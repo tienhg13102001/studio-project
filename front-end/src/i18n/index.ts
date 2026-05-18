@@ -1,8 +1,7 @@
+import { useLanguage } from "./LanguageContext";
 import en from "./locales/en";
 import vi from "./locales/vi";
-import { useLanguage } from "./LanguageContext";
-
-export { useLanguage, LanguageProvider } from "./LanguageContext";
+export { LanguageProvider, useLanguage } from "./LanguageContext";
 export type { Lang } from "./LanguageContext";
 
 const translations = { en, vi };
