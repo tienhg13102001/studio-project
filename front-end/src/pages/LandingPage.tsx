@@ -18,9 +18,7 @@ const LandingPage = () => {
         <VideoBackground />
         {/* Header / Navbar */}
         <HeroSection />
-        <div className="absolute bottom-8 left-1/2 z-10 -translate-x-1/2 animate-bounce cursor-pointer">
-          <ArrowDown size={32} className="text-primary" />
-        </div>
+
       </div>
     </>
   );
