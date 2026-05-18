@@ -1,59 +1,63 @@
-import { SunIcon, UserIcon } from "@phosphor-icons/react";
+import { UserIcon, ListIcon } from "@phosphor-icons/react";
 import Logo from "../../assets/icons/Logo";
+import { Button } from "#components/ui/button";
+import NavLinks from "#components/molecules/NavLinks";
+import ThemeToggle from "#components/molecules/ThemeToggle";
+import { useLanguage, useTranslation } from "#i18n";
 
 type Props = {};
 
 const Navbar: React.FC<Props> = () => {
+  const { lang, setLang } = useLanguage();
+  const t = useTranslation();
+
   return (
-    <nav className="w-full py-4 px-6 md:px-12 flex items-center justify-between z-20 absolute top-0 left-0 bg-black/10 backdrop-blur-sm">
-      {/* Logo Left */}
-      <div className="flex items-center cursor-pointer">
-        {/* Icon TV Placeholder cho logo */}
-        <Logo className="w-8 h-8 text-white" />
+    <nav className="absolute top-0 left-0 z-20 flex w-full items-center justify-between bg-black/10 px-6 py-4 backdrop-blur-sm md:px-12">
+      {/* Logo */}
+      <div className="flex cursor-pointer items-center">
+        <Logo className="h-8 w-8 text-white" />
       </div>
-      {/* Center Navigation (Ẩn trên mobile) */}
-      <nav className="hidden lg:flex items-center gap-8 text-sm font-medium">
-        <a href="#" className="relative nav-active text-white hover:text-gray-300 transition-colors">
-          Home
-        </a>
-        <a href="#" className="flex items-center gap-1 text-gray-300 hover:text-white transition-colors">
-          Services <i className="fa-solid fa-chevron-down text-[10px]" />
-        </a>
-        <a href="#" className="text-gray-300 hover:text-white transition-colors">
-          Rental
-        </a>
-        <a href="#" className="text-gray-300 hover:text-white transition-colors">
-          Blog
-        </a>
-        <a href="#" className="text-gray-300 hover:text-white transition-colors">
-          Team
-        </a>
-        <a href="#" className="text-gray-300 hover:text-white transition-colors">
-          Contact
-        </a>
-      </nav>
+
+      {/* Center Navigation */}
+      <NavLinks />
+
       {/* Right Actions */}
-      <div className="flex items-center gap-4">
-        {/* Language (Giả lập) */}
-        <button className="hidden md:flex items-center gap-2 bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded-md border border-white/20 transition-colors text-sm">
-          🇺🇸 <span>EN</span>
-        </button>
+      <div className="flex items-center gap-2">
+        {/* Language */}
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => setLang(lang === "en" ? "vi" : "en")}
+          className="hidden items-center gap-1.5 rounded-md border border-white/20 bg-white/10 text-sm text-white hover:bg-white/20 md:flex"
+        >
+          {lang === "en" ? "🇺🇸 EN" : "🇻🇳 VI"}
+        </Button>
+
         {/* Theme Toggle */}
-        <button className="w-9 h-9 p-2 flex items-center justify-center bg-white/10 hover:bg-white/20 rounded-md border border-white/20 transition-colors text-brand-yellow">
-          <SunIcon />
-        </button>
+        <ThemeToggle />
+
         {/* User Login */}
-        <button className="w-9 h-9 p-2 flex items-center justify-center bg-white/10 hover:bg-white/20 rounded-md border border-white/20 transition-colors">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="rounded-md border border-white/20 bg-white/10 text-white hover:bg-white/20"
+        >
           <UserIcon />
-        </button>
+        </Button>
+
         {/* Let's Talk CTA */}
-        <button className="hidden md:block bg-brand-yellow hover:bg-yellow-500 text-black font-semibold text-sm px-6 py-2 rounded-full transition-transform hover:scale-105">
-          Let's Talk
-        </button>
-        {/* Mobile Menu Toggle */}
-        <button className="lg:hidden text-white text-2xl ml-2">
-          <i className="fa-solid fa-bars" />
-        </button>
+        <Button className="bg-primary text-primary-foreground hidden rounded-full px-6 text-sm font-semibold hover:brightness-110 md:flex">
+          {t.nav.letsTalk}
+        </Button>
+
+        {/* Mobile Menu */}
+        <Button
+          variant="ghost"
+          size="icon"
+          className="rounded-md border border-white/20 bg-white/10 text-white hover:bg-white/20 lg:hidden"
+        >
+          <ListIcon size={20} />
+        </Button>
       </div>
     </nav>
   );

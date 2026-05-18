@@ -6,11 +6,11 @@ type Props = {};
 
 const MainLayout: React.FC<Props> = () => {
   return (
-    <div>
+    <>
       <Navbar />
       <Outlet />
       {/* <Footer /> */}
-    </div>
+    </>
   );
 };
 

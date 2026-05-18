@@ -1,6 +1,6 @@
 const VideoBackground = () => {
   return (
-    <div className="absolute inset-0 w-full h-full -z-10 overflow-hidden bg-white">
+    <div className="absolute inset-0 w-full h-full -z-10 overflow-hidden ">
       <video autoPlay loop muted playsInline className="absolute top-0 left-0 w-full h-full object-cover">
         <source
           src="https://assets.mixkit.co/videos/preview/mixkit-set-of-plateaus-seen-from-the-sky-in-a-sunset-26070-large.mp4"

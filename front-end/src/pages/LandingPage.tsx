@@ -14,11 +14,11 @@ const LandingPage = () => {
   return (
     <>
       {!isReady && <Preloader onComplete={handlePreloaderComplete} />}
-      <div className="min-h-screen w-full flex flex-col font-sans text-white relative antialiased selection:bg-brand-yellow selection:text-black">
+      <div className="relative flex min-h-screen w-full flex-col font-sans text-white antialiased selection:text-primary">
         <VideoBackground />
         {/* Header / Navbar */}
         <HeroSection />
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 animate-bounce cursor-pointer">
+        <div className="absolute bottom-8 left-1/2 z-10 -translate-x-1/2 animate-bounce cursor-pointer">
           <ArrowDown size={32} className="text-primary" />
         </div>
       </div>
