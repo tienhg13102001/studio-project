@@ -14,7 +14,7 @@ const LandingPage = () => {
   return (
     <>
       {!isReady && <Preloader onComplete={handlePreloaderComplete} />}
-      <div className="relative flex min-h-screen w-full flex-col font-sans text-white antialiased selection:text-primary">
+      <div className="relative flex min-h-dvh w-full flex-col font-sans text-white antialiased selection:text-primary">
         <VideoBackground />
         {/* Header / Navbar */}
         <HeroSection />
