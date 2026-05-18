@@ -1,5 +1,5 @@
 import { Calendar, ChevronLeft, ChevronRight, Clock, Eye, Film, MapPin, PlayCircle, User, Video } from "lucide-react";
-import { useState, type CSSProperties } from "react";
+import { useState, type CSSProperties, type FC } from "react";
 
 // Dữ liệu mẫu mô phỏng theo video
 const MOCK_DATA = {
@@ -24,7 +24,9 @@ const MOCK_DATA = {
   ],
 };
 
-export default function App() {
+type Props = {};
+
+const ProjectDetail: FC<Props> = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const totalImages = MOCK_DATA.images.length;
 
@@ -195,7 +197,7 @@ export default function App() {
                 <ChevronLeft size={24} />
               </button>
 
-              <span className="text-gray-400 text-sm tracking-widest uppercase">Scroll wheel or click arrows</span>
+              <span className="text-gray-400 text-sm tracking-widest uppercase">Click arrows</span>
 
               <button
                 onClick={handleNext}
@@ -224,4 +226,6 @@ export default function App() {
       </div>
     </div>
   );
-}
+};
+
+export default ProjectDetail;
