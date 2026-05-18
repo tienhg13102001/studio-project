@@ -7,29 +7,47 @@ type Props = {
 
 const Preloader = ({ onComplete }: Props) => {
   const [progress, setProgress] = useState(0);
-  console.log("🚀 ~ Preloader ~ progress:", progress)
   const [isExiting, setIsExiting] = useState(false);
 
   useEffect(() => {
-    const duration = 2200;
-    const interval = 20;
-    const steps = duration / interval;
     let current = 0;
+    let timeoutId: ReturnType<typeof setTimeout>;
 
-    const timer = setInterval(() => {
-      current += 1;
-      // Ease-out cubic: nhanh ở đầu, chậm dần ở cuối
-      const eased = Math.round((1 - Math.pow(1 - current / steps, 3)) * 100);
-      setProgress(Math.min(eased, 100));
+    const tick = () => {
+      // 15% chance burst (+4–7), otherwise normal (+1–3)
+      const isBurst = Math.random() < 0.15;
+      const increment = isBurst
+        ? Math.floor(Math.random() * 4) + 4
+        : Math.floor(Math.random() * 3) + 1;
 
-      if (current >= steps) {
-        clearInterval(timer);
+      current = Math.min(current + increment, 100);
+      setProgress(current);
+
+      if (current >= 100) {
         setIsExiting(true);
         setTimeout(onComplete, 750);
+        return;
       }
-    }, interval);
 
-    return () => clearInterval(timer);
+      // Chậm lại gần các mốc 25 / 55 / 80 / 92
+      const isSlowZone = [25, 55, 80, 92].some((cp) => Math.abs(current - cp) < 4);
+      // 12% khả năng "khựng" - dừng lại 300–700ms
+      const isPause = Math.random() < 0.12;
+
+      let delay: number;
+      if (isPause) {
+        delay = 300 + Math.random() * 400;
+      } else if (isSlowZone) {
+        delay = 100 + Math.random() * 150;
+      } else {
+        delay = 25 + Math.random() * 55;
+      }
+
+      timeoutId = setTimeout(tick, delay);
+    };
+
+    timeoutId = setTimeout(tick, 120);
+    return () => clearTimeout(timeoutId);
   }, [onComplete]);
 
   return (
@@ -42,11 +60,8 @@ const Preloader = ({ onComplete }: Props) => {
 
       {/* Thanh trượt */}
       <div className="w-64 md:w-96 flex flex-col gap-3">
-        <div className="w-full h-[2px] bg-white/10 rounded-full overflow-hidden">
-          <div
-            className="h-full bg-primary rounded-full transition-[width] duration-75 ease-linear"
-            style={{ width: `${progress}%` }}
-          />
+        <div className="w-full h-0.5 bg-white/10 rounded-full overflow-hidden">
+          <div className="h-full bg-primary rounded-full transition-[width] duration-75 ease-linear" style={{ width: `${progress}%` }} />
         </div>
         <div className="flex justify-between items-center text-xs text-gray-500 tabular-nums select-none">
           <span className="tracking-widest uppercase">Loading</span>
