@@ -1,7 +1,6 @@
 import HeroSection from "#components/organisms/HeroSection";
 import Preloader from "#components/organisms/Preloader";
 import ServiceSection from "#components/organisms/ServiceSection";
-import VideoBackground from "#components/organisms/VideoBackground";
 import { useState } from "react";
 
 const LandingPage = () => {
