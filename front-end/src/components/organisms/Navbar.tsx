@@ -1,4 +1,4 @@
-import { Sun, User } from "lucide-react";
+import { Sun, User } from "@phosphor-icons/react";
 import Logo from "../../assets/icons/Logo";
 
 type Props = {};
