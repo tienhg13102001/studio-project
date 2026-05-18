@@ -12,6 +12,10 @@ const en = {
     contactBeez: "Contact BeeZ",
     viewProjects: "View Projects",
   },
+  services: {
+    sectionTitle: "What We Do",
+    sectionSubtitle: "From broadcast to short-form content, we master every format",
+  },
 } as const;
 
 export default en;

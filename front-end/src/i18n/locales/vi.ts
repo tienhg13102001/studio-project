@@ -12,6 +12,10 @@ const vi = {
     contactBeez: "Liên Hệ BeeZ",
     viewProjects: "Xem Dự Án",
   },
+  services: {
+    sectionTitle: "Lĩnh Vực Hoạt Động",
+    sectionSubtitle: "Từ truyền hình đến nội dung ngắn, chúng tôi làm chủ mọi định dạng",
+  },
 } as const;
 
 export default vi;

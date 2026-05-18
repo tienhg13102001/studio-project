@@ -6,14 +6,22 @@ const HeroCTA = () => {
   const t = useTranslation();
 
   return (
-    <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6">
-      <Button variant="default" className="rounded-full min-h-10 px-9 py-6 font-bold text-lg">
-        {t.cta.contactBeez}
-      </Button>
-      <Button variant="outline" className="rounded-full min-h-10 px-9 py-6 font-bold text-lg text-white bg-transparent border-white/60 hover:bg-white/10 hover:text-white">
-        {t.cta.viewProjects}
-      </Button>
-      <div className="hidden sm:block w-px h-10 bg-gray-600 mx-2" />
+    <div className="flex flex-col items-center gap-3 sm:flex-row sm:gap-6">
+      <div className="flex gap-3 sm:gap-6">
+        <Button
+          variant="default"
+          className="min-h-10 rounded-full px-6 py-3 text-sm font-bold md:px-9 md:py-6 md:text-lg"
+        >
+          {t.cta.contactBeez}
+        </Button>
+        <Button
+          variant="outline"
+          className="min-h-10 rounded-full border-white/60 bg-transparent px-6 py-3 text-sm font-bold text-white hover:bg-white/10 hover:text-white md:px-9 md:py-6 md:text-lg"
+        >
+          {t.cta.viewProjects}
+        </Button>
+      </div>
+      <div className="mx-2 hidden h-10 w-px bg-gray-600 sm:block" />
       <SocialLinks />
     </div>
   );
