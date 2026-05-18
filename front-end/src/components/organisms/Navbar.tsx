@@ -3,7 +3,7 @@ import Logo from "../../assets/icons/Logo";
 
 type Props = {};
 
-const Navbar: React.FC<Props> = (props) => {
+const Navbar: React.FC<Props> = () => {
   return (
     <nav className="w-full py-4 px-6 md:px-12 flex items-center justify-between z-20 absolute top-0 left-0 bg-black/10 backdrop-blur-sm">
       {/* Logo Left */}
