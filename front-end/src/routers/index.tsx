@@ -1,6 +1,7 @@
 import { createBrowserRouter } from "react-router-dom";
 import MainLayout from "../components/templates/MainLayout";
 import LandingPage from "../pages/LandingPage";
+import NotFoundPage from "../pages/NotFoundPage";
 
 export const router = createBrowserRouter([
   {
@@ -19,6 +20,6 @@ export const router = createBrowserRouter([
   },
   {
     path: "*",
-    element: <div>404 - Không tìm thấy trang</div>, // Có thể tạo ErrorTemplate riêng
+    element: <NotFoundPage />,
   },
 ]);

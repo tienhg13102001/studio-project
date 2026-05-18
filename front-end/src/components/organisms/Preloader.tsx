@@ -10,44 +10,25 @@ const Preloader = ({ onComplete }: Props) => {
   const [isExiting, setIsExiting] = useState(false);
 
   useEffect(() => {
+    const duration = 2200;
+    const interval = 20;
+    const steps = duration / interval;
     let current = 0;
-    let timeoutId: ReturnType<typeof setTimeout>;
 
-    const tick = () => {
-      // 15% chance burst (+4–7), otherwise normal (+1–3)
-      const isBurst = Math.random() < 0.15;
-      const increment = isBurst
-        ? Math.floor(Math.random() * 4) + 4
-        : Math.floor(Math.random() * 3) + 1;
+    const timer = setInterval(() => {
+      current += 1;
+      // Ease-out cubic: nhanh ở đầu, chậm dần ở cuối
+      const eased = Math.round((1 - Math.pow(1 - current / steps, 3)) * 100);
+      setProgress(Math.min(eased, 100));
 
-      current = Math.min(current + increment, 100);
-      setProgress(current);
-
-      if (current >= 100) {
+      if (current >= steps) {
+        clearInterval(timer);
         setIsExiting(true);
         setTimeout(onComplete, 750);
-        return;
       }
+    }, interval);
 
-      // Chậm lại gần các mốc 25 / 55 / 80 / 92
-      const isSlowZone = [25, 55, 80, 92].some((cp) => Math.abs(current - cp) < 4);
-      // 12% khả năng "khựng" - dừng lại 300–700ms
-      const isPause = Math.random() < 0.12;
-
-      let delay: number;
-      if (isPause) {
-        delay = 300 + Math.random() * 400;
-      } else if (isSlowZone) {
-        delay = 100 + Math.random() * 150;
-      } else {
-        delay = 25 + Math.random() * 55;
-      }
-
-      timeoutId = setTimeout(tick, delay);
-    };
-
-    timeoutId = setTimeout(tick, 120);
-    return () => clearTimeout(timeoutId);
+    return () => clearInterval(timer);
   }, [onComplete]);
 
   return (
