@@ -1,26 +1,29 @@
+import { useLanguage, useTranslation } from "#i18n";
 import {
   DeviceMobileCameraIcon,
   PhoneIcon,
   TelevisionSimpleIcon,
 } from "@phosphor-icons/react";
-import type { FC, ElementType } from "react";
+import type { ElementType, FC } from "react";
 import { useMemo } from "react";
-import { useLanguage, useTranslation } from "#i18n";
 import { getServicesContent } from "../../mocks/servicesContent";
 
 // Phần không dịch: icon & ảnh — map theo id
 const SERVICE_META: Record<number, { icon: ElementType; image: string }> = {
   1: {
     icon: TelevisionSimpleIcon,
-    image: "https://images.unsplash.com/photo-1536440136628-849c177e76a1?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+    image:
+      "https://images.unsplash.com/photo-1536440136628-849c177e76a1?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
   },
   2: {
     icon: DeviceMobileCameraIcon,
-    image: "https://images.unsplash.com/photo-1611162616475-46b635cb6868?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+    image:
+      "https://images.unsplash.com/photo-1611162616475-46b635cb6868?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
   },
   3: {
     icon: PhoneIcon,
-    image: "https://images.unsplash.com/photo-1556910103-1c02745aae4d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+    image:
+      "https://images.unsplash.com/photo-1556910103-1c02745aae4d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
   },
 };
 
@@ -70,7 +73,10 @@ const ServiceSection: FC<Props> = () => {
                   {/* Icon Container */}
                   <div className="flex items-start">
                     <div className="rounded-xl border border-white/10 bg-black/30 p-2.5 backdrop-blur-md transition-colors duration-300 group-hover:border-white/30 group-hover:bg-black/50">
-                      <Icon className="h-5 w-5 text-gray-200" strokeWidth={1.5} />
+                      <Icon
+                        className="h-5 w-5 text-gray-200"
+                        strokeWidth={1.5}
+                      />
                     </div>
                   </div>
 

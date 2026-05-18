@@ -10,6 +10,10 @@ const HeroSection = () => {
   const { lang } = useLanguage();
   const content = useMemo(() => getLandingContent(lang), [lang]);
 
+  const handleScrollDown = () => {
+    window.scrollBy({ top: window.innerHeight, behavior: "smooth" });
+  };
+
   return (
     <main className="relative z-10 flex min-h-dvh grow flex-col items-center justify-center px-4 pt-20 text-center lg:pb-24">
       <div className="mb-6 opacity-90">
@@ -23,7 +27,10 @@ const HeroSection = () => {
         {content.subheading}
       </p>
       <HeroCTA />
-      <div className="absolute bottom-8 left-1/2 z-10 -translate-x-1/2 animate-bounce cursor-pointer">
+      <div
+        className="absolute bottom-8 left-1/2 z-10 -translate-x-1/2 animate-bounce cursor-pointer"
+        onClick={handleScrollDown}
+      >
         <ArrowDownIcon size={32} className="text-primary" />
       </div>
       <VideoBackground />
