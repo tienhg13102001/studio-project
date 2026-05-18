@@ -1,4 +1,4 @@
-import { Sun, User } from "@phosphor-icons/react";
+import { SunIcon, UserIcon } from "@phosphor-icons/react";
 import Logo from "../../assets/icons/Logo";
 
 type Props = {};
@@ -40,11 +40,11 @@ const Navbar: React.FC<Props> = () => {
         </button>
         {/* Theme Toggle */}
         <button className="w-9 h-9 p-2 flex items-center justify-center bg-white/10 hover:bg-white/20 rounded-md border border-white/20 transition-colors text-brand-yellow">
-          <Sun />
+          <SunIcon />
         </button>
         {/* User Login */}
         <button className="w-9 h-9 p-2 flex items-center justify-center bg-white/10 hover:bg-white/20 rounded-md border border-white/20 transition-colors">
-          <User />
+          <UserIcon />
         </button>
         {/* Let's Talk CTA */}
         <button className="hidden md:block bg-brand-yellow hover:bg-yellow-500 text-black font-semibold text-sm px-6 py-2 rounded-full transition-transform hover:scale-105">

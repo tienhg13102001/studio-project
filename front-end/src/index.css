@@ -129,4 +129,17 @@
   html {
     @apply font-sans;
     }
+  :root {
+    --instagram-gradient: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285aeb 90%);
+    --facebook-gradient: linear-gradient(135deg, #18acfe 0%, #0163e0 100%);
+  }
+}
+
+@layer utilities {
+  .bg-instagram-gradient {
+    background: var(--instagram-gradient);
+  }
+  .bg-facebook-gradient {
+    background: var(--facebook-gradient);
+  }
 }
