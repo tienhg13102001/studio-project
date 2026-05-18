@@ -13,7 +13,7 @@ const ServiceSection: FC<Props> = () => {
   const services = useMemo(() => getServicesContent(lang), [lang]);
 
   return (
-    <section className="bg-secondary-foreground min-h-dvh px-4 py-24 font-sans sm:px-6 lg:px-8">
+    <section className="bg-foreground min-h-dvh px-4 py-24 font-sans sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl">
         <SectionHeader
           title={t.services.sectionTitle}

@@ -11,7 +11,7 @@ const FeatureSection: FC<Props> = () => {
   const t = useTranslation();
 
   return (
-    <section className="bg-secondary-foreground flex min-h-dvh flex-col justify-center overflow-hidden py-16 font-sans">
+    <section className="bg-foreground flex min-h-dvh flex-col justify-center overflow-hidden py-16 font-sans">
       <div className="mx-auto mb-10 w-full max-w-7xl px-6">
         <SectionHeader title={t.featured.sectionTitle} subtitle="" />
       </div>
