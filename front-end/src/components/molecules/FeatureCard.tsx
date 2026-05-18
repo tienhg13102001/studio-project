@@ -1,11 +1,11 @@
-import type { PortfolioCardData } from "#mocks/featuredContent";
+import type { FeatureCardData } from "#mocks/featuredContent";
 
 type Props = {
-  card: PortfolioCardData;
+  card: FeatureCardData;
   variant: "vertical" | "horizontal";
 };
 
-const PortfolioCard: React.FC<Props> = ({ card, variant }) => {
+const FeatureCard: React.FC<Props> = ({ card, variant }) => {
   const isVertical = variant === "vertical";
 
   return (
@@ -34,7 +34,7 @@ const PortfolioCard: React.FC<Props> = ({ card, variant }) => {
       {/* Info */}
       <div className="p-3">
         <h3
-          className={`text-input truncate font-semibold ${isVertical ? "text-sm" : "text-sm md:text-base"}`}
+          className={`text-foreground truncate font-semibold ${isVertical ? "text-sm" : "text-sm md:text-base"}`}
           title={card.title}
         >
           {card.title}
@@ -50,4 +50,4 @@ const PortfolioCard: React.FC<Props> = ({ card, variant }) => {
   );
 };
 
-export default PortfolioCard;
+export default FeatureCard;

@@ -1,5 +1,5 @@
 // Portfolio items — titles are project names, no i18n needed
-export type PortfolioCardData = {
+export type FeatureCardData = {
   id: number;
   tag: string;
   image: string;
@@ -7,7 +7,7 @@ export type PortfolioCardData = {
   subtitle: string;
 };
 
-export const topCards: PortfolioCardData[] = [
+export const topCards: FeatureCardData[] = [
   {
     id: 1,
     tag: "SHORT",
@@ -59,7 +59,7 @@ export const topCards: PortfolioCardData[] = [
   },
 ];
 
-export const bottomCards: PortfolioCardData[] = [
+export const bottomCards: FeatureCardData[] = [
   {
     id: 1,
     tag: "INTERVIEW",

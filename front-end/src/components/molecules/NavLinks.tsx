@@ -4,7 +4,12 @@ import type { Translations } from "#i18n";
 
 type NavKey = keyof Translations["nav"];
 
-const NAV_ITEMS: { key: NavKey; href: string; active?: boolean; hasDropdown?: boolean }[] = [
+const NAV_ITEMS: {
+  key: NavKey;
+  href: string;
+  active?: boolean;
+  hasDropdown?: boolean;
+}[] = [
   { key: "home", href: "#", active: true },
   { key: "services", href: "#", hasDropdown: true },
   { key: "rental", href: "#" },
@@ -13,7 +18,11 @@ const NAV_ITEMS: { key: NavKey; href: string; active?: boolean; hasDropdown?: bo
   { key: "contact", href: "#" },
 ];
 
-const NavLinks = () => {
+type Props = {
+  scrolled: boolean;
+};
+
+const NavLinks: React.FC<Props> = ({ scrolled }) => {
   const t = useTranslation();
 
   return (
@@ -23,7 +32,13 @@ const NavLinks = () => {
           key={item.key}
           href={item.href}
           className={`flex items-center gap-1 transition-colors ${
-            item.active ? "text-white" : "text-white/60 hover:text-white"
+            scrolled
+              ? item.active
+                ? "text-foreground"
+                : "text-muted-foreground hover:text-foreground"
+              : item.active
+                ? "text-background"
+                : "text-muted-foreground hover:text-foreground"
           }`}
         >
           {t.nav[item.key]}
