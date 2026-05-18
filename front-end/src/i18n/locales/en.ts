@@ -16,6 +16,9 @@ const en = {
     sectionTitle: "What We Do",
     sectionSubtitle: "From broadcast to short-form content, we master every format",
   },
+  featured: {
+    sectionTitle: "Featured",
+  },
 } as const;
 
 export default en;

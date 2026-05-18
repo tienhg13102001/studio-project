@@ -1,3 +1,4 @@
+import FeatureSection from "#components/organisms/FeatureSection";
 import HeroSection from "#components/organisms/HeroSection";
 import Preloader from "#components/organisms/Preloader";
 import ServiceSection from "#components/organisms/ServiceSection";
@@ -18,6 +19,8 @@ const LandingPage = () => {
         <HeroSection />
         {/* Service Section */}
         <ServiceSection />
+        {/* Feature Section */}
+        <FeatureSection />
       </div>
     </>
   );

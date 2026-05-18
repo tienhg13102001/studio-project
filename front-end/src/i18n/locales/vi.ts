@@ -16,6 +16,9 @@ const vi = {
     sectionTitle: "Lĩnh Vực Hoạt Động",
     sectionSubtitle: "Từ truyền hình đến nội dung ngắn, chúng tôi làm chủ mọi định dạng",
   },
+  featured: {
+    sectionTitle: "Nổi Bật",
+  },
 } as const;
 
 export default vi;

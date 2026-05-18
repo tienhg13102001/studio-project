@@ -21,7 +21,7 @@ const Navbar: React.FC<Props> = () => {
 
   return (
     <nav
-      className={`fixed top-0 left-0 z-20 flex w-full items-center justify-between px-6 py-4 transition-all duration-800 md:px-12 ${scrolled ? "bg-secondary-foreground/90 backdrop-blur-sm" : "bg-transparent"}`}
+      className={`fixed top-0 left-0 z-20 flex w-full items-center justify-between px-6 py-4 transition-all duration-800 md:px-12 ${scrolled ? "bg-foreground/90 backdrop-blur-sm" : "bg-transparent"}`}
     >
       {/* Logo */}
       <div className="flex cursor-pointer items-center">
