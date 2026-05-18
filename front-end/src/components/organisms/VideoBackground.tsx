@@ -8,6 +8,8 @@ const VideoBackground = () => {
         Trình duyệt của bạn không hỗ trợ thẻ video.
       </video>
       <div className="absolute inset-0 bg-black/75" />
+      {/* background black mờ dần từ dưới lên */}
+      <div className="absolute inset-0 bg-linear-to-t from-black/50 to-transparent" />
     </div>
   );
 };
