@@ -18,7 +18,7 @@ const HeroSection = () => {
   };
 
   return (
-    <main className="relative z-10 flex min-h-dvh grow flex-col items-center justify-center px-4 pt-20 text-center lg:pb-24">
+    <section className="relative z-10 flex min-h-dvh grow flex-col items-center justify-center px-4 pt-20 text-center lg:pb-24">
       <div className="mb-6 opacity-90">
         <Logo className="h-16 w-16 text-white md:h-20 md:w-20 lg:h-24 lg:w-24" />
       </div>
@@ -37,7 +37,7 @@ const HeroSection = () => {
         <ArrowDownIcon size={32} className="text-primary" />
       </div>
       <VideoBackground src={data?.videoBackground} />
-    </main>
+    </section>
   );
 };
 
