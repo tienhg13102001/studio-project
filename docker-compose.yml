@@ -12,6 +12,8 @@ services:
       MONGO_INITDB_DATABASE: studio_db
     volumes:
       - mongodb_data:/data/db
+    ports:
+      - '127.0.0.1:27017:27017'
     networks:
       - studio-net
     healthcheck:
