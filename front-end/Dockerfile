@@ -8,6 +8,8 @@ RUN npm install
 
 COPY . .
 
+# Empty string → axios uses relative URLs → nginx proxies /api to backend
+ENV VITE_API_URL=""
 RUN npm run build
 
 # ── Stage 2: Serve with nginx ───────────────────────────────────────────────────

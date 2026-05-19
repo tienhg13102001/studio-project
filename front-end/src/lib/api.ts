@@ -1,12 +1,12 @@
 import axios from "axios";
 
 const apiClient = axios.create({
-  baseURL: import.meta.env.VITE_API_URL ?? "http://localhost:4000",
+  baseURL: import.meta.env.VITE_API_URL ?? "",
   timeout: 10000,
   headers: { "Content-Type": "application/json" },
 });
 
-const API_BASE = import.meta.env.VITE_API_URL ?? "http://localhost:4000";
+const API_BASE = import.meta.env.VITE_API_URL ?? "";
 
 /** Relative paths (/images/..., /videos/...) → full backend URL; http(s) URLs stay unchanged */
 export function resolveAssetUrl(path: string): string {
