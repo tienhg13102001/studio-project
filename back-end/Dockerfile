@@ -1,26 +1,12 @@
-# ── Stage 1: Build TypeScript ──────────────────────────────────────────────────
-FROM node:20-alpine AS builder
-
-WORKDIR /app
-
-COPY package.json yarn.lock* ./
-RUN yarn install --frozen-lockfile
-
-COPY tsconfig.json ./
-COPY src ./src
-
-RUN yarn build
-
-# ── Stage 2: Production image ───────────────────────────────────────────────────
 FROM node:20-alpine
-
 WORKDIR /app
 
-COPY package.json yarn.lock* ./
-RUN yarn install --production --frozen-lockfile && yarn cache clean
+COPY package.json ./
+RUN npm install
 
-COPY --from=builder /app/dist ./dist
+COPY . .
 
-EXPOSE 5002
+ENV NODE_ENV=production
+EXPOSE 4000
 
-CMD ["node", "dist/app.js"]
+CMD ["npm", "start"]
