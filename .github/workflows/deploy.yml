@@ -9,6 +9,7 @@ jobs:
   deploy:
     name: SSH Deploy
     runs-on: ubuntu-latest
+    environment: SSH_HOST
 
     steps:
       - name: Deploy via SSH
