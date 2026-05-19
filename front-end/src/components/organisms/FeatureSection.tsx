@@ -13,6 +13,7 @@ const FeatureSection: FC<Props> = () => {
 
   // Fall back to mock while API loads
   const top = verticalCards || [];
+  console.log("🚀 ~ FeatureSection ~ top:", top)
   const bottom = horizontalCards || [];
 
   return (

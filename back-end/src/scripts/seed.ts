@@ -82,7 +82,7 @@ async function seed() {
       order: 1,
       tag: tagMap.get("SHORT"),
       image:
-        "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=400&h=600",
+        "/images/PTL00985.webp",
       title: "Greenfield Dental - V-Line...",
       subtitle: "Greenfield",
     },
@@ -91,7 +91,7 @@ async function seed() {
       order: 2,
       tag: tagMap.get("SHORT"),
       image:
-        "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&q=80&w=400&h=600",
+        "/images/PTL00985.webp",
       title: "bb.q Chicken - Birthday Ce...",
       subtitle: "bb.q Chicken",
     },
@@ -100,7 +100,7 @@ async function seed() {
       order: 3,
       tag: tagMap.get("SHORT"),
       image:
-        "https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&q=80&w=400&h=600",
+        "/images/PTL00985.webp",
       title: "Greenfield Braces - Nerdy...",
       subtitle: "Greenfield Dental",
     },
@@ -109,7 +109,7 @@ async function seed() {
       order: 4,
       tag: tagMap.get("SHORT"),
       image:
-        "https://images.unsplash.com/photo-1562967914-608f82629710?auto=format&fit=crop&q=80&w=400&h=600",
+        "/images/PTL00985.webp",
       title: "bb.q Chicken - Crispy Chic...",
       subtitle: "bb.q Chicken",
     },
@@ -118,7 +118,7 @@ async function seed() {
       order: 5,
       tag: tagMap.get("SHORT"),
       image:
-        "https://images.unsplash.com/photo-1519999482648-25049ddd37b1?auto=format&fit=crop&q=80&w=400&h=600",
+        "/images/PTL00985.webp",
       title: "Greenfield Braces - Sporty...",
       subtitle: "Greenfield Dental",
     },
@@ -127,7 +127,7 @@ async function seed() {
       order: 6,
       tag: tagMap.get("F&B"),
       image:
-        "https://images.unsplash.com/photo-1588195538326-c5b1e9f80a1b?auto=format&fit=crop&q=80&w=400&h=600",
+        "/images/PTL00985.webp",
       title: "Grouper Fish - Chef's Sign...",
       subtitle: "Chapter Fine Dining",
     },
@@ -136,7 +136,7 @@ async function seed() {
       order: 7,
       tag: tagMap.get("F&B"),
       image:
-        "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&q=80&w=400&h=600",
+        "/images/PTL00985.webp",
       title: "Fresh Sashimi - Master...",
       subtitle: "Chapter Fine Dining",
     },
@@ -146,7 +146,7 @@ async function seed() {
       order: 1,
       tag: tagMap.get("INTERVIEW"),
       image:
-        "https://images.unsplash.com/photo-1557804506-669a67965ba0?auto=format&fit=crop&q=80&w=600&h=338",
+        "/images/PTL00959.webp",
       title: "Emotional Interview - 45 Minutes of Talking",
       subtitle: "Healthcare",
     },
@@ -155,7 +155,7 @@ async function seed() {
       order: 2,
       tag: tagMap.get("TVC"),
       image:
-        "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&q=80&w=600&h=338",
+        "/images/PTL00959.webp",
       title: "Join Our Club - Wake Up The Champion",
       subtitle: "Greenfield Dental",
     },
@@ -164,7 +164,7 @@ async function seed() {
       order: 3,
       tag: tagMap.get("TVC"),
       image:
-        "https://images.unsplash.com/photo-1511895426328-dc8714191300?auto=format&fit=crop&q=80&w=600&h=338",
+        "/images/PTL00959.webp",
       title: "A Gleaming Miracle",
       subtitle: "Greenfield Dental",
     },
@@ -173,7 +173,7 @@ async function seed() {
       order: 4,
       tag: tagMap.get("TVC"),
       image:
-        "https://images.unsplash.com/photo-1497215728101-856f4ea42174?auto=format&fit=crop&q=80&w=600&h=338",
+        "/images/PTL00959.webp",
       title: "Đóng Stress - Mở Strong",
       subtitle: "T-Matsuoka Medical Center",
     },
