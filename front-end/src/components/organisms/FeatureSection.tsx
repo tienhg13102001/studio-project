@@ -1,9 +1,8 @@
 import { default as FeatureCard } from "#components/molecules/FeatureCard";
 import MarqueeRow from "#components/molecules/MarqueeRow";
 import SectionHeader from "#components/molecules/SectionHeader";
-import { useTranslation } from "#i18n";
 import { useFeatured } from "#hooks/useFeatured";
-import { verticalCards as mockVertical, horizontalCards as mockHorizontal } from "#mocks/featuredContent";
+import { useTranslation } from "#i18n";
 import type { FC } from "react";
 
 type Props = {};
@@ -13,8 +12,8 @@ const FeatureSection: FC<Props> = () => {
   const { verticalCards, horizontalCards } = useFeatured();
 
   // Fall back to mock while API loads
-  const top = verticalCards ?? mockVertical;
-  const bottom = horizontalCards ?? mockHorizontal;
+  const top = verticalCards || [];
+  const bottom = horizontalCards || [];
 
   return (
     <section className="bg-background flex min-h-dvh flex-col justify-center overflow-hidden py-16 font-sans">
