@@ -7,7 +7,7 @@ export type FeatureCardData = {
   subtitle: string;
 };
 
-export const topCards: FeatureCardData[] = [
+export const verticalCards: FeatureCardData[] = [
   {
     id: 1,
     tag: "SHORT",
@@ -59,7 +59,7 @@ export const topCards: FeatureCardData[] = [
   },
 ];
 
-export const bottomCards: FeatureCardData[] = [
+export const horizontalCards: FeatureCardData[] = [
   {
     id: 1,
     tag: "INTERVIEW",

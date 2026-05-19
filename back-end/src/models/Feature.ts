@@ -2,7 +2,7 @@ import mongoose, { Schema, type Document, type PopulatedDoc } from "mongoose";
 import type { IService } from "./Service.ts";
 
 export interface IFeature extends Document {
-  section: "top" | "bottom";
+  layout: "vertical" | "horizontal";
   order: number;
   tag: PopulatedDoc<IService>;
   image: string;
@@ -12,7 +12,7 @@ export interface IFeature extends Document {
 
 const featureSchema = new Schema<IFeature>(
   {
-    section: { type: String, enum: ["top", "bottom"], required: true },
+    layout: { type: String, enum: ["vertical", "horizontal"], required: true },
     order: { type: Number, required: true },
     tag: { type: Schema.Types.ObjectId, ref: "Service", required: true },
     image: { type: String, required: true },

@@ -5,11 +5,11 @@ import { sendSuccess } from "../lib/response.ts";
 const router = Router();
 
 router.get("/", async (_req, res) => {
-  const [topCards, bottomCards] = await Promise.all([
-    Feature.find({ section: "top" }).sort({ order: 1 }).populate("tag"),
-    Feature.find({ section: "bottom" }).sort({ order: 1 }).populate("tag"),
+  const [verticalCards, horizontalCards] = await Promise.all([
+    Feature.find({ layout: "vertical" }).sort({ order: 1 }).populate("tag"),
+    Feature.find({ layout: "horizontal" }).sort({ order: 1 }).populate("tag"),
   ]);
-  sendSuccess(res, { topCards, bottomCards });
+  sendSuccess(res, { verticalCards, horizontalCards });
 });
 
 export default router;

@@ -26,7 +26,7 @@ export type ServiceItem = {
 
 export type Feature = {
   id: string;
-  section: "top" | "bottom";
+  layout: "vertical" | "horizontal";
   order: number;
   tag: ServiceItem; // populated from Service
   image: string;
@@ -35,8 +35,8 @@ export type Feature = {
 };
 
 export type FeaturedContent = {
-  topCards: Feature[];
-  bottomCards: Feature[];
+  verticalCards: Feature[];
+  horizontalCards: Feature[];
 };
 
 // ─── API response envelope ───────────────────────────────────────────────────

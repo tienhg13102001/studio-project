@@ -28,7 +28,7 @@ export type ApiServiceTag = {
 
 export type ApiFeature = {
   id: string;
-  section: "top" | "bottom";
+  layout: "vertical" | "horizontal";
   order: number;
   tag: ApiServiceTag; // populated
   image: string;
@@ -37,8 +37,8 @@ export type ApiFeature = {
 };
 
 export type ApiFeaturedContent = {
-  topCards: ApiFeature[];
-  bottomCards: ApiFeature[];
+  verticalCards: ApiFeature[];
+  horizontalCards: ApiFeature[];
 };
 
 export type ApiPaginatedServices = {

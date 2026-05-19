@@ -36,8 +36,8 @@ export function useFeatured() {
       .finally(() => setLoading(false));
   }, []);
 
-  const topCards = raw?.topCards.map(mapFeature) ?? null;
-  const bottomCards = raw?.bottomCards.map(mapFeature) ?? null;
+  const verticalCards = raw?.verticalCards.map(mapFeature) ?? null;
+  const horizontalCards = raw?.horizontalCards.map(mapFeature) ?? null;
 
-  return { topCards, bottomCards, loading, error };
+  return { verticalCards, horizontalCards, loading, error };
 }

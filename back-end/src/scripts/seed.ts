@@ -85,7 +85,7 @@ async function seed() {
   await Feature.insertMany([
     // top cards
     {
-      section: "top",
+      layout: "vertical",
       order: 1,
       tag: tagMap.get("SHORT"),
       image:
@@ -94,7 +94,7 @@ async function seed() {
       subtitle: "Greenfield",
     },
     {
-      section: "top",
+      layout: "vertical",
       order: 2,
       tag: tagMap.get("SHORT"),
       image:
@@ -103,7 +103,7 @@ async function seed() {
       subtitle: "bb.q Chicken",
     },
     {
-      section: "top",
+      layout: "vertical",
       order: 3,
       tag: tagMap.get("SHORT"),
       image:
@@ -112,7 +112,7 @@ async function seed() {
       subtitle: "Greenfield Dental",
     },
     {
-      section: "top",
+      layout: "vertical",
       order: 4,
       tag: tagMap.get("SHORT"),
       image:
@@ -121,7 +121,7 @@ async function seed() {
       subtitle: "bb.q Chicken",
     },
     {
-      section: "top",
+      layout: "vertical",
       order: 5,
       tag: tagMap.get("SHORT"),
       image:
@@ -130,7 +130,7 @@ async function seed() {
       subtitle: "Greenfield Dental",
     },
     {
-      section: "top",
+      layout: "vertical",
       order: 6,
       tag: tagMap.get("F&B"),
       image:
@@ -139,7 +139,7 @@ async function seed() {
       subtitle: "Chapter Fine Dining",
     },
     {
-      section: "top",
+      layout: "vertical",
       order: 7,
       tag: tagMap.get("F&B"),
       image:
@@ -149,7 +149,7 @@ async function seed() {
     },
     // bottom cards
     {
-      section: "bottom",
+      layout: "horizontal",
       order: 1,
       tag: tagMap.get("INTERVIEW"),
       image:
@@ -158,7 +158,7 @@ async function seed() {
       subtitle: "Healthcare",
     },
     {
-      section: "bottom",
+      layout: "horizontal",
       order: 2,
       tag: tagMap.get("TVC"),
       image:
@@ -167,7 +167,7 @@ async function seed() {
       subtitle: "Greenfield Dental",
     },
     {
-      section: "bottom",
+      layout: "horizontal",
       order: 3,
       tag: tagMap.get("TVC"),
       image:
@@ -176,7 +176,7 @@ async function seed() {
       subtitle: "Greenfield Dental",
     },
     {
-      section: "bottom",
+      layout: "horizontal",
       order: 4,
       tag: tagMap.get("TVC"),
       image:
