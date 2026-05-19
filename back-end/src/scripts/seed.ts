@@ -8,11 +8,7 @@ async function seed() {
   await connectDB();
   console.log("🌱 Seeding database...");
 
-  await Promise.all([
-    Landing.deleteMany({}),
-    Service.deleteMany({}),
-    Feature.deleteMany({}),
-  ]);
+  await Promise.all([Landing.deleteMany({}), Service.deleteMany({}), Feature.deleteMany({})]);
 
   // ─── Landing ──────────────────────────────────────────────────────────────
   await Landing.create({
@@ -43,8 +39,7 @@ async function seed() {
       order: 2,
       tag: "SHORT",
       iconName: "DeviceMobileCamera",
-      image:
-        "https://images.unsplash.com/photo-1611162616475-46b635cb6868?auto=format&fit=crop&w=800&q=80",
+      image: "/images/services1.webp",
       title: { en: "Short-form Content", vi: "Nội Dung Dạng Ngắn" },
       description: {
         en: "TikTok, Reels, Shorts — multi-platform content with 1B+ views",
@@ -55,8 +50,7 @@ async function seed() {
       order: 3,
       tag: "F&B",
       iconName: "Phone",
-      image:
-        "https://images.unsplash.com/photo-1556910103-1c02745aae4d?auto=format&fit=crop&w=800&q=80",
+      image: "/images/services2.webp",
       title: { en: "Food & Beverage (F&B)", vi: "Đồ Ăn & Thức Uống (F&B)" },
       description: {
         en: "Creative, professional video production for restaurants and F&B brands",
@@ -67,8 +61,7 @@ async function seed() {
       order: 4,
       tag: "INTERVIEW",
       iconName: "Microphone",
-      image:
-        "https://images.unsplash.com/photo-1557804506-669a67965ba0?auto=format&fit=crop&w=800&q=80",
+      image: "/images/services2.webp",
       title: { en: "Interview Production", vi: "Sản Xuất Phỏng Vấn" },
       description: {
         en: "In-depth interview videos that tell authentic stories and build trust",
