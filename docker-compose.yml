@@ -1,0 +1,72 @@
+name: beezvn
+
+services:
+  mongo:
+    image: mongo:7
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASS}
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - beez
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./back-end
+    restart: unless-stopped
+    env_file:
+      - ./back-end/.env
+    environment:
+      NODE_ENV: production
+      PORT: 4000
+      MONGODB_URI: mongodb://${MONGO_ROOT_USER}:${MONGO_ROOT_PASS}@mongo:27017/beez?authSource=admin
+      FRONTEND_URL: https://beezvn.com
+    depends_on:
+      mongo:
+        condition: service_healthy
+    networks:
+      - beez
+
+  frontend:
+    build:
+      context: ./front-end
+      args:
+        # Empty → same-origin requests via Caddy
+        VITE_API_URL: ""
+    restart: unless-stopped
+    depends_on:
+      - backend
+    networks:
+      - beez
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - frontend
+      - backend
+    networks:
+      - beez
+
+volumes:
+  mongo_data:
+  caddy_data:
+  caddy_config:
+
+networks:
+  beez:
+    driver: bridge
