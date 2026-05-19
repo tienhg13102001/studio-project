@@ -11,6 +11,11 @@ services:
       MONGO_INITDB_DATABASE: beez
     volumes:
       - mongo_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   mongo-express:
     image: mongo-express:1
@@ -24,7 +29,38 @@ services:
       ME_CONFIG_MONGODB_URL: mongodb://${MONGO_ROOT_USER:-admin}:${MONGO_ROOT_PASS:-secret}@mongo:27017/
       ME_CONFIG_BASICAUTH: false
     depends_on:
-      - mongo
+      mongo:
+        condition: service_healthy
+
+  backend:
+    build:
+      context: ./back-end
+    container_name: beez_backend
+    restart: unless-stopped
+    environment:
+      PORT: 4000
+      NODE_ENV: production
+      MONGODB_URI: mongodb://${MONGO_ROOT_USER:-admin}:${MONGO_ROOT_PASS:-secret}@mongo:27017/beez?authSource=admin
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost}
+    volumes:
+      # Media files mount — thêm video/ảnh vào back-end/public/ không cần rebuild
+      - ./back-end/public:/app/public
+    depends_on:
+      mongo:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: ./front-end
+      args:
+        # VITE_API_URL="" → dùng relative path, Nginx proxy sang backend
+        VITE_API_URL: ${VITE_API_URL:-}
+    container_name: beez_frontend
+    restart: unless-stopped
+    ports:
+      - "${APP_PORT:-80}:80"
+    depends_on:
+      - backend
 
 volumes:
   mongo_data:
