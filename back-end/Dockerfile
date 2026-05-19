@@ -7,6 +7,6 @@ RUN npm install
 COPY . .
 
 ENV NODE_ENV=production
-EXPOSE 4000
+EXPOSE 5002
 
 CMD ["npm", "start"]
