@@ -1,5 +1,5 @@
 {
-  "name": "beez-production-api",
+  "name": "@studio/back-end",
   "version": "1.0.0",
   "type": "module",
   "scripts": {

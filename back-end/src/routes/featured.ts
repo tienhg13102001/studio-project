@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { Feature } from "../models/Feature.ts";
-import { sendSuccess } from "../lib/response.ts";
+import { sendSuccess } from "../lib/response";
+import { Feature } from "../models/Feature";
 
 const router = Router();
 

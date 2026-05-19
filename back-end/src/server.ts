@@ -1,8 +1,8 @@
 import "dotenv/config";
-import app from "./app.ts";
-import { connectDB } from "./lib/db.ts";
+import { connectDB } from "./lib/db";
+import app from "./app";
 
-const PORT = Number(process.env.PORT) || 4000;
+const PORT = Number(process.env.PORT) || 5002;
 
 connectDB().then(() => {
   app.listen(PORT, () => {
