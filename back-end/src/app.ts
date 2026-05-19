@@ -22,7 +22,7 @@ app.use(
 );
 
 // ─── Static files ─────────────────────────────────────────────────────────────
-app.use(express.static(join(__dirname, "../public")));
+app.use("/api/public", express.static(join(__dirname, "../public")));
 
 // ─── Routes ──────────────────────────────────────────────────────────────────
 app.get("/api/health", (_req, res) => {

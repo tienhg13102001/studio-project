@@ -8,10 +8,12 @@ const apiClient = axios.create({
 
 const API_BASE = import.meta.env.VITE_API_URL ?? "";
 
-/** Relative paths (/images/..., /videos/...) → full backend URL; http(s) URLs stay unchanged */
+/** Relative paths (/images/..., /videos/...) → /api/... URL; http(s) URLs stay unchanged */
 export function resolveAssetUrl(path: string): string {
   if (path.startsWith("http")) return path;
-  return `${API_BASE}${path}`;
+  // Normalize: /images/x.jpg → /api/images/x.jpg
+  const normalized = path.startsWith("/api") ? path : `/api/public${path}`;
+  return `${API_BASE}${normalized}`;
 }
 
 export async function apiFetch<T>(path: string): Promise<T> {
