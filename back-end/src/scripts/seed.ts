@@ -82,7 +82,7 @@ async function seed() {
       order: 1,
       tag: tagMap.get("SHORT"),
       image:
-        "/images/PTL00985.webp",
+        "/images/feature1.webp",
       title: "Greenfield Dental - V-Line...",
       subtitle: "Greenfield",
     },
@@ -91,7 +91,7 @@ async function seed() {
       order: 2,
       tag: tagMap.get("SHORT"),
       image:
-        "/images/PTL00985.webp",
+        "/images/feature1.webp",
       title: "bb.q Chicken - Birthday Ce...",
       subtitle: "bb.q Chicken",
     },
@@ -100,7 +100,7 @@ async function seed() {
       order: 3,
       tag: tagMap.get("SHORT"),
       image:
-        "/images/PTL00985.webp",
+        "/images/feature1.webp",
       title: "Greenfield Braces - Nerdy...",
       subtitle: "Greenfield Dental",
     },
@@ -109,7 +109,7 @@ async function seed() {
       order: 4,
       tag: tagMap.get("SHORT"),
       image:
-        "/images/PTL00985.webp",
+        "/images/feature1.webp",
       title: "bb.q Chicken - Crispy Chic...",
       subtitle: "bb.q Chicken",
     },
@@ -118,7 +118,7 @@ async function seed() {
       order: 5,
       tag: tagMap.get("SHORT"),
       image:
-        "/images/PTL00985.webp",
+        "/images/feature1.webp",
       title: "Greenfield Braces - Sporty...",
       subtitle: "Greenfield Dental",
     },
@@ -127,7 +127,7 @@ async function seed() {
       order: 6,
       tag: tagMap.get("F&B"),
       image:
-        "/images/PTL00985.webp",
+        "/images/feature1.webp",
       title: "Grouper Fish - Chef's Sign...",
       subtitle: "Chapter Fine Dining",
     },
@@ -136,7 +136,7 @@ async function seed() {
       order: 7,
       tag: tagMap.get("F&B"),
       image:
-        "/images/PTL00985.webp",
+        "/images/feature1.webp",
       title: "Fresh Sashimi - Master...",
       subtitle: "Chapter Fine Dining",
     },
@@ -146,7 +146,7 @@ async function seed() {
       order: 1,
       tag: tagMap.get("INTERVIEW"),
       image:
-        "/images/PTL00959.webp",
+        "/images/feature2.webp",
       title: "Emotional Interview - 45 Minutes of Talking",
       subtitle: "Healthcare",
     },
@@ -155,7 +155,7 @@ async function seed() {
       order: 2,
       tag: tagMap.get("TVC"),
       image:
-        "/images/PTL00959.webp",
+        "/images/feature2.webp",
       title: "Join Our Club - Wake Up The Champion",
       subtitle: "Greenfield Dental",
     },
@@ -164,7 +164,7 @@ async function seed() {
       order: 3,
       tag: tagMap.get("TVC"),
       image:
-        "/images/PTL00959.webp",
+        "/images/feature2.webp",
       title: "A Gleaming Miracle",
       subtitle: "Greenfield Dental",
     },
@@ -173,7 +173,7 @@ async function seed() {
       order: 4,
       tag: tagMap.get("TVC"),
       image:
-        "/images/PTL00959.webp",
+        "/images/feature2.webp",
       title: "Đóng Stress - Mở Strong",
       subtitle: "T-Matsuoka Medical Center",
     },
