@@ -10,7 +10,7 @@ const Preloader = ({ onComplete }: Props) => {
   const [isExiting, setIsExiting] = useState(false);
 
   useEffect(() => {
-    const duration = 2200;
+    const duration = 3300;
     const interval = 20;
     const steps = duration / interval;
     let current = 0;
