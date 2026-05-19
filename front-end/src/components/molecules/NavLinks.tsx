@@ -23,6 +23,7 @@ type Props = {
 };
 
 const NavLinks: React.FC<Props> = ({ scrolled }) => {
+  console.log("🚀 ~ NavLinks ~ scrolled:", scrolled)
   const t = useTranslation();
 
   return (
@@ -37,7 +38,7 @@ const NavLinks: React.FC<Props> = ({ scrolled }) => {
                 ? "text-foreground"
                 : "text-muted-foreground hover:text-foreground"
               : item.active
-                ? "text-background"
+                ? "text-primary"
                 : "text-muted-foreground hover:text-foreground"
           }`}
         >

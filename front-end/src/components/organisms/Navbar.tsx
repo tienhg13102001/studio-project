@@ -21,7 +21,7 @@ const Navbar: React.FC<Props> = () => {
 
   return (
     <nav
-      className={`fixed top-0 left-0 z-20 flex w-full items-center justify-between px-6 py-4 transition-all duration-800 md:px-12 ${scrolled ? "bg-background/90 shadow-sm backdrop-blur-sm" : "bg-transparent"}`}
+      className={`fixed top-0 left-0 z-20 flex w-full items-center justify-between px-6 py-4 transition-all duration-800 md:px-12 ${scrolled ? "bg-background/50 shadow-sm backdrop-blur-sm" : "bg-transparent"}`}
     >
       {/* Logo */}
       <div className="flex cursor-pointer items-center">
@@ -35,10 +35,9 @@ const Navbar: React.FC<Props> = () => {
       <div className="flex items-center gap-2">
         {/* Language */}
         <Button
-          variant="ghost"
-          size="sm"
+          variant="outline"
           onClick={() => setLang(lang === "en" ? "vi" : "en")}
-          className="hidden items-center gap-1.5 rounded-md border border-white/20 bg-white/10 text-sm text-white hover:bg-white/20 md:flex"
+
         >
           {lang === "en" ? "🇺🇸 EN" : "🇻🇳 VI"}
         </Button>
@@ -47,24 +46,20 @@ const Navbar: React.FC<Props> = () => {
         <ThemeToggle />
 
         {/* User Login */}
-        <Button
-          variant="ghost"
-          size="icon"
-          className="rounded-md border border-white/20 bg-white/10 text-white hover:bg-white/20"
-        >
+        <Button variant="outline">
           <UserIcon />
         </Button>
 
         {/* Let's Talk CTA */}
-        <Button className="bg-primary text-primary-foreground hidden rounded-full px-6 text-sm font-semibold hover:brightness-110 md:flex">
+        <Button variant="outline" >
           {t.nav.letsTalk}
         </Button>
 
         {/* Mobile Menu */}
         <Button
-          variant="ghost"
+          variant="outline"
           size="icon"
-          className="rounded-md border border-white/20 bg-white/10 text-white hover:bg-white/20 lg:hidden"
+          className="lg:hidden"
         >
           <ListIcon size={20} />
         </Button>

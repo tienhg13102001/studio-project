@@ -9,10 +9,8 @@ const ThemeToggle = () => {
 
   return (
     <Button
-      variant="ghost"
-      size="icon"
+      variant="outline"
       onClick={() => setTheme(isDark ? "light" : "dark")}
-      className="bg-white/10 hover:bg-white/20 text-primary border border-white/20 rounded-md"
       aria-label="Toggle theme"
     >
       {isDark ? <SunIcon size={18} /> : <MoonIcon size={18} />}
