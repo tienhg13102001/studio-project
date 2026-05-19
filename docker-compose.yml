@@ -4,18 +4,16 @@ services:
   # ── MongoDB ──────────────────────────────────────────────────────────────────
   mongodb:
     image: mongo:7
-    container_name: studio-mongodb
+    container_name: beez-mongodb
     restart: unless-stopped
     environment:
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USER}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASS}
-      MONGO_INITDB_DATABASE: studio_db
+      MONGO_INITDB_DATABASE: beez_db
     volumes:
       - mongodb_data:/data/db
-    ports:
-      - '0.0.0.0:27017:27017'
     networks:
-      - studio-net
+      - beez-net
     healthcheck:
       test:
         - CMD-SHELL
@@ -30,25 +28,25 @@ services:
     build:
       context: ./back-end
       dockerfile: Dockerfile
-    container_name: studio-backend
+    container_name: beez-backend
     restart: unless-stopped
     env_file:
       - ./back-end/.env
     environment:
-      MONGODB_URI: mongodb://${MONGO_ROOT_USER}:${MONGO_ROOT_PASS}@mongodb:27017/studio_db?authSource=admin
+      MONGODB_URI: mongodb://${MONGO_ROOT_USER}:${MONGO_ROOT_PASS}@mongodb:27017/beez_db?authSource=admin
       NODE_ENV: production
     depends_on:
       mongodb:
         condition: service_healthy
     networks:
-      - studio-net
+      - beez-net
 
   # ── Frontend ──────────────────────────────────────────────────────────────────
   frontend:
     build:
       context: ./front-end
       dockerfile: Dockerfile
-    container_name: studio-frontend
+    container_name: beez-frontend
     restart: unless-stopped
     ports:
       - '80:80'
@@ -58,11 +56,11 @@ services:
     depends_on:
       - backend
     networks:
-      - studio-net
+      - beez-net
 
 # ── Shared network ─────────────────────────────────────────────────────────────
 networks:
-  studio-net:
+  beez-net:
     driver: bridge
 
 # ── Named volumes ──────────────────────────────────────────────────────────────
