@@ -2,13 +2,19 @@ import { default as FeatureCard } from "#components/molecules/FeatureCard";
 import MarqueeRow from "#components/molecules/MarqueeRow";
 import SectionHeader from "#components/molecules/SectionHeader";
 import { useTranslation } from "#i18n";
-import { bottomCards, topCards } from "#mocks/featuredContent";
+import { useFeatured } from "#hooks/useFeatured";
+import { bottomCards as mockBottom, topCards as mockTop } from "#mocks/featuredContent";
 import type { FC } from "react";
 
 type Props = {};
 
 const FeatureSection: FC<Props> = () => {
   const t = useTranslation();
+  const { topCards, bottomCards } = useFeatured();
+
+  // Fall back to mock while API loads
+  const top = topCards ?? mockTop;
+  const bottom = bottomCards ?? mockBottom;
 
   return (
     <section className="bg-background flex min-h-dvh flex-col justify-center overflow-hidden py-16 font-sans">
@@ -18,13 +24,13 @@ const FeatureSection: FC<Props> = () => {
 
       <div className="flex flex-col gap-6 md:gap-8">
         <MarqueeRow direction="left">
-          {topCards.map((card) => (
+          {top.map((card) => (
             <FeatureCard key={card.id} card={card} variant="vertical" />
           ))}
         </MarqueeRow>
 
         <MarqueeRow direction="right">
-          {bottomCards.map((card) => (
+          {bottom.map((card) => (
             <FeatureCard key={card.id} card={card} variant="horizontal" />
           ))}
         </MarqueeRow>

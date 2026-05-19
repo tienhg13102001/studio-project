@@ -1,16 +1,15 @@
 import { useLanguage, useTranslation } from "#i18n";
 import SectionHeader from "#components/molecules/SectionHeader";
 import ServiceCard from "#components/molecules/ServiceCard";
+import { useServices } from "#hooks/useServices";
 import type { FC } from "react";
-import { useMemo } from "react";
-import { getServicesContent } from "../../mocks/servicesContent";
 
 type Props = {};
 
 const ServiceSection: FC<Props> = () => {
   const { lang } = useLanguage();
   const t = useTranslation();
-  const services = useMemo(() => getServicesContent(lang), [lang]);
+  const { data: services } = useServices(lang);
 
   return (
     <section className="bg-background min-h-dvh px-4 py-24 font-sans sm:px-6 lg:px-8">
@@ -21,7 +20,7 @@ const ServiceSection: FC<Props> = () => {
         />
 
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {services.map((service) => (
+          {services?.map((service) => (
             <ServiceCard key={service.id} service={service} />
           ))}
         </div>

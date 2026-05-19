@@ -1,7 +1,13 @@
-import type { FeatureCardData } from "#mocks/featuredContent";
+type CardProps = {
+  id: string | number;
+  tag: string;
+  image: string;
+  title: string;
+  subtitle: string;
+};
 
 type Props = {
-  card: FeatureCardData;
+  card: CardProps;
   variant: "vertical" | "horizontal";
 };
 

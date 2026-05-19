@@ -1,7 +1,7 @@
-import type { ServiceItem } from "../../mocks/servicesContent";
+import type { ServiceDisplay } from "#hooks/useServices";
 
 type Props = {
-  service: ServiceItem;
+  service: ServiceDisplay;
 };
 
 const ServiceCard: React.FC<Props> = ({ service }) => {

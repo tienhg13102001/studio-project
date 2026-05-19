@@ -31,7 +31,7 @@ const NavLinks: React.FC<Props> = ({ scrolled }) => {
         <a
           key={item.key}
           href={item.href}
-          className={`flex items-center gap-1 transition-colors ${
+          className={`flex items-center gap-1 transition-colors duration-800 ${
             scrolled
               ? item.active
                 ? "text-foreground"

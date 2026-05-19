@@ -1,14 +1,17 @@
 import HeroCTA from "#components/molecules/HeroCTA";
 import { useLanguage } from "#i18n";
-import { ArrowDownIcon } from "@phosphor-icons/react";
-import { useMemo } from "react";
-import Logo from "../../assets/icons/Logo";
+import { useLanding } from "#hooks/useLanding";
 import { getLandingContent } from "../../mocks/landingContent";
+import { ArrowDownIcon } from "@phosphor-icons/react";
+import Logo from "../../assets/icons/Logo";
 import VideoBackground from "./VideoBackground";
 
 const HeroSection = () => {
   const { lang } = useLanguage();
-  const content = useMemo(() => getLandingContent(lang), [lang]);
+  const { data } = useLanding(lang);
+
+  // Use mock as fallback while API loads to avoid layout shift
+  const content = data ?? getLandingContent(lang);
 
   const handleScrollDown = () => {
     window.scrollBy({ top: window.innerHeight, behavior: "smooth" });
@@ -33,7 +36,7 @@ const HeroSection = () => {
       >
         <ArrowDownIcon size={32} className="text-primary" />
       </div>
-      <VideoBackground />
+      <VideoBackground src={data?.videoBackground} />
     </main>
   );
 };
