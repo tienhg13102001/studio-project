@@ -12,6 +12,8 @@ services:
       MONGO_INITDB_DATABASE: beez_db
     volumes:
       - mongodb_data:/data/db
+    ports:
+      - '27017:27017'
     networks:
       - beez-net
     healthcheck:
