@@ -6,7 +6,7 @@ import { Feature } from "../models/Feature.ts";
 
 async function seed() {
   await connectDB();
-  console.log("🌱 Seeding database...");
+  console.log("🌱 Seeding database....");
 
   await Promise.all([Landing.deleteMany({}), Service.deleteMany({}), Feature.deleteMany({})]);
 
