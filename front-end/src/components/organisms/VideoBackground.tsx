@@ -21,7 +21,7 @@ const VideoBackground = ({ src }: Props) => {
       <div className="absolute inset-0 bg-black/75" />
       {/* background black mờ dần từ dưới lên */}
       <div className="absolute inset-0 bg-linear-to-b from-background/10 to-transparent" />
-      <div className="absolute inset-0 bg-linear-to-t from-background/50 to-transparent" />
+      <div className="absolute inset-0 bg-linear-to-t from-background/90 to-transparent" />
     </div>
   );
 };

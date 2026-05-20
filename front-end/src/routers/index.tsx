@@ -2,20 +2,21 @@ import { createBrowserRouter } from "react-router-dom";
 import MainLayout from "../components/templates/MainLayout";
 import LandingPage from "../pages/LandingPage";
 import NotFoundPage from "../pages/NotFoundPage";
+import ServicePage from "../pages/ServicePage";
 
 export const router = createBrowserRouter([
   {
     path: "/",
-    element: <MainLayout />, // Dùng Template làm Layout bọc ngoài
+    element: <MainLayout />,
     children: [
       {
-        index: true, // Route mặc định khi vào '/'
+        index: true,
         element: <LandingPage />,
       },
-      // {
-      //   path: 'about', // Domain.com/about
-      //   element: <AboutPage />,
-      // },
+      {
+        path: "service/:id",
+        element: <ServicePage />,
+      },
     ],
   },
   {

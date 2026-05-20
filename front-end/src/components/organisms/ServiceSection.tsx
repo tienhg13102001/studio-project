@@ -12,12 +12,9 @@ const ServiceSection: FC<Props> = () => {
   const { data: services } = useServices(lang);
 
   return (
-    <section className="bg-background min-h-dvh px-4 py-24 font-sans sm:px-6 lg:px-8">
+    <section className="min-h-dvh px-4 py-24 font-sans sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl">
-        <SectionHeader
-          title={t.services.sectionTitle}
-          subtitle={t.services.sectionSubtitle}
-        />
+        <SectionHeader title={t.services.sectionTitle} subtitle={t.services.sectionSubtitle} />
 
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
           {services?.map((service) => (

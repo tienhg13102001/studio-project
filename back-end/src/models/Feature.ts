@@ -8,16 +8,18 @@ export interface IFeature extends Document {
   image: string;
   title: string;
   subtitle: string;
+  prominent: boolean;
 }
 
 const featureSchema = new Schema<IFeature>(
   {
-    layout: { type: String, enum: ["vertical", "horizontal"], required: true },
-    order: { type: Number, required: true },
-    tag: { type: Schema.Types.ObjectId, ref: "Service", required: true },
-    image: { type: String, required: true },
-    title: { type: String, required: true },
-    subtitle: { type: String, required: true },
+    layout:    { type: String, enum: ["vertical", "horizontal"], required: true },
+    order:     { type: Number, required: true },
+    tag:       { type: Schema.Types.ObjectId, ref: "Service", required: true },
+    image:     { type: String, required: true },
+    title:     { type: String, required: true },
+    subtitle:  { type: String, required: true },
+    prominent: { type: Boolean, default: false },
   },
   {
     toJSON: {
