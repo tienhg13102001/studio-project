@@ -19,6 +19,11 @@ const en = {
   featured: {
     sectionTitle: "Featured",
   },
+  team: {
+    heroLine1: "The Minds Behind",
+    heroLine2: "BeeZ Production",
+    heroSubtitle: "The creative, dedicated and passionate team behind every project",
+  },
 } as const;
 
 export default en;

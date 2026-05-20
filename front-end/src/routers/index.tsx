@@ -4,6 +4,7 @@ import LandingPage from "../pages/LandingPage";
 import NotFoundPage from "../pages/NotFoundPage";
 import ServicePage from "../pages/ServicePage";
 import ContactPage from "../pages/ContactPage";
+import TeamPage from "../pages/TeamPage";
 
 export const router = createBrowserRouter([
   {
@@ -21,6 +22,10 @@ export const router = createBrowserRouter([
       {
         path: "contact",
         element: <ContactPage />,
+      },
+      {
+        path: "team",
+        element: <TeamPage />,
       },
     ],
   },

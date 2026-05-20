@@ -9,6 +9,10 @@ const BG_URL = "/bg-main.webp";
 const MainLayout: React.FC<Props> = () => {
   return (
     <div className="relative min-h-screen">
+      <Navbar />
+      <Outlet />
+      {/* <Footer /> */}
+
       {/* Global background image */}
       <div
         className="fixed inset-0 -z-10 bg-cover bg-center bg-no-repeat opacity-10"
@@ -20,9 +24,6 @@ const MainLayout: React.FC<Props> = () => {
           style={{ background: "radial-gradient(ellipse at center, transparent 10%, black 80%)" }}
         />
       </div>
-      <Navbar />
-      <Outlet />
-      {/* <Footer /> */}
     </div>
   );
 };

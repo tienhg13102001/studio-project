@@ -49,11 +49,12 @@ const NavLinks: React.FC<Props> = ({ scrolled }) => {
 
   const linkClass = (item: (typeof NAV_ITEMS)[number]) => {
     const active = isActive(item);
-    const base = "relative flex items-center gap-1 transition-colors duration-200 after:absolute after:bottom-[-4px] after:left-0 after:h-px after:w-full after:origin-left after:scale-x-0 after:bg-current after:transition-transform after:duration-200 hover:after:scale-x-100";
+    const base =
+      "relative flex items-center gap-1 transition-colors duration-200 after:absolute after:bottom-[-4px] after:left-0 after:h-px after:w-full after:origin-left after:scale-x-0 after:bg-current after:transition-transform after:duration-200 hover:after:scale-x-100";
     if (active) {
       return `${base} after:scale-x-100 ${scrolled ? "text-foreground" : "text-primary"}`;
     }
-    return `${base} ${scrolled ? "text-muted-foreground hover:text-foreground" : "text-white/70 hover:text-white"}`;
+    return `${base} ${scrolled ? "text-muted-foreground hover:text-foreground" : pathname !== "/" ? "text-foreground/70 hover:text-foreground" : "text-white/70 hover:text-white"}`;
   };
 
   return (

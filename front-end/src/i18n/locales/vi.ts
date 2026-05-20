@@ -19,6 +19,11 @@ const vi = {
   featured: {
     sectionTitle: "Nổi Bật",
   },
+  team: {
+    heroLine1: "Những người đứng sau",
+    heroLine2: "BeeZ Production",
+    heroSubtitle: "Đội ngũ sáng tạo, tận tâm và đầy nhiệt huyết đứng sau mọi dự án",
+  },
 } as const;
 
 export default vi;

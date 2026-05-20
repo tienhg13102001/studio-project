@@ -1,7 +1,6 @@
 import HeroCTA from "#components/molecules/HeroCTA";
 import { useLanguage } from "#i18n";
 import { useLanding } from "#hooks/useLanding";
-import { getLandingContent } from "../../mocks/landingContent";
 import { ArrowDownIcon } from "@phosphor-icons/react";
 import Logo from "../../assets/icons/Logo";
 import VideoBackground from "./VideoBackground";
@@ -11,7 +10,11 @@ const HeroSection = () => {
   const { data } = useLanding(lang);
 
   // Use mock as fallback while API loads to avoid layout shift
-  const content = data ?? getLandingContent(lang);
+  const content = data ?? {
+    heroLine1: lang === "en" ? "Welcome to" : "Chào mừng đến với",
+    heroLine2: "BeeZ Production",
+    subheading: lang === "en" ? "Your one-stop creative studio for stunning visuals and unforgettable stories" : "Studio sáng tạo tất cả trong một của bạn cho hình ảnh tuyệt đẹp và câu chuyện khó quên",
+  };
 
   const handleScrollDown = () => {
     window.scrollBy({ top: window.innerHeight, behavior: "smooth" });
