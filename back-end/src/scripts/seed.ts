@@ -395,8 +395,9 @@ async function seed() {
   console.log("  ✓ Contact");
 
   // ─── Users ────────────────────────────────────────────────────────────────
-  await User.insertMany([
-    {
+  // Use create() (not insertMany) so bcrypt pre-save hook fires on each document
+  await Promise.all([
+    User.create({
       name: "Tyler Nguyen",
       role: { en: "Creative Director", vi: "Giám Đốc Sáng Tạo" },
       photo: "/images/user1.webp",
@@ -414,8 +415,8 @@ async function seed() {
       email: "tyler@beezvn.com",
       password: "changeme123",
       accountRole: "admin",
-    },
-    {
+    }),
+    User.create({
       name: "Minh Tran",
       role: { en: "Producer", vi: "Nhà Sản Xuất" },
       quote: {
@@ -428,8 +429,8 @@ async function seed() {
       email: "minh@beezvn.com",
       password: "changeme123",
       accountRole: "member",
-    },
-    {
+    }),
+    User.create({
       name: "Linh Pham",
       role: { en: "Director of Photography", vi: "Giám Đốc Hình Ảnh" },
       quote: {
@@ -442,8 +443,8 @@ async function seed() {
       email: "linh@beezvn.com",
       password: "changeme123",
       accountRole: "member",
-    },
-    {
+    }),
+    User.create({
       name: "Huy Le",
       role: { en: "Scriptwriter", vi: "Biên Kịch" },
       quote: {
@@ -456,7 +457,7 @@ async function seed() {
       email: "huy@beezvn.com",
       password: "changeme123",
       accountRole: "editor",
-    },
+    }),
   ]);
   console.log("  ✓ Users (4)");
 

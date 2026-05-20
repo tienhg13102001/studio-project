@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { apiFetch, resolveAssetUrl } from "#lib/api";
 import type { ApiFeature, ApiFeaturedContent } from "#lib/apiTypes";
 
@@ -26,18 +26,22 @@ export function useFeatured() {
   const [error, setError] = useState<string | null>(null);
   const fetched = useRef(false);
 
-  useEffect(() => {
-    if (fetched.current) return;
-    fetched.current = true;
-
+  const refetch = useCallback(() => {
+    setLoading(true);
     apiFetch<ApiFeaturedContent>("/api/featured")
       .then(setRaw)
       .catch((err: Error) => setError(err.message))
       .finally(() => setLoading(false));
   }, []);
 
+  useEffect(() => {
+    if (fetched.current) return;
+    fetched.current = true;
+    refetch();
+  }, [refetch]);
+
   const verticalCards = raw?.verticalCards.map(mapFeature) ?? null;
   const horizontalCards = raw?.horizontalCards.map(mapFeature) ?? null;
 
-  return { verticalCards, horizontalCards, loading, error };
+  return { verticalCards, horizontalCards, raw, loading, error, refetch };
 }

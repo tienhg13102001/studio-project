@@ -48,7 +48,7 @@ const Navbar: React.FC<Props> = () => {
           <ThemeToggle />
 
           {/* User Login */}
-          <Button variant="outline">
+          <Button variant="outline" onClick={() => navigate("/portal")}>
             <UserIcon />
           </Button>
 

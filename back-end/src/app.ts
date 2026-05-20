@@ -10,6 +10,8 @@ import servicesRouter from "./routes/services.ts";
 import contactRouter from "./routes/contact.ts";
 import usersRouter from "./routes/users.ts";
 import brandsRouter from "./routes/brands.ts";
+import authRouter from "./routes/auth.ts";
+import uploadRouter from "./routes/upload.ts";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -20,7 +22,7 @@ app.use(express.json());
 app.use(
   cors({
     origin: process.env.FRONTEND_URL ?? "http://localhost:5173",
-    methods: ["GET", "POST"],
+    methods: ["GET", "POST", "PUT"],
   })
 );
 
@@ -38,6 +40,8 @@ app.use("/api/featured", featuredRouter);
 app.use("/api/contact", contactRouter);
 app.use("/api/users", usersRouter);
 app.use("/api/brands", brandsRouter);
+app.use("/api/auth", authRouter);
+app.use("/api/upload", uploadRouter);
 
 // ─── 404 ─────────────────────────────────────────────────────────────────────
 app.use((_req, res) => {

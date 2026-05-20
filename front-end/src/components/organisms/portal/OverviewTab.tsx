@@ -1,0 +1,69 @@
+import { UsersThreeIcon, StarIcon, BriefcaseIcon, ImageSquareIcon } from "@phosphor-icons/react";
+import type { ApiUser, ApiBrand } from "#lib/apiTypes";
+import type { ServiceDisplay } from "#hooks/useServices";
+import type { FeatureDisplay } from "#hooks/useFeatured";
+import { TeamTable } from "./TeamTab";
+import { BrandsGrid } from "./BrandsTab";
+
+type Props = {
+  teamData:       ApiUser[]        | null;
+  teamLoading:    boolean;
+  brandsData:     ApiBrand[]       | null;
+  brandsLoading:  boolean;
+  servicesData:   ServiceDisplay[] | null;
+  allProjects:    FeatureDisplay[];
+  onTabChange:    (id: string) => void;
+};
+
+export default function OverviewTab({
+  teamData, teamLoading,
+  brandsData, brandsLoading,
+  servicesData, allProjects,
+  onTabChange,
+}: Props) {
+  const stats = [
+    { label: "Team Members", value: teamData?.length    ?? "—", icon: <UsersThreeIcon  size={20} weight="duotone" />, color: "text-blue-400"    },
+    { label: "Brands",       value: brandsData?.length  ?? "—", icon: <StarIcon         size={20} weight="duotone" />, color: "text-amber-400"  },
+    { label: "Services",     value: servicesData?.length ?? "—",icon: <BriefcaseIcon    size={20} weight="duotone" />, color: "text-violet-400" },
+    { label: "Projects",     value: allProjects.length  || "—", icon: <ImageSquareIcon  size={20} weight="duotone" />, color: "text-emerald-400"},
+  ];
+
+  return (
+    <>
+      {/* Stat cards */}
+      <div className="grid grid-cols-4 gap-4">
+        {stats.map((card) => (
+          <div key={card.label} className="rounded-xl border border-white/8 bg-white/3 p-5 flex flex-col gap-3">
+            <div className={card.color}>{card.icon}</div>
+            <div>
+              <p className="text-2xl font-bold text-white">{card.value}</p>
+              <p className="text-xs text-white/40 mt-0.5">{card.label}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Team preview */}
+      <section>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-sm font-semibold text-white/80">Team Members</h2>
+          <button onClick={() => onTabChange("team")} className="text-xs text-primary hover:underline">
+            View all
+          </button>
+        </div>
+        <TeamTable data={teamData} loading={teamLoading} preview />
+      </section>
+
+      {/* Brands preview */}
+      <section>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-sm font-semibold text-white/80">Brands</h2>
+          <button onClick={() => onTabChange("brands")} className="text-xs text-primary hover:underline">
+            View all
+          </button>
+        </div>
+        <BrandsGrid data={brandsData} loading={brandsLoading} preview />
+      </section>
+    </>
+  );
+}

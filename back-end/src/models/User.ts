@@ -1,4 +1,5 @@
 import mongoose, { Schema, type Document } from "mongoose";
+import bcrypt from "bcryptjs";
 
 interface LocalizedString {
   en: string;
@@ -21,6 +22,9 @@ export interface IUser extends Document {
   password:    string;
   accountRole: "admin" | "member" | "editor";
   active:      boolean;
+
+  // Method
+  comparePassword(plain: string): Promise<boolean>;
 }
 
 const localizedStringSchema = new Schema<LocalizedString>(
@@ -59,5 +63,16 @@ const userSchema = new Schema<IUser>(
     },
   },
 );
+
+// Hash password before save
+userSchema.pre("save", async function () {
+  if (!this.isModified("password")) return;
+  this.password = await bcrypt.hash(this.password, 12);
+});
+
+// Compare plain password against hash
+userSchema.methods.comparePassword = function (plain: string): Promise<boolean> {
+  return bcrypt.compare(plain, this.password);
+};
 
 export const User = mongoose.model<IUser>("User", userSchema);

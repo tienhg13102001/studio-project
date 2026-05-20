@@ -24,4 +24,16 @@ router.get("/:id", async (req, res) => {
   sendSuccess(res, service);
 });
 
+/** PUT /api/services/:id */
+router.put("/:id", async (req, res) => {
+  const { title, description, iconName, image, tag, order } = req.body as Record<string, unknown>;
+  const service = await Service.findByIdAndUpdate(
+    req.params.id,
+    { title, description, iconName, image, tag, order },
+    { new: true, runValidators: true },
+  );
+  if (!service) { sendError(res, "Service not found", 404); return; }
+  sendSuccess(res, service);
+});
+
 export default router;

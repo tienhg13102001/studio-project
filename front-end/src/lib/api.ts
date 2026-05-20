@@ -28,4 +28,10 @@ export async function apiPost<T>(path: string, body: unknown): Promise<T> {
   return res.data.data as T;
 }
 
+export async function apiPut<T>(path: string, body: unknown): Promise<T> {
+  const res = await apiClient.put<{ success: boolean; data?: T; error?: string }>(path, body);
+  if (!res.data.success) throw new Error(res.data.error ?? "Unknown API error");
+  return res.data.data as T;
+}
+
 export default apiClient;

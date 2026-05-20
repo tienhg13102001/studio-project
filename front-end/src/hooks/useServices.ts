@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import type { ElementType } from "react";
 import type { Lang } from "#i18n";
 import { apiFetch, resolveAssetUrl } from "#lib/api";
@@ -29,17 +29,20 @@ export function useServices(lang: Lang) {
   const [error, setError] = useState<string | null>(null);
   const fetched = useRef(false);
 
-  useEffect(() => {
-    if (fetched.current) return;
-    fetched.current = true;
-
+  const refetch = useCallback(() => {
+    setLoading(true);
     apiFetch<ApiPaginatedServices>("/api/services?limit=100")
       .then((res) => setRaw(res.items))
       .catch((err: Error) => setError(err.message))
       .finally(() => setLoading(false));
   }, []);
 
-  const data = raw?.map((s) => mapService(s, lang)) ?? null;
+  useEffect(() => {
+    if (fetched.current) return;
+    fetched.current = true;
+    refetch();
+  }, [refetch]);
 
-  return { data, loading, error };
+  const data = raw?.map((s) => mapService(s, lang)) ?? null;
+  return { data, raw, loading, error, refetch };
 }

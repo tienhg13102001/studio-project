@@ -35,6 +35,7 @@ export type ApiFeature = {
 
 export type ApiService = {
   id:          string;
+  order:       number;
   tag:         string;
   iconName:    string;
   image:       string;
