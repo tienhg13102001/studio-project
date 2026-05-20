@@ -5,6 +5,7 @@ import { Service } from "../models/Service.ts";
 import { Feature } from "../models/Feature.ts";
 import { Contact } from "../models/Contact.ts";
 import { User } from "../models/User.ts";
+import { Brand } from "../models/Brand.ts";
 
 async function seed() {
   await connectDB();
@@ -16,6 +17,7 @@ async function seed() {
     Feature.deleteMany({}),
     Contact.deleteMany({}),
     User.deleteMany({}),
+    Brand.deleteMany({}),
   ]);
 
   // ─── Landing ──────────────────────────────────────────────────────────────
@@ -335,6 +337,20 @@ async function seed() {
     ),
   );
   console.log("  ✓ Service.features linked");
+
+  // ─── Brands ───────────────────────────────────────────────────────────────
+  // Map feature titles to their IDs for easy linking
+  const featureMap = new Map(insertedFeatures.map((f) => [f.title, f._id]));
+
+  await Brand.insertMany([
+    { name: "Techcombank", logo: "/brands/techcombank.svg", order: 3, features: [] },
+    { name: "Vietcombank", logo: "/brands/vietcombank.svg", order: 5, features: [] },
+    { name: "Shopee", logo: "/brands/shopee.svg", order: 6, features: [] },
+    { name: "Shopee Food", logo: "/brands/shopee-food.svg", order: 7, features: [] },
+    { name: "VPBank", logo: "/brands/vpbank.svg", order: 8, features: [] },
+    { name: "FPT", logo: "/brands/fpt.svg", order: 9, features: [] },
+  ]);
+  console.log("  ✓ Brands (10)");
 
   // ─── Contact ──────────────────────────────────────────────────────────────
   await Contact.create({

@@ -88,3 +88,11 @@ export type ApiUser = {
   featured: boolean;
   accountRole: "admin" | "member" | "editor";
 };
+
+export type ApiBrand = {
+  id:       string;
+  name:     string;
+  logo:     string;
+  features: ApiFeature[];
+  order:    number;
+};

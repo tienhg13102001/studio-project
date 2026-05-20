@@ -19,6 +19,17 @@ const vi = {
   featured: {
     sectionTitle: "Nổi Bật",
   },
+  stats: {
+    items: [
+      { value: "1000+", label: "Dự Án",        icon: "UserIcon",       details: ["TVC & Quảng Cáo", "Nội dung ngắn", "Phỏng vấn – Brand film", "Nội dung mạng xã hội"] },
+      { value: "100+",  label: "Khách Hàng",    icon: "UsersThreeIcon", details: ["Thương hiệu F&B", "Ngân hàng", "Y tế", "Giải trí"] },
+      { value: "1 Tỷ",  label: "Lượt Xem",    icon: "VideoIcon",      details: ["YouTube", "TikTok", "Instagram Reels", "Facebook"] },
+    ],
+  },
+  brands: {
+    badge: "Chúng tôi đã hợp tác cùng những thương hiệu lớn",
+    heading: "Được Tin Dùng Bởi Các Lãnh Đạo",
+  },
   team: {
     heroLine1: "Những người đứng sau",
     heroLine2: "BeeZ Production",

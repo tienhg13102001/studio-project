@@ -2,6 +2,7 @@ import FeatureSection from "#components/organisms/FeatureSection";
 import HeroSection from "#components/organisms/HeroSection";
 import Preloader from "#components/organisms/Preloader";
 import ServiceSection from "#components/organisms/ServiceSection";
+import StatsAndBrands from "#components/organisms/StatsAndBrands";
 import { useState } from "react";
 
 const LandingPage = () => {
@@ -22,6 +23,8 @@ const LandingPage = () => {
         <ServiceSection />
         {/* Feature Section */}
         <FeatureSection />
+        {/* Stats & Brands */}
+        <StatsAndBrands />
       </div>
     </>
   );
