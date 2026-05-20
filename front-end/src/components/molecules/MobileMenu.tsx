@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { createPortal } from "react-dom";
 import { XIcon, CaretDownIcon } from "@phosphor-icons/react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { Button } from "#components/ui/button";
 import ThemeToggle from "#components/molecules/ThemeToggle";
 import { useTranslation, useLanguage } from "#i18n";
@@ -10,13 +10,13 @@ import { useServices } from "#hooks/useServices";
 
 type NavKey = keyof Translations["nav"];
 
-const NAV_ITEMS: { key: NavKey; href: string; hasDropdown?: boolean }[] = [
-  { key: "home", href: "#" },
-  { key: "services", href: "#", hasDropdown: true },
-  { key: "rental", href: "#" },
-  { key: "blog", href: "#" },
-  { key: "team", href: "#" },
-  { key: "contact", href: "#" },
+const NAV_ITEMS: { key: NavKey; to: string; hasDropdown?: boolean }[] = [
+  { key: "home", to: "/" },
+  { key: "services", to: "/service", hasDropdown: true },
+  // { key: "rental", to: "/rental" },
+  // { key: "blog",   to: "/blog" },
+  { key: "team", to: "/team" },
+  { key: "contact", to: "/contact" },
 ];
 
 type Props = {
@@ -27,8 +27,14 @@ type Props = {
 const MobileMenu: React.FC<Props> = ({ open, onClose }) => {
   const t = useTranslation();
   const { lang, setLang } = useLanguage();
+  const { pathname } = useLocation();
   const [servicesOpen, setServicesOpen] = useState(false);
   const { data: services } = useServices(lang);
+
+  const isActive = (item: (typeof NAV_ITEMS)[number]) => {
+    if (item.key === "home") return pathname === "/";
+    return pathname.startsWith(item.to);
+  };
 
   return createPortal(
     <>
@@ -63,7 +69,11 @@ const MobileMenu: React.FC<Props> = ({ open, onClose }) => {
                   <div>
                     <button
                       onClick={() => setServicesOpen((v) => !v)}
-                      className="flex w-full items-center justify-between rounded-lg px-3 py-3 text-sm font-medium text-foreground transition-colors hover:bg-muted"
+                      className={`flex w-full items-center justify-between rounded-lg px-3 py-3 text-sm font-medium transition-colors hover:bg-muted ${
+                        isActive(item)
+                          ? "text-primary bg-primary/5"
+                          : "text-foreground"
+                      }`}
                     >
                       <span>{t.nav[item.key]}</span>
                       <CaretDownIcon
@@ -103,13 +113,17 @@ const MobileMenu: React.FC<Props> = ({ open, onClose }) => {
                     </div>
                   </div>
                 ) : (
-                  <a
-                    href={item.href}
+                  <Link
+                    to={item.to}
                     onClick={onClose}
-                    className="flex rounded-lg px-3 py-3 text-sm font-medium text-foreground transition-colors hover:bg-muted"
+                    className={`flex rounded-lg px-3 py-3 text-sm font-medium transition-colors hover:bg-muted ${
+                      isActive(item)
+                        ? "text-primary bg-primary/5 font-semibold"
+                        : "text-foreground"
+                    }`}
                   >
                     {t.nav[item.key]}
-                  </a>
+                  </Link>
                 )}
               </li>
             ))}
