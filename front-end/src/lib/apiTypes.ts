@@ -58,3 +58,20 @@ export type ApiPaginatedServices = {
     totalPages: number;
   };
 };
+
+export type ApiContact = {
+  heading:    LocalizedString;
+  subheading: LocalizedString;
+  phone:      string;
+  email:      string;
+  address:    LocalizedString;
+  mapUrl:     string;
+  workingHours: Array<{ label: LocalizedString; hours: LocalizedString }>;
+  socials: {
+    zalo?:      string;
+    facebook?:  string;
+    youtube?:   string;
+    tiktok?:    string;
+    instagram?: string;
+  };
+};

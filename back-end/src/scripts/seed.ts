@@ -3,12 +3,13 @@ import { connectDB, disconnectDB } from "../lib/db.ts";
 import { Landing } from "../models/Landing.ts";
 import { Service } from "../models/Service.ts";
 import { Feature } from "../models/Feature.ts";
+import { Contact } from "../models/Contact.ts";
 
 async function seed() {
   await connectDB();
   console.log("🌱 Seeding database....");
 
-  await Promise.all([Landing.deleteMany({}), Service.deleteMany({}), Feature.deleteMany({})]);
+  await Promise.all([Landing.deleteMany({}), Service.deleteMany({}), Feature.deleteMany({}), Contact.deleteMany({})]);
 
   // ─── Landing ──────────────────────────────────────────────────────────────
   await Landing.create({
@@ -167,6 +168,48 @@ async function seed() {
     ),
   );
   console.log("  ✓ Service.features linked");
+
+  // ─── Contact ──────────────────────────────────────────────────────────────
+  await Contact.create({
+    heading: {
+      en: "Let's Work Together",
+      vi: "Hãy Cùng Hợp Tác",
+    },
+    subheading: {
+      en: "Got a project in mind? Reach out and let's create something remarkable.",
+      vi: "Bạn có dự án trong đầu? Hãy liên hệ và cùng nhau tạo nên điều đặc biệt.",
+    },
+    phone: "+84 901 234 567",
+    email: "hello@beezvn.com",
+    address: {
+      en: "123 Kim Ma Street, Ba Dinh District, Hanoi, Vietnam",
+      vi: "123 Đường Kim Mã, Quận Ba Đình, Hà Nội, Việt Nam",
+    },
+    mapUrl:
+      "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3723.8!2d105.8342!3d21.0285!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMjHCsDAxJzQyLjYiTiAxMDXCsDUwJzAzLjEiRQ!5e0!3m2!1svi!2svn!4v1234567890",
+    workingHours: [
+      {
+        label: { en: "Monday – Friday", vi: "Thứ 2 – Thứ 6" },
+        hours: { en: "9:00 AM – 6:00 PM", vi: "9:00 SA – 6:00 CH" },
+      },
+      {
+        label: { en: "Saturday", vi: "Thứ 7" },
+        hours: { en: "10:00 AM – 4:00 PM", vi: "10:00 SA – 4:00 CH" },
+      },
+      {
+        label: { en: "Sunday", vi: "Chủ Nhật" },
+        hours: { en: "Closed", vi: "Nghỉ" },
+      },
+    ],
+    socials: {
+      facebook:  "https://facebook.com/beezvn",
+      instagram: "https://instagram.com/beezvn",
+      youtube:   "https://youtube.com/@beezvn",
+      tiktok:    "https://tiktok.com/@beezvn",
+      zalo:      "https://zalo.me/beezvn",
+    },
+  });
+  console.log("  ✓ Contact");
 
   console.log("✅ Seed complete");
   await disconnectDB();

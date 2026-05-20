@@ -5,6 +5,7 @@ import { apiFetch, resolveAssetUrl } from "#lib/api";
 import { getIcon } from "#lib/iconMap";
 import { useLanguage } from "#i18n";
 import { Button } from "#components/ui/button";
+import PageHero from "#components/organisms/PageHero";
 import type { ApiService } from "#lib/apiTypes";
 
 const ServicePage: React.FC = () => {
@@ -55,18 +56,12 @@ const ServicePage: React.FC = () => {
 
   return (
     <div className="min-h-screen">
-      {/* Hero */}
-      <div className="relative h-[60vh] w-full overflow-hidden">
-        <img src={imageUrl} alt={title} className="h-full w-full object-cover" />
-        <div className="from-background via-background/40 absolute inset-0 bg-linear-to-t to-transparent" />
-
-        <div className="absolute bottom-0 left-0 px-6 pb-10 md:px-12">
-          <div className="bg-primary text-primary-foreground mb-3 flex h-12 w-12 items-center justify-center rounded-xl">
-            <Icon size={24} weight="duotone" />
-          </div>
-          <h1 className="text-4xl font-bold text-white md:text-5xl">{title}</h1>
-        </div>
-      </div>
+      <PageHero
+        variant="image"
+        title={title}
+        image={imageUrl}
+        icon={<Icon size={24} weight="duotone" />}
+      />
 
       <div className="mx-auto max-w-4xl px-6 py-16 md:px-12">
         {/* Description */}

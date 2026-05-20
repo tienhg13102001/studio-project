@@ -5,9 +5,10 @@ import ServiceSection from "#components/organisms/ServiceSection";
 import { useState } from "react";
 
 const LandingPage = () => {
-  const [isReady, setIsReady] = useState(false);
+  const [isReady, setIsReady] = useState(() => sessionStorage.getItem("preloaded") === "1");
 
   const handlePreloaderComplete = () => {
+    sessionStorage.setItem("preloaded", "1");
     setIsReady(true);
   };
 

@@ -3,6 +3,7 @@ import MainLayout from "../components/templates/MainLayout";
 import LandingPage from "../pages/LandingPage";
 import NotFoundPage from "../pages/NotFoundPage";
 import ServicePage from "../pages/ServicePage";
+import ContactPage from "../pages/ContactPage";
 
 export const router = createBrowserRouter([
   {
@@ -16,6 +17,10 @@ export const router = createBrowserRouter([
       {
         path: "service/:id",
         element: <ServicePage />,
+      },
+      {
+        path: "contact",
+        element: <ContactPage />,
       },
     ],
   },

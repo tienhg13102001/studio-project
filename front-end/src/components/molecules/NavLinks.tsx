@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 import { CaretDownIcon } from "@phosphor-icons/react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useTranslation, useLanguage } from "#i18n";
 import type { Translations } from "#i18n";
 import { useServices } from "#hooks/useServices";
@@ -9,16 +9,15 @@ type NavKey = keyof Translations["nav"];
 
 const NAV_ITEMS: {
   key: NavKey;
-  href: string;
-  active?: boolean;
+  to: string;
   hasDropdown?: boolean;
 }[] = [
-  { key: "home", href: "/", active: true },
-  { key: "services", href: "#", hasDropdown: true },
-  { key: "rental", href: "/rental" },
-  { key: "blog", href: "/blog" },
-  { key: "team", href: "/team" },
-  { key: "contact", href: "/contact" },
+  { key: "home", to: "/" },
+  { key: "services", to: "/service", hasDropdown: true },
+  // { key: "rental", to: "/rental" },
+  // { key: "blog",   to: "/blog" },
+  { key: "team", to: "/team" },
+  { key: "contact", to: "/contact" },
 ];
 
 type Props = {
@@ -28,10 +27,16 @@ type Props = {
 const NavLinks: React.FC<Props> = ({ scrolled }) => {
   const t = useTranslation();
   const { lang } = useLanguage();
+  const { pathname } = useLocation();
   const [openDropdown, setOpenDropdown] = useState<NavKey | null>(null);
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const { data: services } = useServices(lang);
+
+  const isActive = (item: (typeof NAV_ITEMS)[number]) => {
+    if (item.key === "home") return pathname === "/";
+    return pathname.startsWith(item.to);
+  };
 
   const handleMouseEnter = (key: NavKey) => {
     if (closeTimer.current) clearTimeout(closeTimer.current);
@@ -40,6 +45,15 @@ const NavLinks: React.FC<Props> = ({ scrolled }) => {
 
   const handleMouseLeave = () => {
     closeTimer.current = setTimeout(() => setOpenDropdown(null), 150);
+  };
+
+  const linkClass = (item: (typeof NAV_ITEMS)[number]) => {
+    const active = isActive(item);
+    const base = "relative flex items-center gap-1 transition-colors duration-200 after:absolute after:bottom-[-4px] after:left-0 after:h-px after:w-full after:origin-left after:scale-x-0 after:bg-current after:transition-transform after:duration-200 hover:after:scale-x-100";
+    if (active) {
+      return `${base} after:scale-x-100 ${scrolled ? "text-foreground" : "text-primary"}`;
+    }
+    return `${base} ${scrolled ? "text-muted-foreground hover:text-foreground" : "text-white/70 hover:text-white"}`;
   };
 
   return (
@@ -51,26 +65,19 @@ const NavLinks: React.FC<Props> = ({ scrolled }) => {
           onMouseEnter={() => (item.hasDropdown ? handleMouseEnter(item.key) : undefined)}
           onMouseLeave={item.hasDropdown ? handleMouseLeave : undefined}
         >
-          <a
-            href={item.href}
-            className={`flex items-center gap-1 transition-colors duration-800 ${
-              scrolled
-                ? item.active
-                  ? "text-foreground"
-                  : "text-muted-foreground hover:text-foreground"
-                : item.active
-                  ? "text-primary"
-                  : "text-muted-foreground hover:text-foreground"
-            }`}
-          >
-            {t.nav[item.key]}
-            {item.hasDropdown && (
+          {item.hasDropdown ? (
+            <button type="button" className={linkClass(item)}>
+              {t.nav[item.key]}
               <CaretDownIcon
                 size={11}
                 className={`transition-transform duration-200 ${openDropdown === item.key ? "rotate-180" : ""}`}
               />
-            )}
-          </a>
+            </button>
+          ) : (
+            <Link to={item.to} className={linkClass(item)}>
+              {t.nav[item.key]}
+            </Link>
+          )}
 
           {/* Services Dropdown */}
           {item.key === "services" && openDropdown === "services" && (
