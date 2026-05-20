@@ -75,7 +75,7 @@ const Navbar: React.FC<Props> = () => {
       {pathname !== "/" && (
         <button
           onClick={() => navigate("/")}
-          className="bg-background/60 text-foreground hover:bg-background/80 border-border fixed top-20 left-6 z-20 flex items-center gap-2 rounded-full border p-3 text-sm font-medium backdrop-blur-sm transition-colors md:left-6"
+          className="bg-background/60 text-foreground hover:bg-background/80 border-border fixed top-20 left-3 z-20 flex items-center gap-2 rounded-full border p-2 text-sm font-medium backdrop-blur-sm transition-colors md:left-6 md:p-3"
         >
           <ArrowLeftIcon size={25} />
         </button>
