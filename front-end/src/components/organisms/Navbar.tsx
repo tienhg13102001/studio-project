@@ -26,64 +26,60 @@ const Navbar: React.FC<Props> = () => {
 
   return (
     <>
-    <nav
-      className={`fixed top-0 left-0 z-20 flex w-full items-center justify-between px-6 py-4 transition-all duration-800 md:px-12 ${scrolled && pathname === "/" ? "bg-background/50 shadow-sm backdrop-blur-sm" : pathname !== "/" ? "bg-background/50 shadow-sm backdrop-blur-sm" : "bg-transparent"}`}
-    >
-      {/* Logo */}
-      <div className="flex cursor-pointer items-center">
-        <Logo className="h-8 w-8 text-white" />
-      </div>
-
-      {/* Center Navigation */}
-      <NavLinks scrolled={scrolled} />
-
-      {/* Right Actions */}
-      <div className="flex items-center gap-2">
-        {/* Language */}
-        <Button
-          variant="outline"
-          onClick={() => setLang(lang === "en" ? "vi" : "en")}
-
-        >
-          {lang === "en" ? "🇺🇸 EN" : "🇻🇳 VI"}
-        </Button>
-
-        {/* Theme Toggle */}
-        <ThemeToggle />
-
-        {/* User Login */}
-        <Button variant="outline">
-          <UserIcon />
-        </Button>
-
-        {/* Let's Talk CTA */}
-        <Button variant="outline" className="hidden lg:inline-flex">
-          {t.nav.letsTalk}
-        </Button>
-
-        {/* Mobile Menu */}
-        <Button
-          variant="outline"
-          size="icon-lg"
-          className="lg:hidden"
-          onClick={() => setMobileOpen(true)}
-        >
-          <ListIcon size={20} />
-        </Button>
-      </div>
-
-      {/* Mobile Drawer */}
-      <MobileMenu open={mobileOpen} onClose={() => setMobileOpen(false)} />
-    </nav>
-
-    {pathname !== "/" && (
-      <button
-        onClick={() => navigate("/")}
-        className="fixed top-20 left-6 z-20 flex items-center gap-2 rounded-full bg-background/60 p-3 text-sm font-medium text-foreground backdrop-blur-sm transition-colors hover:bg-background/80 md:left-6 border border-border"
+      <nav
+        className={`fixed top-0 left-0 z-20 flex w-full items-center justify-between px-6 py-4 transition-all duration-800 md:px-12 ${scrolled && pathname === "/" ? "bg-background/50 shadow-sm backdrop-blur-sm" : pathname !== "/" ? "bg-background/50 shadow-sm backdrop-blur-sm" : "bg-transparent"}`}
       >
-        <ArrowLeftIcon size={25} />
-      </button>
-    )}
+        {/* Logo */}
+        <div className="flex cursor-pointer items-center" onClick={() => navigate("/")}>
+          <Logo className="h-8 w-8 text-white" />
+        </div>
+
+        {/* Center Navigation */}
+        <NavLinks scrolled={scrolled} />
+
+        {/* Right Actions */}
+        <div className="flex items-center gap-2">
+          {/* Language */}
+          <Button variant="outline" onClick={() => setLang(lang === "en" ? "vi" : "en")}>
+            {lang === "en" ? "🇺🇸 EN" : "🇻🇳 VI"}
+          </Button>
+
+          {/* Theme Toggle */}
+          <ThemeToggle />
+
+          {/* User Login */}
+          <Button variant="outline">
+            <UserIcon />
+          </Button>
+
+          {/* Let's Talk CTA */}
+          <Button variant="outline" className="hidden lg:inline-flex">
+            {t.nav.letsTalk}
+          </Button>
+
+          {/* Mobile Menu */}
+          <Button
+            variant="outline"
+            size="icon-lg"
+            className="lg:hidden"
+            onClick={() => setMobileOpen(true)}
+          >
+            <ListIcon size={20} />
+          </Button>
+        </div>
+
+        {/* Mobile Drawer */}
+        <MobileMenu open={mobileOpen} onClose={() => setMobileOpen(false)} />
+      </nav>
+
+      {pathname !== "/" && (
+        <button
+          onClick={() => navigate("/")}
+          className="bg-background/60 text-foreground hover:bg-background/80 border-border fixed top-20 left-6 z-20 flex items-center gap-2 rounded-full border p-3 text-sm font-medium backdrop-blur-sm transition-colors md:left-6"
+        >
+          <ArrowLeftIcon size={25} />
+        </button>
+      )}
     </>
   );
 };
