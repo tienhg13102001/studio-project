@@ -75,3 +75,16 @@ export type ApiContact = {
     instagram?: string;
   };
 };
+
+export type ApiUser = {
+  id:       string;
+  name:     string;
+  role:     LocalizedString;
+  photo?:   string;
+  quote?:   LocalizedString;
+  bio?:     LocalizedString;
+  skills:   string[];
+  order:    number;
+  featured: boolean;
+  accountRole: "admin" | "member" | "editor";
+};

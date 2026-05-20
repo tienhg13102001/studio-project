@@ -23,6 +23,16 @@ const vi = {
     heroLine1: "Những người đứng sau",
     heroLine2: "BeeZ Production",
     heroSubtitle: "Đội ngũ sáng tạo, tận tâm và đầy nhiệt huyết đứng sau mọi dự án",
+    aboutBadge: "Về Chúng Tôi",
+    aboutHeading: "Chúng Tôi Là Ai",
+    aboutDescription: "Chúng tôi là đội ngũ sáng tạo đam mê kể chuyện bằng hình ảnh. Từ TVC và phim ngắn đến nội dung mạng xã hội — mỗi dự án đều nhận được sự chú ý tỉ mỉ theo phong cách điện ảnh và cam kết về chất lượng.",
+    stats: [
+      { value: "1 tỷ+", label: "Lượt Xem" },
+      { value: "1000+", label: "Dự Án" },
+      { value: "50+", label: "Khách Hàng" },
+    ],
+    meetBadge: "Đội Ngũ",
+    meetHeading: "Khám Phá Đội Ngũ",
   },
 } as const;
 

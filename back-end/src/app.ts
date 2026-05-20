@@ -8,6 +8,7 @@ import featuredRouter from "./routes/featured.ts";
 import landingRouter from "./routes/landing.ts";
 import servicesRouter from "./routes/services.ts";
 import contactRouter from "./routes/contact.ts";
+import usersRouter from "./routes/users.ts";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -34,6 +35,7 @@ app.use("/api/landing", landingRouter);
 app.use("/api/services", servicesRouter);
 app.use("/api/featured", featuredRouter);
 app.use("/api/contact", contactRouter);
+app.use("/api/users", usersRouter);
 
 // ─── 404 ─────────────────────────────────────────────────────────────────────
 app.use((_req, res) => {

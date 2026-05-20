@@ -1,4 +1,6 @@
 import PageHero from "#components/organisms/PageHero";
+import WhoWeAre from "#components/organisms/WhoWeAre";
+import MeetOurTeam from "#components/organisms/MeetOurTeam";
 import { useTranslation } from "#i18n";
 
 const TeamPage = () => {
@@ -15,8 +17,11 @@ const TeamPage = () => {
         }
         subtitle={t.team.heroSubtitle}
       />
+      <WhoWeAre />
+      <MeetOurTeam />
     </div>
   );
 };
 
 export default TeamPage;
+
