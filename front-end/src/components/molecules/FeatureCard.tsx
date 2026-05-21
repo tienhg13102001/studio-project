@@ -1,7 +1,7 @@
 type CardProps = {
   id: string | number;
   tag: string;
-  image: string;
+  thumbnailImage: string;
   title: string;
   subtitle: string;
 };
@@ -27,7 +27,7 @@ const FeatureCard: React.FC<Props> = ({ card, variant }) => {
         }`}
       >
         <img
-          src={card.image}
+          src={card.thumbnailImage}
           alt={card.title}
           className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
         />

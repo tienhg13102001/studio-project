@@ -10,6 +10,6 @@ connectDB().then(() => {
     console.log(`   GET /api/health`);
     console.log(`   GET /api/landing`);
     console.log(`   GET /api/services`);
-    console.log(`   GET /api/featured`);
+    console.log(`   GET /api/projects`);
   });
 });

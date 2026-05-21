@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { ArrowLeftIcon, StarIcon } from "@phosphor-icons/react";
 import { apiFetch, resolveAssetUrl } from "#lib/api";
-import { getIcon } from "#lib/iconMap";
 import { useLanguage } from "#i18n";
 import { Button } from "#components/ui/button";
 import PageHero from "#components/organisms/PageHero";
@@ -47,12 +46,11 @@ const ServicePage: React.FC = () => {
     );
   }
 
-  const Icon = getIcon(service.iconName);
   const title = service.title[lang];
   const description = service.description[lang];
-  const imageUrl = resolveAssetUrl(service.image);
-  const prominentFeatures = service.features.filter((f) => f.prominent);
-  const regularFeatures = service.features.filter((f) => !f.prominent);
+  const imageUrl = resolveAssetUrl(service.thumbnailImage);
+  const prominentProjects = service.projects.filter((f) => f.prominent);
+  const regularProjects   = service.projects.filter((f) => !f.prominent);
 
   return (
     <div className="min-h-screen">
@@ -60,7 +58,6 @@ const ServicePage: React.FC = () => {
         variant="image"
         title={title}
         image={imageUrl}
-        icon={<Icon size={24} weight="duotone" />}
       />
 
       <div className="mx-auto max-w-4xl px-6 py-16 md:px-12">
@@ -100,24 +97,24 @@ const ServicePage: React.FC = () => {
           </section>
         )}
 
-        {/* Features */}
-        {service.features.length > 0 && (
+        {/* Projects */}
+        {service.projects.length > 0 && (
           <section className="mt-16">
             <h2 className="text-foreground mb-8 text-2xl font-bold">
               {lang === "vi" ? "Dự Án Nổi Bật" : "Featured Work"}
             </h2>
 
-            {/* Prominent features — larger cards */}
-            {prominentFeatures.length > 0 && (
+            {/* Prominent projects — larger cards */}
+            {prominentProjects.length > 0 && (
               <div className="mb-4 grid gap-4 sm:grid-cols-2">
-                {prominentFeatures.map((f) => (
+                {prominentProjects.map((f) => (
                   <div
                     key={f.id}
                     className="group border-primary/30 relative overflow-hidden rounded-2xl border"
                   >
                     <div className="aspect-video w-full overflow-hidden">
                       <img
-                        src={resolveAssetUrl(f.image)}
+                        src={resolveAssetUrl(f.thumbnailImage)}
                         alt={f.title}
                         className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                       />
@@ -136,17 +133,17 @@ const ServicePage: React.FC = () => {
               </div>
             )}
 
-            {/* Regular features — smaller grid */}
-            {regularFeatures.length > 0 && (
+            {/* Regular projects — smaller grid */}
+            {regularProjects.length > 0 && (
               <div className="grid gap-3 sm:grid-cols-3">
-                {regularFeatures.map((f) => (
+                {regularProjects.map((f) => (
                   <div
                     key={f.id}
                     className="group border-border relative overflow-hidden rounded-xl border"
                   >
                     <div className="aspect-video w-full overflow-hidden">
                       <img
-                        src={resolveAssetUrl(f.image)}
+                        src={resolveAssetUrl(f.thumbnailImage)}
                         alt={f.title}
                         className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                       />

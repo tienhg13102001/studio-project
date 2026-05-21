@@ -92,16 +92,12 @@ const NavLinks: React.FC<Props> = ({ scrolled }) => {
 
               <div className="grid grid-cols-2 gap-2">
                 {(services ?? []).map((service) => {
-                  const Icon = service.icon;
                   return (
                     <Link
                       key={service.id}
                       to={`/service/${service.id}`}
                       className="group hover:bg-muted flex items-start gap-3 rounded-lg p-3 transition-colors"
                     >
-                      <div className="bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-md transition-colors">
-                        <Icon size={18} weight="duotone" />
-                      </div>
                       <div className="min-w-0">
                         <p className="text-foreground text-sm font-semibold">{service.title}</p>
                         <p className="text-muted-foreground mt-0.5 line-clamp-2 text-xs">

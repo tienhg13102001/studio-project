@@ -1,14 +1,11 @@
 import { useEffect, useRef, useState, useCallback } from "react";
-import type { ElementType } from "react";
 import type { Lang } from "#i18n";
 import { apiFetch, resolveAssetUrl } from "#lib/api";
 import type { ApiPaginatedServices, ApiService } from "#lib/apiTypes";
-import { getIcon } from "#lib/iconMap";
 
 export type ServiceDisplay = {
   id: string;
-  icon: ElementType;
-  image: string;
+  thumbnailImage: string;
   title: string;
   description: string;
 };
@@ -16,8 +13,7 @@ export type ServiceDisplay = {
 function mapService(s: ApiService, lang: Lang): ServiceDisplay {
   return {
     id: s.id,
-    icon: getIcon(s.iconName),
-    image: resolveAssetUrl(s.image),
+    thumbnailImage: resolveAssetUrl(s.thumbnailImage),
     title: s.title[lang],
     description: s.description[lang],
   };

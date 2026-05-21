@@ -14,7 +14,6 @@ export interface IUser extends Document {
   quote?:   LocalizedString;
   bio?:     LocalizedString;
   skills:   string[];
-  order:    number;
   featured: boolean;
 
   // ── Auth ──────────────────────────────────────────────────────────────────
@@ -41,7 +40,6 @@ const userSchema = new Schema<IUser>(
     quote:    { type: localizedStringSchema },
     bio:      { type: localizedStringSchema },
     skills:   { type: [String], default: [] },
-    order:    { type: Number, default: 0 },
     featured: { type: Boolean, default: false },
 
     // Auth

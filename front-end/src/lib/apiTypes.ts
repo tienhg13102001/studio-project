@@ -17,37 +17,33 @@ export type ApiFaqItem = {
 export type ApiServiceTag = {
   id:          string;
   tag:         string;
-  iconName:    string;
   title:       LocalizedString;
   description: LocalizedString;
 };
 
-export type ApiFeature = {
-  id:        string;
-  layout:    "vertical" | "horizontal";
-  order:     number;
-  tag:       ApiServiceTag; // populated
-  image:     string;
-  title:     string;
-  subtitle:  string;
-  prominent: boolean;
+export type ApiProject = {
+  id:             string;
+  layout:         "vertical" | "horizontal";
+  service:        ApiServiceTag; // populated
+  thumbnailImage: string;
+  title:          string;
+  subtitle:       string;
+  prominent:      boolean;
 };
 
 export type ApiService = {
-  id:          string;
-  order:       number;
-  tag:         string;
-  iconName:    string;
-  image:       string;
-  title:       LocalizedString;
-  description: LocalizedString;
-  faqs:        ApiFaqItem[];
-  features:    ApiFeature[]; // populated from Feature collection
+  id:             string;
+  tag:            string;
+  thumbnailImage: string;
+  title:          LocalizedString;
+  description:    LocalizedString;
+  faqs:           ApiFaqItem[];
+  projects:       ApiProject[]; // populated from Project collection
 };
 
-export type ApiFeaturedContent = {
-  verticalCards:   ApiFeature[];
-  horizontalCards: ApiFeature[];
+export type ApiProjectsContent = {
+  verticalCards:   ApiProject[];
+  horizontalCards: ApiProject[];
 };
 
 export type ApiPaginatedServices = {
@@ -80,12 +76,12 @@ export type ApiContact = {
 export type ApiUser = {
   id:       string;
   name:     string;
+  email:    string;
   role:     LocalizedString;
   photo?:   string;
   quote?:   LocalizedString;
   bio?:     LocalizedString;
   skills:   string[];
-  order:    number;
   featured: boolean;
   accountRole: "admin" | "member" | "editor";
 };
@@ -94,6 +90,6 @@ export type ApiBrand = {
   id:       string;
   name:     string;
   logo:     string;
-  features: ApiFeature[];
+  features: ApiProject[];
   order:    number;
 };

@@ -1,7 +1,7 @@
 import { UsersThreeIcon, StarIcon, BriefcaseIcon, ImageSquareIcon } from "@phosphor-icons/react";
 import type { ApiUser, ApiBrand } from "#lib/apiTypes";
 import type { ServiceDisplay } from "#hooks/useServices";
-import type { FeatureDisplay } from "#hooks/useFeatured";
+import type { ProjectDisplay } from "#hooks/useProjects";
 import { TeamTable } from "./TeamTab";
 import { BrandsGrid } from "./BrandsTab";
 
@@ -11,7 +11,7 @@ type Props = {
   brandsData:     ApiBrand[]       | null;
   brandsLoading:  boolean;
   servicesData:   ServiceDisplay[] | null;
-  allProjects:    FeatureDisplay[];
+  allProjects:    ProjectDisplay[];
   onTabChange:    (id: string) => void;
 };
 

@@ -1,34 +1,34 @@
-import { useEffect, useRef, useState, useCallback } from "react";
 import { apiFetch, resolveAssetUrl } from "#lib/api";
-import type { ApiFeature, ApiFeaturedContent } from "#lib/apiTypes";
+import type { ApiProject, ApiProjectsContent } from "#lib/apiTypes";
+import { useCallback, useEffect, useRef, useState } from "react";
 
-export type FeatureDisplay = {
+export type ProjectDisplay = {
   id: string;
   tag: string;
-  image: string;
+  thumbnailImage: string;
   title: string;
   subtitle: string;
 };
 
-function mapFeature(f: ApiFeature): FeatureDisplay {
+function mapProject(f: ApiProject): ProjectDisplay {
   return {
     id: f.id,
-    tag: f.tag.tag, // populated service's short code
-    image: resolveAssetUrl(f.image),
+    tag: f.service?.tag ?? "",
+    thumbnailImage: resolveAssetUrl(f.thumbnailImage),
     title: f.title,
     subtitle: f.subtitle,
   };
 }
 
-export function useFeatured() {
-  const [raw, setRaw] = useState<ApiFeaturedContent | null>(null);
+export function useProjects() {
+  const [raw, setRaw] = useState<ApiProjectsContent | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const fetched = useRef(false);
 
   const refetch = useCallback(() => {
     setLoading(true);
-    apiFetch<ApiFeaturedContent>("/api/featured")
+    apiFetch<ApiProjectsContent>("/api/projects")
       .then(setRaw)
       .catch((err: Error) => setError(err.message))
       .finally(() => setLoading(false));
@@ -40,8 +40,8 @@ export function useFeatured() {
     refetch();
   }, [refetch]);
 
-  const verticalCards = raw?.verticalCards.map(mapFeature) ?? null;
-  const horizontalCards = raw?.horizontalCards.map(mapFeature) ?? null;
+  const verticalCards = raw?.verticalCards.map(mapProject) ?? null;
+  const horizontalCards = raw?.horizontalCards.map(mapProject) ?? null;
 
   return { verticalCards, horizontalCards, raw, loading, error, refetch };
 }

@@ -1,5 +1,5 @@
 import mongoose, { Schema, type Document, type PopulatedDoc } from "mongoose";
-import type { IFeature } from "./Feature.ts";
+import type { IProject } from "./Project.ts";
 
 const localizedString = new Schema({ en: String, vi: String }, { _id: false });
 
@@ -17,26 +17,22 @@ export interface IFaqItem {
 }
 
 export interface IService extends Document {
-  order:       number;
-  tag:         string;
-  iconName:    string;
-  image:       string;
-  title:       { en: string; vi: string };
-  description: { en: string; vi: string };
-  faqs:        IFaqItem[];
-  features:    PopulatedDoc<IFeature>[];
+  tag:            string;
+  thumbnailImage: string;
+  title:          { en: string; vi: string };
+  description:    { en: string; vi: string };
+  faqs:           IFaqItem[];
+  projects:       PopulatedDoc<IProject>[];
 }
 
 const serviceSchema = new Schema<IService>(
   {
-    order:       { type: Number, required: true },
-    tag:         { type: String, required: true, unique: true },
-    iconName:    { type: String, required: true },
-    image:       { type: String, required: true },
-    title:       { type: localizedString, required: true },
-    description: { type: localizedString, required: true },
-    faqs:        { type: [faqItemSchema], default: [] },
-    features:    [{ type: Schema.Types.ObjectId, ref: "Feature" }],
+    tag:            { type: String, required: true, unique: true },
+    thumbnailImage: { type: String, required: true },
+    title:          { type: localizedString, required: true },
+    description:    { type: localizedString, required: true },
+    faqs:           { type: [faqItemSchema], default: [] },
+    projects:       [{ type: Schema.Types.ObjectId, ref: "Project" }],
   },
   {
     toJSON: {

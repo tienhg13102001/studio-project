@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useTeam } from "#hooks/useTeam";
 import { useBrands } from "#hooks/useBrands";
 import { useServices } from "#hooks/useServices";
-import { useFeatured } from "#hooks/useFeatured";
+import { useProjects } from "#hooks/useProjects";
 import type { PortalUser } from "#lib/portal.types";
 import PortalSidebar from "#components/organisms/portal/PortalSidebar";
 import PortalHeader from "#components/molecules/portal/PortalHeader";
@@ -21,9 +21,9 @@ const DashboardPage = () => {
   const { data: teamData,     loading: teamLoading,     refetch: refetchTeam    } = useTeam();
   const { data: brandsData,   loading: brandsLoading,   refetch: refetchBrands  } = useBrands();
   const { data: servicesData, raw: rawServices, loading: servicesLoading, refetch: refetchServices } = useServices("en");
-  const { verticalCards, horizontalCards, raw: rawFeatured, loading: featuredLoading, refetch: refetchFeatured } = useFeatured();
+  const { verticalCards, horizontalCards, raw: rawProjects, loading: projectsLoading, refetch: refetchProjects } = useProjects();
   const allProjects  = [...(verticalCards ?? []), ...(horizontalCards ?? [])];
-  const rawFeatures  = rawFeatured ? [...rawFeatured.verticalCards, ...rawFeatured.horizontalCards] : null;
+  const rawProjectList = rawProjects ? [...rawProjects.verticalCards, ...rawProjects.horizontalCards] : null;
 
   useEffect(() => {
     try {
@@ -66,7 +66,7 @@ const DashboardPage = () => {
           {activeTab === "team"     && <TeamTab     data={teamData}     loading={teamLoading}     onRefetch={refetchTeam}     />}
           {activeTab === "brands"   && <BrandsTab   data={brandsData}   loading={brandsLoading}   onRefetch={refetchBrands}   />}
           {activeTab === "services" && <ServicesTab data={servicesData} raw={rawServices}         loading={servicesLoading}  onRefetch={refetchServices} />}
-          {activeTab === "projects" && <ProjectsTab data={allProjects}  raw={rawFeatures}         services={rawServices}     loading={featuredLoading}   onRefetch={refetchFeatured} />}
+          {activeTab === "projects" && <ProjectsTab data={allProjects}  raw={rawProjectList}      services={rawServices}     loading={projectsLoading}   onRefetch={refetchProjects} />}
         </div>
       </main>
     </div>

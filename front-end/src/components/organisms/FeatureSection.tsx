@@ -1,7 +1,7 @@
 import { default as FeatureCard } from "#components/molecules/FeatureCard";
 import MarqueeRow from "#components/molecules/MarqueeRow";
 import SectionHeader from "#components/molecules/SectionHeader";
-import { useFeatured } from "#hooks/useFeatured";
+import { useProjects } from "#hooks/useProjects";
 import { useTranslation } from "#i18n";
 import type { FC } from "react";
 
@@ -9,7 +9,7 @@ type Props = {};
 
 const FeatureSection: FC<Props> = () => {
   const t = useTranslation();
-  const { verticalCards, horizontalCards } = useFeatured();
+  const { verticalCards, horizontalCards } = useProjects();
 
   // Fall back to mock while API loads
   const top = verticalCards || [];

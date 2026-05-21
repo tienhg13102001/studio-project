@@ -4,7 +4,7 @@ import { join, dirname } from "path";
 import { fileURLToPath } from "url";
 import errorHandler from "./middleware/errorHandler.ts";
 import { sendError, sendSuccess } from "./lib/response.ts";
-import featuredRouter from "./routes/featured.ts";
+import projectsRouter from "./routes/projects.ts";
 import landingRouter from "./routes/landing.ts";
 import servicesRouter from "./routes/services.ts";
 import contactRouter from "./routes/contact.ts";
@@ -22,7 +22,7 @@ app.use(express.json());
 app.use(
   cors({
     origin: process.env.FRONTEND_URL ?? "http://localhost:5173",
-    methods: ["GET", "POST", "PUT"],
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
   })
 );
 
@@ -36,7 +36,7 @@ app.get("/api/health", (_req, res) => {
 
 app.use("/api/landing", landingRouter);
 app.use("/api/services", servicesRouter);
-app.use("/api/featured", featuredRouter);
+app.use("/api/projects", projectsRouter);
 app.use("/api/contact", contactRouter);
 app.use("/api/users", usersRouter);
 app.use("/api/brands", brandsRouter);

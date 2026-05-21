@@ -16,27 +16,25 @@ export type LandingContent = {
 export type ServiceItem = {
   id: number;
   tag: string; // short code, e.g. "TVC", "SHORT", "F&B"
-  iconName: string; // Phosphor icon name, e.g. "TelevisionSimple"
-  image: string;
+  thumbnailImage: string;
   title: LocalizedString;
   description: LocalizedString;
 };
 
-// ─── Featured ────────────────────────────────────────────────────────────────
+// ─── Projects ────────────────────────────────────────────────────────────────
 
-export type Feature = {
+export type Project = {
   id: string;
   layout: "vertical" | "horizontal";
-  order: number;
-  tag: ServiceItem; // populated from Service
-  image: string;
+  service: ServiceItem; // populated from Service
+  thumbnailImage: string;
   title: string;
   subtitle: string;
 };
 
-export type FeaturedContent = {
-  verticalCards: Feature[];
-  horizontalCards: Feature[];
+export type ProjectsContent = {
+  verticalCards: Project[];
+  horizontalCards: Project[];
 };
 
 // ─── API response envelope ───────────────────────────────────────────────────

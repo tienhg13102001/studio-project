@@ -110,23 +110,31 @@ export default function BrandsTab({ data, loading, onRefetch }: TabProps) {
       >
         {form && (
           <>
-            <div>
-              <label className={lbl}>Name</label>
-              <input className={inp} value={form.name} onChange={(e) => set("name", e.target.value)} />
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+              {/* ── Left ──────────────────────────────── */}
+              <div className="flex flex-col gap-4">
+                <div>
+                  <label className={lbl}>Name</label>
+                  <input className={inp} value={form.name} onChange={(e) => set("name", e.target.value)} />
+                </div>
+                <div>
+                  <label className={lbl}>Order</label>
+                  <input
+                    className={inp}
+                    type="number"
+                    value={form.order}
+                    onChange={(e) => set("order", Number(e.target.value))}
+                  />
+                </div>
+              </div>
+
+              {/* ── Right: logo ───────────────────────── */}
+              <div>
+                <label className={lbl}>Logo</label>
+                <ImageUpload value={form.logo} onChange={(path) => set("logo", path)} />
+              </div>
             </div>
-            <div>
-              <label className={lbl}>Logo</label>
-              <ImageUpload value={form.logo} onChange={(path) => set("logo", path)} />
-            </div>
-            <div>
-              <label className={lbl}>Order</label>
-              <input
-                className={inp}
-                type="number"
-                value={form.order}
-                onChange={(e) => set("order", Number(e.target.value))}
-              />
-            </div>
+
             {error && <p className="text-xs text-red-400">{error}</p>}
           </>
         )}

@@ -2,7 +2,7 @@ import "dotenv/config";
 import { connectDB, disconnectDB } from "../lib/db.ts";
 import { Landing } from "../models/Landing.ts";
 import { Service } from "../models/Service.ts";
-import { Feature } from "../models/Feature.ts";
+import { Project } from "../models/Project.ts";
 import { Contact } from "../models/Contact.ts";
 import { User } from "../models/User.ts";
 import { Brand } from "../models/Brand.ts";
@@ -14,7 +14,7 @@ async function seed() {
   await Promise.all([
     Landing.deleteMany({}),
     Service.deleteMany({}),
-    Feature.deleteMany({}),
+    Project.deleteMany({}),
     Contact.deleteMany({}),
     User.deleteMany({}),
     Brand.deleteMany({}),
@@ -35,10 +35,8 @@ async function seed() {
   // ─── Services ─────────────────────────────────────────────────────────────
   const insertedServices = await Service.insertMany([
     {
-      order: 1,
       tag: "TVC",
-      iconName: "TelevisionSimple",
-      image: "/images/NAQ03133.webp",
+      thumbnailImage: "/images/NAQ03133.webp",
       title: { en: "TVC Production", vi: "Sản Xuất TVC" },
       description: {
         en: "Building brand value through inspiring visuals and storytelling",
@@ -85,10 +83,8 @@ async function seed() {
       ],
     },
     {
-      order: 2,
       tag: "SHORT",
-      iconName: "DeviceMobileCamera",
-      image: "/images/services1.webp",
+      thumbnailImage: "/images/services1.webp",
       title: { en: "Short-form Content", vi: "Nội Dung Dạng Ngắn" },
       description: {
         en: "TikTok, Reels, Shorts — multi-platform content with 1B+ views",
@@ -128,10 +124,8 @@ async function seed() {
       ],
     },
     {
-      order: 3,
       tag: "F&B",
-      iconName: "Phone",
-      image: "/images/services2.webp",
+      thumbnailImage: "/images/services2.webp",
       title: { en: "Food & Beverage (F&B)", vi: "Đồ Ăn & Thức Uống (F&B)" },
       description: {
         en: "Creative, professional video production for restaurants and F&B brands",
@@ -171,10 +165,8 @@ async function seed() {
       ],
     },
     {
-      order: 4,
       tag: "INTERVIEW",
-      iconName: "Microphone",
-      image: "/images/services2.webp",
+      thumbnailImage: "/images/services2.webp",
       title: { en: "Interview Production", vi: "Sản Xuất Phỏng Vấn" },
       description: {
         en: "In-depth interview videos that tell authentic stories and build trust",
@@ -216,131 +208,120 @@ async function seed() {
   // Build tag → ObjectId lookup
   const tagMap = new Map(insertedServices.map((s) => [s.tag, s._id]));
 
-  // ─── Features ─────────────────────────────────────────────────────────────
-  const insertedFeatures = await Feature.insertMany([
+  // ─── Projects ─────────────────────────────────────────────────────────────
+  const insertedProjects = await Project.insertMany([
     // SHORT
     {
       layout: "vertical",
-      order: 1,
       prominent: true,
-      tag: tagMap.get("SHORT"),
-      image: "/images/feature1.webp",
+      service: tagMap.get("SHORT"),
+      thumbnailImage: "/images/feature1.webp",
       title: "Greenfield Dental - V-Line...",
       subtitle: "Greenfield",
     },
     {
       layout: "vertical",
-      order: 2,
       prominent: false,
-      tag: tagMap.get("SHORT"),
-      image: "/images/feature1.webp",
+      service: tagMap.get("SHORT"),
+      thumbnailImage: "/images/feature1.webp",
       title: "bb.q Chicken - Birthday Ce...",
       subtitle: "bb.q Chicken",
     },
     {
       layout: "vertical",
-      order: 3,
       prominent: false,
-      tag: tagMap.get("SHORT"),
-      image: "/images/feature1.webp",
+      service: tagMap.get("SHORT"),
+      thumbnailImage: "/images/feature1.webp",
       title: "Greenfield Braces - Nerdy...",
       subtitle: "Greenfield Dental",
     },
     {
       layout: "vertical",
-      order: 4,
       prominent: false,
-      tag: tagMap.get("SHORT"),
-      image: "/images/feature1.webp",
+      service: tagMap.get("SHORT"),
+      thumbnailImage: "/images/feature1.webp",
       title: "bb.q Chicken - Crispy Chic...",
       subtitle: "bb.q Chicken",
     },
     {
       layout: "vertical",
-      order: 5,
       prominent: true,
-      tag: tagMap.get("SHORT"),
-      image: "/images/feature1.webp",
+      service: tagMap.get("SHORT"),
+      thumbnailImage: "/images/feature1.webp",
       title: "Greenfield Braces - Sporty...",
       subtitle: "Greenfield Dental",
     },
     // F&B
     {
       layout: "vertical",
-      order: 6,
       prominent: true,
-      tag: tagMap.get("F&B"),
-      image: "/images/feature1.webp",
+      service: tagMap.get("F&B"),
+      thumbnailImage: "/images/feature1.webp",
       title: "Grouper Fish - Chef's Sign...",
       subtitle: "Chapter Fine Dining",
     },
     {
       layout: "vertical",
-      order: 7,
       prominent: false,
-      tag: tagMap.get("F&B"),
-      image: "/images/feature1.webp",
+      service: tagMap.get("F&B"),
+      thumbnailImage: "/images/feature1.webp",
       title: "Fresh Sashimi - Master...",
       subtitle: "Chapter Fine Dining",
     },
     // INTERVIEW
     {
       layout: "horizontal",
-      order: 1,
       prominent: true,
-      tag: tagMap.get("INTERVIEW"),
-      image: "/images/feature2.webp",
+      service: tagMap.get("INTERVIEW"),
+      thumbnailImage: "/images/feature2.webp",
       title: "Emotional Interview - 45 Minutes of Talking",
       subtitle: "Healthcare",
     },
     // TVC
     {
       layout: "horizontal",
-      order: 2,
       prominent: true,
-      tag: tagMap.get("TVC"),
-      image: "/images/feature2.webp",
+      service: tagMap.get("TVC"),
+      thumbnailImage: "/images/feature2.webp",
       title: "Join Our Club - Wake Up The Champion",
       subtitle: "Greenfield Dental",
     },
     {
       layout: "horizontal",
-      order: 3,
       prominent: false,
-      tag: tagMap.get("TVC"),
-      image: "/images/feature2.webp",
+      service: tagMap.get("TVC"),
+      thumbnailImage: "/images/feature2.webp",
       title: "A Gleaming Miracle",
       subtitle: "Greenfield Dental",
     },
     {
       layout: "horizontal",
-      order: 4,
       prominent: true,
-      tag: tagMap.get("TVC"),
-      image: "/images/feature2.webp",
+      service: tagMap.get("TVC"),
+      thumbnailImage: "/images/feature2.webp",
       title: "Đóng Stress - Mở Strong",
       subtitle: "T-Matsuoka Medical Center",
     },
   ]);
-  console.log("  ✓ Features (7 vertical, 4 horizontal)");
+  console.log("  ✓ Projects (7 vertical, 4 horizontal)");
 
-  // ─── Link features back to each service ──────────────────────────────────
-  const featuresByServiceId = new Map<string, (typeof insertedFeatures)[number]["_id"][]>();
-  for (const f of insertedFeatures) {
-    const svcId = f.tag!.toString();
-    if (!featuresByServiceId.has(svcId)) featuresByServiceId.set(svcId, []);
-    featuresByServiceId.get(svcId)!.push(f._id);
+  // ─── Link projects back to each service ──────────────────────────────────
+  const projectsByServiceId = new Map<string, (typeof insertedProjects)[number]["_id"][]>();
+  for (const f of insertedProjects) {
+    const svcId = f.service!.toString();
+    if (!projectsByServiceId.has(svcId)) projectsByServiceId.set(svcId, []);
+    projectsByServiceId.get(svcId)!.push(f._id);
   }
   await Promise.all(
     insertedServices.map((s) =>
-      s.updateOne({ features: featuresByServiceId.get(s._id.toString()) ?? [] }),
+      s.updateOne({ projects: projectsByServiceId.get(s._id.toString()) ?? [] }),
     ),
   );
-  console.log("  ✓ Service.features linked");
+  console.log("  ✓ Service.projects linked");
 
   // ─── Brands ───────────────────────────────────────────────────────────────
-  // Map feature titles to their IDs for easy linking
-  const featureMap = new Map(insertedFeatures.map((f) => [f.title, f._id]));
+  // Map project titles to their IDs for easy linking
+  const featureMap = new Map(insertedProjects.map((f) => [f.title, f._id]));
 
   await Brand.insertMany([
     { name: "Techcombank", logo: "/brands/techcombank.svg", order: 3, features: [] },
@@ -410,7 +391,6 @@ async function seed() {
         vi: "Với hơn năm năm kinh nghiệm sản xuất video, Tyler tiếp cận mỗi dự án với niềm đam mê sâu sắc về kể chuyện bằng hình ảnh và cam kết chặt chẽ với từng chi tiết. Công việc của anh tại BeeZ phản ánh sự cân bằng tinh tế giữa kỹ thuật điện ảnh và cảm quan kỹ thuật số hiện đại.",
       },
       skills: ["Cinematic Direction", "Brand Storytelling", "Commercial Production"],
-      order: 1,
       featured: true,
       email: "tyler@beezvn.com",
       password: "changeme123",
@@ -424,7 +404,6 @@ async function seed() {
         vi: "Sản xuất tốt là làm cho những điều không thể trở nên dễ dàng.",
       },
       skills: ["Production Management", "TVC Production", "Budget Planning"],
-      order: 2,
       featured: false,
       email: "minh@beezvn.com",
       password: "changeme123",
@@ -438,7 +417,6 @@ async function seed() {
         vi: "Ánh sáng kể câu chuyện trước khi ngôn từ làm điều đó.",
       },
       skills: ["Cinematography", "Lighting Design", "Camera Operation"],
-      order: 3,
       featured: false,
       email: "linh@beezvn.com",
       password: "changeme123",
@@ -452,7 +430,6 @@ async function seed() {
         vi: "Kịch bản tốt là bản thiết kế của cảm xúc.",
       },
       skills: ["Screenwriting", "Brand Storytelling", "Content Strategy"],
-      order: 4,
       featured: false,
       email: "huy@beezvn.com",
       password: "changeme123",
