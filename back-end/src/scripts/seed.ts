@@ -331,7 +331,7 @@ async function seed() {
     { name: "VPBank", logo: "/brands/vpbank.svg", order: 8, features: [] },
     { name: "FPT", logo: "/brands/fpt.svg", order: 9, features: [] },
   ]);
-  console.log("  ✓ Brands (10)");
+  console.log("  ✓ Brands (6)");
 
   // ─── Contact ──────────────────────────────────────────────────────────────
   await Contact.create({
@@ -379,7 +379,7 @@ async function seed() {
   // Use create() (not insertMany) so bcrypt pre-save hook fires on each document
   await Promise.all([
     User.create({
-      name: "Tyler Nguyen",
+      name: "Hoan Nguyen",
       role: { en: "Creative Director", vi: "Giám Đốc Sáng Tạo" },
       photo: "/images/user1.webp",
       quote: {
@@ -387,41 +387,16 @@ async function seed() {
         vi: "Mỗi khung hình là cơ hội kể một câu chuyện chạm đến lòng người. Tại BeeZ, chúng tôi không chỉ làm video – chúng tôi tạo ra những trải nghiệm khó quên.",
       },
       bio: {
-        en: "With over five years of experience in video production, Tyler approaches each project with a deep passion for visual storytelling and a strong commitment to detail. His work at BeeZ Agency reflects a careful balance between cinematic craft and modern digital sensibility, resulting in content that resonates with audiences and has collectively reached over one billion views across platforms.",
-        vi: "Với hơn năm năm kinh nghiệm sản xuất video, Tyler tiếp cận mỗi dự án với niềm đam mê sâu sắc về kể chuyện bằng hình ảnh và cam kết chặt chẽ với từng chi tiết. Công việc của anh tại BeeZ phản ánh sự cân bằng tinh tế giữa kỹ thuật điện ảnh và cảm quan kỹ thuật số hiện đại.",
+        en: "With over five years of experience in video production, Hoan approaches each project with a deep passion for visual storytelling and a strong commitment to detail. His work at BeeZ Agency reflects a careful balance between cinematic craft and modern digital sensibility, resulting in content that resonates with audiences and has collectively reached over one billion views across platforms.",
+        vi: "Với hơn năm năm kinh nghiệm sản xuất video, Hoan tiếp cận mỗi dự án với niềm đam mê sâu sắc về kể chuyện bằng hình ảnh và cam kết chặt chẽ với từng chi tiết. Công việc của anh tại BeeZ phản ánh sự cân bằng tinh tế giữa kỹ thuật điện ảnh và cảm quan kỹ thuật số hiện đại.",
       },
       skills: ["Cinematic Direction", "Brand Storytelling", "Commercial Production"],
       featured: true,
-      email: "tyler@beezvn.com",
+      email: "hoan@beezvn.com",
       password: "changeme123",
       accountRole: "admin",
     }),
-    User.create({
-      name: "Minh Tran",
-      role: { en: "Producer", vi: "Nhà Sản Xuất" },
-      quote: {
-        en: "Great production is about making the impossible feel effortless.",
-        vi: "Sản xuất tốt là làm cho những điều không thể trở nên dễ dàng.",
-      },
-      skills: ["Production Management", "TVC Production", "Budget Planning"],
-      featured: false,
-      email: "minh@beezvn.com",
-      password: "changeme123",
-      accountRole: "member",
-    }),
-    User.create({
-      name: "Linh Pham",
-      role: { en: "Director of Photography", vi: "Giám Đốc Hình Ảnh" },
-      quote: {
-        en: "Light tells the story before the words do.",
-        vi: "Ánh sáng kể câu chuyện trước khi ngôn từ làm điều đó.",
-      },
-      skills: ["Cinematography", "Lighting Design", "Camera Operation"],
-      featured: false,
-      email: "linh@beezvn.com",
-      password: "changeme123",
-      accountRole: "member",
-    }),
+
     User.create({
       name: "Huy Le",
       role: { en: "Scriptwriter", vi: "Biên Kịch" },
@@ -436,7 +411,7 @@ async function seed() {
       accountRole: "editor",
     }),
   ]);
-  console.log("  ✓ Users (4)");
+  console.log("  ✓ Users (2)");
 
   console.log("✅ Seed complete");
   await disconnectDB();

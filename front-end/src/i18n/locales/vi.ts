@@ -10,7 +10,7 @@ const vi = {
   },
   cta: {
     contactBeez: "Liên Hệ BeeZ",
-    viewProjects: "Xem Dự Án",
+    viewMyWorkss: "Xem Dịch Vụ",
   },
   services: {
     sectionTitle: "Lĩnh Vực Hoạt Động",

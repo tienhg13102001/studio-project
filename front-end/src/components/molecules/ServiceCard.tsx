@@ -6,7 +6,10 @@ type Props = {
 
 const ServiceCard: React.FC<Props> = ({ service }) => {
   return (
-    <div className="group border-border/30 relative h-60 cursor-pointer overflow-hidden rounded-2xl border transition-shadow duration-300 hover:shadow-lg">
+    <div
+      className="group border-border/30 relative h-60 cursor-pointer overflow-hidden rounded-2xl border transition-shadow duration-300 hover:shadow-lg"
+      onClick={() => (window.location.href = `/service/${service.id}`)}
+    >
       {/* Hình nền với hiệu ứng zoom khi hover */}
       <img
         src={service.thumbnailImage}
@@ -21,9 +24,7 @@ const ServiceCard: React.FC<Props> = ({ service }) => {
       <div className="absolute inset-0 z-10 flex flex-col justify-between p-5">
         {/* Tiêu đề và Mô tả */}
         <div className="mt-auto translate-y-2 transform border-t border-white/20 pt-4 transition-transform duration-300 group-hover:translate-y-0">
-          <h3 className="mb-2 text-xl font-semibold tracking-wide text-white">
-            {service.title}
-          </h3>
+          <h3 className="mb-2 text-xl font-semibold tracking-wide text-white">{service.title}</h3>
           <p className="line-clamp-2 text-xs leading-relaxed text-gray-300 opacity-80 transition-opacity duration-300 group-hover:opacity-100">
             {service.description}
           </p>

@@ -1,7 +1,7 @@
-import { useLanguage, useTranslation } from "#i18n";
 import SectionHeader from "#components/molecules/SectionHeader";
 import ServiceCard from "#components/molecules/ServiceCard";
 import { useServices } from "#hooks/useServices";
+import { useLanguage, useTranslation } from "#i18n";
 import type { FC } from "react";
 
 type Props = {};
@@ -12,7 +12,7 @@ const ServiceSection: FC<Props> = () => {
   const { data: services } = useServices(lang);
 
   return (
-    <section className="min-h-dvh px-4 py-24 font-sans sm:px-6 lg:px-8">
+    <section id="services" className="min-h-dvh px-4 py-24 font-sans sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl">
         <SectionHeader title={t.services.sectionTitle} subtitle={t.services.sectionSubtitle} />
 

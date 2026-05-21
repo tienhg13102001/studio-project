@@ -3,15 +3,20 @@ import LogoZalo from "../../assets/icons/LogoZalo";
 
 const SocialLinks = () => {
   return (
-    <div className="flex items-center gap-3 mt-4 sm:mt-0">
-      <div className="w-10 h-10 flex items-center justify-center bg-instagram-gradient rounded-full">
-        <InstagramLogoIcon className="w-2/3 h-2/3" />
+    <div className="mt-4 flex items-center gap-3 sm:mt-0">
+      <div className="bg-instagram-gradient flex h-10 w-10 items-center justify-center rounded-full">
+        <InstagramLogoIcon className="h-2/3 w-2/3" />
       </div>
-      <div className="w-10 h-10 flex items-center justify-center bg-facebook-gradient rounded-full">
-        <FacebookLogoIcon className="w-2/3 h-2/3" />
-      </div>
-      <div className="rounded-full overflow-hidden h-10 w-10">
-        <LogoZalo className="w-full h-full" />
+      <a
+        href="https://www.facebook.com/BeeZProductions"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="bg-facebook-gradient flex h-10 w-10 items-center justify-center rounded-full"
+      >
+        <FacebookLogoIcon className="h-2/3 w-2/3" />
+      </a>
+      <div className="h-10 w-10 overflow-hidden rounded-full">
+        <LogoZalo className="h-full w-full" />
       </div>
     </div>
   );

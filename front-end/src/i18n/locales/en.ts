@@ -10,7 +10,7 @@ const en = {
   },
   cta: {
     contactBeez: "Contact BeeZ",
-    viewProjects: "View Projects",
+    viewMyWorkss: "View My Works",
   },
   services: {
     sectionTitle: "What We Do",
