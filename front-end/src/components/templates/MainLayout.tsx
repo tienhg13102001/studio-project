@@ -1,5 +1,6 @@
 import React from "react";
 import { Outlet } from "react-router-dom";
+import Footer from "../organisms/Footer";
 import Navbar from "../organisms/Navbar";
 
 type Props = {};
@@ -11,7 +12,7 @@ const MainLayout: React.FC<Props> = () => {
     <div className="relative min-h-screen">
       <Navbar />
       <Outlet />
-      {/* <Footer /> */}
+      <Footer />
 
       {/* Global background image */}
       <div

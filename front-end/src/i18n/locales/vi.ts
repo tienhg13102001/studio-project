@@ -45,6 +45,14 @@ const vi = {
     meetBadge: "Đội Ngũ",
     meetHeading: "Khám Phá Đội Ngũ",
   },
+  footer: {
+    tagline: "Studio sản xuất phim quảng cáo, TVC và nội dung sáng tạo — kể câu chuyện thương hiệu bằng hình ảnh điện ảnh.",
+    quickLinks: "Liên Kết Nhanh",
+    contact: "Liên Hệ",
+    hours: "Giờ Làm Việc",
+    followUs: "Theo Dõi",
+    rights: "Bản quyền © {year} BeeZ Production. Mọi quyền được bảo lưu.",
+  },
 } as const;
 
 export default vi;

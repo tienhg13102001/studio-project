@@ -45,6 +45,14 @@ const en = {
     meetBadge: "The Team",
     meetHeading: "Meet Our Team",
   },
+  footer: {
+    tagline: "A creative production studio crafting TVCs, brand films and social content — telling brand stories through cinematic visuals.",
+    quickLinks: "Quick Links",
+    contact: "Contact",
+    hours: "Working Hours",
+    followUs: "Follow Us",
+    rights: "© {year} BeeZ Production. All rights reserved.",
+  },
 } as const;
 
 export default en;
