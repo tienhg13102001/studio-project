@@ -1,16 +1,19 @@
+import MediaPlayer from "#components/molecules/MediaPlayer";
 import { Button } from "#components/ui/button";
 import type { ProjectDisplay } from "#hooks/useProjects";
 import { cn } from "#lib/utils";
 import {
   ArrowLeftIcon,
   ArrowRightIcon,
+  CaretDownIcon,
   EyeIcon,
   FilmReelIcon,
+  LinkIcon,
   MapPinIcon,
   PlayCircleIcon,
   XIcon,
 } from "@phosphor-icons/react";
-import { useState, type CSSProperties, type FC } from "react";
+import { useRef, useState, type CSSProperties, type FC } from "react";
 
 type Props = {
   project: ProjectDisplay;
@@ -19,8 +22,21 @@ type Props = {
 
 const ProjectDetail: FC<Props> = ({ project, onClose }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [isPlayVideo, setIsPlayVideo] = useState(false);
+  const [isSheetExpanded, setIsSheetExpanded] = useState(false);
+  const sheetTouchStartY = useRef<number | null>(null);
   const totalImages = project?.photos?.length || 0;
+
+  const handleSheetTouchStart = (e: React.TouchEvent) => {
+    sheetTouchStartY.current = e.touches[0].clientY;
+  };
+
+  const handleSheetTouchEnd = (e: React.TouchEvent) => {
+    if (sheetTouchStartY.current === null) return;
+    const delta = e.changedTouches[0].clientY - sheetTouchStartY.current;
+    if (delta < -30) setIsSheetExpanded(true);
+    else if (delta > 30) setIsSheetExpanded(false);
+    sheetTouchStartY.current = null;
+  };
 
   const handleNext = () => {
     if (currentIndex < totalImages - 1) {
@@ -81,106 +97,184 @@ const ProjectDetail: FC<Props> = ({ project, onClose }) => {
   };
 
   return (
-    <div className="bg-background/90 fixed z-50 flex h-dvh w-screen items-center justify-center overflow-hidden overflow-y-auto font-sans text-white transition-opacity duration-300">
+    <div className="bg-background/95 text-foreground fixed inset-0 z-50 flex h-dvh w-screen items-start justify-center overflow-hidden overflow-y-auto font-sans transition-opacity duration-300 lg:items-center">
       {/* Icon close */}
       <Button
         onClick={onClose}
-        className="absolute top-6 right-6 h-10 w-10 rounded-full bg-white/10 p-3 text-white backdrop-blur-md transition-colors hover:bg-white/20"
+        className="bg-foreground/10 text-foreground hover:bg-foreground/20 fixed top-6 right-6 z-60 h-10 w-10 rounded-full p-3 backdrop-blur-md transition-colors"
       >
         <XIcon size={20} />
       </Button>
-      {/* Container chính */}
+
+      {/* MOBILE LAYOUT */}
+      <div className="relative h-dvh w-full overflow-hidden lg:hidden">
+        {/* Background: Video / Thumbnail (full screen) */}
+        <div className="absolute inset-0 flex items-center justify-center bg-black">
+          {project.video ? (
+            <MediaPlayer
+              src={project.video}
+              poster={project.thumbnailImage}
+              alt={project.title}
+              className="h-full w-full"
+              videoClassName="object-cover"
+            />
+          ) : (
+            <img
+              src={project.thumbnailImage}
+              alt={project.title}
+              className="h-full w-full object-cover"
+            />
+          )}
+        </div>
+
+        {/* Draggable Bottom Sheet */}
+        <div
+          className="bg-card/95 text-card-foreground absolute right-0 bottom-0 left-0 z-40 flex flex-col rounded-t-3xl backdrop-blur-md transition-transform duration-300 ease-out"
+          style={{
+            height: "85dvh",
+            transform: isSheetExpanded ? "translateY(0)" : "translateY(calc(100% - 130px))",
+          }}
+        >
+          {/* Drag handle + Header (peek area, always visible) */}
+          <div
+            onTouchStart={handleSheetTouchStart}
+            onTouchEnd={handleSheetTouchEnd}
+            className="shrink-0 touch-none select-none"
+          >
+            <div className="flex justify-center pt-3 pb-2">
+              <div className="bg-muted-foreground/40 h-1 w-10 rounded-full" />
+            </div>
+
+            <div className="flex items-start justify-between gap-3 px-5 pb-3">
+              <div className="flex min-w-0 flex-1 items-start gap-3">
+                <div className="bg-foreground/10 flex h-12 w-12 shrink-0 items-center justify-center rounded-xl">
+                  <FilmReelIcon size={22} className="text-foreground" />
+                </div>
+                <div className="min-w-0 flex-1 pt-0.5">
+                  <h1 className="text-foreground truncate text-base font-bold">{project.title}</h1>
+                  <div className="mt-1.5 flex items-center gap-2">
+                    {project.subtitle && (
+                      <span className="text-muted-foreground truncate text-xs">
+                        {project.subtitle}
+                      </span>
+                    )}
+                    {project.tag && (
+                      <span className="bg-primary/20 text-primary inline-block rounded-md px-2 py-0.5 text-[11px] font-medium">
+                        {project.tag}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </div>
+              <div className="flex shrink-0 items-center gap-2">
+                <button
+                  type="button"
+                  className="bg-foreground/10 text-foreground hover:bg-foreground/20 flex h-9 w-9 items-center justify-center rounded-full transition-colors"
+                >
+                  <LinkIcon size={16} />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setIsSheetExpanded((v) => !v)}
+                  className="bg-foreground/10 text-foreground hover:bg-foreground/20 flex h-9 w-9 items-center justify-center rounded-full transition-colors"
+                >
+                  <CaretDownIcon
+                    size={16}
+                    className={cn(
+                      "transition-transform duration-300",
+                      !isSheetExpanded && "rotate-180",
+                    )}
+                  />
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Scrollable expanded content */}
+          <div className="flex-1 overflow-y-auto px-5 pb-10">
+            <div className="mt-4">
+              <h3 className="text-muted-foreground mb-2 text-xs font-semibold tracking-wider uppercase">
+                About
+              </h3>
+              <p className="text-foreground/80 text-sm leading-relaxed">{project.subtitle}</p>
+            </div>
+
+            {project.photos && totalImages > 0 && (
+              <>
+                <div className="border-border my-6 border-t" />
+                <div>
+                  <h3 className="text-muted-foreground mb-3 text-xs font-semibold tracking-wider uppercase">
+                    Behind the Scenes
+                  </h3>
+                  <div className="-mx-5 flex gap-2 overflow-x-auto px-5 pb-2">
+                    {project.photos.map((image, idx) => (
+                      <img
+                        key={idx}
+                        src={image}
+                        alt={`Behind the scenes ${idx + 1}`}
+                        className="h-24 w-20 shrink-0 rounded-lg object-cover"
+                      />
+                    ))}
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* DESKTOP LAYOUT */}
       <div
         className={cn(
-          "relative flex w-full flex-col items-center gap-5 px-8 pb-40 lg:flex-row lg:gap-10 lg:pb-0",
+          "relative hidden w-full items-center gap-10 px-8 lg:flex lg:flex-row",
           totalImages > 0 ? "lg:justify-start" : "lg:justify-center",
         )}
       >
         {/* CỘT TRÁI: VIDEO NẾU CÓ */}
         {project.video && (
           <div className="relative flex w-full justify-center lg:w-1/3">
-            {isPlayVideo ? (
-              <video
-                src={project.video}
-                controls
-                autoPlay /* THÊM THUỘC TÍNH NÀY ĐỂ VIDEO TỰ CHẠY */
-                className="h-full max-h-[80vh] w-auto rounded-2xl object-cover shadow-2xl"
-              />
-            ) : (
-              <>
-                {/* Nhóm thẻ img và nút Play vào chung phần điều kiện false */}
-                <img
-                  src={project.thumbnailImage}
-                  alt="Thumbnail"
-                  className="h-auto max-h-[80vh] w-full rounded-2xl object-cover shadow-2xl"
-                />
-
-                {/* Nút play giờ chỉ hiện khi isPlayVideo là false */}
-                <Button
-                  className="bg-primary absolute inset-0 m-auto flex h-16 w-16 items-center justify-center rounded-full text-black backdrop-blur-md transition-colors hover:bg-yellow-500"
-                  onClick={() => setIsPlayVideo(true)}
-                >
-                  <PlayCircleIcon size={32} />
-                </Button>
-              </>
-            )}
+            <MediaPlayer
+              src={project.video}
+              poster={project.thumbnailImage}
+              alt={project.title}
+              className="max-h-[80vh] w-full rounded-2xl shadow-2xl"
+              videoClassName="object-cover"
+            />
           </div>
         )}
         {/* CỘT GIỮA: THÔNG TIN (Info Column) */}
         <div className="border-border z-30 flex h-fit w-full flex-col justify-center space-y-8 rounded-3xl border px-10 py-20 backdrop-blur-sm lg:w-1/3">
           {/* Header Info */}
           <div>
-            <span className="mb-4 inline-block rounded-md bg-yellow-500/20 px-3 py-1 text-sm font-medium text-yellow-500">
+            <span className="bg-primary/20 text-primary mb-4 inline-block rounded-md px-3 py-1 text-sm font-medium">
               {project.tag}
             </span>
-            <h1 className="mb-4 flex items-center gap-3 text-4xl font-bold">
-              <span className="rounded-lg bg-white/10 p-2">
-                <FilmReelIcon size={24} className="text-white" />
+            <h1 className="text-foreground mb-4 flex items-center gap-3 text-4xl font-bold">
+              <span className="bg-foreground/10 rounded-lg p-2">
+                <FilmReelIcon size={24} className="text-foreground" />
               </span>
               {project.title}
             </h1>
 
-            <div className="flex flex-wrap items-center gap-6 text-sm text-gray-400">
+            <div className="text-muted-foreground flex flex-wrap items-center gap-6 text-sm">
               <div className="flex items-center gap-2">
                 <MapPinIcon size={16} /> {project.id}
               </div>
-              {/* <div className="flex items-center gap-2">
-                <Calendar size={16} /> {project.year}
-              </div>
-              <div className="flex items-center gap-2">
-                <Clock size={16} /> {project.duration}
-              </div> */}
             </div>
           </div>
 
-          <div className="border-0.5 border" />
+          <div className="border-border border-t" />
 
           {/* About */}
           <div>
-            <h3 className="mb-2 text-sm font-semibold tracking-wider text-gray-400 uppercase">
+            <h3 className="text-muted-foreground mb-2 text-sm font-semibold tracking-wider uppercase">
               About
             </h3>
-            <p className="text-sm leading-relaxed text-gray-300">{project.subtitle}</p>
+            <p className="text-foreground/80 text-sm leading-relaxed">{project.subtitle}</p>
           </div>
 
-          {/* Production Team */}
-          {/* <div>
-            <h3 className="text-sm font-semibold tracking-wider text-gray-400 mb-4 uppercase">Production Team</h3>
-            <div className="space-y-3 text-sm">
-              {project.crew.map((member, idx) => (
-                <div key={idx} className="flex justify-between items-center border-b border-gray-800 pb-2">
-                  <div className="flex items-center gap-3 text-gray-400">
-                    {member.icon}
-                    <span>{member.role}</span>
-                  </div>
-                  <span className="text-gray-200">{member.name}</span>
-                </div>
-              ))}
-            </div>
-          </div> */}
-
           {/* Action Button */}
-          <button className="flex w-full items-center justify-center gap-2 rounded-lg bg-yellow-600 py-3 font-semibold text-black transition-colors hover:bg-yellow-500">
+          <button className="bg-primary text-primary-foreground hover:bg-primary/90 flex w-full items-center justify-center gap-2 rounded-lg py-3 font-semibold transition-colors">
             Watch More <PlayCircleIcon size={20} />
           </button>
         </div>
@@ -188,39 +282,38 @@ const ProjectDetail: FC<Props> = ({ project, onClose }) => {
         {/* CỘT PHẢI: SLIDER HÌNH ẢNH (Slider Column) */}
         {project.photos && totalImages > 0 && (
           <div className="relative flex h-100 w-full items-center lg:h-150 lg:w-1/3">
-            {/* Khu vực chứa các thẻ ảnh (Perspective để tạo chiều sâu nếu cần, ở đây dùng 2D transform cho đơn giản và mượt) */}
+            {/* Khu vực chứa các thẻ ảnh */}
             <div className="relative flex h-full w-full items-center justify-center md:h-[80%]">
               {project.photos.map((image, index) => {
                 const overlayOpacity = Math.min(Math.max(index - currentIndex, 0) * 0.3, 0.85);
                 return (
                   <div
                     key={index}
-                    className="absolute top-0 left-0 h-full w-full origin-center overflow-hidden rounded-2xl bg-gray-900 shadow-2xl transition-all duration-700 ease-[cubic-bezier(0.25,1,0.5,1)] "
+                    className="bg-muted absolute top-0 left-0 h-full w-full origin-center overflow-hidden rounded-2xl shadow-2xl transition-all duration-700 ease-[cubic-bezier(0.25,1,0.5,1)]"
                     style={getCardStyle(index)}
                   >
-                    {/* Hình nền */}
                     <img src={image} alt={image} className="h-full w-full object-cover" />
 
-                    {/* Lớp phủ gradient để dễ đọc text */}
+                    {/* Gradient để dễ đọc text trên ảnh - giữ đen vì luôn nằm trên ảnh */}
                     <div className="absolute inset-0 bg-linear-to-t from-black/80 via-transparent to-black/20"></div>
 
-                    {/* Lớp phủ đen — tối dần theo khoảng cách */}
+                    {/* Lớp phủ đen tối dần theo khoảng cách */}
                     <div
                       className="absolute inset-0 bg-black transition-all duration-700"
                       style={{ opacity: overlayOpacity }}
                     ></div>
 
-                    {/* Số thứ tự góc trên phải */}
+                    {/* Số thứ tự - giữ trắng vì luôn trên ảnh */}
                     <div className="absolute top-4 right-4 rounded-full bg-black/50 px-3 py-1 text-sm font-medium tracking-widest text-white backdrop-blur-sm">
                       {index + 1} / {totalImages}
                     </div>
 
-                    {/* Tiêu đề & Icon ở góc dưới */}
+                    {/* Tiêu đề & Icon - giữ trắng vì luôn trên ảnh */}
                     <div className="absolute right-6 bottom-6 left-6 flex items-end justify-between">
-                      <h2 className="text-xl font-semibold text-white shadow-sm md:text-2xl">
+                      <h2 className="text-xl font-semibold text-white drop-shadow-sm md:text-2xl">
                         {project.title}
                       </h2>
-                      <button className="rounded-full bg-black/40 p-3 backdrop-blur-md transition-colors hover:bg-white/20">
+                      <button className="rounded-full bg-black/40 p-3 backdrop-blur-md transition-colors hover:bg-black/60">
                         <EyeIcon size={20} className="text-white" />
                       </button>
                     </div>
@@ -229,46 +322,50 @@ const ProjectDetail: FC<Props> = ({ project, onClose }) => {
               })}
             </div>
 
-            {/* Điều hướng (Navigation Controls) - Căn giữa ở dưới cùng */}
+            {/* Navigation Controls */}
             <div className="absolute -bottom-20 left-0 z-40 flex w-full flex-col items-center gap-4 md:-bottom-10">
-              {/* Nút bấm */}
               <div className="flex items-center gap-6">
                 <button
                   onClick={handlePrev}
                   disabled={currentIndex === 0}
-                  className={`flex items-center justify-center rounded-full p-3 transition-all ${
+                  className={cn(
+                    "flex items-center justify-center rounded-full p-3 transition-all",
                     currentIndex === 0
-                      ? "cursor-not-allowed bg-gray-800/50 text-gray-600"
-                      : "bg-white/10 text-white backdrop-blur-md hover:bg-white/20"
-                  }`}
+                      ? "bg-muted text-muted-foreground/50 cursor-not-allowed"
+                      : "bg-foreground/10 text-foreground hover:bg-foreground/20 backdrop-blur-md",
+                  )}
                 >
                   <ArrowLeftIcon size={24} />
                 </button>
 
-                <span className="text-sm tracking-widest text-gray-400 uppercase">
+                <span className="text-muted-foreground text-sm tracking-widest uppercase">
                   Click arrows
                 </span>
 
                 <button
                   onClick={handleNext}
                   disabled={currentIndex === totalImages - 1}
-                  className={`flex items-center justify-center rounded-full p-3 transition-all ${
+                  className={cn(
+                    "flex items-center justify-center rounded-full p-3 transition-all",
                     currentIndex === totalImages - 1
-                      ? "cursor-not-allowed bg-gray-800/50 text-gray-600"
-                      : "bg-white/10 text-white backdrop-blur-md hover:bg-white/20"
-                  }`}
+                      ? "bg-muted text-muted-foreground/50 cursor-not-allowed"
+                      : "bg-foreground/10 text-foreground hover:bg-foreground/20 backdrop-blur-md",
+                  )}
                 >
                   <ArrowRightIcon size={24} />
                 </button>
               </div>
 
-              {/* Dấu chấm chỉ báo (Dots indicator) */}
+              {/* Dots */}
               <div className="flex items-center gap-2">
                 {project.photos &&
                   project.photos.map((_, idx) => (
                     <div
                       key={idx}
-                      className={`h-1.5 rounded-full transition-all duration-300 ${idx === currentIndex ? "bg-primary w-6" : "w-1.5 bg-gray-600"}`}
+                      className={cn(
+                        "h-1.5 rounded-full transition-all duration-300",
+                        idx === currentIndex ? "bg-primary w-6" : "bg-muted-foreground/40 w-1.5",
+                      )}
                     />
                   ))}
               </div>
