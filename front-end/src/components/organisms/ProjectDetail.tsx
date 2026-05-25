@@ -90,7 +90,7 @@ const ProjectDetail: FC<Props> = ({ project, onClose }) => {
         <XIcon size={20} />
       </Button>
       {/* Container chính */}
-      <div className={cn('relative flex w-full flex-col items-center gap-5 px-8 lg:flex-row lg:gap-10 pb-40', totalImages > 0 ? "lg:justify-start" : "lg:justify-center")}>
+      <div className={cn('relative flex w-full flex-col items-center gap-5 px-8 lg:flex-row lg:gap-10 pb-40 lg:pb-0', totalImages > 0 ? "lg:justify-start" : "lg:justify-center")}>
         {/* CỘT TRÁI: VIDEO NẾU CÓ */}
         {project.video && (
           <div className="relative flex w-full justify-center lg:w-1/2">
