@@ -88,8 +88,8 @@ const ContactPage: React.FC = () => {
       { key: "zalo", icon: <LogoZalo className="h-4 w-4" />, label: "Zalo" },
     ];
 
-  const inputClass =
-    "w-full rounded-lg border border-border bg-background/60 px-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-colors";
+  // const inputClass =
+  //   "w-full rounded-lg border border-border bg-background/60 px-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-colors";
 
   return (
     <div className="min-h-screen">
