@@ -1,6 +1,6 @@
+import { resolveAssetUrl, uploadVideo } from "#lib/api";
+import { FilmStripIcon } from "@phosphor-icons/react";
 import { useRef, useState } from "react";
-import { UploadSimpleIcon, FilmStripIcon } from "@phosphor-icons/react";
-import { uploadVideo, resolveAssetUrl } from "#lib/api";
 
 export type VideoUploadProps = {
   value: string;
