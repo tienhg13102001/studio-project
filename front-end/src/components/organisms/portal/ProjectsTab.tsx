@@ -3,14 +3,36 @@ import ImageUpload from "#components/ui/portal/ImageUpload";
 import ImagesUpload from "#components/ui/portal/ImagesUpload";
 import { TableSkeleton } from "#components/ui/portal/TableSkeleton";
 import VideoUpload from "#components/ui/portal/VideoUpload";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "#components/ui/alert-dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "#components/ui/alert-dialog";
 import { Badge } from "#components/ui/badge";
 import { Button } from "#components/ui/button";
 import { Checkbox } from "#components/ui/checkbox";
 import { Input } from "#components/ui/input";
 import { Label } from "#components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "#components/ui/select";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "#components/ui/table";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "#components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "#components/ui/table";
 import type { ProjectDisplay } from "#hooks/useProjects";
 import { apiDelete, apiPost, apiPut } from "#lib/api";
 import type { ApiProject, ApiService, ApiServiceTag } from "#lib/apiTypes";
@@ -156,6 +178,7 @@ export default function ProjectsTab({ data, raw, services, loading, onRefetch }:
   const set = (k: keyof ProjectForm, v: unknown) => setForm((f) => (f ? { ...f, [k]: v } : f));
 
   if (loading) return <TableSkeleton cols={5} rows={5} />;
+  console.log(data)
 
   return (
     <>
@@ -213,7 +236,7 @@ export default function ProjectsTab({ data, raw, services, loading, onRefetch }:
                         variant="outline"
                         size="xs"
                         onClick={() => openEdit(p.id)}
-                        className="border-white/10 text-white/50 hover:border-primary/40 hover:text-primary"
+                        className="hover:border-primary/40 hover:text-primary border-white/10 text-white/50"
                       >
                         <PencilSimpleIcon size={11} />
                         Edit
@@ -223,7 +246,10 @@ export default function ProjectsTab({ data, raw, services, loading, onRefetch }:
                         size="icon-xs"
                         onClick={() => {
                           const r = (raw ?? []).find((x) => x.id === p.id);
-                          if (r) { setConfirmDelete(r); setDeleteError(null); }
+                          if (r) {
+                            setConfirmDelete(r);
+                            setDeleteError(null);
+                          }
                         }}
                         className="border border-white/10 text-white/50 hover:border-red-500/50 hover:text-red-400"
                         title="Delete project"
@@ -248,7 +274,11 @@ export default function ProjectsTab({ data, raw, services, loading, onRefetch }:
         saving={saving}
         onDelete={
           editing
-            ? () => { setConfirmDelete(editing); setDeleteError(null); closeEdit(); }
+            ? () => {
+                setConfirmDelete(editing);
+                setDeleteError(null);
+                closeEdit();
+              }
             : undefined
         }
         deleting={deleting}
@@ -292,7 +322,10 @@ export default function ProjectsTab({ data, raw, services, loading, onRefetch }:
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <Label>Layout</Label>
-                    <Select value={form.layout} onValueChange={(v) => set("layout", v as "vertical" | "horizontal")}>
+                    <Select
+                      value={form.layout}
+                      onValueChange={(v) => set("layout", v as "vertical" | "horizontal")}
+                    >
                       <SelectTrigger>
                         <SelectValue />
                       </SelectTrigger>
@@ -345,7 +378,8 @@ export default function ProjectsTab({ data, raw, services, loading, onRefetch }:
           <AlertDialogHeader>
             <AlertDialogTitle>Delete project?</AlertDialogTitle>
             <AlertDialogDescription>
-              "<span className="text-white/80">{confirmDelete?.title}</span>" will be permanently deleted.
+              "<span className="text-white/80">{confirmDelete?.title}</span>" will be permanently
+              deleted.
             </AlertDialogDescription>
           </AlertDialogHeader>
           {deleteError && <p className="text-xs text-red-400">{deleteError}</p>}
