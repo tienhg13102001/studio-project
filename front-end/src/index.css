@@ -151,12 +151,13 @@
   }
 
   /* Marquee animations for FeatureSection */
+  /* translateX(-25%) = exactly 1 copy width out of 4 copies → seamless loop */
   @keyframes marquee-left {
     from { transform: translateX(0); }
-    to   { transform: translateX(-50%); }
+    to   { transform: translateX(-25%); }
   }
   @keyframes marquee-right {
-    from { transform: translateX(-50%); }
+    from { transform: translateX(-25%); }
     to   { transform: translateX(0); }
   }
   .animate-marquee-left {
