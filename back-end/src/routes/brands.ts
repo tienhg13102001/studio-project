@@ -4,11 +4,11 @@ import { Brand } from "../models/Brand.ts";
 
 const router = Router();
 
-/** GET /api/brands — active brands sorted by order, features populated */
+/** GET /api/brands — active brands sorted by order, projects populated */
 router.get("/", async (_req, res, next) => {
   try {
     const brands = await Brand.find({ active: true })
-      .populate("features")
+      .populate("projects")
       .sort({ order: 1 });
     sendSuccess(res, brands);
   } catch (e) {
