@@ -134,6 +134,8 @@ const ProjectDetail: FC<Props> = ({ project, onClose }) => {
             height: "85dvh",
             transform: isSheetExpanded ? "translateY(0)" : "translateY(calc(100% - 130px))",
           }}
+          onTouchStart={handleSheetTouchStart}
+          onTouchEnd={handleSheetTouchEnd}
         >
           {/* Drag handle + Header (peek area, always visible) */}
           <div
