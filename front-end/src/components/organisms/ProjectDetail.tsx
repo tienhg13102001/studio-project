@@ -21,7 +21,6 @@ const ProjectDetail: FC<Props> = ({ project, onClose }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPlayVideo, setIsPlayVideo] = useState(false);
   const totalImages = project?.photos?.length || 0;
-  console.log("🚀 ~ ProjectDetail ~ totalImages:", totalImages)
 
   const handleNext = () => {
     if (currentIndex < totalImages - 1) {
@@ -82,7 +81,7 @@ const ProjectDetail: FC<Props> = ({ project, onClose }) => {
   };
 
   return (
-    <div className="bg-background/90 fixed z-50 flex h-dvh w-screen items-center justify-center overflow-hidden font-sans text-white transition-opacity duration-300">
+    <div className="bg-background/90 fixed z-50 flex h-dvh w-screen items-center justify-center overflow-hidden font-sans text-white transition-opacity duration-300 overflow-y-auto">
       {/* Icon close */}
       <Button
         onClick={onClose}
@@ -91,7 +90,7 @@ const ProjectDetail: FC<Props> = ({ project, onClose }) => {
         <XIcon size={20} />
       </Button>
       {/* Container chính */}
-      <div className={cn('relative flex w-full flex-col items-center gap-5 px-8 lg:flex-row lg:gap-10', totalImages > 0 ? "lg:justify-start" : "lg:justify-center")}>
+      <div className={cn('relative flex w-full flex-col items-center gap-5 px-8 lg:flex-row lg:gap-10 pb-40', totalImages > 0 ? "lg:justify-start" : "lg:justify-center")}>
         {/* CỘT TRÁI: VIDEO NẾU CÓ */}
         {project.video && (
           <div className="relative flex w-full justify-center lg:w-1/2">
