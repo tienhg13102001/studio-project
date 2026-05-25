@@ -31,6 +31,7 @@ export type Project = {
   title: string;
   subtitle: string;
   video?: string; // optional, path to video file
+  photos?: string[]; // optional, list of product photo paths
 };
 
 export type ProjectsContent = {

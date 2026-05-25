@@ -7,12 +7,17 @@ import { TableSkeleton } from "#components/ui/portal/TableSkeleton";
 import EditModal from "#components/ui/portal/EditModal";
 import ImageUpload from "#components/ui/portal/ImageUpload";
 import AutoTextarea from "#components/ui/portal/AutoTextarea";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "#components/ui/alert-dialog";
+import { Badge } from "#components/ui/badge";
+import { Button } from "#components/ui/button";
+import { Checkbox } from "#components/ui/checkbox";
+import { Input } from "#components/ui/input";
+import { Label } from "#components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "#components/ui/select";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "#components/ui/table";
 
-const inp =
-  "w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/30 focus:border-primary/50 focus:outline-none transition-colors";
-const sel =
-  "w-full rounded-lg border border-white/10 bg-[#1a1a1a] px-3 py-2 text-sm text-white focus:border-primary/50 focus:outline-none transition-colors";
-const lbl = "block text-xs font-medium text-white/50 mb-1.5";
+// ─── ROLE_COLOR badge variant mapping ─────────────────────────────────────────
+// ROLE_COLOR from portal.types is used as className string still for TeamTable badge
 
 // ─── TeamTable (also used by OverviewTab) ────────────────────────────────────
 
@@ -31,20 +36,18 @@ export function TeamTable({ data, loading, preview, onEdit, onDelete }: TablePro
 
   return (
     <div className="overflow-hidden rounded-xl border border-white/8">
-      <table className="w-full text-sm">
-        <thead className="border-b border-white/8 bg-white/3">
-          <tr>
+      <Table>
+        <TableHeader>
+          <TableRow className="hover:bg-transparent">
             {["Member", "Role", "Skills", "Account Role", "Status", ...(onEdit ? [""] : [])].map((h) => (
-              <th key={h} className="px-4 py-3 text-left text-xs font-medium text-white/40">
-                {h}
-              </th>
+              <TableHead key={h}>{h}</TableHead>
             ))}
-          </tr>
-        </thead>
-        <tbody>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
           {rows.map((u) => (
-            <tr key={u.id} className="border-b border-white/5 last:border-0 transition-colors hover:bg-white/3">
-              <td className="px-4 py-3">
+            <TableRow key={u.id}>
+              <TableCell>
                 <div className="flex items-center gap-3">
                   {u.photo ? (
                     <img src={resolveAssetUrl(u.photo)} alt={u.name} className="h-8 w-8 rounded-full object-cover" />
@@ -58,57 +61,59 @@ export function TeamTable({ data, loading, preview, onEdit, onDelete }: TablePro
                     {u.featured && <p className="text-[10px] text-primary">Featured</p>}
                   </div>
                 </div>
-              </td>
-              <td className="px-4 py-3 text-xs text-white/60">{u.role.en}</td>
-              <td className="px-4 py-3">
+              </TableCell>
+              <TableCell className="text-xs text-white/60">{u.role.en}</TableCell>
+              <TableCell>
                 <div className="flex flex-wrap gap-1">
                   {u.skills.slice(0, 2).map((s) => (
-                    <span key={s} className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[10px] text-white/50">
-                      {s}
-                    </span>
+                    <Badge key={s} variant="default" className="text-[10px]">{s}</Badge>
                   ))}
                   {u.skills.length > 2 && (
                     <span className="text-[10px] text-white/30">+{u.skills.length - 2}</span>
                   )}
                 </div>
-              </td>
-              <td className="px-4 py-3">
+              </TableCell>
+              <TableCell>
                 <span className={`rounded-full border px-2 py-0.5 text-[10px] font-medium ${ROLE_COLOR[u.accountRole] ?? ""}`}>
                   {u.accountRole}
                 </span>
-              </td>
-              <td className="px-4 py-3">
+              </TableCell>
+              <TableCell>
                 <span className="inline-flex items-center gap-1 text-[10px] text-emerald-400">
                   <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
                   Active
                 </span>
-              </td>
+              </TableCell>
               {onEdit && (
-                <td className="px-4 py-3">
+                <TableCell>
                   <div className="flex items-center gap-2">
-                    <button
+                    <Button
+                      variant="outline"
+                      size="xs"
                       onClick={() => onEdit(u)}
-                      className="flex items-center gap-1 rounded-lg border border-white/10 px-2.5 py-1.5 text-[10px] text-white/50 transition-colors hover:border-primary/40 hover:text-primary"
+                      className="border-white/10 text-white/50 hover:border-primary/40 hover:text-primary"
                     >
                       <PencilSimpleIcon size={11} />
                       Edit
-                    </button>
+                    </Button>
                     {onDelete && (
-                      <button
+                      <Button
+                        variant="ghost"
+                        size="icon-xs"
                         onClick={() => onDelete(u)}
-                        className="flex items-center gap-1 rounded-lg border border-white/10 px-2.5 py-1.5 text-[10px] text-white/50 transition-colors hover:border-red-500/50 hover:text-red-400"
+                        className="border border-white/10 text-white/50 hover:border-red-500/50 hover:text-red-400"
                         title="Delete user"
                       >
                         <TrashIcon size={11} />
-                      </button>
+                      </Button>
                     )}
                   </div>
-                </td>
+                </TableCell>
               )}
-            </tr>
+            </TableRow>
           ))}
-        </tbody>
-      </table>
+        </TableBody>
+      </Table>
     </div>
   );
 }
@@ -236,18 +241,23 @@ export default function TeamTab({ data, loading, onRefetch }: TabProps) {
 
   return (
     <>
+      {/* ── Header ── */}
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-semibold text-white">Team Members</h2>
-        <button
-          onClick={openCreate}
-          className="flex items-center gap-1.5 rounded-lg bg-primary px-3 py-1.5 text-xs font-medium text-black transition-all hover:opacity-80"
-        >
+        <Button size="sm" onClick={openCreate} className="bg-primary text-black hover:opacity-80">
           <PlusIcon size={12} weight="bold" />
           Add member
-        </button>
+        </Button>
       </div>
-      <TeamTable data={data} loading={loading} onEdit={openEdit} onDelete={(u) => { setConfirmDelete(u); setDeleteError(null); }} />
 
+      <TeamTable
+        data={data}
+        loading={loading}
+        onEdit={openEdit}
+        onDelete={(u) => { setConfirmDelete(u); setDeleteError(null); }}
+      />
+
+      {/* ── Edit Modal ── */}
       <EditModal
         title={creating ? "Add member" : `Edit — ${editing?.name ?? ""}`}
         isOpen={!!editing || creating}
@@ -258,23 +268,22 @@ export default function TeamTab({ data, loading, onRefetch }: TabProps) {
         {form && (
           <>
             <div className="grid grid-cols-1 gap-6 md:grid-cols-[3fr_2fr]">
-              {/* ── Left: text fields ─────────────────── */}
+              {/* ── Left: text fields ───────────────── */}
               <div className="flex flex-col gap-4">
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className={lbl}>Name</label>
-                    <input className={inp} value={form.name} onChange={(e) => set("name", e.target.value)} />
+                    <Label>Name</Label>
+                    <Input value={form.name} onChange={(e) => set("name", e.target.value)} />
                   </div>
                   <div>
-                    <label className={lbl}>Email</label>
-                    <input className={inp} type="email" value={form.email} onChange={(e) => set("email", e.target.value)} />
+                    <Label>Email</Label>
+                    <Input type="email" value={form.email} onChange={(e) => set("email", e.target.value)} />
                   </div>
                 </div>
                 {creating && (
                   <div>
-                    <label className={lbl}>Password</label>
-                    <input
-                      className={inp}
+                    <Label>Password</Label>
+                    <Input
                       type="password"
                       autoComplete="new-password"
                       value={form.password}
@@ -284,72 +293,73 @@ export default function TeamTab({ data, loading, onRefetch }: TabProps) {
                 )}
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className={lbl}>Role in team (EN)</label>
-                    <input className={inp} value={form.roleEn} onChange={(e) => set("roleEn", e.target.value)} />
+                    <Label>Role in team (EN)</Label>
+                    <Input value={form.roleEn} onChange={(e) => set("roleEn", e.target.value)} />
                   </div>
                   <div>
-                    <label className={lbl}>Role in team (VI)</label>
-                    <input className={inp} value={form.roleVi} onChange={(e) => set("roleVi", e.target.value)} />
-                  </div>
-                </div>
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className={lbl}>Quote (EN)</label>
-                    <input className={inp} value={form.quoteEn} onChange={(e) => set("quoteEn", e.target.value)} />
-                  </div>
-                  <div>
-                    <label className={lbl}>Quote (VI)</label>
-                    <input className={inp} value={form.quoteVi} onChange={(e) => set("quoteVi", e.target.value)} />
+                    <Label>Role in team (VI)</Label>
+                    <Input value={form.roleVi} onChange={(e) => set("roleVi", e.target.value)} />
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className={lbl}>Bio (EN)</label>
-                    <AutoTextarea className={inp} value={form.bioEn} onChange={(e) => set("bioEn", e.target.value)} />
+                    <Label>Quote (EN)</Label>
+                    <Input value={form.quoteEn} onChange={(e) => set("quoteEn", e.target.value)} />
                   </div>
                   <div>
-                    <label className={lbl}>Bio (VI)</label>
-                    <AutoTextarea className={inp} value={form.bioVi} onChange={(e) => set("bioVi", e.target.value)} />
+                    <Label>Quote (VI)</Label>
+                    <Input value={form.quoteVi} onChange={(e) => set("quoteVi", e.target.value)} />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <Label>Bio (EN)</Label>
+                    <AutoTextarea value={form.bioEn} onChange={(e) => set("bioEn", e.target.value)} />
+                  </div>
+                  <div>
+                    <Label>Bio (VI)</Label>
+                    <AutoTextarea value={form.bioVi} onChange={(e) => set("bioVi", e.target.value)} />
                   </div>
                 </div>
                 <div>
-                  <label className={lbl}>Skills (comma-separated)</label>
-                  <input
-                    className={inp}
+                  <Label>Skills (comma-separated)</Label>
+                  <Input
                     placeholder="React, TypeScript, …"
                     value={form.skills}
                     onChange={(e) => set("skills", e.target.value)}
                   />
                 </div>
                 <div>
-                  <label className={lbl}>Account Role</label>
-                  <select
-                    className={sel}
+                  <Label>Account Role</Label>
+                  <Select
                     value={form.accountRole}
-                    onChange={(e) => set("accountRole", e.target.value as TeamForm["accountRole"])}
+                    onValueChange={(v) => set("accountRole", v as TeamForm["accountRole"])}
                   >
-                    <option value="admin">admin</option>
-                    <option value="member">member</option>
-                    <option value="editor">editor</option>
-                  </select>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="admin">Admin</SelectItem>
+                      <SelectItem value="editor">Editor</SelectItem>
+                      <SelectItem value="member">Member</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
                 <div className="flex items-center gap-2">
-                  <input
+                  <Checkbox
                     id="team-featured"
-                    type="checkbox"
                     checked={form.featured}
-                    onChange={(e) => set("featured", e.target.checked)}
-                    className="h-4 w-4 accent-primary"
+                    onCheckedChange={(checked) => set("featured", !!checked)}
                   />
-                  <label htmlFor="team-featured" className="text-sm text-white/60">
+                  <label htmlFor="team-featured" className="text-sm text-white/60 cursor-pointer">
                     Featured member
                   </label>
                 </div>
               </div>
 
-              {/* ── Right: photo ──────────────────────── */}
+              {/* ── Right: photo ────────────────── */}
               <div>
-                <label className={lbl}>Photo</label>
+                <Label>Photo</Label>
                 <ImageUpload value={form.photo} onChange={(path) => set("photo", path)} />
               </div>
             </div>
@@ -359,40 +369,25 @@ export default function TeamTab({ data, loading, onRefetch }: TabProps) {
         )}
       </EditModal>
 
-      {/* Confirm delete modal */}
-      {confirmDelete && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm">
-          <div className="w-full max-w-md rounded-2xl border border-white/10 bg-[#161616] shadow-2xl">
-            <div className="border-b border-white/8 px-6 py-4">
-              <h3 className="font-semibold text-white">Delete user</h3>
-            </div>
-            <div className="px-6 py-5">
-              <p className="text-sm text-white/70">
-                Are you sure you want to delete{" "}
-                <span className="font-semibold text-white">{confirmDelete.name}</span>? This action
-                cannot be undone.
-              </p>
-              {deleteError && <p className="mt-3 text-xs text-red-400">{deleteError}</p>}
-            </div>
-            <div className="flex justify-end gap-3 border-t border-white/8 px-6 py-4">
-              <button
-                onClick={() => setConfirmDelete(null)}
-                disabled={deleting}
-                className="rounded-lg border border-white/10 px-4 py-2 text-sm text-white/60 transition-colors hover:border-white/30 hover:text-white disabled:opacity-50"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleDelete}
-                disabled={deleting}
-                className="rounded-lg bg-red-500 px-5 py-2 text-sm font-medium text-white transition-all hover:bg-red-600 disabled:opacity-50"
-              >
-                {deleting ? "Deleting…" : "Delete"}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* ── Confirm Delete Dialog ── */}
+      <AlertDialog open={!!confirmDelete} onOpenChange={(open) => !open && setConfirmDelete(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete user?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete{" "}
+              <span className="font-semibold text-white">{confirmDelete?.name}</span>? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          {deleteError && <p className="text-xs text-red-400">{deleteError}</p>}
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={deleting}>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete} disabled={deleting}>
+              {deleting ? "Deleting…" : "Delete"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 }

@@ -1,24 +1,27 @@
 import EditModal from "#components/ui/portal/EditModal";
 import ImageUpload from "#components/ui/portal/ImageUpload";
+import ImagesUpload from "#components/ui/portal/ImagesUpload";
 import { TableSkeleton } from "#components/ui/portal/TableSkeleton";
 import VideoUpload from "#components/ui/portal/VideoUpload";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "#components/ui/alert-dialog";
+import { Badge } from "#components/ui/badge";
+import { Button } from "#components/ui/button";
+import { Checkbox } from "#components/ui/checkbox";
+import { Input } from "#components/ui/input";
+import { Label } from "#components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "#components/ui/select";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "#components/ui/table";
 import type { ProjectDisplay } from "#hooks/useProjects";
 import { apiDelete, apiPost, apiPut } from "#lib/api";
 import type { ApiProject, ApiService, ApiServiceTag } from "#lib/apiTypes";
 import { PencilSimpleIcon, PlusIcon, TrashIcon } from "@phosphor-icons/react";
 import { useState } from "react";
 
-const inp =
-  "w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/30 focus:border-primary/50 focus:outline-none transition-colors";
-const sel =
-  "w-full rounded-lg border border-white/10 bg-[#1a1a1a] px-3 py-2 text-sm text-white focus:border-primary/50 focus:outline-none transition-colors";
-const lbl = "block text-xs font-medium text-white/50 mb-1.5";
-
-const TAG_COLORS: Record<string, string> = {
-  TVC: "bg-amber-500/15   text-amber-400   border-amber-500/30",
-  SHORT: "bg-blue-500/15    text-blue-400    border-blue-500/30",
-  "F&B": "bg-emerald-500/15 text-emerald-400 border-emerald-500/30",
-  INTERVIEW: "bg-violet-500/15  text-violet-400  border-violet-500/30",
+const TAG_VARIANT: Record<string, "amber" | "blue" | "emerald" | "violet"> = {
+  TVC: "amber",
+  SHORT: "blue",
+  "F&B": "emerald",
+  INTERVIEW: "violet",
 };
 
 // ─── Edit form ───────────────────────────────────────────────────────────────
@@ -29,8 +32,9 @@ type ProjectForm = {
   thumbnailImage: string;
   layout: "vertical" | "horizontal";
   prominent: boolean;
-  service: string; // service ObjectId
-  video: string; // optional, path to video file
+  service: string;
+  video: string;
+  photos: string[];
 };
 
 function toForm(f: ApiProject): ProjectForm {
@@ -46,6 +50,7 @@ function toForm(f: ApiProject): ProjectForm {
     prominent: f.prominent,
     service,
     video: f.video ?? "",
+    photos: f.photos ?? [],
   };
 }
 
@@ -58,6 +63,7 @@ function emptyProjectForm(): ProjectForm {
     prominent: false,
     service: "",
     video: "",
+    photos: [],
   };
 }
 
@@ -115,6 +121,7 @@ export default function ProjectsTab({ data, raw, services, loading, onRefetch }:
         prominent: form.prominent,
         service: form.service,
         video: form.video || undefined,
+        photos: form.photos,
       };
       if (creating) {
         await apiPost(`/api/projects`, payload);
@@ -148,40 +155,35 @@ export default function ProjectsTab({ data, raw, services, loading, onRefetch }:
 
   const set = (k: keyof ProjectForm, v: unknown) => setForm((f) => (f ? { ...f, [k]: v } : f));
 
-  if (loading) return <TableSkeleton cols={6} rows={5} />;
+  if (loading) return <TableSkeleton cols={5} rows={5} />;
 
   return (
     <>
+      {/* ── Header ── */}
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-semibold text-white">Projects</h2>
-        <button
-          onClick={openCreate}
-          className="bg-primary flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium text-black transition-all hover:opacity-80"
-        >
+        <Button size="sm" onClick={openCreate} className="bg-primary text-black hover:opacity-80">
           <PlusIcon size={12} weight="bold" />
           Add project
-        </button>
+        </Button>
       </div>
+
+      {/* ── Table ── */}
       <div className="overflow-hidden rounded-xl border border-white/8">
-        <table className="w-full text-sm">
-          <thead className="border-b border-white/8 bg-white/3">
-            <tr>
+        <Table>
+          <TableHeader>
+            <TableRow className="hover:bg-transparent">
               {["Project", "Tag", "Layout", "Prominent", ""].map((h) => (
-                <th key={h} className="px-4 py-3 text-left text-xs font-medium text-white/40">
-                  {h}
-                </th>
+                <TableHead key={h}>{h}</TableHead>
               ))}
-            </tr>
-          </thead>
-          <tbody>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
             {data.map((p) => {
               const rawItem = (raw ?? []).find((r) => r.id === p.id);
               return (
-                <tr
-                  key={p.id}
-                  className="border-b border-white/5 transition-colors last:border-0 hover:bg-white/3"
-                >
-                  <td className="px-4 py-3">
+                <TableRow key={p.id}>
+                  <TableCell>
                     <div className="flex items-center gap-3">
                       <img
                         src={p.thumbnailImage}
@@ -193,53 +195,51 @@ export default function ProjectsTab({ data, raw, services, loading, onRefetch }:
                         <p className="line-clamp-1 text-[10px] text-white/40">{p.subtitle}</p>
                       </div>
                     </div>
-                  </td>
-                  <td className="px-4 py-3">
-                    <span
-                      className={`rounded-full border px-2 py-0.5 text-[10px] font-medium ${TAG_COLORS[p.tag] ?? "border-white/20 bg-white/10 text-white/60"}`}
-                    >
-                      {p.tag}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3 text-xs text-white/60">{rawItem?.layout ?? "—"}</td>
-                  <td className="px-4 py-3">
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant={TAG_VARIANT[p.tag] ?? "default"}>{p.tag}</Badge>
+                  </TableCell>
+                  <TableCell className="text-xs text-white/60">{rawItem?.layout ?? "—"}</TableCell>
+                  <TableCell>
                     {rawItem?.prominent ? (
-                      <span className="text-primary text-[10px]">Yes</span>
+                      <Badge variant="primary">Yes</Badge>
                     ) : (
                       <span className="text-[10px] text-white/30">—</span>
                     )}
-                  </td>
-                  <td className="px-4 py-3">
+                  </TableCell>
+                  <TableCell>
                     <div className="flex items-center gap-2">
-                      <button
+                      <Button
+                        variant="outline"
+                        size="xs"
                         onClick={() => openEdit(p.id)}
-                        className="hover:border-primary/40 hover:text-primary flex items-center gap-1 rounded-lg border border-white/10 px-2.5 py-1.5 text-[10px] text-white/50 transition-colors"
+                        className="border-white/10 text-white/50 hover:border-primary/40 hover:text-primary"
                       >
                         <PencilSimpleIcon size={11} />
                         Edit
-                      </button>
-                      <button
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon-xs"
                         onClick={() => {
                           const r = (raw ?? []).find((x) => x.id === p.id);
-                          if (r) {
-                            setConfirmDelete(r);
-                            setDeleteError(null);
-                          }
+                          if (r) { setConfirmDelete(r); setDeleteError(null); }
                         }}
-                        className="flex items-center gap-1 rounded-lg border border-white/10 px-2.5 py-1.5 text-[10px] text-white/50 transition-colors hover:border-red-500/50 hover:text-red-400"
+                        className="border border-white/10 text-white/50 hover:border-red-500/50 hover:text-red-400"
                         title="Delete project"
                       >
                         <TrashIcon size={11} />
-                      </button>
+                      </Button>
                     </div>
-                  </td>
-                </tr>
+                  </TableCell>
+                </TableRow>
               );
             })}
-          </tbody>
-        </table>
+          </TableBody>
+        </Table>
       </div>
 
+      {/* ── Edit / Create Modal ── */}
       <EditModal
         title={creating ? "Add Project" : `Edit — ${editing?.title ?? "…"}`}
         isOpen={!!editing || creating}
@@ -248,88 +248,89 @@ export default function ProjectsTab({ data, raw, services, loading, onRefetch }:
         saving={saving}
         onDelete={
           editing
-            ? () => {
-                setConfirmDelete(editing);
-                setDeleteError(null);
-                closeEdit();
-              }
+            ? () => { setConfirmDelete(editing); setDeleteError(null); closeEdit(); }
             : undefined
         }
         deleting={deleting}
       >
         {form && (
           <>
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-              {/* ── Left: text + meta ─────────────────── */}
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-[2fr_1fr]">
+              {/* ── Left: text fields ── */}
               <div className="flex flex-col gap-4">
                 <div>
-                  <label className={lbl}>Title</label>
-                  <input
-                    className={inp}
+                  <Label>Title</Label>
+                  <Input
                     value={form.title}
                     onChange={(e) => set("title", e.target.value)}
+                    placeholder="Project title"
                   />
                 </div>
                 <div>
-                  <label className={lbl}>Subtitle</label>
-                  <input
-                    className={inp}
+                  <Label>Subtitle</Label>
+                  <Input
                     value={form.subtitle}
                     onChange={(e) => set("subtitle", e.target.value)}
+                    placeholder="Short description"
                   />
                 </div>
-                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                  <div>
-                    <label className={lbl}>Layout</label>
-                    <select
-                      className={sel}
-                      value={form.layout}
-                      onChange={(e) => set("layout", e.target.value as ProjectForm["layout"])}
-                    >
-                      <option value="vertical">vertical</option>
-                      <option value="horizontal">horizontal</option>
-                    </select>
-                  </div>
-                  <div>
-                    <div>
-                      <label className={lbl}>Video (optional)</label>
-                      <VideoUpload value={form.video} onChange={(v) => set("video", v)} />
-                    </div>
-                    <label className={lbl}>Service Tag</label>
-                    <select
-                      className={sel}
-                      value={form.service}
-                      onChange={(e) => set("service", e.target.value)}
-                    >
+                <div>
+                  <Label>Service</Label>
+                  <Select value={form.service} onValueChange={(v) => set("service", v)}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="— Select service —" />
+                    </SelectTrigger>
+                    <SelectContent>
                       {(services ?? []).map((s) => (
-                        <option key={s.id} value={s.id}>
-                          {s.tag} — {s.title.en}
-                        </option>
+                        <SelectItem key={s.id} value={s.id}>
+                          {s.title.en}
+                        </SelectItem>
                       ))}
-                    </select>
-                  </div>
+                    </SelectContent>
+                  </Select>
                 </div>
-                <div className="flex items-center gap-2">
-                  <input
-                    id="prominent"
-                    type="checkbox"
-                    checked={form.prominent}
-                    onChange={(e) => set("prominent", e.target.checked)}
-                    className="accent-primary h-4 w-4"
-                  />
-                  <label htmlFor="prominent" className="text-sm text-white/60">
-                    Prominent
-                  </label>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <Label>Layout</Label>
+                    <Select value={form.layout} onValueChange={(v) => set("layout", v as "vertical" | "horizontal")}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="vertical">Vertical</SelectItem>
+                        <SelectItem value="horizontal">Horizontal</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="flex flex-col justify-end pb-1">
+                    <label className="flex cursor-pointer items-center gap-2">
+                      <Checkbox
+                        checked={form.prominent}
+                        onCheckedChange={(checked) => set("prominent", !!checked)}
+                      />
+                      <span className="text-xs text-white/50">Prominent</span>
+                    </label>
+                  </div>
                 </div>
               </div>
 
-              {/* ── Right: image ──────────────────────── */}
-              <div>
-                <label className={lbl}>Thumbnail Image</label>
-                <ImageUpload
-                  value={form.thumbnailImage}
-                  onChange={(path) => set("thumbnailImage", path)}
-                />
+              {/* ── Right: thumbnail + video + photos ── */}
+              <div className="flex flex-col gap-4">
+                <div>
+                  <Label>Thumbnail Image</Label>
+                  <ImageUpload
+                    value={form.thumbnailImage}
+                    onChange={(path) => set("thumbnailImage", path)}
+                  />
+                </div>
+                <div>
+                  <Label>Video (optional)</Label>
+                  <VideoUpload value={form.video} onChange={(v) => set("video", v)} />
+                </div>
+                <div>
+                  <Label>Product Photos (optional)</Label>
+                  <ImagesUpload value={form.photos} onChange={(v) => set("photos", v)} />
+                </div>
               </div>
             </div>
 
@@ -338,33 +339,24 @@ export default function ProjectsTab({ data, raw, services, loading, onRefetch }:
         )}
       </EditModal>
 
-      {confirmDelete && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm">
-          <div className="w-full max-w-sm rounded-2xl border border-white/10 bg-[#161616] p-6 shadow-2xl">
-            <h3 className="mb-2 font-semibold text-white">Delete project?</h3>
-            <p className="mb-5 text-sm text-white/50">
-              “<span className="text-white/80">{confirmDelete.title}</span>” will be permanently
-              deleted.
-            </p>
-            {deleteError && <p className="mb-3 text-xs text-red-400">{deleteError}</p>}
-            <div className="flex justify-end gap-3">
-              <button
-                onClick={() => setConfirmDelete(null)}
-                className="rounded-lg border border-white/10 px-4 py-2 text-sm text-white/60 transition-colors hover:border-white/30 hover:text-white"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleDelete}
-                disabled={deleting}
-                className="rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-2 text-sm text-red-400 transition-colors hover:bg-red-500/20 disabled:opacity-50"
-              >
-                {deleting ? "Deleting…" : "Delete"}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* ── Confirm Delete Dialog ── */}
+      <AlertDialog open={!!confirmDelete} onOpenChange={(open) => !open && setConfirmDelete(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete project?</AlertDialogTitle>
+            <AlertDialogDescription>
+              "<span className="text-white/80">{confirmDelete?.title}</span>" will be permanently deleted.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          {deleteError && <p className="text-xs text-red-400">{deleteError}</p>}
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete} disabled={deleting}>
+              {deleting ? "Deleting…" : "Delete"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 }

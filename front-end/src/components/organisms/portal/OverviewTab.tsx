@@ -4,6 +4,7 @@ import type { ServiceDisplay } from "#hooks/useServices";
 import type { ProjectDisplay } from "#hooks/useProjects";
 import { TeamTable } from "./TeamTab";
 import { BrandsGrid } from "./BrandsTab";
+import { Button } from "#components/ui/button";
 
 type Props = {
   teamData:       ApiUser[]        | null;
@@ -47,9 +48,9 @@ export default function OverviewTab({
       <section>
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-sm font-semibold text-white/80">Team Members</h2>
-          <button onClick={() => onTabChange("team")} className="text-xs text-primary hover:underline">
+          <Button variant="link" onClick={() => onTabChange("team")} className="text-xs text-primary p-0 h-auto">
             View all
-          </button>
+          </Button>
         </div>
         <TeamTable data={teamData} loading={teamLoading} preview />
       </section>
@@ -58,9 +59,9 @@ export default function OverviewTab({
       <section>
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-sm font-semibold text-white/80">Brands</h2>
-          <button onClick={() => onTabChange("brands")} className="text-xs text-primary hover:underline">
+          <Button variant="link" onClick={() => onTabChange("brands")} className="text-xs text-primary p-0 h-auto">
             View all
-          </button>
+          </Button>
         </div>
         <BrandsGrid data={brandsData} loading={brandsLoading} preview />
       </section>

@@ -16,6 +16,11 @@ import { useServices } from "#hooks/useServices";
 import { useLanguage } from "#i18n";
 import { apiPost } from "#lib/api";
 import PageHero from "#components/organisms/PageHero";
+import { Button } from "#components/ui/button";
+import { Input } from "#components/ui/input";
+import { Label } from "#components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "#components/ui/select";
+import { Textarea } from "#components/ui/textarea";
 import LogoZalo from "../assets/icons/LogoZalo";
 
 type FormState = {
@@ -214,76 +219,84 @@ const ContactPage: React.FC = () => {
                     ? "Chúng tôi sẽ phản hồi sớm nhất có thể."
                     : "We'll get back to you as soon as possible."}
                 </p>
-                <button
+                <Button
+                  variant="link"
                   onClick={() => setSent(false)}
-                  className="text-primary mt-2 text-sm underline underline-offset-2"
+                  className="text-primary mt-2 text-sm underline underline-offset-2 h-auto p-0"
                 >
                   {lang === "vi" ? "Gửi tin nhắn khác" : "Send another message"}
-                </button>
+                </Button>
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="flex flex-col gap-4" noValidate>
                 <div>
-                  <label className="text-foreground mb-1 block text-xs font-medium">
+                  <Label className="text-foreground mb-1 text-xs">
                     {lang === "vi" ? "Họ và Tên" : "Full Name"}{" "}
                     <span className="text-primary">*</span>
-                  </label>
-                  <input
+                  </Label>
+                  <Input
                     type="text"
                     required
                     placeholder={lang === "vi" ? "Tên của bạn" : "Your name"}
                     value={form.name}
                     onChange={set("name")}
-                    className={inputClass}
+                    className="border-border bg-background/60 text-foreground placeholder:text-muted-foreground focus:border-primary"
                   />
                 </div>
 
                 <div>
-                  <label className="text-foreground mb-1 block text-xs font-medium">
+                  <Label className="text-foreground mb-1 text-xs">
                     Email <span className="text-primary">*</span>
-                  </label>
-                  <input
+                  </Label>
+                  <Input
                     type="email"
                     required
                     placeholder="email@example.com"
                     value={form.email}
                     onChange={set("email")}
-                    className={inputClass}
+                    className="border-border bg-background/60 text-foreground placeholder:text-muted-foreground focus:border-primary"
                   />
                 </div>
 
                 <div>
-                  <label className="text-foreground mb-1 block text-xs font-medium">
+                  <Label className="text-foreground mb-1 text-xs">
                     {lang === "vi" ? "Điện Thoại" : "Phone"}
-                  </label>
-                  <input
+                  </Label>
+                  <Input
                     type="tel"
                     placeholder="+84 xxx xxx xxx"
                     value={form.phone}
                     onChange={set("phone")}
-                    className={inputClass}
+                    className="border-border bg-background/60 text-foreground placeholder:text-muted-foreground focus:border-primary"
                   />
                 </div>
 
                 <div>
-                  <label className="text-foreground mb-1 block text-xs font-medium">
+                  <Label className="text-foreground mb-1 text-xs">
                     {lang === "vi" ? "Dịch Vụ Quan Tâm" : "Service of Interest"}
-                  </label>
-                  <select value={form.service} onChange={set("service")} className={inputClass}>
-                    <option value="">{lang === "vi" ? "Chọn dịch vụ" : "Select a service"}</option>
-                    {(services ?? []).map((s) => (
-                      <option key={s.id} value={s.id}>
-                        {s.title}
-                      </option>
-                    ))}
-                  </select>
+                  </Label>
+                  <Select
+                    value={form.service}
+                    onValueChange={(v) => setForm((prev) => ({ ...prev, service: v }))}
+                  >
+                    <SelectTrigger className="w-full rounded-lg border border-border bg-background/60 px-4 py-2.5 text-sm text-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-colors">
+                      <SelectValue placeholder={lang === "vi" ? "Chọn dịch vụ" : "Select a service"} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {(services ?? []).map((s) => (
+                        <SelectItem key={s.id} value={s.id}>
+                          {s.title}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
 
                 <div>
-                  <label className="text-foreground mb-1 block text-xs font-medium">
+                  <Label className="text-foreground mb-1 text-xs">
                     {lang === "vi" ? "Tin Nhắn" : "Message"} <span className="text-primary">*</span>
-                  </label>
-                  <textarea
+                  </Label>
+                  <Textarea
                     required
                     rows={4}
                     placeholder={
@@ -293,16 +306,16 @@ const ContactPage: React.FC = () => {
                     }
                     value={form.message}
                     onChange={set("message")}
-                    className={`${inputClass} resize-none`}
+                    className="border-border bg-background/60 text-foreground placeholder:text-muted-foreground focus:border-primary min-h-[100px]"
                   />
                 </div>
 
                 {submitError && <p className="text-destructive text-xs">{submitError}</p>}
 
-                <button
+                <Button
                   type="submit"
                   disabled={submitting}
-                  className="bg-primary text-primary-foreground hover:bg-primary/90 flex items-center justify-center gap-2 rounded-lg px-6 py-3 text-sm font-semibold transition-colors disabled:opacity-60"
+                  className="bg-primary text-primary-foreground hover:bg-primary/90 flex items-center justify-center gap-2 rounded-lg px-6 py-3 text-sm font-semibold transition-colors disabled:opacity-60 h-auto"
                 >
                   {submitting ? (
                     <SpinnerIcon size={16} className="animate-spin" />
@@ -310,7 +323,7 @@ const ContactPage: React.FC = () => {
                     <PaperPlaneTiltIcon size={16} weight="fill" />
                   )}
                   {lang === "vi" ? "Gửi Tin Nhắn" : "Send Message"}
-                </button>
+                </Button>
               </form>
             )}
           </div>

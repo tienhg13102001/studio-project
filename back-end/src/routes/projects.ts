@@ -26,6 +26,7 @@ router.post("/", async (req, res) => {
     prominent: body.prominent,
     service: body.service,
     video: body.video,
+    photos: body.photos,
   });
   if (body.service) {
     await Service.findByIdAndUpdate(body.service, { $push: { projects: project._id } });
@@ -38,10 +39,10 @@ router.post("/", async (req, res) => {
 
 // Accepts: { title, subtitle, thumbnailImage, layout, prominent, service, video? }
 router.put("/:id", async (req, res) => {
-  const { title, subtitle, thumbnailImage, layout, prominent, service, video } = req.body as Record<string, unknown>;
+  const { title, subtitle, thumbnailImage, layout, prominent, service, video, photos } = req.body as Record<string, unknown>;
   const project = await Project.findByIdAndUpdate(
     req.params.id,
-    { title, subtitle, thumbnailImage, layout, prominent, service, video },
+    { title, subtitle, thumbnailImage, layout, prominent, service, video, photos },
     { new: true, runValidators: true },
   ).populate("service");
   if (!project) { sendError(res, "Project not found", 404); return; }

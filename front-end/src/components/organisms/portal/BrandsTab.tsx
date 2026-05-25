@@ -4,10 +4,10 @@ import { apiPut, resolveAssetUrl } from "#lib/api";
 import type { ApiBrand } from "#lib/apiTypes";
 import EditModal from "#components/ui/portal/EditModal";
 import ImageUpload from "#components/ui/portal/ImageUpload";
-
-const inp =
-  "w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/30 focus:border-primary/50 focus:outline-none transition-colors";
-const lbl = "block text-xs font-medium text-white/50 mb-1.5";
+import { Button } from "#components/ui/button";
+import { Input } from "#components/ui/input";
+import { Label } from "#components/ui/label";
+import { Skeleton } from "#components/ui/skeleton";
 
 // ─── BrandsGrid (also used by OverviewTab) ───────────────────────────────────
 
@@ -25,7 +25,7 @@ export function BrandsGrid({ data, loading, preview, onEdit }: GridProps) {
     return (
       <div className="grid grid-cols-6 gap-3">
         {Array.from({ length: 6 }).map((_, i) => (
-          <div key={i} className="h-20 animate-pulse rounded-xl border border-white/8 bg-white/3" />
+          <Skeleton key={i} className="h-20 rounded-xl border border-white/8" />
         ))}
       </div>
     );
@@ -44,12 +44,14 @@ export function BrandsGrid({ data, loading, preview, onEdit }: GridProps) {
           />
           <p className="w-full truncate text-center text-[10px] text-white/30">{b.name}</p>
           {onEdit && (
-            <button
+            <Button
+              variant="ghost"
+              size="icon-xs"
               onClick={() => onEdit(b)}
-              className="absolute right-1.5 top-1.5 flex h-5 w-5 items-center justify-center rounded-md border border-white/10 bg-[#0d0d0d] text-white/40 opacity-0 transition-all group-hover:opacity-100 hover:border-primary/30 hover:text-primary"
+              className="absolute right-1.5 top-1.5 border border-white/10 bg-[#0d0d0d] text-white/40 opacity-0 transition-all group-hover:opacity-100 hover:border-primary/30 hover:text-primary"
             >
               <PencilSimpleIcon size={10} />
-            </button>
+            </Button>
           )}
         </div>
       ))}
@@ -114,13 +116,12 @@ export default function BrandsTab({ data, loading, onRefetch }: TabProps) {
               {/* ── Left ──────────────────────────────── */}
               <div className="flex flex-col gap-4">
                 <div>
-                  <label className={lbl}>Name</label>
-                  <input className={inp} value={form.name} onChange={(e) => set("name", e.target.value)} />
+                  <Label>Name</Label>
+                  <Input value={form.name} onChange={(e) => set("name", e.target.value)} />
                 </div>
                 <div>
-                  <label className={lbl}>Order</label>
-                  <input
-                    className={inp}
+                  <Label>Order</Label>
+                  <Input
                     type="number"
                     value={form.order}
                     onChange={(e) => set("order", Number(e.target.value))}
@@ -130,7 +131,7 @@ export default function BrandsTab({ data, loading, onRefetch }: TabProps) {
 
               {/* ── Right: logo ───────────────────────── */}
               <div>
-                <label className={lbl}>Logo</label>
+                <Label>Logo</Label>
                 <ImageUpload value={form.logo} onChange={(path) => set("logo", path)} />
               </div>
             </div>

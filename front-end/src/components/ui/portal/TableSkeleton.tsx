@@ -1,33 +1,43 @@
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "#components/ui/table";
+import { Skeleton } from "#components/ui/skeleton";
+
 type TableSkeletonProps = { cols: number; rows: number };
 
 export function TableSkeleton({ cols, rows }: TableSkeletonProps) {
   return (
-    <div className="rounded-xl border border-white/8 overflow-hidden">
-      <table className="w-full">
-        <thead className="border-b border-white/8 bg-white/3">
-          <tr>
+    <div className="overflow-hidden rounded-xl border border-white/8">
+      <Table>
+        <TableHeader>
+          <TableRow className="hover:bg-transparent">
             {Array.from({ length: cols }).map((_, i) => (
-              <th key={i} className="px-4 py-3">
-                <div className="h-3 w-16 rounded bg-white/10 animate-pulse" />
-              </th>
+              <TableHead key={i}>
+                <Skeleton className="h-3 w-16" />
+              </TableHead>
             ))}
-          </tr>
-        </thead>
-        <tbody>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
           {Array.from({ length: rows }).map((_, r) => (
-            <tr key={r} className="border-b border-white/5 last:border-0">
+            <TableRow key={r} className="hover:bg-transparent">
               {Array.from({ length: cols }).map((_, c) => (
-                <td key={c} className="px-4 py-3">
-                  <div
-                    className="h-3 rounded bg-white/8 animate-pulse"
+                <TableCell key={c}>
+                  <Skeleton
+                    className="h-3"
                     style={{ width: `${60 + (c * 15) % 40}%` }}
                   />
-                </td>
+                </TableCell>
               ))}
-            </tr>
+            </TableRow>
           ))}
-        </tbody>
-      </table>
+        </TableBody>
+      </Table>
     </div>
   );
 }

@@ -9,6 +9,7 @@ export interface IProject extends Document {
   subtitle: string;
   prominent: boolean;
   video?: string; // optional, path to video file
+  photos?: string[]; // optional, list of product photo paths
 }
 
 const projectSchema = new Schema<IProject>(
@@ -20,6 +21,7 @@ const projectSchema = new Schema<IProject>(
     subtitle:       { type: String, required: true },
     prominent:      { type: Boolean, default: false },
     video:          { type: String, required: false }, // path to video file (optional)
+    photos:         { type: [String], required: false }, // array of product photo paths (optional)
   },
   {
     toJSON: {

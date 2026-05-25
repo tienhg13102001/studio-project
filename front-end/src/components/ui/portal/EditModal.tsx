@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { XIcon } from "@phosphor-icons/react";
+import { Button } from "#components/ui/button";
 
 type Props = {
   title:    string;
@@ -22,12 +23,14 @@ export default function EditModal({ title, isOpen, onClose, onSubmit, saving, ch
         {/* Header */}
         <div className="flex items-center justify-between border-b border-white/8 px-4 py-3 sm:px-6 sm:py-4">
           <h3 className="font-semibold text-white">{title}</h3>
-          <button
+          <Button
+            variant="ghost"
+            size="icon-sm"
             onClick={onClose}
-            className="flex h-7 w-7 items-center justify-center rounded-lg text-white/40 transition-colors hover:bg-white/8 hover:text-white"
+            className="text-white/40 hover:bg-white/8 hover:text-white"
           >
             <XIcon size={14} />
-          </button>
+          </Button>
         </div>
 
         {/* Body */}
@@ -39,29 +42,31 @@ export default function EditModal({ title, isOpen, onClose, onSubmit, saving, ch
         <div className="flex items-center justify-between gap-3 border-t border-white/8 px-4 py-3 sm:px-6 sm:py-4">
           <div>
             {onDelete && (
-              <button
+              <Button
+                variant="destructive"
                 onClick={onDelete}
                 disabled={deleting || saving}
-                className="rounded-lg border border-red-500/30 px-4 py-2 text-sm text-red-400 transition-colors hover:border-red-500/60 hover:bg-red-500/10 disabled:opacity-50"
+                className="border border-red-500/30 bg-red-500/10 text-red-400 hover:border-red-500/60 hover:bg-red-500/20"
               >
                 {deleting ? "Deleting…" : (deleteLabel ?? "Delete")}
-              </button>
+              </Button>
             )}
           </div>
           <div className="flex gap-3">
-            <button
+            <Button
+              variant="outline"
               onClick={onClose}
-              className="rounded-lg border border-white/10 px-4 py-2 text-sm text-white/60 transition-colors hover:border-white/30 hover:text-white"
+              className="border-white/10 text-white/60 hover:border-white/30 hover:text-white"
             >
               Cancel
-            </button>
-            <button
+            </Button>
+            <Button
               onClick={onSubmit}
               disabled={saving}
-              className="rounded-lg bg-primary px-5 py-2 text-sm font-medium text-black transition-all hover:opacity-80 disabled:opacity-50"
+              className="bg-primary text-black hover:opacity-80"
             >
               {saving ? "Saving…" : "Save changes"}
-            </button>
+            </Button>
           </div>
         </div>
       </div>

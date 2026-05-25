@@ -1,14 +1,12 @@
 import { resolveAssetUrl, uploadVideo } from "#lib/api";
 import { FilmStripIcon } from "@phosphor-icons/react";
 import { useRef, useState } from "react";
+import { Input } from "#components/ui/input";
 
 export type VideoUploadProps = {
   value: string;
   onChange: (path: string) => void;
 };
-
-const inp =
-  "w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/30 focus:border-primary/50 focus:outline-none transition-colors";
 
 export default function VideoUpload({ value, onChange }: VideoUploadProps) {
   const [uploading, setUploading] = useState(false);
@@ -41,8 +39,7 @@ export default function VideoUpload({ value, onChange }: VideoUploadProps) {
   return (
     <div className="flex flex-col gap-2">
       {/* Manual URL input */}
-      <input
-        className={inp}
+      <Input
         placeholder="/videos/… or https://…"
         value={value}
         onChange={(e) => onChange(e.target.value)}
@@ -56,6 +53,9 @@ export default function VideoUpload({ value, onChange }: VideoUploadProps) {
         onDragOver={(e) => e.preventDefault()}
         className="flex items-center gap-2 rounded-lg border border-dashed border-white/20 bg-black/10 px-4 py-3 text-white/60 hover:bg-white/5 cursor-pointer"
         onClick={() => inputRef.current?.click()}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") inputRef.current?.click();
+        }}
       >
         <FilmStripIcon size={20} />
         {uploading ? (
@@ -63,7 +63,7 @@ export default function VideoUpload({ value, onChange }: VideoUploadProps) {
         ) : (
           <span>Click or drop video (mp4/webm/mov, ≤500MB)</span>
         )}
-        <input
+        <Input
           ref={inputRef}
           type="file"
           accept="video/mp4,video/webm,video/quicktime,video/x-m4v"
@@ -74,9 +74,18 @@ export default function VideoUpload({ value, onChange }: VideoUploadProps) {
           }}
         />
       </div>
-      {uploadError && <div className="text-xs text-red-400">{uploadError}</div>}
+
+      {uploadError && (
+        <div className="text-xs text-red-400">{uploadError}</div>
+      )}
+
       {previewSrc && (
-        <video src={previewSrc} controls className="w-full max-h-48 rounded-lg mt-2 bg-black" preload="metadata" />
+        <video
+          src={previewSrc}
+          controls
+          className="w-full max-h-48 rounded-lg mt-2 bg-black"
+          preload="metadata"
+        />
       )}
     </div>
   );

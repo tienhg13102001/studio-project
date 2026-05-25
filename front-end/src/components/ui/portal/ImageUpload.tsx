@@ -2,14 +2,12 @@ import { useRef, useState } from "react";
 import { UploadSimpleIcon, ImageIcon } from "@phosphor-icons/react";
 import axios from "axios";
 import { resolveAssetUrl } from "#lib/api";
+import { Input } from "#components/ui/input";
 
 type Props = {
   value:    string;
   onChange: (path: string) => void;
 };
-
-const inp =
-  "w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/30 focus:border-primary/50 focus:outline-none transition-colors";
 
 export default function ImageUpload({ value, onChange }: Props) {
   const [uploading, setUploading] = useState(false);
@@ -46,8 +44,7 @@ export default function ImageUpload({ value, onChange }: Props) {
   return (
     <div className="flex flex-col gap-2">
       {/* Manual URL input */}
-      <input
-        className={inp}
+      <Input
         placeholder="/images/… or https://…"
         value={value}
         onChange={(e) => onChange(e.target.value)}
@@ -63,7 +60,6 @@ export default function ImageUpload({ value, onChange }: Props) {
         onKeyDown={(e) => e.key === "Enter" && inputRef.current?.click()}
         className="flex cursor-pointer items-center gap-3 rounded-lg border border-dashed border-white/15 bg-white/3 p-3 transition-colors hover:border-primary/30 hover:bg-primary/5"
       >
-        {/* Preview / placeholder */}
         {previewSrc ? (
           <img
             src={previewSrc}

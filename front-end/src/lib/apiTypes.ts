@@ -30,6 +30,7 @@ export type ApiProject = {
   subtitle:       string;
   prominent:      boolean;
   video?: string; // optional, path to video file
+  photos?: string[]; // optional, list of product photo paths
 };
 
 export type ApiService = {

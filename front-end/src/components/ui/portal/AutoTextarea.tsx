@@ -1,4 +1,5 @@
 import { useLayoutEffect, useRef } from "react";
+import { Textarea } from "#components/ui/textarea";
 
 export default function AutoTextarea({
   className,
@@ -14,9 +15,9 @@ export default function AutoTextarea({
     }
   }, [value]);
   return (
-    <textarea
+    <Textarea
       ref={ref}
-      className={`${className} resize-none overflow-hidden`}
+      className={`${className ?? ""} overflow-hidden`}
       rows={1}
       value={value}
       onChange={onChange}

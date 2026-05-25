@@ -7,10 +7,28 @@ import EditModal from "#components/ui/portal/EditModal";
 import ImageUpload from "#components/ui/portal/ImageUpload";
 import AutoTextarea from "#components/ui/portal/AutoTextarea";
 import { TableSkeleton } from "#components/ui/portal/TableSkeleton";
-
-const inp =
-  "w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/30 focus:border-primary/50 focus:outline-none transition-colors";
-const lbl = "block text-xs font-medium text-white/50 mb-1.5";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "#components/ui/alert-dialog";
+import { Badge } from "#components/ui/badge";
+import { Button } from "#components/ui/button";
+import { Input } from "#components/ui/input";
+import { Label } from "#components/ui/label";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "#components/ui/table";
 
 // ─── Edit form ───────────────────────────────────────────────────────────────
 
@@ -47,9 +65,11 @@ function toForm(s: ApiService): ServiceForm {
     })),
   };
 }
+
 function emptyServiceForm(): ServiceForm {
   return { titleEn: "", titleVi: "", descEn: "", descVi: "", thumbnailImage: "", tag: "", faqs: [] };
 }
+
 // ─── Tab ─────────────────────────────────────────────────────────────────────
 
 type TabProps = {
@@ -144,48 +164,41 @@ export default function ServicesTab({ data, raw, loading, onRefetch }: TabProps)
 
   const addFaq = () =>
     setForm((f) =>
-      f
-        ? {
-            ...f,
-            faqs: [...f.faqs, { questionEn: "", questionVi: "", answerEn: "", answerVi: "" }],
-          }
-        : f,
+      f ? { ...f, faqs: [...f.faqs, { questionEn: "", questionVi: "", answerEn: "", answerVi: "" }] } : f,
     );
 
   const removeFaq = (i: number) =>
     setForm((f) => (f ? { ...f, faqs: f.faqs.filter((_, idx) => idx !== i) } : f));
 
-  if (loading) return <TableSkeleton cols={6} rows={4} />;
+  if (loading) return <TableSkeleton cols={5} rows={4} />;
 
   return (
     <>
+      {/* ── Header ── */}
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-semibold text-white">Services</h2>
-        <button
-          onClick={openCreate}
-          className="flex items-center gap-1.5 rounded-lg bg-primary px-3 py-1.5 text-xs font-medium text-black transition-all hover:opacity-80"
-        >
+        <Button size="sm" onClick={openCreate} className="bg-primary text-black hover:opacity-80">
           <PlusIcon size={12} weight="bold" />
           Add service
-        </button>
+        </Button>
       </div>
+
+      {/* ── Table ── */}
       <div className="overflow-hidden rounded-xl border border-white/8">
-        <table className="w-full text-sm">
-          <thead className="border-b border-white/8 bg-white/3">
-            <tr>
+        <Table>
+          <TableHeader>
+            <TableRow className="hover:bg-transparent">
               {["Service", "Tag", "Description", "FAQs", ""].map((h) => (
-                <th key={h} className="px-4 py-3 text-left text-xs font-medium text-white/40">
-                  {h}
-                </th>
+                <TableHead key={h}>{h}</TableHead>
               ))}
-            </tr>
-          </thead>
-          <tbody>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
             {(data ?? []).map((s) => {
               const rawItem = (raw ?? []).find((r) => r.id === s.id);
               return (
-                <tr key={s.id} className="border-b border-white/5 last:border-0 transition-colors hover:bg-white/3">
-                  <td className="px-4 py-3">
+                <TableRow key={s.id}>
+                  <TableCell>
                     <div className="flex items-center gap-3">
                       {s.thumbnailImage && (
                         <img
@@ -196,114 +209,100 @@ export default function ServicesTab({ data, raw, loading, onRefetch }: TabProps)
                       )}
                       <p className="truncate text-xs font-medium text-white">{s.title}</p>
                     </div>
-                  </td>
-                  <td className="px-4 py-3">
-                    <span className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[10px] text-white/60">
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant="outline" className="border-white/10 bg-white/5 text-white/60">
                       {rawItem?.tag ?? ""}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3 text-xs text-white/50">
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-xs text-white/50">
                     <p className="line-clamp-2 max-w-xs">{s.description}</p>
-                  </td>
-                  <td className="px-4 py-3 text-xs text-white/60">{rawItem?.faqs.length ?? 0}</td>
-                  <td className="px-4 py-3">
+                  </TableCell>
+                  <TableCell className="text-xs text-white/60">{rawItem?.faqs.length ?? 0}</TableCell>
+                  <TableCell>
                     <div className="flex items-center gap-2">
-                      <button
+                      <Button
+                        variant="outline"
+                        size="xs"
                         onClick={() => openEdit(s.id)}
-                        className="flex items-center gap-1 rounded-lg border border-white/10 px-2.5 py-1.5 text-[10px] text-white/50 transition-colors hover:border-primary/40 hover:text-primary"
+                        className="border-white/10 text-white/50 hover:border-primary/40 hover:text-primary"
                       >
                         <PencilSimpleIcon size={11} />
                         Edit
-                      </button>
-                      <button
-                        onClick={() => { const r = (raw ?? []).find((x) => x.id === s.id); if (r) { setConfirmDelete(r); setDeleteError(null); } }}
-                        className="flex items-center gap-1 rounded-lg border border-white/10 px-2.5 py-1.5 text-[10px] text-white/50 transition-colors hover:border-red-500/50 hover:text-red-400"
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon-xs"
+                        onClick={() => {
+                          const r = (raw ?? []).find((x) => x.id === s.id);
+                          if (r) { setConfirmDelete(r); setDeleteError(null); }
+                        }}
+                        className="border border-white/10 text-white/50 hover:border-red-500/50 hover:text-red-400"
                         title="Delete service"
                       >
                         <TrashIcon size={11} />
-                      </button>
+                      </Button>
                     </div>
-                  </td>
-                </tr>
+                  </TableCell>
+                </TableRow>
               );
             })}
-          </tbody>
-        </table>
+          </TableBody>
+        </Table>
       </div>
 
+      {/* ── Edit Modal ── */}
       <EditModal
         title={creating ? "Add Service" : `Edit — ${editing?.title.en ?? "…"}`}
         isOpen={!!editing || loadingEdit || creating}
         onClose={closeEdit}
         onSubmit={handleSave}
         saving={saving}
-        onDelete={editing ? () => { setConfirmDelete(editing); setDeleteError(null); closeEdit(); } : undefined}
+        onDelete={
+          editing
+            ? () => { setConfirmDelete(editing); setDeleteError(null); closeEdit(); }
+            : undefined
+        }
         deleting={deleting}
       >
         {form && (
           <>
             <div className="grid grid-cols-1 gap-6 md:grid-cols-[2fr_2fr]">
-              {/* ── Left: text fields ─────────────────── */}
+              {/* ── Left: text fields ───────────────── */}
               <div className="flex flex-col gap-4">
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className={lbl}>Title (EN)</label>
-                    <input
-                      className={inp}
-                      value={form.titleEn}
-                      onChange={(e) => set("titleEn", e.target.value)}
-                    />
+                    <Label>Title (EN)</Label>
+                    <Input value={form.titleEn} onChange={(e) => set("titleEn", e.target.value)} />
                   </div>
                   <div>
-                    <label className={lbl}>Title (VI)</label>
-                    <input
-                      className={inp}
-                      value={form.titleVi}
-                      onChange={(e) => set("titleVi", e.target.value)}
-                    />
+                    <Label>Title (VI)</Label>
+                    <Input value={form.titleVi} onChange={(e) => set("titleVi", e.target.value)} />
                   </div>
                 </div>
                 <div>
-                  <label className={lbl}>Description (EN)</label>
-                  <AutoTextarea
-                    className={inp}
-                    value={form.descEn}
-                    onChange={(e) => set("descEn", e.target.value)}
-                  />
+                  <Label>Description (EN)</Label>
+                  <AutoTextarea value={form.descEn} onChange={(e) => set("descEn", e.target.value)} />
                 </div>
                 <div>
-                  <label className={lbl}>Description (VI)</label>
-                  <AutoTextarea
-                    className={inp}
-                    value={form.descVi}
-                    onChange={(e) => set("descVi", e.target.value)}
-                  />
+                  <Label>Description (VI)</Label>
+                  <AutoTextarea value={form.descVi} onChange={(e) => set("descVi", e.target.value)} />
                 </div>
                 <div>
-                  <label className={lbl}>Tag (slug)</label>
-                  <input
-                    className={inp}
-                    value={form.tag}
-                    onChange={(e) => set("tag", e.target.value)}
-                  />
+                  <Label>Tag (slug)</Label>
+                  <Input value={form.tag} onChange={(e) => set("tag", e.target.value)} />
                 </div>
-                {/* Linked Features read-only */}
                 {editing && (editing.projects?.length ?? 0) > 0 && (
                   <div>
-                    <label className={lbl}>Linked Projects ({editing.projects.length})</label>
+                    <Label>Linked Projects ({editing.projects.length})</Label>
                     <div className="flex flex-col gap-1.5">
                       {editing.projects.map((f) => (
-                        <div
-                          key={f.id}
-                          className="flex items-center gap-2.5 rounded-lg border border-white/8 bg-white/3 p-2"
-                        >
+                        <div key={f.id} className="flex items-center gap-2.5 rounded-lg border border-white/8 bg-white/3 p-2">
                           <div className="min-w-0">
                             <p className="truncate text-xs font-medium text-white/80">{f.title}</p>
                             <p className="text-[10px] text-white/35">{f.subtitle}</p>
                           </div>
-                          <span className="ml-auto shrink-0 rounded border border-white/8 px-1.5 py-0.5 text-[10px] text-white/30">
-                            {f.layout}
-                          </span>
+                          <Badge variant="outline" className="ml-auto shrink-0">{f.layout}</Badge>
                         </div>
                       ))}
                     </div>
@@ -311,76 +310,61 @@ export default function ServicesTab({ data, raw, loading, onRefetch }: TabProps)
                 )}
               </div>
 
-              {/* ── Right: image + FAQs ───────────────── */}
+              {/* ── Right: image + FAQs ─────────────── */}
               <div className="flex flex-col gap-4">
                 <div>
-                  <label className={lbl}>Image</label>
+                  <Label>Image</Label>
                   <ImageUpload value={form.thumbnailImage} onChange={(path) => set("thumbnailImage", path)} />
                 </div>
 
                 {/* FAQs */}
                 <div>
                   <div className="mb-2 flex items-center justify-between">
-                    <label className={lbl + " mb-0"}>FAQs ({form.faqs.length})</label>
-                    <button
+                    <Label className="mb-0">FAQs ({form.faqs.length})</Label>
+                    <Button
                       type="button"
+                      variant="outline"
+                      size="xs"
                       onClick={addFaq}
-                      className="hover:border-primary/40 hover:text-primary flex items-center gap-1 rounded-md border border-white/10 px-2 py-1 text-[10px] text-white/50 transition-colors"
+                      className="border-white/10 text-white/50 hover:border-primary/40 hover:text-primary"
                     >
                       <PlusIcon size={10} />
                       Add FAQ
-                    </button>
+                    </Button>
                   </div>
                   <div className="flex flex-col gap-3">
                     {form.faqs.map((faq, i) => (
-                      <div
-                        key={i}
-                        className="relative rounded-lg border border-white/8 bg-white/3 p-3"
-                      >
-                        <button
+                      <div key={i} className="relative rounded-lg border border-white/8 bg-white/3 p-3">
+                        <Button
                           type="button"
+                          variant="ghost"
+                          size="icon-xs"
                           onClick={() => removeFaq(i)}
-                          className="absolute top-2 right-2 text-white/25 transition-colors hover:text-red-400"
+                          className="absolute right-2 top-2 text-white/25 hover:text-red-400"
                         >
                           <XIcon size={13} />
-                        </button>
-                        <p className="mb-2 text-[10px] font-medium tracking-wider text-white/30 uppercase">
+                        </Button>
+                        <p className="mb-2 text-[10px] font-medium uppercase tracking-wider text-white/30">
                           FAQ {i + 1}
                         </p>
                         <div className="mb-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
                           <div>
-                            <label className={lbl}>Question (EN)</label>
-                            <input
-                              className={inp}
-                              value={faq.questionEn}
-                              onChange={(e) => setFaq(i, "questionEn", e.target.value)}
-                            />
+                            <Label>Question (EN)</Label>
+                            <Input value={faq.questionEn} onChange={(e) => setFaq(i, "questionEn", e.target.value)} />
                           </div>
                           <div>
-                            <label className={lbl}>Question (VI)</label>
-                            <input
-                              className={inp}
-                              value={faq.questionVi}
-                              onChange={(e) => setFaq(i, "questionVi", e.target.value)}
-                            />
+                            <Label>Question (VI)</Label>
+                            <Input value={faq.questionVi} onChange={(e) => setFaq(i, "questionVi", e.target.value)} />
                           </div>
                         </div>
                         <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                           <div>
-                            <label className={lbl}>Answer (EN)</label>
-                            <AutoTextarea
-                              className={inp}
-                              value={faq.answerEn}
-                              onChange={(e) => setFaq(i, "answerEn", e.target.value)}
-                            />
+                            <Label>Answer (EN)</Label>
+                            <AutoTextarea value={faq.answerEn} onChange={(e) => setFaq(i, "answerEn", e.target.value)} />
                           </div>
                           <div>
-                            <label className={lbl}>Answer (VI)</label>
-                            <AutoTextarea
-                              className={inp}
-                              value={faq.answerVi}
-                              onChange={(e) => setFaq(i, "answerVi", e.target.value)}
-                            />
+                            <Label>Answer (VI)</Label>
+                            <AutoTextarea value={faq.answerVi} onChange={(e) => setFaq(i, "answerVi", e.target.value)} />
                           </div>
                         </div>
                       </div>
@@ -400,32 +384,24 @@ export default function ServicesTab({ data, raw, loading, onRefetch }: TabProps)
         )}
       </EditModal>
 
-      {confirmDelete && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm">
-          <div className="w-full max-w-sm rounded-2xl border border-white/10 bg-[#161616] p-6 shadow-2xl">
-            <h3 className="mb-2 font-semibold text-white">Delete service?</h3>
-            <p className="mb-5 text-sm text-white/50">
-              “<span className="text-white/80">{confirmDelete.title.en}</span>” will be permanently deleted.
-            </p>
-            {deleteError && <p className="mb-3 text-xs text-red-400">{deleteError}</p>}
-            <div className="flex justify-end gap-3">
-              <button
-                onClick={() => setConfirmDelete(null)}
-                className="rounded-lg border border-white/10 px-4 py-2 text-sm text-white/60 transition-colors hover:border-white/30 hover:text-white"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleDelete}
-                disabled={deleting}
-                className="rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-2 text-sm text-red-400 transition-colors hover:bg-red-500/20 disabled:opacity-50"
-              >
-                {deleting ? "Deleting…" : "Delete"}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* ── Confirm Delete Dialog ── */}
+      <AlertDialog open={!!confirmDelete} onOpenChange={(open) => !open && setConfirmDelete(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete service?</AlertDialogTitle>
+            <AlertDialogDescription>
+              "<span className="text-white/80">{confirmDelete?.title.en}</span>" will be permanently deleted.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          {deleteError && <p className="text-xs text-red-400">{deleteError}</p>}
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete} disabled={deleting}>
+              {deleting ? "Deleting…" : "Delete"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 }
