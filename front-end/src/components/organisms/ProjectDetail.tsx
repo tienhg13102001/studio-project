@@ -13,7 +13,7 @@ import {
   PlayCircleIcon,
   XIcon,
 } from "@phosphor-icons/react";
-import { useRef, useState, type CSSProperties, type FC } from "react";
+import { useEffect, useRef, useState, type CSSProperties, type FC } from "react";
 
 type Props = {
   project: ProjectDisplay;
@@ -25,6 +25,15 @@ const ProjectDetail: FC<Props> = ({ project, onClose }) => {
   const [isSheetExpanded, setIsSheetExpanded] = useState(false);
   const sheetTouchStartY = useRef<number | null>(null);
   const totalImages = project?.photos?.length || 0;
+
+  // Lock body scroll while modal is open
+  useEffect(() => {
+    const original = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = original;
+    };
+  }, []);
 
   const handleSheetTouchStart = (e: React.TouchEvent) => {
     sheetTouchStartY.current = e.touches[0].clientY;
@@ -97,7 +106,7 @@ const ProjectDetail: FC<Props> = ({ project, onClose }) => {
   };
 
   return (
-    <div className="bg-background/95 text-foreground fixed inset-0 z-50 flex h-dvh w-screen items-start justify-center overflow-hidden overflow-y-auto font-sans transition-opacity duration-300 lg:items-center">
+    <div className="bg-background/95 text-foreground fixed inset-0 z-50 flex h-dvh w-screen items-start justify-center overflow-hidden font-sans transition-opacity duration-300 lg:items-center lg:overflow-y-auto">
       {/* Icon close */}
       <Button
         onClick={onClose}
@@ -193,7 +202,7 @@ const ProjectDetail: FC<Props> = ({ project, onClose }) => {
           </div>
 
           {/* Scrollable expanded content */}
-          <div className="flex-1 overflow-y-auto px-5 pb-10">
+          <div className="flex-1 overflow-y-auto overscroll-contain px-5 pb-10">
             <div className="mt-4">
               <h3 className="text-muted-foreground mb-2 text-xs font-semibold tracking-wider uppercase">
                 About
