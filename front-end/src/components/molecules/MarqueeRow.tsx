@@ -19,7 +19,7 @@ const MarqueeRow: React.FC<Props> = ({ direction, children }) => (
       {Array.from({ length: COPIES }).map((_, i) => (
         <div
           key={i}
-          className="flex shrink-0 gap-4 px-4 md:gap-6 md:px-6"
+          className="flex shrink-0 gap-4 px-2 md:gap-6 md:px-3"
           aria-hidden={i > 0}
         >
           {children}

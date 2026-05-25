@@ -1,22 +1,48 @@
-import { useState } from "react";
 import { default as FeatureCard } from "#components/molecules/FeatureCard";
 import MarqueeRow from "#components/molecules/MarqueeRow";
 import SectionHeader from "#components/molecules/SectionHeader";
 import { useProjects, type ProjectDisplay } from "#hooks/useProjects";
 import { useTranslation } from "#i18n";
 import type { FC } from "react";
+import { useSearchParams } from "react-router-dom";
 import ProjectDetail from "./ProjectDetail";
+
+const PROJECT_PARAM = "project";
 
 type Props = {};
 
 const FeatureSection: FC<Props> = () => {
   const t = useTranslation();
   const { verticalCards, horizontalCards } = useProjects();
-  const [selectedProject, setSelectedProject] = useState<ProjectDisplay | null>(null);
+  const [searchParams, setSearchParams] = useSearchParams();
 
-  // Fall back to mock while API loads
   const top = verticalCards || [];
   const bottom = horizontalCards || [];
+
+  const projectId = searchParams.get(PROJECT_PARAM);
+  const selectedProject: ProjectDisplay | null = projectId
+    ? [...top, ...bottom].find((p) => p.id === projectId) || null
+    : null;
+
+  const openProject = (card: ProjectDisplay) => {
+    setSearchParams(
+      (prev) => {
+        prev.set(PROJECT_PARAM, card.id);
+        return prev;
+      },
+      { replace: false },
+    );
+  };
+
+  const closeProject = () => {
+    setSearchParams(
+      (prev) => {
+        prev.delete(PROJECT_PARAM);
+        return prev;
+      },
+      { replace: false },
+    );
+  };
 
   return (
     <>
@@ -32,7 +58,7 @@ const FeatureSection: FC<Props> = () => {
                 key={card.id}
                 card={card}
                 variant="vertical"
-                onClick={() => setSelectedProject(card)}
+                onClick={() => openProject(card)}
               />
             ))}
           </MarqueeRow>
@@ -43,16 +69,14 @@ const FeatureSection: FC<Props> = () => {
                 key={card.id}
                 card={card}
                 variant="horizontal"
-                onClick={() => setSelectedProject(card)}
+                onClick={() => openProject(card)}
               />
             ))}
           </MarqueeRow>
         </div>
       </section>
 
-      {selectedProject && (
-        <ProjectDetail project={selectedProject} onClose={() => setSelectedProject(null)} />
-      )}
+      {selectedProject && <ProjectDetail project={selectedProject} onClose={closeProject} />}
     </>
   );
 };

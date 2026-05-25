@@ -3,11 +3,11 @@ import { useTranslation } from "#i18n";
 import { resolveAssetUrl } from "#lib/api";
 
 const GALLERY_IMAGES = [
-  "/images/NAQ03133.webp",
-  "/images/feature1.webp",
-  "/images/feature2.webp",
-  "/images/services1.webp",
-  "/images/services2.webp",
+  "/NAQ03133.webp",
+  "/feature1.webp",
+  "/feature2.webp",
+  "/services1.webp",
+  "/services2.webp",
 ];
 
 const WhoWeAre: React.FC = () => {
@@ -21,7 +21,7 @@ const WhoWeAre: React.FC = () => {
         <div className="relative">
           <div className="overflow-hidden rounded-2xl shadow-2xl aspect-4/3">
             <img
-              src={resolveAssetUrl("/images/services1.webp")}
+              src={"/services1.webp"}
               alt="BeeZ Production team"
               className="h-full w-full object-cover"
             />
@@ -64,7 +64,7 @@ const WhoWeAre: React.FC = () => {
           {[...GALLERY_IMAGES, ...GALLERY_IMAGES].map((src, i) => (
             <div key={i} className="shrink-0 h-48 w-72 overflow-hidden rounded-xl shadow-md">
               <img
-                src={resolveAssetUrl(src)}
+                src={src}
                 alt={`BeeZ gallery ${i}`}
                 className="h-full w-full object-cover transition-transform duration-500 hover:scale-105"
               />
