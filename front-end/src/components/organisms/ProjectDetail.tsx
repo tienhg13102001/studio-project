@@ -104,7 +104,7 @@ const ProjectDetail: FC<Props> = ({ project, onClose }) => {
                 src={project.video}
                 controls
                 autoPlay /* THÊM THUỘC TÍNH NÀY ĐỂ VIDEO TỰ CHẠY */
-                className="h-auto max-h-[80vh] w-full rounded-2xl object-cover shadow-2xl"
+                className="h-full max-h-[80vh] w-auto rounded-2xl object-cover shadow-2xl"
               />
             ) : (
               <>
