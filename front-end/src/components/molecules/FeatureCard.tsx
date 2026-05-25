@@ -18,8 +18,9 @@ const FeatureCard: React.FC<Props> = ({ card, variant, onClick }) => {
   return (
     <div
       onClick={onClick}
-      className={`group shrink-0 cursor-pointer overflow-hidden rounded-xl border border-white/5 transition-transform duration-300 ${isVertical ? "w-45 md:w-55" : "w-75 md:w-95"
-        }`}
+      className={`group bg-card border-border shrink-0 cursor-pointer overflow-hidden rounded-xl border transition-transform duration-300 ${
+        isVertical ? "w-45 md:w-55" : "w-75 md:w-95"
+      }`}
     >
       {/* Thumbnail */}
       <div
