@@ -1,6 +1,5 @@
 import MarqueeRow from "#components/molecules/MarqueeRow";
 import { useTranslation } from "#i18n";
-import { resolveAssetUrl } from "#lib/api";
 
 const GALLERY_IMAGES = [
   "/NAQ03133.webp",
@@ -21,7 +20,7 @@ const WhoWeAre: React.FC = () => {
         <div className="relative">
           <div className="overflow-hidden rounded-2xl shadow-2xl aspect-4/3">
             <img
-              src={"/services1.webp"}
+              src={"/user1.webp"}
               alt="BeeZ Production team"
               className="h-full w-full object-cover"
             />
