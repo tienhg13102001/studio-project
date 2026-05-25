@@ -23,10 +23,7 @@ const FeatureCard: React.FC<Props> = ({ card, variant, onClick }) => {
       }`}
     >
       {/* Thumbnail */}
-      <div
-        className={`relative overflow-hidden ${isVertical ? "h-62.5 md:h-80" : "h-40 md:h-55"
-          }`}
-      >
+      <div className={`relative overflow-hidden ${isVertical ? "h-62.5 md:h-80" : "h-40 md:h-55"}`}>
         <img
           src={card.thumbnailImage}
           alt={card.title}

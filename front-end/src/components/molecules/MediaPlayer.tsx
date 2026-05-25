@@ -87,11 +87,7 @@ const MediaPlayer: FC<Props> = ({
         )}
       >
         <div className="bg-primary text-primary-foreground flex h-16 w-16 items-center justify-center rounded-full shadow-lg">
-          {isPlaying ? (
-            <PauseIcon size={32} weight="fill" />
-          ) : (
-            <PlayIcon size={32} weight="fill" />
-          )}
+          {isPlaying ? <PauseIcon size={32} weight="fill" /> : <PlayIcon size={32} weight="fill" />}
         </div>
       </div>
     </div>

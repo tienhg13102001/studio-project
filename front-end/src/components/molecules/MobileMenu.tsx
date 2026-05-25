@@ -42,19 +42,19 @@ const MobileMenu: React.FC<Props> = ({ open, onClose }) => {
       <div
         onClick={onClose}
         className={`fixed inset-0 z-30 bg-black/60 backdrop-blur-sm transition-opacity duration-300 lg:hidden ${
-          open ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+          open ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0"
         }`}
       />
 
       {/* Drawer */}
       <div
-        className={`fixed top-0 right-0 z-40 flex h-full w-80 flex-col bg-background shadow-2xl transition-transform duration-300 ease-in-out lg:hidden ${
+        className={`bg-background fixed top-0 right-0 z-40 flex h-full w-80 flex-col shadow-2xl transition-transform duration-300 ease-in-out lg:hidden ${
           open ? "translate-x-0" : "translate-x-full"
         }`}
       >
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-border px-6 py-4">
-          <span className="text-base font-semibold text-foreground">Menu</span>
+        <div className="border-border flex items-center justify-between border-b px-6 py-4">
+          <span className="text-foreground text-base font-semibold">Menu</span>
           <Button variant="outline" size="icon" onClick={onClose}>
             <XIcon size={18} />
           </Button>
@@ -69,10 +69,8 @@ const MobileMenu: React.FC<Props> = ({ open, onClose }) => {
                   <div>
                     <button
                       onClick={() => setServicesOpen((v) => !v)}
-                      className={`flex w-full items-center justify-between rounded-lg px-3 py-3 text-sm font-medium transition-colors hover:bg-muted ${
-                        isActive(item)
-                          ? "text-primary bg-primary/5"
-                          : "text-foreground"
+                      className={`hover:bg-muted flex w-full items-center justify-between rounded-lg px-3 py-3 text-sm font-medium transition-colors ${
+                        isActive(item) ? "text-primary bg-primary/5" : "text-foreground"
                       }`}
                     >
                       <span>{t.nav[item.key]}</span>
@@ -96,9 +94,9 @@ const MobileMenu: React.FC<Props> = ({ open, onClose }) => {
                                 key={service.id}
                                 to={`/service/${service.id}`}
                                 onClick={onClose}
-                                className="group flex items-center gap-3 rounded-lg px-3 py-2.5 transition-colors hover:bg-muted"
+                                className="group hover:bg-muted flex items-center gap-3 rounded-lg px-3 py-2.5 transition-colors"
                               >
-                                <span className="text-sm font-medium text-foreground">
+                                <span className="text-foreground text-sm font-medium">
                                   {service.title}
                                 </span>
                               </Link>
@@ -112,10 +110,8 @@ const MobileMenu: React.FC<Props> = ({ open, onClose }) => {
                   <Link
                     to={item.to}
                     onClick={onClose}
-                    className={`flex rounded-lg px-3 py-3 text-sm font-medium transition-colors hover:bg-muted ${
-                      isActive(item)
-                        ? "text-primary bg-primary/5 font-semibold"
-                        : "text-foreground"
+                    className={`hover:bg-muted flex rounded-lg px-3 py-3 text-sm font-medium transition-colors ${
+                      isActive(item) ? "text-primary bg-primary/5 font-semibold" : "text-foreground"
                     }`}
                   >
                     {t.nav[item.key]}
@@ -127,15 +123,12 @@ const MobileMenu: React.FC<Props> = ({ open, onClose }) => {
         </nav>
 
         {/* Footer Actions */}
-        <div className="border-t border-border px-6 py-4 flex flex-col gap-3">
+        <div className="border-border flex flex-col gap-3 border-t px-6 py-4">
           <Button className="w-full" onClick={onClose}>
             {t.nav.letsTalk}
           </Button>
           <div className="flex items-center justify-between">
-            <Button
-              variant="outline"
-              onClick={() => setLang(lang === "en" ? "vi" : "en")}
-            >
+            <Button variant="outline" onClick={() => setLang(lang === "en" ? "vi" : "en")}>
               {lang === "en" ? "🇺🇸 EN" : "🇻🇳 VI"}
             </Button>
             <ThemeToggle />
@@ -143,7 +136,7 @@ const MobileMenu: React.FC<Props> = ({ open, onClose }) => {
         </div>
       </div>
     </>,
-    document.body
+    document.body,
   );
 };
 

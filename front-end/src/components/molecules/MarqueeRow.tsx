@@ -17,11 +17,7 @@ const MarqueeRow: React.FC<Props> = ({ direction, children }) => (
   >
     <div className={direction === "left" ? "animate-marquee-left" : "animate-marquee-right"}>
       {Array.from({ length: COPIES }).map((_, i) => (
-        <div
-          key={i}
-          className="flex shrink-0 gap-4 px-2 md:gap-6 md:px-3"
-          aria-hidden={i > 0}
-        >
+        <div key={i} className="flex shrink-0 gap-4 px-2 md:gap-6 md:px-3" aria-hidden={i > 0}>
           {children}
         </div>
       ))}
