@@ -22,11 +22,11 @@ export default function ImagesUpload({ value, onChange }: ImagesUploadProps) {
     try {
       const formData = new FormData();
       formData.append("image", file);
-      const res = await axios.post<{ success: boolean; data: { path: string } }>(
+      const res = await axios.post<{ success: boolean; data: { url: string; path: string } }>(
         `${import.meta.env.VITE_API_URL ?? ""}/api/upload`,
         formData,
       );
-      if (res.data.success) onChange([...value, res.data.data.path]);
+      if (res.data.success) onChange([...value, res.data.data.url ?? res.data.data.path]);
       else setUploadError("Upload failed");
     } catch {
       setUploadError("Upload failed");

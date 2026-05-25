@@ -9,22 +9,22 @@ type CardProps = {
 type Props = {
   card: CardProps;
   variant: "vertical" | "horizontal";
+  onClick?: () => void;
 };
 
-const FeatureCard: React.FC<Props> = ({ card, variant }) => {
+const FeatureCard: React.FC<Props> = ({ card, variant, onClick }) => {
   const isVertical = variant === "vertical";
 
   return (
     <div
-      className={`group shrink-0 cursor-pointer overflow-hidden rounded-xl border border-white/5 transition-transform duration-300 ${
-        isVertical ? "w-45 md:w-55" : "w-75 md:w-95"
-      }`}
+      onClick={onClick}
+      className={`group shrink-0 cursor-pointer overflow-hidden rounded-xl border border-white/5 transition-transform duration-300 ${isVertical ? "w-45 md:w-55" : "w-75 md:w-95"
+        }`}
     >
       {/* Thumbnail */}
       <div
-        className={`relative overflow-hidden ${
-          isVertical ? "h-62.5 md:h-80" : "h-40 md:h-55"
-        }`}
+        className={`relative overflow-hidden ${isVertical ? "h-62.5 md:h-80" : "h-40 md:h-55"
+          }`}
       >
         <img
           src={card.thumbnailImage}

@@ -20,7 +20,8 @@ export default function VideoUpload({ value, onChange }: VideoUploadProps) {
     setProgress(0);
     try {
       const result = await uploadVideo(file, (p) => setProgress(p.percent));
-      onChange(result.path);
+      // prefer full url; fall back to path for older API versions
+      onChange(result.url ?? result.path);
     } catch (e) {
       setUploadError((e as Error).message);
     } finally {

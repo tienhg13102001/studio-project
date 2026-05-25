@@ -29,11 +29,15 @@ apiClient.interceptors.response.use(
 const API_BASE = import.meta.env.VITE_API_URL ?? "";
 
 
-/** Relative paths (/images/..., /videos/...) → /api/... URL; http(s) URLs stay unchanged */
+/**
+ * Turns a stored image/video value into a displayable URL.
+ * - Full http(s) URLs (new format): returned as-is.
+ * - Legacy relative paths (/uploads/…, /videos/…, /images/…): prefixed with API base.
+ */
 export function resolveAssetUrl(path: string | undefined | null): string {
   if (!path) return "";
   if (path.startsWith("http")) return path;
-  // Normalize: /images/x.jpg → /api/images/x.jpg
+  // Legacy: /images/x.jpg → /api/public/images/x.jpg
   const normalized = path.startsWith("/api") ? path : `/api/public${path}`;
   return `${API_BASE}${normalized}`;
 }
@@ -71,7 +75,8 @@ export interface UploadProgress {
 }
 
 export interface VideoUploadResult {
-  path: string; // e.g. "/videos/1716000000000-uuid.mp4"
+  url: string;  // full absolute URL e.g. https://beezvn.com/api/videos/file.mp4
+  path: string; // legacy relative path e.g. /videos/file.mp4 (kept for backwards compat)
   size: number;
   mimetype: string;
 }

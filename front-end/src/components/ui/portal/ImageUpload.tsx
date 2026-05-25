@@ -20,11 +20,12 @@ export default function ImageUpload({ value, onChange }: Props) {
     try {
       const formData = new FormData();
       formData.append("image", file);
-      const res = await axios.post<{ success: boolean; data: { path: string } }>(
+      const res = await axios.post<{ success: boolean; data: { url: string; path: string } }>(
         `${import.meta.env.VITE_API_URL ?? ""}/api/upload`,
         formData,
       );
-      if (res.data.success) onChange(res.data.data.path);
+      // prefer full url; fall back to path for older API versions
+      if (res.data.success) onChange(res.data.data.url ?? res.data.data.path);
       else setUploadError("Upload failed");
     } catch {
       setUploadError("Upload failed");
@@ -39,6 +40,7 @@ export default function ImageUpload({ value, onChange }: Props) {
     if (file) void handleFile(file);
   };
 
+  // value is now a full URL — resolveAssetUrl handles both absolute URLs and legacy paths
   const previewSrc = value ? resolveAssetUrl(value) : null;
 
   return (

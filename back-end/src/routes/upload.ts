@@ -1,8 +1,18 @@
-import { Router } from "express";
+import { Router, type Request } from "express";
 import multer from "multer";
 import { join, extname, basename, dirname } from "path";
 import { fileURLToPath } from "url";
 import { sendSuccess, sendError } from "../lib/response.ts";
+
+/**
+ * Resolve the public base URL for uploaded assets.
+ * Priority: PUBLIC_URL env → inferred from request protocol+host.
+ */
+function getBaseUrl(req: Request): string {
+  if (process.env.PUBLIC_URL) return process.env.PUBLIC_URL.replace(/\/$/, "");
+  const proto = (req.headers["x-forwarded-proto"] as string) ?? req.protocol;
+  return `${proto}://${req.headers.host}`;
+}
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -78,16 +88,18 @@ const videoUpload = multer({
 
 const router = Router();
 
-/** POST /api/upload — upload a single image, returns { path: "/uploads/…" } */
+/** POST /api/upload — upload a single image, returns { url: "https://…/api/public/uploads/…" } */
 router.post("/", imageUpload.single("image"), (req, res) => {
   if (!req.file) {
     sendError(res, "No image file received", 400);
     return;
   }
-  sendSuccess(res, { path: `/uploads/${req.file.filename}` });
+  const base = getBaseUrl(req);
+  const url = `${base}/api/public/uploads/${req.file.filename}`;
+  sendSuccess(res, { url, path: `/uploads/${req.file.filename}` });
 });
 
-/** POST /api/upload/video — upload a single video (≤ 500MB), returns { path: "/videos/…" } */
+/** POST /api/upload/video — upload a single video (≤ 500MB), returns { url: "https://…/api/videos/…" } */
 router.post("/video", videoUpload.single("video"), (req, res) => {
   if (!req.file) {
     sendError(
@@ -97,7 +109,10 @@ router.post("/video", videoUpload.single("video"), (req, res) => {
     );
     return;
   }
+  const base = getBaseUrl(req);
+  const url = `${base}/api/videos/${req.file.filename}`;
   sendSuccess(res, {
+    url,
     path: `/videos/${req.file.filename}`,
     size: req.file.size,
     mimetype: req.file.mimetype,
