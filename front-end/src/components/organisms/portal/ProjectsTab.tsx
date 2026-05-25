@@ -39,13 +39,6 @@ import type { ApiProject, ApiService, ApiServiceTag } from "#lib/apiTypes";
 import { PencilSimpleIcon, PlusIcon, TrashIcon } from "@phosphor-icons/react";
 import { useState } from "react";
 
-const TAG_VARIANT: Record<string, "amber" | "blue" | "emerald" | "violet"> = {
-  TVC: "amber",
-  SHORT: "blue",
-  "F&B": "emerald",
-  INTERVIEW: "violet",
-};
-
 // ─── Edit form ───────────────────────────────────────────────────────────────
 
 type ProjectForm = {
@@ -178,7 +171,7 @@ export default function ProjectsTab({ data, raw, services, loading, onRefetch }:
   const set = (k: keyof ProjectForm, v: unknown) => setForm((f) => (f ? { ...f, [k]: v } : f));
 
   if (loading) return <TableSkeleton cols={5} rows={5} />;
-  console.log(data)
+  console.log(data);
 
   return (
     <>
@@ -220,7 +213,7 @@ export default function ProjectsTab({ data, raw, services, loading, onRefetch }:
                     </div>
                   </TableCell>
                   <TableCell>
-                    <Badge variant={TAG_VARIANT[p.tag] ?? "default"}>{p.tag}</Badge>
+                    <Badge variant={"default"}>{p.tag}</Badge>
                   </TableCell>
                   <TableCell className="text-xs text-white/60">{rawItem?.layout ?? "—"}</TableCell>
                   <TableCell>
