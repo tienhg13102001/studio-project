@@ -1,18 +1,39 @@
 import { Router } from "express";
 import multer from "multer";
-import { join, extname, dirname } from "path";
+import { join, extname, basename, dirname } from "path";
 import { fileURLToPath } from "url";
-import { randomUUID } from "crypto";
 import { sendSuccess, sendError } from "../lib/response.ts";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 // ─── Image upload (existing, kept for backwards compatibility) ───────────────
+/** Tạo tên file dạng: <tên-gốc>-<YYYYMMDD_HHmmss>.<ext> */
+function buildFilename(originalname: string): string {
+  const ext = extname(originalname).toLowerCase();
+  const nameWithoutExt = basename(originalname, extname(originalname));
+  // Sanitize: chuyển space thành dấu gạch, xóa ký tự đặc biệt
+  const safeName = nameWithoutExt
+    .replace(/\s+/g, "-")
+    .replace(/[^a-zA-Z0-9\-_.\u00C0-\u024F\u1E00-\u1EFF]/g, "");
+  const now = new Date();
+  const pad = (n: number) => String(n).padStart(2, "0");
+  const datePart = [
+    now.getFullYear(),
+    pad(now.getMonth() + 1),
+    pad(now.getDate()),
+  ].join("");
+  const timePart = [
+    pad(now.getHours()),
+    pad(now.getMinutes()),
+    pad(now.getSeconds()),
+  ].join("");
+  return `${safeName}-${datePart}_${timePart}${ext}`;
+}
+
 const imageStorage = multer.diskStorage({
   destination: join(__dirname, "../../public/uploads"),
   filename: (_req, file, cb) => {
-    const ext = extname(file.originalname).toLowerCase();
-    cb(null, `${Date.now()}-${randomUUID()}${ext}`);
+    cb(null, buildFilename(file.originalname));
   },
 });
 
@@ -38,8 +59,7 @@ const VIDEO_MAX_BYTES = 500 * 1024 * 1024; // 500 MB
 const videoStorage = multer.diskStorage({
   destination: join(__dirname, "../../public/videos"),
   filename: (_req, file, cb) => {
-    const ext = extname(file.originalname).toLowerCase();
-    cb(null, `${Date.now()}-${randomUUID()}${ext}`);
+    cb(null, buildFilename(file.originalname));
   },
 });
 
