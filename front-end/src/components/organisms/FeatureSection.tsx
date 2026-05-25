@@ -13,7 +13,6 @@ const FeatureSection: FC<Props> = () => {
   const t = useTranslation();
   const { verticalCards, horizontalCards } = useProjects();
   const [selectedProject, setSelectedProject] = useState<ProjectDisplay | null>(null);
-  console.log("🚀 ~ FeatureSection ~ selectedProject:", selectedProject)
 
   // Fall back to mock while API loads
   const top = verticalCards || [];
@@ -52,10 +51,7 @@ const FeatureSection: FC<Props> = () => {
       </section>
 
       {selectedProject && (
-        <ProjectDetail
-          project={selectedProject}
-          // onClose={() => setSelectedProject(null)}
-        />
+        <ProjectDetail project={selectedProject} onClose={() => setSelectedProject(null)} />
       )}
     </>
   );
