@@ -99,7 +99,7 @@ const ProjectDetail: FC<Props> = ({ project, onClose }) => {
                 src={project.video}
                 controls
                 autoPlay /* THÊM THUỘC TÍNH NÀY ĐỂ VIDEO TỰ CHẠY */
-                className="h-auto max-h-[80vh] w-full rounded-2xl object-cover shadow-2xl"
+                className="h-auto max-h-[80vh] w-full aspect-video rounded-2xl object-cover shadow-2xl"
               />
             ) : (
               <>
@@ -107,7 +107,7 @@ const ProjectDetail: FC<Props> = ({ project, onClose }) => {
                 <img
                   src={project.thumbnailImage}
                   alt="Thumbnail"
-                  className="h-auto max-h-[80vh] w-full rounded-2xl object-cover shadow-2xl"
+                  className="h-auto max-h-[80vh] w-full aspect-video rounded-2xl object-cover shadow-2xl"
                 />
 
                 {/* Nút play giờ chỉ hiện khi isPlayVideo là false */}
