@@ -1,5 +1,6 @@
 import { Button } from "#components/ui/button";
 import type { ProjectDisplay } from "#hooks/useProjects";
+import { cn } from "#lib/utils";
 import {
   ArrowLeftIcon,
   ArrowRightIcon,
@@ -20,6 +21,7 @@ const ProjectDetail: FC<Props> = ({ project, onClose }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPlayVideo, setIsPlayVideo] = useState(false);
   const totalImages = project?.photos?.length || 0;
+  console.log("🚀 ~ ProjectDetail ~ totalImages:", totalImages)
 
   const handleNext = () => {
     if (currentIndex < totalImages - 1) {
@@ -89,7 +91,7 @@ const ProjectDetail: FC<Props> = ({ project, onClose }) => {
         <XIcon size={20} />
       </Button>
       {/* Container chính */}
-      <div className="relative flex w-full flex-col items-center gap-5 px-8 lg:flex-row lg:gap-10">
+      <div className={cn('relative flex w-full flex-col items-center gap-5 px-8 lg:flex-row lg:gap-10', totalImages > 0 ? "lg:justify-start" : "lg:justify-center")}>
         {/* CỘT TRÁI: VIDEO NẾU CÓ */}
         {project.video && (
           <div className="relative flex w-full justify-center lg:w-1/2">
@@ -180,7 +182,7 @@ const ProjectDetail: FC<Props> = ({ project, onClose }) => {
         </div>
 
         {/* CỘT PHẢI: SLIDER HÌNH ẢNH (Slider Column) */}
-        {project.photos && (
+        {project.photos && totalImages > 0 && (
           <div className="relative flex h-100 w-full items-center lg:h-150 lg:w-3/5">
             {/* Khu vực chứa các thẻ ảnh (Perspective để tạo chiều sâu nếu cần, ở đây dùng 2D transform cho đơn giản và mượt) */}
             <div className="relative flex h-full w-full items-center justify-center md:h-[80%]">
