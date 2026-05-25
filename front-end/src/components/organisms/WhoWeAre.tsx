@@ -45,7 +45,7 @@ const WhoWeAre: React.FC = () => {
       </div>
 
       {/* Stats marquee */}
-      <div className="border-y border-border/50 bg-muted/30 py-4 overflow-hidden w-1/2 max-w-7xl mx-auto">
+      <div className="border-y border-border/50 bg-muted/30 py-4 overflow-hidden w-2/3 md:w-1/2 max-w-7xl mx-auto">
         <MarqueeRow direction="left">
           {[...t.team.stats, ...t.team.stats, ...t.team.stats].map((stat, i) => (
             <div key={i} className="flex shrink-0 items-center gap-3">
