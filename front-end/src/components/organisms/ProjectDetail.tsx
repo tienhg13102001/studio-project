@@ -180,11 +180,11 @@ const ProjectDetail: FC<Props> = ({ project, onClose }) => {
         </div>
 
         {/* CỘT PHẢI: SLIDER HÌNH ẢNH (Slider Column) */}
-        <div className="relative flex h-100 w-full items-center lg:h-150 lg:w-3/5">
-          {/* Khu vực chứa các thẻ ảnh (Perspective để tạo chiều sâu nếu cần, ở đây dùng 2D transform cho đơn giản và mượt) */}
-          <div className="relative flex h-full w-full items-center justify-center md:h-[80%]">
-            {project.photos &&
-              project.photos.map((image, index) => {
+        {project.photos && (
+          <div className="relative flex h-100 w-full items-center lg:h-150 lg:w-3/5">
+            {/* Khu vực chứa các thẻ ảnh (Perspective để tạo chiều sâu nếu cần, ở đây dùng 2D transform cho đơn giản và mượt) */}
+            <div className="relative flex h-full w-full items-center justify-center md:h-[80%]">
+              {project.photos.map((image, index) => {
                 const overlayOpacity = Math.min(Math.max(index - currentIndex, 0) * 0.3, 0.85);
                 return (
                   <div
@@ -212,7 +212,7 @@ const ProjectDetail: FC<Props> = ({ project, onClose }) => {
                     {/* Tiêu đề & Icon ở góc dưới */}
                     <div className="absolute right-6 bottom-6 left-6 flex items-end justify-between">
                       <h2 className="text-xl font-semibold text-white shadow-sm md:text-2xl">
-                        "oke"
+                        {project.title}
                       </h2>
                       <button className="rounded-full bg-black/40 p-3 backdrop-blur-md transition-colors hover:bg-white/20">
                         <EyeIcon size={20} className="text-white" />
@@ -221,51 +221,54 @@ const ProjectDetail: FC<Props> = ({ project, onClose }) => {
                   </div>
                 );
               })}
-          </div>
-
-          {/* Điều hướng (Navigation Controls) - Căn giữa ở dưới cùng */}
-          <div className="absolute -bottom-20 left-0 z-40 flex w-full flex-col items-center gap-4 md:-bottom-10">
-            {/* Nút bấm */}
-            <div className="flex items-center gap-6">
-              <button
-                onClick={handlePrev}
-                disabled={currentIndex === 0}
-                className={`flex items-center justify-center rounded-full p-3 transition-all ${
-                  currentIndex === 0
-                    ? "cursor-not-allowed bg-gray-800/50 text-gray-600"
-                    : "bg-white/10 text-white backdrop-blur-md hover:bg-white/20"
-                }`}
-              >
-                <ArrowLeftIcon size={24} />
-              </button>
-
-              <span className="text-sm tracking-widest text-gray-400 uppercase">Click arrows</span>
-
-              <button
-                onClick={handleNext}
-                disabled={currentIndex === totalImages - 1}
-                className={`flex items-center justify-center rounded-full p-3 transition-all ${
-                  currentIndex === totalImages - 1
-                    ? "cursor-not-allowed bg-gray-800/50 text-gray-600"
-                    : "bg-white/10 text-white backdrop-blur-md hover:bg-white/20"
-                }`}
-              >
-                <ArrowRightIcon size={24} />
-              </button>
             </div>
 
-            {/* Dấu chấm chỉ báo (Dots indicator) */}
-            <div className="flex items-center gap-2">
-              {project.photos &&
-                project.photos.map((_, idx) => (
-                  <div
-                    key={idx}
-                    className={`h-1.5 rounded-full transition-all duration-300 ${idx === currentIndex ? "bg-primary w-6" : "w-1.5 bg-gray-600"}`}
-                  />
-                ))}
+            {/* Điều hướng (Navigation Controls) - Căn giữa ở dưới cùng */}
+            <div className="absolute -bottom-20 left-0 z-40 flex w-full flex-col items-center gap-4 md:-bottom-10">
+              {/* Nút bấm */}
+              <div className="flex items-center gap-6">
+                <button
+                  onClick={handlePrev}
+                  disabled={currentIndex === 0}
+                  className={`flex items-center justify-center rounded-full p-3 transition-all ${
+                    currentIndex === 0
+                      ? "cursor-not-allowed bg-gray-800/50 text-gray-600"
+                      : "bg-white/10 text-white backdrop-blur-md hover:bg-white/20"
+                  }`}
+                >
+                  <ArrowLeftIcon size={24} />
+                </button>
+
+                <span className="text-sm tracking-widest text-gray-400 uppercase">
+                  Click arrows
+                </span>
+
+                <button
+                  onClick={handleNext}
+                  disabled={currentIndex === totalImages - 1}
+                  className={`flex items-center justify-center rounded-full p-3 transition-all ${
+                    currentIndex === totalImages - 1
+                      ? "cursor-not-allowed bg-gray-800/50 text-gray-600"
+                      : "bg-white/10 text-white backdrop-blur-md hover:bg-white/20"
+                  }`}
+                >
+                  <ArrowRightIcon size={24} />
+                </button>
+              </div>
+
+              {/* Dấu chấm chỉ báo (Dots indicator) */}
+              <div className="flex items-center gap-2">
+                {project.photos &&
+                  project.photos.map((_, idx) => (
+                    <div
+                      key={idx}
+                      className={`h-1.5 rounded-full transition-all duration-300 ${idx === currentIndex ? "bg-primary w-6" : "w-1.5 bg-gray-600"}`}
+                    />
+                  ))}
+              </div>
             </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );
