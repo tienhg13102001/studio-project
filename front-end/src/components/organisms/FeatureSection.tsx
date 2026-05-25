@@ -20,7 +20,7 @@ const FeatureSection: FC<Props> = () => {
 
   return (
     <>
-      <section className="flex min-h-dvh flex-col justify-center overflow-hidden py-16 font-sans">
+      <section className="flex min-h-screen flex-col justify-center overflow-hidden py-16 font-sans">
         <div className="mx-auto mb-10 w-full max-w-7xl px-6">
           <SectionHeader title={t.featured.sectionTitle} subtitle="" />
         </div>
