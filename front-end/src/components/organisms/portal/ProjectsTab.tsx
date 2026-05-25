@@ -1,11 +1,12 @@
-import { useState } from "react";
-import { PencilSimpleIcon, PlusIcon, TrashIcon } from "@phosphor-icons/react";
-import { apiPost, apiPut, apiDelete } from "#lib/api";
-import type { ApiProject, ApiService, ApiServiceTag } from "#lib/apiTypes";
-import type { ProjectDisplay } from "#hooks/useProjects";
 import EditModal from "#components/ui/portal/EditModal";
 import ImageUpload from "#components/ui/portal/ImageUpload";
 import { TableSkeleton } from "#components/ui/portal/TableSkeleton";
+import VideoUpload from "#components/ui/portal/VideoUpload";
+import type { ProjectDisplay } from "#hooks/useProjects";
+import { apiDelete, apiPost, apiPut } from "#lib/api";
+import type { ApiProject, ApiService, ApiServiceTag } from "#lib/apiTypes";
+import { PencilSimpleIcon, PlusIcon, TrashIcon } from "@phosphor-icons/react";
+import { useState } from "react";
 
 const inp =
   "w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/30 focus:border-primary/50 focus:outline-none transition-colors";
@@ -29,13 +30,14 @@ type ProjectForm = {
   layout: "vertical" | "horizontal";
   prominent: boolean;
   service: string; // service ObjectId
+  video: string; // optional, path to video file
 };
 
 function toForm(f: ApiProject): ProjectForm {
   const service =
     f.service && typeof f.service === "object"
       ? (f.service as ApiServiceTag).id
-      : (f.service as string | undefined ?? "");
+      : ((f.service as string | undefined) ?? "");
   return {
     title: f.title,
     subtitle: f.subtitle,
@@ -43,11 +45,20 @@ function toForm(f: ApiProject): ProjectForm {
     layout: f.layout,
     prominent: f.prominent,
     service,
+    video: f.video ?? "",
   };
 }
 
 function emptyProjectForm(): ProjectForm {
-  return { title: "", subtitle: "", thumbnailImage: "", layout: "vertical", prominent: false, service: "" };
+  return {
+    title: "",
+    subtitle: "",
+    thumbnailImage: "",
+    layout: "vertical",
+    prominent: false,
+    service: "",
+    video: "",
+  };
 }
 
 // ─── Tab ─────────────────────────────────────────────────────────────────────
@@ -78,8 +89,17 @@ export default function ProjectsTab({ data, raw, services, loading, onRefetch }:
     setForm(toForm(rawItem));
     setError(null);
   };
-  const openCreate = () => { setCreating(true); setEditing(null); setForm(emptyProjectForm()); setError(null); };
-  const closeEdit = () => { setEditing(null); setCreating(false); setForm(null); };
+  const openCreate = () => {
+    setCreating(true);
+    setEditing(null);
+    setForm(emptyProjectForm());
+    setError(null);
+  };
+  const closeEdit = () => {
+    setEditing(null);
+    setCreating(false);
+    setForm(null);
+  };
 
   const handleSave = async () => {
     if (!form) return;
@@ -94,6 +114,7 @@ export default function ProjectsTab({ data, raw, services, loading, onRefetch }:
         layout: form.layout,
         prominent: form.prominent,
         service: form.service,
+        video: form.video || undefined,
       };
       if (creating) {
         await apiPost(`/api/projects`, payload);
@@ -135,7 +156,7 @@ export default function ProjectsTab({ data, raw, services, loading, onRefetch }:
         <h2 className="text-lg font-semibold text-white">Projects</h2>
         <button
           onClick={openCreate}
-          className="flex items-center gap-1.5 rounded-lg bg-primary px-3 py-1.5 text-xs font-medium text-black transition-all hover:opacity-80"
+          className="bg-primary flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium text-black transition-all hover:opacity-80"
         >
           <PlusIcon size={12} weight="bold" />
           Add project
@@ -156,54 +177,63 @@ export default function ProjectsTab({ data, raw, services, loading, onRefetch }:
             {data.map((p) => {
               const rawItem = (raw ?? []).find((r) => r.id === p.id);
               return (
-              <tr key={p.id} className="border-b border-white/5 last:border-0 transition-colors hover:bg-white/3">
-                <td className="px-4 py-3">
-                  <div className="flex items-center gap-3">
-                    <img
-                      src={p.thumbnailImage}
-                      alt={p.title}
-                      className="h-10 w-16 shrink-0 rounded object-cover opacity-80"
-                    />
-                    <div className="min-w-0">
-                      <p className="line-clamp-1 text-xs font-medium text-white">{p.title}</p>
-                      <p className="line-clamp-1 text-[10px] text-white/40">{p.subtitle}</p>
+                <tr
+                  key={p.id}
+                  className="border-b border-white/5 transition-colors last:border-0 hover:bg-white/3"
+                >
+                  <td className="px-4 py-3">
+                    <div className="flex items-center gap-3">
+                      <img
+                        src={p.thumbnailImage}
+                        alt={p.title}
+                        className="h-10 w-16 shrink-0 rounded object-cover opacity-80"
+                      />
+                      <div className="min-w-0">
+                        <p className="line-clamp-1 text-xs font-medium text-white">{p.title}</p>
+                        <p className="line-clamp-1 text-[10px] text-white/40">{p.subtitle}</p>
+                      </div>
                     </div>
-                  </div>
-                </td>
-                <td className="px-4 py-3">
-                  <span
-                    className={`rounded-full border px-2 py-0.5 text-[10px] font-medium ${TAG_COLORS[p.tag] ?? "border-white/20 bg-white/10 text-white/60"}`}
-                  >
-                    {p.tag}
-                  </span>
-                </td>
-                <td className="px-4 py-3 text-xs text-white/60">{rawItem?.layout ?? "—"}</td>
-                <td className="px-4 py-3">
-                  {rawItem?.prominent ? (
-                    <span className="text-[10px] text-primary">Yes</span>
-                  ) : (
-                    <span className="text-[10px] text-white/30">—</span>
-                  )}
-                </td>
-                <td className="px-4 py-3">
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={() => openEdit(p.id)}
-                      className="flex items-center gap-1 rounded-lg border border-white/10 px-2.5 py-1.5 text-[10px] text-white/50 transition-colors hover:border-primary/40 hover:text-primary"
+                  </td>
+                  <td className="px-4 py-3">
+                    <span
+                      className={`rounded-full border px-2 py-0.5 text-[10px] font-medium ${TAG_COLORS[p.tag] ?? "border-white/20 bg-white/10 text-white/60"}`}
                     >
-                      <PencilSimpleIcon size={11} />
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => { const r = (raw ?? []).find((x) => x.id === p.id); if (r) { setConfirmDelete(r); setDeleteError(null); } }}
-                      className="flex items-center gap-1 rounded-lg border border-white/10 px-2.5 py-1.5 text-[10px] text-white/50 transition-colors hover:border-red-500/50 hover:text-red-400"
-                      title="Delete project"
-                    >
-                      <TrashIcon size={11} />
-                    </button>
-                  </div>
-                </td>
-              </tr>
+                      {p.tag}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3 text-xs text-white/60">{rawItem?.layout ?? "—"}</td>
+                  <td className="px-4 py-3">
+                    {rawItem?.prominent ? (
+                      <span className="text-primary text-[10px]">Yes</span>
+                    ) : (
+                      <span className="text-[10px] text-white/30">—</span>
+                    )}
+                  </td>
+                  <td className="px-4 py-3">
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => openEdit(p.id)}
+                        className="hover:border-primary/40 hover:text-primary flex items-center gap-1 rounded-lg border border-white/10 px-2.5 py-1.5 text-[10px] text-white/50 transition-colors"
+                      >
+                        <PencilSimpleIcon size={11} />
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => {
+                          const r = (raw ?? []).find((x) => x.id === p.id);
+                          if (r) {
+                            setConfirmDelete(r);
+                            setDeleteError(null);
+                          }
+                        }}
+                        className="flex items-center gap-1 rounded-lg border border-white/10 px-2.5 py-1.5 text-[10px] text-white/50 transition-colors hover:border-red-500/50 hover:text-red-400"
+                        title="Delete project"
+                      >
+                        <TrashIcon size={11} />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
               );
             })}
           </tbody>
@@ -216,7 +246,15 @@ export default function ProjectsTab({ data, raw, services, loading, onRefetch }:
         onClose={closeEdit}
         onSubmit={handleSave}
         saving={saving}
-        onDelete={editing ? () => { setConfirmDelete(editing); setDeleteError(null); closeEdit(); } : undefined}
+        onDelete={
+          editing
+            ? () => {
+                setConfirmDelete(editing);
+                setDeleteError(null);
+                closeEdit();
+              }
+            : undefined
+        }
         deleting={deleting}
       >
         {form && (
@@ -253,6 +291,10 @@ export default function ProjectsTab({ data, raw, services, loading, onRefetch }:
                     </select>
                   </div>
                   <div>
+                    <div>
+                      <label className={lbl}>Video (optional)</label>
+                      <VideoUpload value={form.video} onChange={(v) => set("video", v)} />
+                    </div>
                     <label className={lbl}>Service Tag</label>
                     <select
                       className={sel}
@@ -283,8 +325,11 @@ export default function ProjectsTab({ data, raw, services, loading, onRefetch }:
 
               {/* ── Right: image ──────────────────────── */}
               <div>
-                <label className={lbl}>Image</label>
-                <ImageUpload value={form.thumbnailImage} onChange={(path) => set("thumbnailImage", path)} />
+                <label className={lbl}>Thumbnail Image</label>
+                <ImageUpload
+                  value={form.thumbnailImage}
+                  onChange={(path) => set("thumbnailImage", path)}
+                />
               </div>
             </div>
 
@@ -298,7 +343,8 @@ export default function ProjectsTab({ data, raw, services, loading, onRefetch }:
           <div className="w-full max-w-sm rounded-2xl border border-white/10 bg-[#161616] p-6 shadow-2xl">
             <h3 className="mb-2 font-semibold text-white">Delete project?</h3>
             <p className="mb-5 text-sm text-white/50">
-              “<span className="text-white/80">{confirmDelete.title}</span>” will be permanently deleted.
+              “<span className="text-white/80">{confirmDelete.title}</span>” will be permanently
+              deleted.
             </p>
             {deleteError && <p className="mb-3 text-xs text-red-400">{deleteError}</p>}
             <div className="flex justify-end gap-3">

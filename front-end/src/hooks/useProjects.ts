@@ -8,6 +8,7 @@ export type ProjectDisplay = {
   thumbnailImage: string;
   title: string;
   subtitle: string;
+  video?: string;
 };
 
 function mapProject(f: ApiProject): ProjectDisplay {
@@ -17,6 +18,7 @@ function mapProject(f: ApiProject): ProjectDisplay {
     thumbnailImage: resolveAssetUrl(f.thumbnailImage),
     title: f.title,
     subtitle: f.subtitle,
+    video: f.video,
   };
 }
 

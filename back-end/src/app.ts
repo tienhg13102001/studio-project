@@ -29,6 +29,21 @@ app.use(
 // ─── Static files ─────────────────────────────────────────────────────────────
 app.use("/api/public", express.static(join(__dirname, "../public")));
 
+// Dedicated video endpoint: express.static supports HTTP Range natively (seek/scrub),
+// and we apply a long immutable cache because filenames are unique (UUID-based).
+app.use(
+  "/api/videos",
+  express.static(join(__dirname, "../public/videos"), {
+    maxAge: "30d",
+    immutable: true,
+    acceptRanges: true,
+    fallthrough: false,
+    setHeaders: (res) => {
+      res.setHeader("Cache-Control", "public, max-age=2592000, immutable");
+    },
+  }),
+);
+
 // ─── Routes ──────────────────────────────────────────────────────────────────
 app.get("/api/health", (_req, res) => {
   sendSuccess(res, { status: "ok", timestamp: new Date().toISOString() });

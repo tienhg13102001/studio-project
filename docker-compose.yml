@@ -40,6 +40,10 @@ services:
     depends_on:
       mongodb:
         condition: service_healthy
+    volumes:
+      # Persist user uploads (images & videos) across container rebuilds
+      - backend_uploads:/app/public/uploads
+      - backend_videos:/app/public/videos
     networks:
       - beez-net
 
@@ -68,3 +72,5 @@ networks:
 # ── Named volumes ──────────────────────────────────────────────────────────────
 volumes:
   mongodb_data:
+  backend_uploads:
+  backend_videos:

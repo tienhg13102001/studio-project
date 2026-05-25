@@ -29,6 +29,7 @@ export type ApiProject = {
   title:          string;
   subtitle:       string;
   prominent:      boolean;
+  video?: string; // optional, path to video file
 };
 
 export type ApiService = {

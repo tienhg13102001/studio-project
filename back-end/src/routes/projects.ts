@@ -14,9 +14,19 @@ router.get("/", async (_req, res) => {
 });
 
 /** POST /api/projects */
+
+// Accepts: { title, subtitle, thumbnailImage, layout, prominent, service, video? }
 router.post("/", async (req, res) => {
   const body = req.body as Partial<IProject>;
-  const project = await Project.create(body);
+  const project = await Project.create({
+    title: body.title,
+    subtitle: body.subtitle,
+    thumbnailImage: body.thumbnailImage,
+    layout: body.layout,
+    prominent: body.prominent,
+    service: body.service,
+    video: body.video,
+  });
   if (body.service) {
     await Service.findByIdAndUpdate(body.service, { $push: { projects: project._id } });
   }
@@ -25,11 +35,13 @@ router.post("/", async (req, res) => {
 });
 
 /** PUT /api/projects/:id */
+
+// Accepts: { title, subtitle, thumbnailImage, layout, prominent, service, video? }
 router.put("/:id", async (req, res) => {
-  const { title, subtitle, thumbnailImage, layout, prominent, service } = req.body as Record<string, unknown>;
+  const { title, subtitle, thumbnailImage, layout, prominent, service, video } = req.body as Record<string, unknown>;
   const project = await Project.findByIdAndUpdate(
     req.params.id,
-    { title, subtitle, thumbnailImage, layout, prominent, service },
+    { title, subtitle, thumbnailImage, layout, prominent, service, video },
     { new: true, runValidators: true },
   ).populate("service");
   if (!project) { sendError(res, "Project not found", 404); return; }

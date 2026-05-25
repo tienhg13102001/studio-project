@@ -30,6 +30,7 @@ export type Project = {
   thumbnailImage: string;
   title: string;
   subtitle: string;
+  video?: string; // optional, path to video file
 };
 
 export type ProjectsContent = {

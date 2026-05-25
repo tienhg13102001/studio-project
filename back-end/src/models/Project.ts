@@ -8,6 +8,7 @@ export interface IProject extends Document {
   title: string;
   subtitle: string;
   prominent: boolean;
+  video?: string; // optional, path to video file
 }
 
 const projectSchema = new Schema<IProject>(
@@ -18,6 +19,7 @@ const projectSchema = new Schema<IProject>(
     title:          { type: String, required: true },
     subtitle:       { type: String, required: true },
     prominent:      { type: Boolean, default: false },
+    video:          { type: String, required: false }, // path to video file (optional)
   },
   {
     toJSON: {
