@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { type AxiosError } from "axios";
 
 const apiClient = axios.create({
   baseURL: import.meta.env.VITE_API_URL ?? "",
@@ -6,7 +6,28 @@ const apiClient = axios.create({
   headers: { "Content-Type": "application/json" },
 });
 
+// ─── Response interceptor ─────────────────────────────────────────────────────
+// When the server returns a non-2xx status, Axios throws before we can read
+// res.data. This interceptor extracts the actual error message from the
+// response body (res.data.error / res.data.message) so callers get a
+// meaningful message instead of "Request failed with status code 500".
+apiClient.interceptors.response.use(
+  (res) => res,
+  (err: AxiosError<{ success?: boolean; error?: string; message?: string }>) => {
+    const serverMsg =
+      err.response?.data?.error ??
+      err.response?.data?.message ??
+      null;
+    if (serverMsg) {
+      // Replace the generic Axios message with the server's own message
+      err.message = serverMsg;
+    }
+    return Promise.reject(err);
+  },
+);
+
 const API_BASE = import.meta.env.VITE_API_URL ?? "";
+
 
 /** Relative paths (/images/..., /videos/...) → /api/... URL; http(s) URLs stay unchanged */
 export function resolveAssetUrl(path: string | undefined | null): string {
