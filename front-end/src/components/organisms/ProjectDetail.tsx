@@ -81,7 +81,7 @@ const ProjectDetail: FC<Props> = ({ project, onClose }) => {
   };
 
   return (
-    <div className="bg-background/90 fixed z-50 flex h-dvh w-screen items-center justify-center overflow-hidden font-sans text-white transition-opacity duration-300 overflow-y-auto">
+    <div className="bg-background/90 fixed z-50 flex h-dvh w-screen items-center justify-center overflow-hidden overflow-y-auto font-sans text-white transition-opacity duration-300">
       {/* Icon close */}
       <Button
         onClick={onClose}
@@ -90,16 +90,21 @@ const ProjectDetail: FC<Props> = ({ project, onClose }) => {
         <XIcon size={20} />
       </Button>
       {/* Container chính */}
-      <div className={cn('relative flex w-full flex-col items-center gap-5 px-8 lg:flex-row lg:gap-10 pb-40 lg:pb-0', totalImages > 0 ? "lg:justify-start" : "lg:justify-center")}>
+      <div
+        className={cn(
+          "relative flex w-full flex-col items-center gap-5 px-8 pb-40 lg:flex-row lg:gap-10 lg:pb-0",
+          totalImages > 0 ? "lg:justify-start" : "lg:justify-center",
+        )}
+      >
         {/* CỘT TRÁI: VIDEO NẾU CÓ */}
         {project.video && (
-          <div className="relative flex w-full justify-center lg:w-1/2">
+          <div className="relative flex w-full justify-center lg:w-1/3">
             {isPlayVideo ? (
               <video
                 src={project.video}
                 controls
                 autoPlay /* THÊM THUỘC TÍNH NÀY ĐỂ VIDEO TỰ CHẠY */
-                className="h-auto max-h-[80vh] w-full aspect-video rounded-2xl object-cover shadow-2xl"
+                className="h-auto max-h-[80vh] w-full rounded-2xl object-cover shadow-2xl"
               />
             ) : (
               <>
@@ -107,7 +112,7 @@ const ProjectDetail: FC<Props> = ({ project, onClose }) => {
                 <img
                   src={project.thumbnailImage}
                   alt="Thumbnail"
-                  className="h-auto max-h-[80vh] w-full aspect-video rounded-2xl object-cover shadow-2xl"
+                  className="h-auto max-h-[80vh] w-full rounded-2xl object-cover shadow-2xl"
                 />
 
                 {/* Nút play giờ chỉ hiện khi isPlayVideo là false */}
@@ -122,7 +127,7 @@ const ProjectDetail: FC<Props> = ({ project, onClose }) => {
           </div>
         )}
         {/* CỘT GIỮA: THÔNG TIN (Info Column) */}
-        <div className="border-border z-30 flex h-fit w-full flex-col justify-center space-y-8 rounded-3xl border px-10 py-20 backdrop-blur-sm lg:w-2/5">
+        <div className="border-border z-30 flex h-fit w-full flex-col justify-center space-y-8 rounded-3xl border px-10 py-20 backdrop-blur-sm lg:w-1/3">
           {/* Header Info */}
           <div>
             <span className="mb-4 inline-block rounded-md bg-yellow-500/20 px-3 py-1 text-sm font-medium text-yellow-500">
@@ -182,7 +187,7 @@ const ProjectDetail: FC<Props> = ({ project, onClose }) => {
 
         {/* CỘT PHẢI: SLIDER HÌNH ẢNH (Slider Column) */}
         {project.photos && totalImages > 0 && (
-          <div className="relative flex h-100 w-full items-center lg:h-150 lg:w-3/5">
+          <div className="relative flex h-100 w-full items-center lg:h-150 lg:w-1/3">
             {/* Khu vực chứa các thẻ ảnh (Perspective để tạo chiều sâu nếu cần, ở đây dùng 2D transform cho đơn giản và mượt) */}
             <div className="relative flex h-full w-full items-center justify-center md:h-[80%]">
               {project.photos.map((image, index) => {
@@ -190,7 +195,7 @@ const ProjectDetail: FC<Props> = ({ project, onClose }) => {
                 return (
                   <div
                     key={index}
-                    className="absolute top-0 left-0 h-full w-full origin-center overflow-hidden rounded-2xl bg-gray-900 shadow-2xl transition-all duration-700 ease-[cubic-bezier(0.25,1,0.5,1)] md:w-[85%]"
+                    className="absolute top-0 left-0 h-full w-full origin-center overflow-hidden rounded-2xl bg-gray-900 shadow-2xl transition-all duration-700 ease-[cubic-bezier(0.25,1,0.5,1)] "
                     style={getCardStyle(index)}
                   >
                     {/* Hình nền */}
