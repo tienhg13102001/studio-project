@@ -1,22 +1,22 @@
 import mongoose, { Schema, type Document } from "mongoose";
-import type { IFeature } from "./Feature.ts";
 import type { PopulatedDoc } from "mongoose";
+import type { IProject } from "./Project.ts";
 
 export interface IBrand extends Document {
-  name:     string;
-  logo:     string;           // path or URL to logo image
-  features: PopulatedDoc<IFeature>[];
-  order:    number;
-  active:   boolean;
+  name: string;
+  logo: string; // path or URL to logo image
+  projects: PopulatedDoc<IProject>[];
+  order: number;
+  active: boolean;
 }
 
 const brandSchema = new Schema<IBrand>(
   {
-    name:     { type: String, required: true, trim: true },
-    logo:     { type: String, required: true },
-    features: [{ type: Schema.Types.ObjectId, ref: "Feature" }],
-    order:    { type: Number, default: 0 },
-    active:   { type: Boolean, default: true },
+    name: { type: String, required: true, trim: true },
+    logo: { type: String, required: true },
+    projects: [{ type: Schema.Types.ObjectId, ref: "Project" }],
+    order: { type: Number, default: 0 },
+    active: { type: Boolean, default: true },
   },
   {
     toJSON: {
