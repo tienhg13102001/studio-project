@@ -12,7 +12,7 @@
   "dependencies": {
     "@fontsource-variable/lora": "^5.2.8",
     "@fontsource-variable/montserrat": "^5.2.8",
-    "@fontsource-variable/outfit": "^5.2.8",
+    "@fontsource-variable/plus-jakarta-sans": "^5.2.8",
     "@phosphor-icons/react": "^2.1.10",
     "axios": "^1.16.1",
     "class-variance-authority": "^0.7.1",
