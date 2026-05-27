@@ -43,6 +43,10 @@ export const router = createBrowserRouter([
     ],
   },
   {
+    path: "script",
+    element: <ScriptPage />,
+  },
+  {
     path: "*",
     element: <NotFoundPage />,
   },
