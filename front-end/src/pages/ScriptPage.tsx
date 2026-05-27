@@ -1,8 +1,6 @@
-import React from "react";
 
-type Props = {};
 
-const ScriptPage = (props: Props) => {
+const ScriptPage = () => {
   return (
     <div>
       <iframe

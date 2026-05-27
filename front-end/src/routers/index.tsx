@@ -8,6 +8,7 @@ import TeamPage from "../pages/TeamPage";
 import PortalPage from "../pages/portal/PortalPage";
 import PortalLayout from "../components/templates/portal/PortalLayout";
 import DashboardPage from "../pages/portal/DashboardPage";
+import ScriptPage from "../pages/ScriptPage";
 
 export const router = createBrowserRouter([
   // Public portal login
