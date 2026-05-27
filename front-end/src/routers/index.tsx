@@ -44,7 +44,7 @@ export const router = createBrowserRouter([
     ],
   },
   {
-    path: "/script",
+    path: "/scripts",
     element: <ScriptPage />,
   },
   {
