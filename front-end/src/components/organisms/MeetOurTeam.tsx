@@ -45,8 +45,6 @@ const MeetOurTeam: React.FC = () => {
                 <img
                   src={resolveAssetUrl(featured.photo)}
                   alt={featured.name}
-                  loading="lazy"
-                  decoding="async"
                   className="h-full w-full object-cover"
                 />
               </div>
@@ -109,7 +107,6 @@ const MeetOurTeam: React.FC = () => {
                     <img
                       src={resolveAssetUrl(user.photo)}
                       alt={user.name}
-                      loading="lazy"
                       decoding="async"
                       className="h-full w-full object-cover"
                     />

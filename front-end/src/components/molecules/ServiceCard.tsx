@@ -14,8 +14,6 @@ const ServiceCard: React.FC<Props> = ({ service }) => {
       <img
         src={service.thumbnailImage}
         alt={service.title}
-        loading="lazy"
-        decoding="async"
         className="absolute inset-0 h-full w-full object-cover opacity-60 transition-transform duration-700 ease-in-out group-hover:scale-110 group-hover:opacity-80"
       />
 
