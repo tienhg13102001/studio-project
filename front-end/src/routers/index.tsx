@@ -46,7 +46,7 @@ export const router = createBrowserRouter([
     ],
   },
   {
-    path: "/scripts",
+    path: "/bao-gia",
     element: withSuspense(ScriptPage),
   },
   {
