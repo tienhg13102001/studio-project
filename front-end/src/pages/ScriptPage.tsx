@@ -6,8 +6,7 @@ const ScriptPage = () => {
       <iframe
         src="https://script.google.com/macros/s/AKfycbxpjBUuVXucUFAZvA--zEzUrW3gEFJxhSh24iGD42qHqRmp8eJn-FfyJCXmC6Ut1vs/exec"
         width="100%"
-        height="600px"
-        frameBorder="0"
+        height="100vh"
         allowFullScreen
       ></iframe>
     </div>
