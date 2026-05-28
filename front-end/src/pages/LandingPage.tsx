@@ -1,10 +1,9 @@
+import FeatureSection from "#components/organisms/FeatureSection";
 import HeroSection from "#components/organisms/HeroSection";
 import Preloader from "#components/organisms/Preloader";
-import { lazy, Suspense, useState } from "react";
-
-const ServiceSection = lazy(() => import("#components/organisms/ServiceSection"));
-const FeatureSection = lazy(() => import("#components/organisms/FeatureSection"));
-const StatsAndBrands = lazy(() => import("#components/organisms/StatsAndBrands"));
+import ServiceSection from "#components/organisms/ServiceSection";
+import StatsAndBrands from "#components/organisms/StatsAndBrands";
+import { useState } from "react";
 
 const LandingPage = () => {
   const [isReady, setIsReady] = useState(() => sessionStorage.getItem("preloaded") === "1");
@@ -19,11 +18,9 @@ const LandingPage = () => {
       {!isReady && <Preloader onComplete={handlePreloaderComplete} />}
       <div className="selection:text-primary relative flex w-full flex-col font-sans text-white antialiased">
         <HeroSection />
-        <Suspense fallback={null}>
-          <ServiceSection />
-          <FeatureSection />
-          <StatsAndBrands />
-        </Suspense>
+        <ServiceSection />
+        <FeatureSection />
+        <StatsAndBrands />
       </div>
     </>
   );
