@@ -3,9 +3,10 @@ import MarqueeRow from "#components/molecules/MarqueeRow";
 import SectionHeader from "#components/molecules/SectionHeader";
 import { useProjects, type ProjectDisplay } from "#hooks/useProjects";
 import { useTranslation } from "#i18n";
-import type { FC } from "react";
+import { lazy, Suspense, type FC } from "react";
 import { useSearchParams } from "react-router-dom";
-import ProjectDetail from "./ProjectDetail";
+
+const ProjectDetail = lazy(() => import("./ProjectDetail"));
 
 const PROJECT_PARAM = "project";
 
@@ -76,7 +77,11 @@ const FeatureSection: FC<Props> = () => {
         </div>
       </section>
 
-      {selectedProject && <ProjectDetail project={selectedProject} onClose={closeProject} />}
+      {selectedProject && (
+        <Suspense fallback={null}>
+          <ProjectDetail project={selectedProject} onClose={closeProject} />
+        </Suspense>
+      )}
     </>
   );
 };
