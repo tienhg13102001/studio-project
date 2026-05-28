@@ -42,10 +42,30 @@ export function resolveAssetUrl(path: string | undefined | null): string {
   return `${API_BASE}${normalized}`;
 }
 
+// In-memory cache of resolved/in-flight GET promises keyed by path.
+// Lets multiple components call apiFetch(samePath) without triggering
+// duplicate network requests. Failed requests are evicted so callers can retry.
+const fetchCache = new Map<string, Promise<unknown>>();
+
 export async function apiFetch<T>(path: string): Promise<T> {
-  const res = await apiClient.get<{ success: boolean; data?: T; error?: string }>(path);
-  if (!res.data.success) throw new Error(res.data.error ?? "Unknown API error");
-  return res.data.data as T;
+  const cached = fetchCache.get(path);
+  if (cached) return cached as Promise<T>;
+
+  const promise = apiClient
+    .get<{ success: boolean; data?: T; error?: string }>(path)
+    .then((res) => {
+      if (!res.data.success) throw new Error(res.data.error ?? "Unknown API error");
+      return res.data.data as T;
+    });
+
+  promise.catch(() => fetchCache.delete(path)); // allow retry after error
+  fetchCache.set(path, promise);
+  return promise;
+}
+
+// Drop a cached entry so the next apiFetch(path) re-hits the server.
+export function invalidateApiCache(path: string) {
+  fetchCache.delete(path);
 }
 
 export async function apiPost<T>(path: string, body: unknown): Promise<T> {
