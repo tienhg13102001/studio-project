@@ -27,6 +27,8 @@ const FeatureCard: React.FC<Props> = ({ card, variant, onClick }) => {
         <img
           src={card.thumbnailImage}
           alt={card.title}
+          loading="lazy"
+          decoding="async"
           className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
         />
         <span className="bg-primary text-primary-foreground absolute top-3 left-3 rounded px-2 py-0.5 text-[10px] font-bold tracking-wider uppercase shadow md:text-xs">

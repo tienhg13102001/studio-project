@@ -38,7 +38,14 @@ const PageHero: React.FC<PageHeroProps> = (props) => {
     const { title, image, icon, height = "h-[60vh]" } = props;
     return (
       <div className={`relative ${height} w-full overflow-hidden`}>
-        <img src={image} alt={title} className="h-full w-full object-cover" />
+        <img
+          src={image}
+          alt={title}
+          loading="eager"
+          decoding="async"
+          fetchPriority="high"
+          className="h-full w-full object-cover"
+        />
         <div className="from-background via-background/40 absolute inset-0 bg-linear-to-t to-transparent" />
         <div className="absolute bottom-0 left-0 px-6 pb-10 md:px-12">
           {icon && (

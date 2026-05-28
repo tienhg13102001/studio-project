@@ -22,6 +22,8 @@ const WhoWeAre: React.FC = () => {
             <img
               src={"/user1.webp"}
               alt="BeeZ Production team"
+              loading="lazy"
+              decoding="async"
               className="h-full w-full object-cover"
             />
           </div>
@@ -65,6 +67,8 @@ const WhoWeAre: React.FC = () => {
               <img
                 src={src}
                 alt={`BeeZ gallery ${i}`}
+                loading="lazy"
+                decoding="async"
                 className="h-full w-full object-cover transition-transform duration-500 hover:scale-105"
               />
             </div>

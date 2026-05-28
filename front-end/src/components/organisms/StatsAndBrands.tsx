@@ -76,6 +76,8 @@ const StatsAndBrands: React.FC = () => {
                   <img
                     src={resolveAssetUrl(brand.logo)}
                     alt={brand.name}
+                    loading="lazy"
+                    decoding="async"
                     className="h-8 max-w-30 object-contain opacity-50 grayscale transition-all duration-300 hover:opacity-100 hover:grayscale-0"
                   />
                 </div>
