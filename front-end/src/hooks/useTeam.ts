@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from "react";
-import { apiFetch } from "#lib/api";
+import { apiFetch, invalidateApiCache } from "#lib/api";
 import type { ApiUser } from "#lib/apiTypes";
 
 export function useTeam() {
@@ -7,18 +7,23 @@ export function useTeam() {
   const [loading, setLoading] = useState(true);
   const fetched = useRef(false);
 
-  const refetch = useCallback(() => {
+  const fetch = useCallback(() => {
     setLoading(true);
     apiFetch<ApiUser[]>("/api/users")
       .then(setData)
       .finally(() => setLoading(false));
   }, []);
 
+  const refetch = useCallback(() => {
+    invalidateApiCache("/api/users");
+    fetch();
+  }, [fetch]);
+
   useEffect(() => {
     if (fetched.current) return;
     fetched.current = true;
-    refetch();
-  }, [refetch]);
+    fetch();
+  }, [fetch]);
 
   return { data, loading, refetch };
 }

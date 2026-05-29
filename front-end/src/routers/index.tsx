@@ -1,5 +1,5 @@
 import { lazy, Suspense, type ComponentType, type LazyExoticComponent } from "react";
-import { createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter, Navigate } from "react-router-dom";
 import MainLayout from "../components/templates/MainLayout";
 import PortalLayout from "../components/templates/portal/PortalLayout";
 
@@ -10,7 +10,13 @@ const TeamPage = lazy(() => import("../pages/TeamPage"));
 const ScriptPage = lazy(() => import("../pages/ScriptPage"));
 const NotFoundPage = lazy(() => import("../pages/NotFoundPage"));
 const PortalPage = lazy(() => import("../pages/portal/PortalPage"));
-const DashboardPage = lazy(() => import("../pages/portal/DashboardPage"));
+
+const PortalOverviewPage = lazy(() => import("../pages/portal/OverviewPage"));
+const PortalTeamPage = lazy(() => import("../pages/portal/TeamPage"));
+const PortalBrandsPage = lazy(() => import("../pages/portal/BrandsPage"));
+const PortalServicesPage = lazy(() => import("../pages/portal/ServicesPage"));
+const PortalProjectsPage = lazy(() => import("../pages/portal/ProjectsPage"));
+const PortalSettingsPage = lazy(() => import("../pages/portal/SettingsPage"));
 
 const PageFallback = () => (
   <div className="flex min-h-screen items-center justify-center">
@@ -30,10 +36,19 @@ export const router = createBrowserRouter([
     path: "/portal",
     element: withSuspense(PortalPage),
   },
-  // Protected portal routes
+  // Protected portal shell + nested tab routes
   {
     element: <PortalLayout />,
-    children: [{ path: "/portal/dashboard", element: withSuspense(DashboardPage) }],
+    children: [
+      { path: "/portal/dashboard", element: withSuspense(PortalOverviewPage) },
+      { path: "/portal/team", element: withSuspense(PortalTeamPage) },
+      { path: "/portal/brands", element: withSuspense(PortalBrandsPage) },
+      { path: "/portal/services", element: withSuspense(PortalServicesPage) },
+      { path: "/portal/projects", element: withSuspense(PortalProjectsPage) },
+      { path: "/portal/settings", element: withSuspense(PortalSettingsPage) },
+      // Any unknown /portal/* (other than /portal itself) → dashboard
+      { path: "/portal/*", element: <Navigate to="/portal/dashboard" replace /> },
+    ],
   },
   {
     path: "/",

@@ -13,7 +13,10 @@ const HeroSection = () => {
   const content = data ?? {
     heroLine1: lang === "en" ? "Welcome to" : "Chào mừng đến với",
     heroLine2: "BeeZ Production",
-    subheading: lang === "en" ? "Your one-stop creative studio for stunning visuals and unforgettable stories" : "Studio sáng tạo tất cả trong một của bạn cho hình ảnh tuyệt đẹp và câu chuyện khó quên",
+    subheading:
+      lang === "en"
+        ? "Your one-stop creative studio for stunning visuals and unforgettable stories"
+        : "Studio sáng tạo tất cả trong một của bạn cho hình ảnh tuyệt đẹp và câu chuyện khó quên",
   };
 
   const handleScrollDown = () => {

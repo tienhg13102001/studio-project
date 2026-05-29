@@ -25,3 +25,7 @@ Thumbs.db
 *.ntvs*
 *.njsproj
 *.sln
+
+# User-uploaded assets — keep folder, ignore contents
+public/uploads/*
+!public/uploads/.gitkeep

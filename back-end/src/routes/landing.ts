@@ -12,4 +12,18 @@ router.get("/", async (_req, res, next) => {
   } catch (e) { next(e); }
 });
 
+/** PUT /api/landing — update the single landing document (upsert) */
+router.put("/", async (req, res, next) => {
+  try {
+    const { heroLine1, heroLine2, subheading, videoBackground, phone, email, address, socials } =
+      req.body as Record<string, unknown>;
+    const landing = await Landing.findOneAndUpdate(
+      {},
+      { heroLine1, heroLine2, subheading, videoBackground, phone, email, address, socials },
+      { new: true, upsert: true, runValidators: true, setDefaultsOnInsert: true },
+    );
+    sendSuccess(res, landing);
+  } catch (e) { next(e); }
+});
+
 export default router;

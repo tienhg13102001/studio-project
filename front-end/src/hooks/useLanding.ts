@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { Lang } from "#i18n";
-import { apiFetch, resolveAssetUrl } from "#lib/api";
+import { apiFetch, invalidateApiCache, resolveAssetUrl } from "#lib/api";
 import type { ApiLanding } from "#lib/apiTypes";
 
 export type LandingDisplay = {
@@ -8,6 +8,14 @@ export type LandingDisplay = {
   heroLine2: string;
   subheading: string;
   videoBackground: string;
+  phone: string;
+  email: string;
+  address: string;
+  socials: {
+    zalo: string;
+    facebook: string;
+    instagram: string;
+  };
 };
 
 export function useLanding(lang: Lang) {
@@ -16,15 +24,24 @@ export function useLanding(lang: Lang) {
   const [error, setError] = useState<string | null>(null);
   const fetched = useRef(false);
 
-  useEffect(() => {
-    if (fetched.current) return;
-    fetched.current = true;
-
+  const fetch = useCallback(() => {
+    setLoading(true);
     apiFetch<ApiLanding>("/api/landing")
       .then(setRaw)
       .catch((err: Error) => setError(err.message))
       .finally(() => setLoading(false));
   }, []);
+
+  const refetch = useCallback(() => {
+    invalidateApiCache("/api/landing");
+    fetch();
+  }, [fetch]);
+
+  useEffect(() => {
+    if (fetched.current) return;
+    fetched.current = true;
+    fetch();
+  }, [fetch]);
 
   const data: LandingDisplay | null = raw
     ? {
@@ -32,8 +49,16 @@ export function useLanding(lang: Lang) {
         heroLine2: raw.heroLine2[lang],
         subheading: raw.subheading[lang],
         videoBackground: resolveAssetUrl(raw.videoBackground),
+        phone: raw.phone ?? "",
+        email: raw.email ?? "",
+        address: raw.address?.[lang] ?? "",
+        socials: {
+          zalo: raw.socials?.zalo ?? "",
+          facebook: raw.socials?.facebook ?? "",
+          instagram: raw.socials?.instagram ?? "",
+        },
       }
     : null;
 
-  return { data, loading, error };
+  return { data, raw, loading, error, refetch };
 }

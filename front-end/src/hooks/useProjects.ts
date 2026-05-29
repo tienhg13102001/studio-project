@@ -1,4 +1,4 @@
-import { apiFetch, resolveAssetUrl } from "#lib/api";
+import { apiFetch, invalidateApiCache, resolveAssetUrl } from "#lib/api";
 import type { ApiProject, ApiProjectsContent } from "#lib/apiTypes";
 import { useCallback, useEffect, useRef, useState } from "react";
 
@@ -30,7 +30,7 @@ export function useProjects() {
   const [error, setError] = useState<string | null>(null);
   const fetched = useRef(false);
 
-  const refetch = useCallback(() => {
+  const fetch = useCallback(() => {
     setLoading(true);
     apiFetch<ApiProjectsContent>("/api/projects")
       .then(setRaw)
@@ -38,11 +38,16 @@ export function useProjects() {
       .finally(() => setLoading(false));
   }, []);
 
+  const refetch = useCallback(() => {
+    invalidateApiCache("/api/projects");
+    fetch();
+  }, [fetch]);
+
   useEffect(() => {
     if (fetched.current) return;
     fetched.current = true;
-    refetch();
-  }, [refetch]);
+    fetch();
+  }, [fetch]);
 
   const verticalCards = raw?.verticalCards.map(mapProject) ?? null;
   const horizontalCards = raw?.horizontalCards.map(mapProject) ?? null;

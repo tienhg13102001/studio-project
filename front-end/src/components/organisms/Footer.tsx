@@ -1,14 +1,12 @@
+import SocialLinks from "#components/molecules/SocialLinks";
 import { useContact } from "#hooks/useContact";
+import { useLanding } from "#hooks/useLanding";
 import { useLanguage, useTranslation } from "#i18n";
 import {
   ClockIcon,
   EnvelopeSimpleIcon,
-  FacebookLogoIcon,
-  InstagramLogoIcon,
   MapPinIcon,
   PhoneIcon,
-  TiktokLogoIcon,
-  YoutubeLogoIcon,
 } from "@phosphor-icons/react";
 import { Link } from "react-router-dom";
 import Logo from "../../assets/icons/Logo";
@@ -24,30 +22,13 @@ const Footer: React.FC = () => {
   const t = useTranslation();
   const { lang } = useLanguage();
   const { data: contact } = useContact();
+  const { data: landing } = useLanding(lang);
   const year = new Date().getFullYear();
-
-  const socials = [
-    contact?.socials.facebook && {
-      href: contact.socials.facebook,
-      icon: FacebookLogoIcon,
-      label: "Facebook",
-    },
-    contact?.socials.instagram && {
-      href: contact.socials.instagram,
-      icon: InstagramLogoIcon,
-      label: "Instagram",
-    },
-    contact?.socials.youtube && {
-      href: contact.socials.youtube,
-      icon: YoutubeLogoIcon,
-      label: "YouTube",
-    },
-    contact?.socials.tiktok && {
-      href: contact.socials.tiktok,
-      icon: TiktokLogoIcon,
-      label: "TikTok",
-    },
-  ].filter(Boolean) as { href: string; icon: typeof FacebookLogoIcon; label: string }[];
+  const hasSocials = !!(
+    landing?.socials.facebook ||
+    landing?.socials.instagram ||
+    landing?.socials.zalo
+  );
 
   return (
     <footer className="border-border bg-card/50 text-foreground border-t">
@@ -86,32 +67,32 @@ const Footer: React.FC = () => {
             {t.footer.contact}
           </h3>
           <ul className="space-y-3 text-sm">
-            {contact?.phone && (
+            {landing?.phone && (
               <li className="flex items-start gap-2">
                 <PhoneIcon size={16} className="text-primary mt-0.5 shrink-0" />
                 <a
-                  href={`tel:${contact.phone}`}
+                  href={`tel:${landing.phone}`}
                   className="text-muted-foreground hover:text-foreground transition-colors"
                 >
-                  {contact.phone}
+                  {landing.phone}
                 </a>
               </li>
             )}
-            {contact?.email && (
+            {landing?.email && (
               <li className="flex items-start gap-2">
                 <EnvelopeSimpleIcon size={16} className="text-primary mt-0.5 shrink-0" />
                 <a
-                  href={`mailto:${contact.email}`}
+                  href={`mailto:${landing.email}`}
                   className="text-muted-foreground hover:text-foreground transition-colors"
                 >
-                  {contact.email}
+                  {landing.email}
                 </a>
               </li>
             )}
-            {contact?.address && (
+            {landing?.address && (
               <li className="flex items-start gap-2">
                 <MapPinIcon size={16} className="text-primary mt-0.5 shrink-0" />
-                <span className="text-muted-foreground">{contact.address[lang]}</span>
+                <span className="text-muted-foreground">{landing.address}</span>
               </li>
             )}
           </ul>
@@ -138,25 +119,12 @@ const Footer: React.FC = () => {
             </div>
           )}
 
-          {socials.length > 0 && (
+          {hasSocials && (
             <div>
               <h3 className="text-foreground mb-4 text-sm font-semibold tracking-wider uppercase">
                 {t.footer.followUs}
               </h3>
-              <div className="flex items-center gap-3">
-                {socials.map(({ href, icon: Icon, label }) => (
-                  <a
-                    key={label}
-                    href={href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label={label}
-                    className="bg-foreground/10 hover:bg-primary hover:text-primary-foreground text-foreground flex h-9 w-9 items-center justify-center rounded-full transition-colors"
-                  >
-                    <Icon size={18} />
-                  </a>
-                ))}
-              </div>
+              <SocialLinks size="sm" showPhone={false} />
             </div>
           )}
         </div>

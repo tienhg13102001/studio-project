@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import type { Lang } from "#i18n";
-import { apiFetch, resolveAssetUrl } from "#lib/api";
+import { apiFetch, invalidateApiCache, resolveAssetUrl } from "#lib/api";
 import type { ApiPaginatedServices, ApiService } from "#lib/apiTypes";
 
 export type ServiceDisplay = {
@@ -25,7 +25,7 @@ export function useServices(lang: Lang) {
   const [error, setError] = useState<string | null>(null);
   const fetched = useRef(false);
 
-  const refetch = useCallback(() => {
+  const fetch = useCallback(() => {
     setLoading(true);
     apiFetch<ApiPaginatedServices>("/api/services?limit=100")
       .then((res) => setRaw(res.items))
@@ -33,11 +33,16 @@ export function useServices(lang: Lang) {
       .finally(() => setLoading(false));
   }, []);
 
+  const refetch = useCallback(() => {
+    invalidateApiCache("/api/services?limit=100");
+    fetch();
+  }, [fetch]);
+
   useEffect(() => {
     if (fetched.current) return;
     fetched.current = true;
-    refetch();
-  }, [refetch]);
+    fetch();
+  }, [fetch]);
 
   const data = raw?.map((s) => mapService(s, lang)) ?? null;
   return { data, raw, loading, error, refetch };

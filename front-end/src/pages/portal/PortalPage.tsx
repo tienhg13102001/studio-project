@@ -11,11 +11,12 @@ import {
   EyeSlashIcon,
   SpinnerIcon,
   ArrowLeftIcon,
+  UserCircleIcon,
 } from "@phosphor-icons/react";
 import Logo from "../../assets/icons/Logo";
 import { apiPost, resolveAssetUrl } from "#lib/api";
 
-type View = "select" | "admin";
+type View = "continue" | "select" | "admin";
 
 type LoginResponse = {
   id: string;
@@ -24,9 +25,23 @@ type LoginResponse = {
   accountRole: "admin" | "member" | "editor";
 };
 
+function readSavedUser(): LoginResponse | null {
+  try {
+    const raw = localStorage.getItem("portal_user");
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as LoginResponse;
+    if (parsed?.id && parsed?.name && parsed?.email) return parsed;
+    return null;
+  } catch {
+    localStorage.removeItem("portal_user");
+    return null;
+  }
+}
+
 const PortalPage = () => {
   const navigate = useNavigate();
-  const [view, setView] = useState<View>("select");
+  const [savedUser, setSavedUser] = useState<LoginResponse | null>(() => readSavedUser());
+  const [view, setView] = useState<View>(() => (readSavedUser() ? "continue" : "select"));
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPw, setShowPw] = useState(false);
@@ -39,13 +54,19 @@ const PortalPage = () => {
     setLoading(true);
     try {
       const user = await apiPost<LoginResponse>("/api/auth/login", { email, password });
-      sessionStorage.setItem("portal_user", JSON.stringify(user));
+      localStorage.setItem("portal_user", JSON.stringify(user));
       navigate("/portal/dashboard");
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Login failed");
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleSwitchAccount = () => {
+    localStorage.removeItem("portal_user");
+    setSavedUser(null);
+    setView("select");
   };
 
   return (
@@ -80,14 +101,49 @@ const PortalPage = () => {
           <div className="mb-8 flex flex-col gap-4">
             <Logo className="text-primary h-9 w-9" />
             <div>
-              <h1 className="text-3xl font-bold text-white">Welcome to Portal</h1>
+              <h1 className="text-3xl font-bold text-white">
+                {view === "continue" ? "Welcome back" : "Welcome to Portal"}
+              </h1>
               <p className="mt-1 text-sm text-white/50">
-                {view === "select"
-                  ? "Please select your portal type"
-                  : "Admin Portal — Sign in to continue"}
+                {view === "continue" && "Bạn đã đăng nhập trên thiết bị này"}
+                {view === "select" && "Please select your portal type"}
+                {view === "admin" && "Admin Portal — Sign in to continue"}
               </p>
             </div>
           </div>
+
+          {/* ── Continue with saved session ── */}
+          {view === "continue" && savedUser && (
+            <div className="flex flex-col gap-3">
+              <button
+                onClick={() => navigate("/portal/dashboard")}
+                className="group hover:border-primary/50 hover:bg-primary/10 flex items-center gap-4 rounded-xl border border-white/10 bg-white/5 px-5 py-4 text-left transition-all"
+              >
+                <div className="bg-primary/20 text-primary group-hover:bg-primary group-hover:text-primary-foreground flex h-12 w-12 shrink-0 items-center justify-center rounded-full text-base font-bold transition-colors">
+                  {savedUser.name.charAt(0).toUpperCase()}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="text-[11px] tracking-wider text-white/40 uppercase">
+                    Truy cập với tài khoản
+                  </p>
+                  <p className="truncate text-sm font-semibold text-white">{savedUser.name}</p>
+                  <p className="mt-0.5 truncate text-xs text-white/40">{savedUser.email}</p>
+                </div>
+                <ArrowRightIcon
+                  size={16}
+                  className="group-hover:text-primary shrink-0 text-white/30 transition-colors"
+                />
+              </button>
+
+              <button
+                onClick={handleSwitchAccount}
+                className="inline-flex items-center justify-center gap-1.5 self-center rounded-lg px-3 py-1.5 text-xs text-white/40 transition-colors hover:text-white"
+              >
+                <UserCircleIcon size={14} />
+                Đăng nhập tài khoản khác
+              </button>
+            </div>
+          )}
 
           {/* ── Selection view ── */}
           {view === "select" && (

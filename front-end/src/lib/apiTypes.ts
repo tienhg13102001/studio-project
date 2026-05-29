@@ -7,6 +7,14 @@ export type ApiLanding = {
   heroLine2: LocalizedString;
   subheading: LocalizedString;
   videoBackground: string;
+  phone?: string;
+  email?: string;
+  address?: LocalizedString;
+  socials?: {
+    zalo?: string;
+    facebook?: string;
+    instagram?: string;
+  };
 };
 
 export type ApiFaqItem = {
