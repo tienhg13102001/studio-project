@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { ArrowLeftIcon, StarIcon } from "@phosphor-icons/react";
 import { apiFetch, resolveAssetUrl } from "#lib/api";
 import { useLanguage } from "#i18n";
+import Seo from "#components/Seo";
 import { Button } from "#components/ui/button";
 import PageHero from "#components/organisms/PageHero";
 import type { ApiService } from "#lib/apiTypes";
@@ -54,6 +55,12 @@ const ServicePage: React.FC = () => {
 
   return (
     <div className="min-h-screen">
+      <Seo
+        title={title}
+        description={description.slice(0, 160)}
+        path={`/service/${id}`}
+        image={imageUrl}
+      />
       <PageHero
         variant="image"
         title={title}

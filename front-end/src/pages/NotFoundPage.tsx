@@ -1,3 +1,4 @@
+import Seo from "#components/Seo";
 import { useNavigate } from "react-router-dom";
 import Logo from "../assets/icons/Logo";
 
@@ -6,6 +7,7 @@ const NotFoundPage = () => {
 
   return (
     <div className="text-foreground relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-[#0a0a0a] px-6 font-sans">
+      <Seo title="404 — Không tìm thấy trang" description="Trang bạn tìm không tồn tại." noindex />
       {/* Chữ 404 nền mờ */}
       <span className="pointer-events-none absolute text-[20rem] leading-none font-bold text-white/3 select-none">
         404

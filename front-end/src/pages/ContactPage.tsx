@@ -11,6 +11,7 @@ import {
   PaperPlaneTiltIcon,
   SpinnerIcon,
 } from "@phosphor-icons/react";
+import Seo from "#components/Seo";
 import { useContact } from "#hooks/useContact";
 import { useServices } from "#hooks/useServices";
 import { useLanguage } from "#i18n";
@@ -93,6 +94,11 @@ const ContactPage: React.FC = () => {
 
   return (
     <div className="min-h-screen">
+      <Seo
+        title="Liên hệ"
+        description="Liên hệ BeeZ Production để bắt đầu dự án video tiếp theo của bạn — TVC, phim quảng cáo, brand film. Đội ngũ tại Hà Nội luôn sẵn sàng tư vấn."
+        path="/contact"
+      />
       <PageHero title={contact.heading[lang]} subtitle={contact.subheading[lang]} />
 
       <div className="mx-auto max-w-5xl px-6 pb-24 md:px-12">
