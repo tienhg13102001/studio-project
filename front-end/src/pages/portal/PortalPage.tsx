@@ -13,8 +13,9 @@ import {
   ArrowLeftIcon,
   UserCircleIcon,
 } from "@phosphor-icons/react";
-import Logo from "../../assets/icons/Logo";
-import { apiPost, resolveAssetUrl } from "#lib/api";
+import LogoYellow from "../../assets/icons/LogoYellow";
+import LogoBlack from "../../assets/icons/LogoBlack";
+import { apiPost } from "#lib/api";
 
 type View = "continue" | "select" | "admin";
 
@@ -70,18 +71,15 @@ const PortalPage = () => {
   };
 
   return (
-    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-black px-4">
-      {/* Video background */}
-      <video
-        autoPlay
-        muted
-        loop
-        playsInline
-        className="pointer-events-none absolute inset-0 h-full w-full object-cover opacity-30"
-        src={resolveAssetUrl("/videos/video-bg.webm")}
-      />
+    <div className="bg-primary relative flex min-h-screen items-center justify-center overflow-hidden px-4">
+      {/* Tiled logo pattern background */}
+      <div className="pointer-events-none absolute inset-0 m-[-20%] grid rotate-25 grid-cols-[repeat(auto-fill,minmax(110px,1fr))] place-items-center gap-6 p-6 opacity-20">
+        {Array.from({ length: 360 }).map((_, i) => (
+          <LogoBlack key={i} className="h-20 w-20" />
+        ))}
+      </div>
       {/* Dark overlay */}
-      <div className="pointer-events-none absolute inset-0 bg-black/60" />
+      <div className="pointer-events-none absolute inset-0 bg-black/50" />
 
       {/* Card */}
       <div className="relative w-full max-w-md overflow-hidden rounded-2xl border border-white/10 bg-black/60 shadow-2xl backdrop-blur-xl">
@@ -97,9 +95,9 @@ const PortalPage = () => {
         </div>
 
         <div className="px-8 pt-6 pb-8">
-          {/* Logo + heading */}
+          {/* LogoYellow + heading */}
           <div className="mb-8 flex flex-col gap-4">
-            <Logo className="text-primary h-9 w-9" />
+            <LogoYellow className="text-primary h-9 w-9" />
             <div>
               <h1 className="text-3xl font-bold text-white">
                 {view === "continue" ? "Welcome back" : "Welcome to Portal"}

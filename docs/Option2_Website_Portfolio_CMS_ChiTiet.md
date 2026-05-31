@@ -84,7 +84,7 @@ Kế thừa toàn bộ thiết kế và tính năng của Option 1, với điể
 | 2 | **Giới thiệu ngắn** | Số liệu thống kê tự động (tổng dự án, năm hoạt động) |
 | 3 | **Tác phẩm nổi bật** | 6-9 dự án được Admin đánh dấu "Featured" |
 | 4 | **Dịch vụ** | Danh sách dịch vụ lấy từ Admin |
-| 5 | **Khách hàng đối tác** | Logo từ module Clients trong Admin |
+| 5 | **Khách hàng đối tác** | LogoYellow từ module Clients trong Admin |
 | 6 | **Testimonials** | Đánh giá khách hàng do Admin thêm vào |
 | 7 | **CTA cuối trang** | Dẫn đến trang liên hệ |
 
@@ -179,7 +179,7 @@ Chức năng bổ sung:
 
 ### 5.7. Cài đặt Studio (`/admin/settings`)
 
-- Thông tin cơ bản: Tên Studio, Slogan, Mô tả ngắn, Logo.
+- Thông tin cơ bản: Tên Studio, Slogan, Mô tả ngắn, LogoYellow.
 - Thông tin liên hệ: SĐT, Email, Địa chỉ, Zalo, Facebook, Instagram, YouTube, TikTok.
 - Nội dung Hero Banner: Tiêu đề, Phụ đề, Link video nền.
 - Đổi mật khẩu Admin.

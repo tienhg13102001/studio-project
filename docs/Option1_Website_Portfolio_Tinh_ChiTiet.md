@@ -47,7 +47,7 @@ Website Portfolio Tĩnh đóng vai trò như một **"Card visit điện tử" c
 | 2 | **Giới thiệu ngắn** | 2-3 câu mô tả Studio, số liệu nổi bật (số dự án, năm kinh nghiệm, khách hàng) |
 | 3 | **Tác phẩm nổi bật** | Hiển thị 6 - 9 video/ảnh tiêu biểu nhất (thumbnail + nhúng YouTube/Vimeo) |
 | 4 | **Dịch vụ** | Tóm tắt 3-4 dịch vụ chính, mỗi dịch vụ có icon và mô tả 1-2 dòng |
-| 5 | **Khách hàng đối tác** | Logo các thương hiệu đã hợp tác (dạng thanh cuộn ngang) |
+| 5 | **Khách hàng đối tác** | LogoYellow các thương hiệu đã hợp tác (dạng thanh cuộn ngang) |
 | 6 | **Testimonials** | 2-3 đánh giá của khách hàng thực tế (ảnh + tên + lời nhận xét) |
 | 7 | **CTA cuối trang** | Banner kêu gọi liên hệ — "Bạn có dự án muốn thực hiện? Liên hệ ngay!" |
 
@@ -180,7 +180,7 @@ studio-portfolio/
 │   ├── images/
 │   │   ├── portfolio/       # Thumbnail của các dự án
 │   │   ├── team/            # Ảnh thành viên
-│   │   └── clients/         # Logo khách hàng
+│   │   └── clients/         # LogoYellow khách hàng
 │   └── favicon.ico
 ├── src/
 │   ├── app/                 # Next.js App Router
@@ -212,7 +212,7 @@ studio-portfolio/
 │       ├── portfolio.ts     # Dữ liệu tác phẩm
 │       ├── services.ts      # Dữ liệu dịch vụ
 │       ├── team.ts          # Dữ liệu đội ngũ
-│       └── clients.ts       # Logo khách hàng
+│       └── clients.ts       # LogoYellow khách hàng
 ├── next.config.js
 ├── tailwind.config.js
 └── package.json
@@ -270,11 +270,11 @@ Sau khi hoàn thành, Developer bàn giao cho Studio:
 
 Để dự án triển khai đúng tiến độ, Studio cần chuẩn bị và cung cấp:
 
-- [ ] **Logo** Studio (file vector `.svg` hoặc `.png` nền trong).
+- [ ] **LogoYellow** Studio (file vector `.svg` hoặc `.png` nền trong).
 - [ ] **Ảnh đại diện** Studio (ảnh không gian, thiết bị, đội ngũ) — tối thiểu 10 ảnh chất lượng cao.
 - [ ] **Danh sách tác phẩm muốn hiển thị** kèm link YouTube/Vimeo tương ứng.
 - [ ] **Nội dung text** cho phần Giới thiệu và Dịch vụ (Studio tự soạn hoặc yêu cầu Developer hỗ trợ).
-- [ ] **Logo/tên các khách hàng đối tác** đã hợp tác.
+- [ ] **LogoYellow/tên các khách hàng đối tác** đã hợp tác.
 - [ ] **Thông tin liên hệ chính thức:** số điện thoại, email, địa chỉ, link Zalo OA / Facebook / Instagram.
 - [ ] **Đăng ký tên miền** (hoặc ủy quyền cho Developer đăng ký).
 

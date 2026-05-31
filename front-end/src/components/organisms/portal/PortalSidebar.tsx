@@ -9,7 +9,7 @@ import {
   UsersThreeIcon,
 } from "@phosphor-icons/react";
 import { Link, useLocation } from "react-router-dom";
-import Logo from "../../../assets/icons/Logo";
+import LogoYellow from "../../../assets/icons/LogoYellow";
 
 type NavItem = {
   icon: React.ReactNode;
@@ -37,9 +37,9 @@ export default function PortalSidebar({ user, onLogout }: Props) {
 
   return (
     <aside className="flex w-60 shrink-0 flex-col border-r border-white/8 bg-black/40">
-      {/* Logo */}
+      {/* LogoYellow */}
       <div className="flex items-center gap-2.5 border-b border-white/8 px-5 py-5">
-        <Logo className="text-primary h-7 w-7 shrink-0" />
+        <LogoYellow className="text-primary h-7 w-7 shrink-0" />
         <div className="min-w-0">
           <p className="truncate text-sm leading-tight font-bold text-white">BeeZ Portal</p>
           <p className="text-[10px] leading-tight text-white/30">Admin Dashboard</p>

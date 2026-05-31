@@ -131,7 +131,7 @@ export default function BrandsTab({ data, loading, onRefetch }: TabProps) {
 
               {/* ── Right: logo ───────────────────────── */}
               <div>
-                <Label>Logo</Label>
+                <Label>LogoYellow</Label>
                 <ImageUpload value={form.logo} onChange={(path) => set("logo", path)} />
               </div>
             </div>

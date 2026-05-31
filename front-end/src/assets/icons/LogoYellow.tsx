@@ -1,6 +1,6 @@
 import type { FC } from "react";
 
-const Logo: FC<React.SVGProps<SVGSVGElement>> = (props) => {
+const LogoYellow: FC<React.SVGProps<SVGSVGElement>> = (props) => {
   return (
     <svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 377.38 383.63" {...props}>
       <g id="Layer_1-2" data-name="Layer 1">
@@ -13,4 +13,4 @@ const Logo: FC<React.SVGProps<SVGSVGElement>> = (props) => {
   );
 };
 
-export default Logo;
+export default LogoYellow;

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { UserIcon, ListIcon, ArrowLeftIcon } from "@phosphor-icons/react";
-import Logo from "../../assets/icons/Logo";
+import LogoYellow from "../../assets/icons/LogoYellow";
 import { Button } from "#components/ui/button";
 import NavLinks from "#components/molecules/NavLinks";
 import ThemeToggle from "#components/molecules/ThemeToggle";
@@ -29,9 +29,9 @@ const Navbar: React.FC<Props> = () => {
       <nav
         className={`fixed top-0 left-0 z-20 flex w-full items-center justify-between px-6 py-4 transition-all duration-800 md:px-12 ${scrolled && pathname === "/" ? "bg-background/50 shadow-sm backdrop-blur-sm" : pathname !== "/" ? "bg-background/50 shadow-sm backdrop-blur-sm" : "bg-transparent"}`}
       >
-        {/* Logo */}
+        {/* LogoYellow */}
         <div className="flex cursor-pointer items-center" onClick={() => navigate("/")}>
-          <Logo className="h-8 w-8 text-white" />
+          <LogoYellow className="h-8 w-8 text-white" />
         </div>
 
         {/* Center Navigation */}

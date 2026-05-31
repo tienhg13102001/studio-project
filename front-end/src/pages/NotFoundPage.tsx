@@ -1,6 +1,6 @@
 import Seo from "#components/Seo";
 import { useNavigate } from "react-router-dom";
-import Logo from "../assets/icons/Logo";
+import LogoYellow from "../assets/icons/LogoYellow";
 
 const NotFoundPage = () => {
   const navigate = useNavigate();
@@ -13,8 +13,8 @@ const NotFoundPage = () => {
         404
       </span>
 
-      {/* Logo */}
-      <Logo className="mb-10 h-10 w-10 opacity-60" />
+      {/* LogoYellow */}
+      <LogoYellow className="mb-10 h-10 w-10 opacity-60" />
 
       {/* Nội dung chính */}
       <div className="relative z-10 flex flex-col items-center gap-4 text-center">

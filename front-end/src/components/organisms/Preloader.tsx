@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import Logo from "../../assets/icons/Logo";
+import LogoYellow from "../../assets/icons/LogoYellow";
 
 type Props = {
   /** 0-100, target progress driven by API loading state. */
@@ -46,7 +46,7 @@ const Preloader = ({ target, onComplete }: Props) => {
         isExiting ? "-translate-y-full" : "translate-y-0"
       }`}
     >
-      <Logo className="mb-12 h-14 w-14 opacity-80" />
+      <LogoYellow className="mb-12 h-14 w-14 opacity-80" />
 
       <div className="flex w-64 flex-col gap-3 md:w-96">
         <div className="h-0.5 w-full overflow-hidden rounded-full bg-white/10">

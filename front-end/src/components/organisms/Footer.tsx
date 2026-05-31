@@ -9,7 +9,7 @@ import {
   PhoneIcon,
 } from "@phosphor-icons/react";
 import { Link } from "react-router-dom";
-import Logo from "../../assets/icons/Logo";
+import LogoYellow from "../../assets/icons/LogoYellow";
 
 const NAV_ITEMS = [
   { key: "home", to: "/" },
@@ -36,7 +36,7 @@ const Footer: React.FC = () => {
         {/* Brand */}
         <div className="space-y-4">
           <Link to="/" className="inline-flex items-center gap-2">
-            <Logo className="text-foreground h-8 w-8" />
+            <LogoYellow className="text-foreground h-8 w-8" />
             <span className="text-xl font-bold">BeeZ Production</span>
           </Link>
           <p className="text-muted-foreground text-sm leading-relaxed">{t.footer.tagline}</p>
