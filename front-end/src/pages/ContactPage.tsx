@@ -320,7 +320,7 @@ const ContactPage: React.FC = () => {
                     }
                     value={form.message}
                     onChange={set("message")}
-                    className="border-border bg-background/60 text-foreground placeholder:text-muted-foreground focus:border-primary min-h-[100px]"
+                    className="border-border bg-background/60 text-foreground placeholder:text-muted-foreground focus:border-primary min-h-25"
                   />
                 </div>
 
