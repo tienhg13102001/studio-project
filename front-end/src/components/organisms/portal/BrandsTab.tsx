@@ -1,7 +1,17 @@
 import { useState } from "react";
-import { PencilSimpleIcon } from "@phosphor-icons/react";
-import { apiPut, resolveAssetUrl } from "#lib/api";
+import { PencilSimpleIcon, PlusIcon, TrashIcon } from "@phosphor-icons/react";
+import { apiDelete, apiPost, apiPut, resolveAssetUrl } from "#lib/api";
 import type { ApiBrand } from "#lib/apiTypes";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "#components/ui/alert-dialog";
 import EditModal from "#components/ui/portal/EditModal";
 import ImageUpload from "#components/ui/portal/ImageUpload";
 import { Button } from "#components/ui/button";
@@ -67,25 +77,45 @@ function toForm(b: ApiBrand): BrandForm {
   return { name: b.name, logo: b.logo, order: b.order };
 }
 
+function emptyBrandForm(order: number): BrandForm {
+  return { name: "", logo: "", order };
+}
+
 // ─── Tab ─────────────────────────────────────────────────────────────────────
 
 type TabProps = { data: ApiBrand[] | null; loading: boolean; onRefetch: () => void };
 
 export default function BrandsTab({ data, loading, onRefetch }: TabProps) {
   const [editing, setEditing] = useState<ApiBrand | null>(null);
+  const [creating, setCreating] = useState(false);
   const [form, setForm]       = useState<BrandForm | null>(null);
   const [saving, setSaving]   = useState(false);
   const [error, setError]     = useState<string | null>(null);
+  const [confirmDelete, setConfirmDelete] = useState<ApiBrand | null>(null);
+  const [deleting, setDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
 
-  const openEdit  = (b: ApiBrand) => { setEditing(b); setForm(toForm(b)); setError(null); };
-  const closeEdit = () => { setEditing(null); setForm(null); };
+  const openEdit  = (b: ApiBrand) => { setEditing(b); setCreating(false); setForm(toForm(b)); setError(null); };
+  const openCreate = () => {
+    setCreating(true);
+    setEditing(null);
+    setForm(emptyBrandForm(data?.length ?? 0));
+    setError(null);
+  };
+  const closeEdit = () => { setEditing(null); setCreating(false); setForm(null); };
 
   const handleSave = async () => {
-    if (!editing || !form) return;
+    if (!form) return;
+    if (!creating && !editing) return;
     setSaving(true);
     setError(null);
     try {
-      await apiPut(`/api/brands/${editing.id}`, { name: form.name, logo: form.logo, order: form.order });
+      const payload = { name: form.name, logo: form.logo, order: form.order };
+      if (creating) {
+        await apiPost(`/api/brands`, payload);
+      } else {
+        await apiPut(`/api/brands/${editing!.id}`, payload);
+      }
       onRefetch();
       closeEdit();
     } catch (e) {
@@ -95,20 +125,52 @@ export default function BrandsTab({ data, loading, onRefetch }: TabProps) {
     }
   };
 
+  const handleDelete = async () => {
+    if (!confirmDelete) return;
+    setDeleting(true);
+    setDeleteError(null);
+    try {
+      await apiDelete(`/api/brands/${confirmDelete.id}`);
+      onRefetch();
+      setConfirmDelete(null);
+      closeEdit();
+    } catch (e) {
+      setDeleteError((e as Error).message);
+    } finally {
+      setDeleting(false);
+    }
+  };
+
   const set = (k: keyof BrandForm, v: unknown) =>
     setForm((f) => (f ? { ...f, [k]: v } : f));
 
   return (
     <>
-      <h2 className="text-lg font-semibold text-white">Brands</h2>
+      <div className="flex items-center justify-between">
+        <h2 className="text-lg font-semibold text-white">Brands</h2>
+        <Button size="sm" onClick={openCreate} className="bg-primary text-black hover:opacity-80">
+          <PlusIcon size={12} weight="bold" />
+          Add brand
+        </Button>
+      </div>
       <BrandsGrid data={data} loading={loading} onEdit={openEdit} />
 
       <EditModal
-        title={`Edit — ${editing?.name ?? ""}`}
-        isOpen={!!editing}
+        title={creating ? "Add Brand" : `Edit — ${editing?.name ?? ""}`}
+        isOpen={!!editing || creating}
         onClose={closeEdit}
         onSubmit={handleSave}
         saving={saving}
+        onDelete={
+          editing
+            ? () => {
+                setConfirmDelete(editing);
+                setDeleteError(null);
+                closeEdit();
+              }
+            : undefined
+        }
+        deleting={deleting}
       >
         {form && (
           <>

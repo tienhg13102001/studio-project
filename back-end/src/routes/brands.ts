@@ -16,6 +16,26 @@ router.get("/", async (_req, res, next) => {
   }
 });
 
+/** POST /api/brands — create a brand */
+router.post("/", async (req, res, next) => {
+  try {
+    const { name, logo, order } = req.body as Record<string, unknown>;
+
+    const missing: string[] = [];
+    if (!name) missing.push("name");
+    if (!logo) missing.push("logo");
+    if (missing.length) {
+      sendError(res, `Missing required fields: ${missing.join(", ")}`, 400);
+      return;
+    }
+
+    const brand = await Brand.create({ name, logo, order });
+    sendSuccess(res, brand, 201);
+  } catch (e) {
+    next(e);
+  }
+});
+
 /** PUT /api/brands/:id */
 router.put("/:id", async (req, res, next) => {
   try {
@@ -27,6 +47,17 @@ router.put("/:id", async (req, res, next) => {
     );
     if (!brand) { sendError(res, "Brand not found", 404); return; }
     sendSuccess(res, brand);
+  } catch (e) {
+    next(e);
+  }
+});
+
+/** DELETE /api/brands/:id */
+router.delete("/:id", async (req, res, next) => {
+  try {
+    const brand = await Brand.findByIdAndDelete(req.params.id);
+    if (!brand) { sendError(res, "Brand not found", 404); return; }
+    sendSuccess(res, { deleted: true });
   } catch (e) {
     next(e);
   }
