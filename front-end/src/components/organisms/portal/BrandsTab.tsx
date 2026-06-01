@@ -1,7 +1,3 @@
-import { useState } from "react";
-import { PencilSimpleIcon, PlusIcon, TrashIcon } from "@phosphor-icons/react";
-import { apiDelete, apiPost, apiPut, resolveAssetUrl } from "#lib/api";
-import type { ApiBrand } from "#lib/apiTypes";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -12,12 +8,16 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "#components/ui/alert-dialog";
-import EditModal from "#components/ui/portal/EditModal";
-import ImageUpload from "#components/ui/portal/ImageUpload";
 import { Button } from "#components/ui/button";
 import { Input } from "#components/ui/input";
 import { Label } from "#components/ui/label";
+import EditModal from "#components/ui/portal/EditModal";
+import ImageUpload from "#components/ui/portal/ImageUpload";
 import { Skeleton } from "#components/ui/skeleton";
+import { apiDelete, apiPost, apiPut, resolveAssetUrl } from "#lib/api";
+import type { ApiBrand } from "#lib/apiTypes";
+import { PencilSimpleIcon, PlusIcon } from "@phosphor-icons/react";
+import { useState } from "react";
 
 // ─── BrandsGrid (also used by OverviewTab) ───────────────────────────────────
 
@@ -193,7 +193,7 @@ export default function BrandsTab({ data, loading, onRefetch }: TabProps) {
 
               {/* ── Right: logo ───────────────────────── */}
               <div>
-                <Label>LogoYellow</Label>
+                <Label>Logo</Label>
                 <ImageUpload value={form.logo} onChange={(path) => set("logo", path)} />
               </div>
             </div>
@@ -202,6 +202,26 @@ export default function BrandsTab({ data, loading, onRefetch }: TabProps) {
           </>
         )}
       </EditModal>
+
+      {/* ── Confirm Delete Dialog ── */}
+      <AlertDialog open={!!confirmDelete} onOpenChange={(open) => !open && setConfirmDelete(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete brand?</AlertDialogTitle>
+            <AlertDialogDescription>
+              "<span className="text-white/80">{confirmDelete?.name}</span>" will be permanently
+              deleted.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          {deleteError && <p className="text-xs text-red-400">{deleteError}</p>}
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete} disabled={deleting}>
+              {deleting ? "Deleting…" : "Delete"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 }
