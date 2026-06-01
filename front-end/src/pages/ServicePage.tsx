@@ -1,22 +1,54 @@
 import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { ArrowLeftIcon, StarIcon } from "@phosphor-icons/react";
 import { apiFetch, resolveAssetUrl } from "#lib/api";
 import { useLanguage } from "#i18n";
 import Seo from "#components/Seo";
 import { Button } from "#components/ui/button";
 import PageHero from "#components/organisms/PageHero";
-import type { ApiService } from "#lib/apiTypes";
+import ProjectDetail from "#components/organisms/ProjectDetail";
+import type { ApiProject, ApiService } from "#lib/apiTypes";
+import type { ProjectDisplay } from "#hooks/useProjects";
+
+const PROJECT_PARAM = "project";
+
+/** Maps a populated API project into the shape ProjectDetail expects. */
+function toProjectDisplay(f: ApiProject): ProjectDisplay {
+  return {
+    id: f.id,
+    tag: f.service?.tag ?? "",
+    thumbnailImage: resolveAssetUrl(f.thumbnailImage),
+    title: f.title,
+    subtitle: f.subtitle,
+    video: f.video ? resolveAssetUrl(f.video) : undefined,
+    photos: f.photos?.map((p) => resolveAssetUrl(p)),
+  };
+}
 
 const ServicePage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { lang } = useLanguage();
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const [service, setService] = useState<ApiService | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+
+  const openProject = (projectId: string) => {
+    setSearchParams((prev) => {
+      prev.set(PROJECT_PARAM, projectId);
+      return prev;
+    });
+  };
+
+  const closeProject = () => {
+    setSearchParams((prev) => {
+      prev.delete(PROJECT_PARAM);
+      return prev;
+    });
+  };
 
   useEffect(() => {
     if (!id) return;
@@ -52,6 +84,11 @@ const ServicePage: React.FC = () => {
   const imageUrl = resolveAssetUrl(service.thumbnailImage);
   const prominentProjects = service.projects.filter((f) => f.prominent);
   const regularProjects   = service.projects.filter((f) => !f.prominent);
+
+  const selectedProjectId = searchParams.get(PROJECT_PARAM);
+  const selectedProject = selectedProjectId
+    ? service.projects.find((f) => f.id === selectedProjectId) ?? null
+    : null;
 
   return (
     <div className="min-h-screen">
@@ -117,7 +154,8 @@ const ServicePage: React.FC = () => {
                 {prominentProjects.map((f) => (
                   <div
                     key={f.id}
-                    className="group border-primary/30 relative overflow-hidden rounded-2xl border"
+                    onClick={() => openProject(f.id)}
+                    className="group border-primary/30 relative cursor-pointer overflow-hidden rounded-2xl border"
                   >
                     <div className="aspect-video w-full overflow-hidden">
                       <img
@@ -146,7 +184,8 @@ const ServicePage: React.FC = () => {
                 {regularProjects.map((f) => (
                   <div
                     key={f.id}
-                    className="group border-border relative overflow-hidden rounded-xl border"
+                    onClick={() => openProject(f.id)}
+                    className="group border-border relative cursor-pointer overflow-hidden rounded-xl border"
                   >
                     <div className="aspect-video w-full overflow-hidden">
                       <img
@@ -167,6 +206,10 @@ const ServicePage: React.FC = () => {
           </section>
         )}
       </div>
+
+      {selectedProject && (
+        <ProjectDetail project={toProjectDisplay(selectedProject)} onClose={closeProject} />
+      )}
     </div>
   );
 };
