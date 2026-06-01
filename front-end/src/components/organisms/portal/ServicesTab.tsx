@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { PencilSimpleIcon, PlusIcon, TrashIcon, XIcon } from "@phosphor-icons/react";
 import { apiFetch, apiPost, apiPut, apiDelete } from "#lib/api";
+import { localized } from "#lib/localized";
 import type { ApiService } from "#lib/apiTypes";
 import type { ServiceDisplay } from "#hooks/useServices";
 import EditModal from "#components/ui/portal/EditModal";
@@ -300,7 +301,7 @@ export default function ServicesTab({ data, raw, loading, onRefetch }: TabProps)
                         <div key={f.id} className="flex items-center gap-2.5 rounded-lg border border-foreground/8 bg-foreground/3 p-2">
                           <div className="min-w-0">
                             <p className="truncate text-xs font-medium text-foreground/80">{f.title}</p>
-                            <p className="text-[10px] text-foreground/35">{f.subtitle}</p>
+                            <p className="text-[10px] text-foreground/35">{localized(f.subtitle, "vi")}</p>
                           </div>
                           <Badge variant="outline" className="ml-auto shrink-0">{f.layout}</Badge>
                         </div>

@@ -2,6 +2,7 @@ import SocialLinks from "#components/molecules/SocialLinks";
 import { useContact } from "#hooks/useContact";
 import { useLanding } from "#hooks/useLanding";
 import { useLanguage, useTranslation } from "#i18n";
+import { localized } from "#lib/localized";
 import {
   ClockIcon,
   EnvelopeSimpleIcon,
@@ -92,7 +93,7 @@ const Footer: React.FC = () => {
             {contact?.address && (
               <li className="flex items-start gap-2">
                 <MapPinIcon size={16} className="text-primary mt-0.5 shrink-0" />
-                <span className="text-muted-foreground">{contact.address[lang]}</span>
+                <span className="text-muted-foreground">{localized(contact.address, lang)}</span>
               </li>
             )}
           </ul>
@@ -110,8 +111,8 @@ const Footer: React.FC = () => {
                   <li key={idx} className="flex items-start gap-2">
                     <ClockIcon size={16} className="text-primary mt-0.5 shrink-0" />
                     <div className="text-muted-foreground">
-                      <span className="text-foreground">{item.label[lang]}: </span>
-                      {item.hours[lang]}
+                      <span className="text-foreground">{localized(item.label, lang)}: </span>
+                      {localized(item.hours, lang)}
                     </div>
                   </li>
                 ))}

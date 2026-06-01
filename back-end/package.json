@@ -8,6 +8,7 @@
     "clone-prod": "tsx src/scripts/clone-prod.ts",
     "migrate-urls": "tsx src/scripts/migrate-urls.ts",
     "link-landing-contact": "tsx src/scripts/link-landing-contact.ts",
+    "migrate-project-subtitle": "tsx src/scripts/migrate-project-subtitle.ts",
     "typecheck": "tsc --noEmit",
     "format": "prettier --write .",
     "format:check": "prettier --check .",

@@ -19,6 +19,13 @@ const en = {
   featured: {
     sectionTitle: "Featured",
   },
+  project: {
+    about: "About",
+    members: "Team",
+    behindTheScenes: "Behind the Scenes",
+    watchMore: "Watch More",
+    clickArrows: "Click arrows",
+  },
   stats: {
     items: [
       { value: "1000+", label: "Projects",  icon: "UserIcon",       details: ["TVC & Commercials", "Short-form", "Interviews – Brand films", "Social Media Content"] },

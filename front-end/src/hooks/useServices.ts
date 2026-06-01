@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import type { Lang } from "#i18n";
 import { apiFetch, invalidateApiCache, resolveAssetUrl } from "#lib/api";
+import { localized } from "#lib/localized";
 import type { ApiPaginatedServices, ApiService } from "#lib/apiTypes";
 
 export type ServiceDisplay = {
@@ -14,8 +15,8 @@ function mapService(s: ApiService, lang: Lang): ServiceDisplay {
   return {
     id: s.id,
     thumbnailImage: resolveAssetUrl(s.thumbnailImage),
-    title: s.title[lang],
-    description: s.description[lang],
+    title: localized(s.title, lang),
+    description: localized(s.description, lang),
   };
 }
 

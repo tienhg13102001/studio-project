@@ -2,7 +2,7 @@ import { default as FeatureCard } from "#components/molecules/FeatureCard";
 import MarqueeRow from "#components/molecules/MarqueeRow";
 import SectionHeader from "#components/molecules/SectionHeader";
 import { useProjects, type ProjectDisplay } from "#hooks/useProjects";
-import { useTranslation } from "#i18n";
+import { useLanguage, useTranslation } from "#i18n";
 import type { FC } from "react";
 import { useSearchParams } from "react-router-dom";
 import ProjectDetail from "./ProjectDetail";
@@ -13,7 +13,8 @@ type Props = {};
 
 const FeatureSection: FC<Props> = () => {
   const t = useTranslation();
-  const { verticalCards, horizontalCards } = useProjects();
+  const { lang } = useLanguage();
+  const { verticalCards, horizontalCards } = useProjects(lang);
   const [searchParams, setSearchParams] = useSearchParams();
 
   const top = verticalCards || [];

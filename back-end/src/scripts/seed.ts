@@ -261,7 +261,7 @@ async function seed() {
       service: tagMap.get("SHORT"),
       thumbnailImage: "/images/feature1.webp",
       title: "Greenfield Dental - V-Line...",
-      subtitle: "Greenfield",
+      subtitle: { en: "Greenfield", vi: "Greenfield" },
     },
     {
       layout: "vertical",
@@ -269,7 +269,7 @@ async function seed() {
       service: tagMap.get("SHORT"),
       thumbnailImage: "/images/feature1.webp",
       title: "bb.q Chicken - Birthday Ce...",
-      subtitle: "bb.q Chicken",
+      subtitle: { en: "bb.q Chicken", vi: "bb.q Chicken" },
     },
     {
       layout: "vertical",
@@ -277,7 +277,7 @@ async function seed() {
       service: tagMap.get("SHORT"),
       thumbnailImage: "/images/feature1.webp",
       title: "Greenfield Braces - Nerdy...",
-      subtitle: "Greenfield Dental",
+      subtitle: { en: "Greenfield Dental", vi: "Greenfield Dental" },
     },
     {
       layout: "vertical",
@@ -285,7 +285,7 @@ async function seed() {
       service: tagMap.get("SHORT"),
       thumbnailImage: "/images/feature1.webp",
       title: "bb.q Chicken - Crispy Chic...",
-      subtitle: "bb.q Chicken",
+      subtitle: { en: "bb.q Chicken", vi: "bb.q Chicken" },
     },
     {
       layout: "vertical",
@@ -293,7 +293,7 @@ async function seed() {
       service: tagMap.get("SHORT"),
       thumbnailImage: "/images/feature1.webp",
       title: "Greenfield Braces - Sporty...",
-      subtitle: "Greenfield Dental",
+      subtitle: { en: "Greenfield Dental", vi: "Greenfield Dental" },
     },
     // F&B
     {
@@ -302,7 +302,7 @@ async function seed() {
       service: tagMap.get("F&B"),
       thumbnailImage: "/images/feature1.webp",
       title: "Grouper Fish - Chef's Sign...",
-      subtitle: "Chapter Fine Dining",
+      subtitle: { en: "Chapter Fine Dining", vi: "Chapter Fine Dining" },
     },
     {
       layout: "vertical",
@@ -310,7 +310,7 @@ async function seed() {
       service: tagMap.get("F&B"),
       thumbnailImage: "/images/feature1.webp",
       title: "Fresh Sashimi - Master...",
-      subtitle: "Chapter Fine Dining",
+      subtitle: { en: "Chapter Fine Dining", vi: "Chapter Fine Dining" },
     },
     // INTERVIEW
     {
@@ -319,7 +319,7 @@ async function seed() {
       service: tagMap.get("INTERVIEW"),
       thumbnailImage: "/images/feature2.webp",
       title: "Emotional Interview - 45 Minutes of Talking",
-      subtitle: "Healthcare",
+      subtitle: { en: "Healthcare", vi: "Healthcare" },
     },
     // TVC
     {
@@ -328,7 +328,7 @@ async function seed() {
       service: tagMap.get("TVC"),
       thumbnailImage: "/images/feature2.webp",
       title: "Join Our Club - Wake Up The Champion",
-      subtitle: "Greenfield Dental",
+      subtitle: { en: "Greenfield Dental", vi: "Greenfield Dental" },
     },
     {
       layout: "horizontal",
@@ -336,7 +336,7 @@ async function seed() {
       service: tagMap.get("TVC"),
       thumbnailImage: "/images/feature2.webp",
       title: "A Gleaming Miracle",
-      subtitle: "Greenfield Dental",
+      subtitle: { en: "Greenfield Dental", vi: "Greenfield Dental" },
     },
     {
       layout: "horizontal",
@@ -344,7 +344,7 @@ async function seed() {
       service: tagMap.get("TVC"),
       thumbnailImage: "/images/feature2.webp",
       title: "Đóng Stress - Mở Strong",
-      subtitle: "T-Matsuoka Medical Center",
+      subtitle: { en: "T-Matsuoka Medical Center", vi: "T-Matsuoka Medical Center" },
     },
   ]);
   console.log("  ✓ Projects (7 vertical, 4 horizontal)");

@@ -8,8 +8,8 @@ const router = Router();
 router.get("/", async (_req, res, next) => {
   try {
     const [verticalCards, horizontalCards] = await Promise.all([
-      Project.find({ layout: "vertical" }).populate("service"),
-      Project.find({ layout: "horizontal" }).populate("service"),
+      Project.find({ layout: "vertical" }).populate("service").populate("members", "name photo"),
+      Project.find({ layout: "horizontal" }).populate("service").populate("members", "name photo"),
     ]);
     sendSuccess(res, { verticalCards, horizontalCards });
   } catch (e) {
@@ -45,11 +45,14 @@ router.post("/", async (req, res, next) => {
       photos: body.photos,
       shootDate: body.shootDate,
       shootLocation: body.shootLocation,
+      members: body.members,
     });
     if (body.service) {
       await Service.findByIdAndUpdate(body.service, { $push: { projects: project._id } });
     }
-    const populated = await Project.findById(project._id).populate("service");
+    const populated = await Project.findById(project._id)
+      .populate("service")
+      .populate("members", "name photo");
     sendSuccess(res, populated, 201);
   } catch (e) {
     next(e);
@@ -59,13 +62,13 @@ router.post("/", async (req, res, next) => {
 /** PUT /api/projects/:id */
 router.put("/:id", async (req, res, next) => {
   try {
-    const { title, subtitle, thumbnailImage, layout, prominent, service, video, photos, shootDate, shootLocation } =
+    const { title, subtitle, thumbnailImage, layout, prominent, service, video, photos, shootDate, shootLocation, members } =
       req.body as Record<string, unknown>;
     const project = await Project.findByIdAndUpdate(
       req.params.id,
-      { title, subtitle, thumbnailImage, layout, prominent, service, video, photos, shootDate, shootLocation },
+      { title, subtitle, thumbnailImage, layout, prominent, service, video, photos, shootDate, shootLocation, members },
       { new: true, runValidators: true },
-    ).populate("service");
+    ).populate("service").populate("members", "name photo");
     if (!project) { sendError(res, "Project not found", 404); return; }
     sendSuccess(res, project);
   } catch (e) {

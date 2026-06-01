@@ -20,7 +20,10 @@ router.get("/", async (req, res, next) => {
 
 router.get("/:id", async (req, res, next) => {
   try {
-    const service = await Service.findById(req.params.id).populate("projects");
+    const service = await Service.findById(req.params.id).populate({
+      path: "projects",
+      populate: { path: "members", select: "name photo" },
+    });
     if (!service) { sendError(res, "Service not found", 404); return; }
     sendSuccess(res, service);
   } catch (e) {

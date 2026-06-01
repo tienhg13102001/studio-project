@@ -1,6 +1,7 @@
 import { useTranslation, useLanguage } from "#i18n";
 import { useTeam } from "#hooks/useTeam";
 import { resolveAssetUrl } from "#lib/api";
+import { localized } from "#lib/localized";
 
 /** Returns the initials of a name, e.g. "Tyler Nguyen" → "TN" */
 function initials(name: string): string {
@@ -58,21 +59,21 @@ const MeetOurTeam: React.FC = () => {
           {/* Info */}
           <div className="flex flex-col gap-5">
             <p className="text-primary text-sm font-semibold uppercase tracking-widest">
-              {featured.role[lang]}
+              {localized(featured.role, lang)}
             </p>
             <h3 className="text-foreground text-4xl font-bold">{featured.name}</h3>
 
             {featured.quote && (
               <blockquote className="relative pl-6 border-l-2 border-primary/40">
                 <p className="text-muted-foreground text-base italic leading-relaxed">
-                  &ldquo;{featured.quote[lang]}&rdquo;
+                  &ldquo;{localized(featured.quote, lang)}&rdquo;
                 </p>
               </blockquote>
             )}
 
             {featured.bio && (
               <p className="text-muted-foreground text-sm leading-relaxed max-w-lg">
-                {featured.bio[lang]}
+                {localized(featured.bio, lang)}
               </p>
             )}
 
@@ -118,13 +119,13 @@ const MeetOurTeam: React.FC = () => {
                 )}
                 <div>
                   <p className="text-foreground font-semibold">{user.name}</p>
-                  <p className="text-muted-foreground text-xs">{user.role[lang]}</p>
+                  <p className="text-muted-foreground text-xs">{localized(user.role, lang)}</p>
                 </div>
               </div>
 
               {user.quote && (
                 <p className="text-muted-foreground text-sm italic leading-relaxed border-t border-border pt-4">
-                  &ldquo;{user.quote[lang]}&rdquo;
+                  &ldquo;{localized(user.quote, lang)}&rdquo;
                 </p>
               )}
 

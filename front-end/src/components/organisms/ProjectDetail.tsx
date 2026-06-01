@@ -1,6 +1,7 @@
 import MediaPlayer from "#components/molecules/MediaPlayer";
 import { Button } from "#components/ui/button";
 import type { ProjectDisplay } from "#hooks/useProjects";
+import { useTranslation } from "#i18n";
 import { cn } from "#lib/utils";
 import {
   ArrowLeftIcon,
@@ -32,6 +33,7 @@ function formatShootDate(value?: string): string {
 
 const ProjectDetail: FC<Props> = ({ project, onClose }) => {
   const navigate = useNavigate();
+  const t = useTranslation();
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isSheetExpanded, setIsSheetExpanded] = useState(false);
@@ -240,7 +242,7 @@ const ProjectDetail: FC<Props> = ({ project, onClose }) => {
           <div className="flex-1 overflow-y-auto overscroll-contain px-5 pb-10">
             <div className="mt-4">
               <h3 className="text-muted-foreground mb-2 text-xs font-semibold tracking-wider uppercase">
-                About
+                {t.project.about}
               </h3>
               <p className="text-foreground/80 text-sm leading-relaxed">{project.subtitle}</p>
             </div>
@@ -260,12 +262,30 @@ const ProjectDetail: FC<Props> = ({ project, onClose }) => {
               </div>
             )}
 
+            {project.members && project.members.length > 0 && (
+              <div className="mt-4">
+                <h3 className="text-muted-foreground mb-2 text-xs font-semibold tracking-wider uppercase">
+                  {t.project.members}
+                </h3>
+                <div className="flex flex-wrap gap-2">
+                  {project.members.map((m) => (
+                    <span
+                      key={m}
+                      className="bg-foreground/10 text-foreground/80 rounded-full px-3 py-1 text-xs"
+                    >
+                      {m}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {project.photos && totalImages > 0 && (
               <>
                 <div className="border-border my-6 border-t" />
                 <div>
                   <h3 className="text-muted-foreground mb-3 text-xs font-semibold tracking-wider uppercase">
-                    Behind the Scenes
+                    {t.project.behindTheScenes}
                   </h3>
                   <div className="-mx-5 flex gap-2 overflow-x-auto px-5 pb-2">
                     {project.photos.map((image, idx) => (
@@ -348,17 +368,36 @@ const ProjectDetail: FC<Props> = ({ project, onClose }) => {
           {/* About */}
           <div>
             <h3 className="text-muted-foreground mb-2 text-sm font-semibold tracking-wider uppercase">
-              About
+              {t.project.about}
             </h3>
             <p className="text-foreground/80 text-sm leading-relaxed">{project.subtitle}</p>
           </div>
+
+          {/* Members */}
+          {project.members && project.members.length > 0 && (
+            <div>
+              <h3 className="text-muted-foreground mb-2 text-sm font-semibold tracking-wider uppercase">
+                {t.project.members}
+              </h3>
+              <div className="flex flex-wrap gap-2">
+                {project.members.map((m) => (
+                  <span
+                    key={m}
+                    className="bg-foreground/10 text-foreground/80 rounded-full px-3 py-1 text-xs"
+                  >
+                    {m}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Action Button */}
           <button
             className="bg-primary text-primary-foreground hover:bg-primary/90 flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg py-3 font-semibold transition-colors"
             onClick={() => navigate("/service")}
           >
-            Watch More <PlayCircleIcon size={20} />
+            {t.project.watchMore} <PlayCircleIcon size={20} />
           </button>
         </div>
 
@@ -422,7 +461,7 @@ const ProjectDetail: FC<Props> = ({ project, onClose }) => {
                 </button>
 
                 <span className="text-muted-foreground text-sm tracking-widest uppercase">
-                  Click arrows
+                  {t.project.clickArrows}
                 </span>
 
                 <button

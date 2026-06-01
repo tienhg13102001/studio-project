@@ -19,6 +19,13 @@ const vi = {
   featured: {
     sectionTitle: "Nổi Bật",
   },
+  project: {
+    about: "Giới Thiệu",
+    members: "Người Thực Hiện",
+    behindTheScenes: "Hậu Trường",
+    watchMore: "Xem Thêm",
+    clickArrows: "Bấm mũi tên",
+  },
   stats: {
     items: [
       { value: "1000+", label: "Dự Án",        icon: "UserIcon",       details: ["TVC & Quảng Cáo", "Nội dung ngắn", "Phỏng vấn – Brand film", "Nội dung mạng xã hội"] },

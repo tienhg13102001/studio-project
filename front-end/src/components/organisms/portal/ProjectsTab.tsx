@@ -14,6 +14,7 @@ import { Checkbox } from "#components/ui/checkbox";
 import { DatePicker } from "#components/ui/date-picker";
 import { Input } from "#components/ui/input";
 import { Label } from "#components/ui/label";
+import { Popover, PopoverContent, PopoverTrigger } from "#components/ui/popover";
 import EditModal from "#components/ui/portal/EditModal";
 import ImageUpload from "#components/ui/portal/ImageUpload";
 import ImagesUpload from "#components/ui/portal/ImagesUpload";
@@ -36,15 +37,15 @@ import {
 } from "#components/ui/table";
 import type { ProjectDisplay } from "#hooks/useProjects";
 import { apiDelete, apiPost, apiPut } from "#lib/api";
-import type { ApiProject, ApiService, ApiServiceTag } from "#lib/apiTypes";
-import { PencilSimpleIcon, PlusIcon, TrashIcon } from "@phosphor-icons/react";
+import type { ApiProject, ApiService, ApiServiceTag, ApiUser } from "#lib/apiTypes";
+import { PencilSimpleIcon, PlusIcon, TrashIcon, XIcon } from "@phosphor-icons/react";
 import { useState } from "react";
 
 // ─── Edit form ───────────────────────────────────────────────────────────────
 
 type ProjectForm = {
   title: string;
-  subtitle: string;
+  subtitle: { en: string; vi: string };
   thumbnailImage: string;
   layout: "vertical" | "horizontal";
   prominent: boolean;
@@ -53,6 +54,7 @@ type ProjectForm = {
   photos: string[];
   shootDate: string;
   shootLocation: string;
+  members: string[];
 };
 
 function toForm(f: ApiProject): ProjectForm {
@@ -60,9 +62,13 @@ function toForm(f: ApiProject): ProjectForm {
     f.service && typeof f.service === "object"
       ? (f.service as ApiServiceTag).id
       : ((f.service as string | undefined) ?? "");
+  const sub = f.subtitle as { en?: string; vi?: string } | string | undefined;
   return {
     title: f.title,
-    subtitle: f.subtitle,
+    subtitle:
+      typeof sub === "string"
+        ? { en: sub, vi: sub }
+        : { en: sub?.en ?? "", vi: sub?.vi ?? "" },
     thumbnailImage: f.thumbnailImage,
     layout: f.layout,
     prominent: f.prominent,
@@ -71,13 +77,14 @@ function toForm(f: ApiProject): ProjectForm {
     photos: f.photos ?? [],
     shootDate: f.shootDate ? f.shootDate.slice(0, 10) : "",
     shootLocation: f.shootLocation ?? "",
+    members: f.members?.map((m) => m.id) ?? [],
   };
 }
 
 function emptyProjectForm(): ProjectForm {
   return {
     title: "",
-    subtitle: "",
+    subtitle: { en: "", vi: "" },
     thumbnailImage: "",
     layout: "vertical",
     prominent: false,
@@ -86,6 +93,7 @@ function emptyProjectForm(): ProjectForm {
     photos: [],
     shootDate: "",
     shootLocation: "",
+    members: [],
   };
 }
 
@@ -95,11 +103,12 @@ type TabProps = {
   data: ProjectDisplay[];
   raw: ApiProject[] | null;
   services: ApiService[] | null;
+  users: ApiUser[] | null;
   loading: boolean;
   onRefetch: () => void;
 };
 
-export default function ProjectsTab({ data, raw, services, loading, onRefetch }: TabProps) {
+export default function ProjectsTab({ data, raw, services, users, loading, onRefetch }: TabProps) {
   const [editing, setEditing] = useState<ApiProject | null>(null);
   const [creating, setCreating] = useState(false);
   const [form, setForm] = useState<ProjectForm | null>(null);
@@ -146,6 +155,7 @@ export default function ProjectsTab({ data, raw, services, loading, onRefetch }:
         photos: form.photos,
         shootDate: form.shootDate || undefined,
         shootLocation: form.shootLocation || undefined,
+        members: form.members.map((s) => s.trim()).filter(Boolean),
       };
       if (creating) {
         await apiPost(`/api/projects`, payload);
@@ -300,11 +310,18 @@ export default function ProjectsTab({ data, raw, services, loading, onRefetch }:
                 </div>
                 <div>
                   <Label>Subtitle</Label>
-                  <Input
-                    value={form.subtitle}
-                    onChange={(e) => set("subtitle", e.target.value)}
-                    placeholder="Short description"
-                  />
+                  <div className="grid grid-cols-2 gap-3">
+                    <Input
+                      value={form.subtitle.en}
+                      onChange={(e) => set("subtitle", { ...form.subtitle, en: e.target.value })}
+                      placeholder="English"
+                    />
+                    <Input
+                      value={form.subtitle.vi}
+                      onChange={(e) => set("subtitle", { ...form.subtitle, vi: e.target.value })}
+                      placeholder="Tiếng Việt"
+                    />
+                  </div>
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
@@ -322,6 +339,80 @@ export default function ProjectsTab({ data, raw, services, loading, onRefetch }:
                       placeholder="Hà Nội"
                     />
                   </div>
+                </div>
+                <div>
+                  <Label>Người thực hiện</Label>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className="h-9 w-full justify-start font-normal"
+                      >
+                        {form.members.length > 0 ? (
+                          `${form.members.length} thành viên`
+                        ) : (
+                          <span className="text-foreground/40">Chọn thành viên</span>
+                        )}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="max-h-64 w-(--radix-popover-trigger-width) overflow-y-auto p-2">
+                      {(users ?? []).length === 0 ? (
+                        <p className="px-2 py-1.5 text-xs text-foreground/40">Chưa có thành viên nào</p>
+                      ) : (
+                        (users ?? []).map((u) => {
+                          const checked = form.members.includes(u.id);
+                          return (
+                            <label
+                              key={u.id}
+                              className="flex cursor-pointer items-center gap-2.5 rounded-md px-2 py-1.5 hover:bg-foreground/5"
+                            >
+                              <Checkbox
+                                checked={checked}
+                                onCheckedChange={(c) =>
+                                  set(
+                                    "members",
+                                    c
+                                      ? [...form.members, u.id]
+                                      : form.members.filter((id) => id !== u.id),
+                                  )
+                                }
+                              />
+                              <span className="text-sm text-foreground/80">{u.name}</span>
+                            </label>
+                          );
+                        })
+                      )}
+                    </PopoverContent>
+                  </Popover>
+
+                  {form.members.length > 0 && (
+                    <div className="mt-2 flex flex-wrap gap-1.5">
+                      {form.members.map((id) => {
+                        const u = (users ?? []).find((x) => x.id === id);
+                        return (
+                          <span
+                            key={id}
+                            className="bg-foreground/10 text-foreground/80 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px]"
+                          >
+                            {u?.name ?? id}
+                            <button
+                              type="button"
+                              onClick={() =>
+                                set(
+                                  "members",
+                                  form.members.filter((m) => m !== id),
+                                )
+                              }
+                              className="text-foreground/40 hover:text-foreground"
+                            >
+                              <XIcon size={10} />
+                            </button>
+                          </span>
+                        );
+                      })}
+                    </div>
+                  )}
                 </div>
                 <div>
                   <Label>Service</Label>

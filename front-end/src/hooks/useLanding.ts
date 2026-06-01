@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { Lang } from "#i18n";
 import { apiFetch, invalidateApiCache, resolveAssetUrl } from "#lib/api";
+import { localized } from "#lib/localized";
 import type { ApiLanding } from "#lib/apiTypes";
 
 export type LandingDisplay = {
@@ -45,13 +46,13 @@ export function useLanding(lang: Lang) {
 
   const data: LandingDisplay | null = raw
     ? {
-        heroLine1: raw.heroLine1[lang],
-        heroLine2: raw.heroLine2[lang],
-        subheading: raw.subheading[lang],
+        heroLine1: localized(raw.heroLine1, lang),
+        heroLine2: localized(raw.heroLine2, lang),
+        subheading: localized(raw.subheading, lang),
         videoBackground: resolveAssetUrl(raw.videoBackground),
         phone: raw.phone ?? "",
         email: raw.email ?? "",
-        address: raw.address?.[lang] ?? "",
+        address: localized(raw.address, lang),
         socials: {
           zalo: raw.socials?.zalo ?? "",
           facebook: raw.socials?.facebook ?? "",

@@ -16,6 +16,7 @@ import { useContact } from "#hooks/useContact";
 import { useServices } from "#hooks/useServices";
 import { useLanguage } from "#i18n";
 import { apiPost } from "#lib/api";
+import { localized } from "#lib/localized";
 import PageHero from "#components/organisms/PageHero";
 import { Button } from "#components/ui/button";
 import { Input } from "#components/ui/input";
@@ -105,7 +106,7 @@ const ContactPage: React.FC = () => {
         description="Liên hệ BeeZ Production để bắt đầu dự án video tiếp theo của bạn — TVC, phim quảng cáo, brand film. Đội ngũ tại Hà Nội luôn sẵn sàng tư vấn."
         path="/contact"
       />
-      <PageHero title={contact.heading[lang]} subtitle={contact.subheading[lang]} />
+      <PageHero title={localized(contact.heading, lang)} subtitle={localized(contact.subheading, lang)} />
 
       <div className="mx-auto max-w-5xl px-6 pb-24 md:px-12">
         <div className="grid gap-8 lg:grid-cols-2">
@@ -140,7 +141,7 @@ const ContactPage: React.FC = () => {
                 {
                   icon: <MapPinIcon size={18} weight="duotone" />,
                   label: lang === "vi" ? "Địa Điểm" : "Location",
-                  value: contact.address[lang],
+                  value: localized(contact.address, lang),
                   href: undefined,
                 },
               ].map(({ icon, label, value, href }) => (
@@ -177,8 +178,8 @@ const ContactPage: React.FC = () => {
                 <div className="flex flex-col gap-1">
                   {contact.workingHours.map((row, i) => (
                     <div key={i} className="flex items-center justify-between text-sm">
-                      <span className="text-muted-foreground">{row.label[lang]}</span>
-                      <span className="text-foreground font-medium">{row.hours[lang]}</span>
+                      <span className="text-muted-foreground">{localized(row.label, lang)}</span>
+                      <span className="text-foreground font-medium">{localized(row.hours, lang)}</span>
                     </div>
                   ))}
                 </div>

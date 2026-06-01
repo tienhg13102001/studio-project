@@ -37,12 +37,19 @@ export type ApiProject = {
   service:        ApiServiceTag; // populated
   thumbnailImage: string;
   title:          string;
-  subtitle:       string;
+  subtitle:       LocalizedString;
   prominent:      boolean;
   video?: string; // optional, path to video file
   photos?: string[]; // optional, list of product photo paths
   shootDate?: string; // optional, ISO date string
   shootLocation?: string; // optional, VN province/city
+  members?: ApiProjectMember[]; // optional, populated team members who worked on the project
+};
+
+export type ApiProjectMember = {
+  id:    string;
+  name:  string;
+  photo?: string;
 };
 
 export type ApiService = {

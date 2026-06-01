@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { ArrowLeftIcon, StarIcon } from "@phosphor-icons/react";
 import { apiFetch, resolveAssetUrl } from "#lib/api";
-import { useLanguage } from "#i18n";
+import { useLanguage, type Lang } from "#i18n";
+import { localized } from "#lib/localized";
 import Seo from "#components/Seo";
 import { Button } from "#components/ui/button";
 import PageHero from "#components/organisms/PageHero";
@@ -13,17 +14,18 @@ import type { ProjectDisplay } from "#hooks/useProjects";
 const PROJECT_PARAM = "project";
 
 /** Maps a populated API project into the shape ProjectDetail expects. */
-function toProjectDisplay(f: ApiProject): ProjectDisplay {
+function toProjectDisplay(f: ApiProject, lang: Lang): ProjectDisplay {
   return {
     id: f.id,
     tag: f.service?.tag ?? "",
     thumbnailImage: resolveAssetUrl(f.thumbnailImage),
     title: f.title,
-    subtitle: f.subtitle,
+    subtitle: localized(f.subtitle, lang),
     video: f.video ? resolveAssetUrl(f.video) : undefined,
     photos: f.photos?.map((p) => resolveAssetUrl(p)),
     shootDate: f.shootDate,
     shootLocation: f.shootLocation,
+    members: f.members?.map((m) => m.name),
   };
 }
 
@@ -81,8 +83,8 @@ const ServicePage: React.FC = () => {
     );
   }
 
-  const title = service.title[lang];
-  const description = service.description[lang];
+  const title = localized(service.title, lang);
+  const description = localized(service.description, lang);
   const imageUrl = resolveAssetUrl(service.thumbnailImage);
   const prominentProjects = service.projects.filter((f) => f.prominent);
   const regularProjects   = service.projects.filter((f) => !f.prominent);
@@ -123,7 +125,7 @@ const ServicePage: React.FC = () => {
                     onClick={() => setOpenFaq(openFaq === i ? null : i)}
                     className="text-foreground hover:bg-muted flex w-full items-center justify-between px-6 py-4 text-left text-sm font-medium transition-colors"
                   >
-                    <span>▶ {faq.question[lang]}</span>
+                    <span>▶ {localized(faq.question, lang)}</span>
                     <span
                       className={`text-muted-foreground ml-4 shrink-0 transition-transform duration-200 ${openFaq === i ? "rotate-180" : ""}`}
                     >
@@ -134,7 +136,7 @@ const ServicePage: React.FC = () => {
                     className={`overflow-hidden transition-all duration-300 ${openFaq === i ? "max-h-96 opacity-100" : "max-h-0 opacity-0"}`}
                   >
                     <p className="border-border text-muted-foreground border-t px-6 py-4 text-sm leading-relaxed">
-                      {faq.answer[lang]}
+                      {localized(faq.answer, lang)}
                     </p>
                   </div>
                 </div>
@@ -173,7 +175,7 @@ const ServicePage: React.FC = () => {
                     </div>
                     <div className="absolute bottom-0 left-0 p-4">
                       <p className="font-semibold text-white">{f.title}</p>
-                      <p className="text-xs text-white/70">{f.subtitle}</p>
+                      <p className="text-xs text-white/70">{localized(f.subtitle, lang)}</p>
                     </div>
                   </div>
                 ))}
@@ -199,7 +201,7 @@ const ServicePage: React.FC = () => {
                     <div className="absolute inset-0 bg-linear-to-t from-black/70 to-transparent" />
                     <div className="absolute bottom-0 left-0 p-3">
                       <p className="text-sm font-medium text-white">{f.title}</p>
-                      <p className="text-xs text-white/60">{f.subtitle}</p>
+                      <p className="text-xs text-white/60">{localized(f.subtitle, lang)}</p>
                     </div>
                   </div>
                 ))}
@@ -210,7 +212,7 @@ const ServicePage: React.FC = () => {
       </div>
 
       {selectedProject && (
-        <ProjectDetail project={toProjectDisplay(selectedProject)} onClose={closeProject} />
+        <ProjectDetail project={toProjectDisplay(selectedProject, lang)} onClose={closeProject} />
       )}
     </div>
   );
