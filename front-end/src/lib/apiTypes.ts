@@ -7,6 +7,8 @@ export type ApiLanding = {
   heroLine2: LocalizedString;
   subheading: LocalizedString;
   videoBackground: string;
+  /** Reference to the linked Contact document (contact info is sourced from there). */
+  contactId?: string;
   phone?: string;
   email?: string;
   address?: LocalizedString;

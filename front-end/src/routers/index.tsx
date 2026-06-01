@@ -4,6 +4,7 @@ import MainLayout from "../components/templates/MainLayout";
 import PortalLayout from "../components/templates/portal/PortalLayout";
 
 const LandingPage = lazy(() => import("../pages/LandingPage"));
+const ServicesPage = lazy(() => import("../pages/ServicesPage"));
 const ServicePage = lazy(() => import("../pages/ServicePage"));
 const ContactPage = lazy(() => import("../pages/ContactPage"));
 const TeamPage = lazy(() => import("../pages/TeamPage"));
@@ -55,6 +56,7 @@ export const router = createBrowserRouter([
     element: <MainLayout />,
     children: [
       { index: true, element: withSuspense(LandingPage) },
+      { path: "service", element: withSuspense(ServicesPage) },
       { path: "service/:id", element: withSuspense(ServicePage) },
       { path: "contact", element: withSuspense(ContactPage) },
       { path: "team", element: withSuspense(TeamPage) },

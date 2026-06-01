@@ -72,14 +72,21 @@ const PortalPage = () => {
 
   return (
     <div className="bg-primary relative flex min-h-screen items-center justify-center overflow-hidden px-4">
-      {/* Tiled logo pattern background */}
-      <div className="pointer-events-none absolute inset-0 m-[-20%] grid rotate-25 grid-cols-[repeat(auto-fill,minmax(110px,1fr))] place-items-center gap-6 p-6 opacity-20">
-        {Array.from({ length: 360 }).map((_, i) => (
-          <LogoBlack key={i} className="h-20 w-20" />
+      {/* Tiled logo pattern background — offset brick rows */}
+      <div className="pointer-events-none absolute inset-0 flex flex-col justify-center gap-8 overflow-hidden opacity-90">
+        {Array.from({ length: 16 }).map((_, r) => (
+          <div
+            key={r}
+            className={`flex shrink-0 justify-center gap-16 ${r % 2 ? "translate-x-15" : ""}`}
+          >
+            {Array.from({ length: 18 }).map((_, c) => (
+              <LogoBlack key={c} className="h-14 w-14 shrink-0" />
+            ))}
+          </div>
         ))}
       </div>
       {/* Dark overlay */}
-      <div className="pointer-events-none absolute inset-0 bg-black/50" />
+      <div className="pointer-events-none absolute inset-0 bg-black/20" />
 
       {/* Card */}
       <div className="relative w-full max-w-md overflow-hidden rounded-2xl border border-white/10 bg-black/60 shadow-2xl backdrop-blur-xl">

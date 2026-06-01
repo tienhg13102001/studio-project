@@ -67,32 +67,32 @@ const Footer: React.FC = () => {
             {t.footer.contact}
           </h3>
           <ul className="space-y-3 text-sm">
-            {landing?.phone && (
+            {contact?.phone && (
               <li className="flex items-start gap-2">
                 <PhoneIcon size={16} className="text-primary mt-0.5 shrink-0" />
                 <a
-                  href={`tel:${landing.phone}`}
+                  href={`tel:${contact.phone.replace(/\s/g, "")}`}
                   className="text-muted-foreground hover:text-foreground transition-colors"
                 >
-                  {landing.phone}
+                  {contact.phone}
                 </a>
               </li>
             )}
-            {landing?.email && (
+            {contact?.email && (
               <li className="flex items-start gap-2">
                 <EnvelopeSimpleIcon size={16} className="text-primary mt-0.5 shrink-0" />
                 <a
-                  href={`mailto:${landing.email}`}
+                  href={`mailto:${contact.email}`}
                   className="text-muted-foreground hover:text-foreground transition-colors"
                 >
-                  {landing.email}
+                  {contact.email}
                 </a>
               </li>
             )}
-            {landing?.address && (
+            {contact?.address && (
               <li className="flex items-start gap-2">
                 <MapPinIcon size={16} className="text-primary mt-0.5 shrink-0" />
-                <span className="text-muted-foreground">{landing.address}</span>
+                <span className="text-muted-foreground">{contact.address[lang]}</span>
               </li>
             )}
           </ul>

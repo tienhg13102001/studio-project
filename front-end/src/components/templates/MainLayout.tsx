@@ -2,6 +2,7 @@ import React from "react";
 import { Outlet } from "react-router-dom";
 import Footer from "../organisms/Footer";
 import Navbar from "../organisms/Navbar";
+import ScrollToTop from "../atoms/ScrollToTop";
 
 type Props = {};
 
@@ -10,6 +11,7 @@ const BG_URL = "/bg-main.webp";
 const MainLayout: React.FC<Props> = () => {
   return (
     <div className="relative min-h-screen">
+      <ScrollToTop />
       <Navbar />
       <Outlet />
       <Footer />
