@@ -67,13 +67,13 @@ const NavLinks: React.FC<Props> = ({ scrolled }) => {
           onMouseLeave={item.hasDropdown ? handleMouseLeave : undefined}
         >
           {item.hasDropdown ? (
-            <button type="button" className={linkClass(item)}>
+            <Link to={item.to} className={linkClass(item)}>
               {t.nav[item.key]}
               <CaretDownIcon
                 size={11}
                 className={`transition-transform duration-200 ${openDropdown === item.key ? "rotate-180" : ""}`}
               />
-            </button>
+            </Link>
           ) : (
             <Link to={item.to} className={linkClass(item)}>
               {t.nav[item.key]}
