@@ -20,7 +20,13 @@ import PageHero from "#components/organisms/PageHero";
 import { Button } from "#components/ui/button";
 import { Input } from "#components/ui/input";
 import { Label } from "#components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "#components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "#components/ui/select";
 import { Textarea } from "#components/ui/textarea";
 import LogoZalo from "../assets/icons/LogoZalo";
 
@@ -228,7 +234,7 @@ const ContactPage: React.FC = () => {
                 <Button
                   variant="link"
                   onClick={() => setSent(false)}
-                  className="text-primary mt-2 text-sm underline underline-offset-2 h-auto p-0"
+                  className="text-primary mt-2 h-auto p-0 text-sm underline underline-offset-2"
                 >
                   {lang === "vi" ? "Gửi tin nhắn khác" : "Send another message"}
                 </Button>
@@ -285,8 +291,10 @@ const ContactPage: React.FC = () => {
                     value={form.service}
                     onValueChange={(v) => setForm((prev) => ({ ...prev, service: v }))}
                   >
-                    <SelectTrigger className="w-full rounded-lg border border-border bg-background/60 px-4 py-2.5 text-sm text-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-colors">
-                      <SelectValue placeholder={lang === "vi" ? "Chọn dịch vụ" : "Select a service"} />
+                    <SelectTrigger className="border-border bg-background/60 text-foreground focus:border-primary focus:ring-primary w-full rounded-lg border px-4 py-2.5 text-sm transition-colors focus:ring-1 focus:outline-none">
+                      <SelectValue
+                        placeholder={lang === "vi" ? "Chọn dịch vụ" : "Select a service"}
+                      />
                     </SelectTrigger>
                     <SelectContent>
                       {(services ?? []).map((s) => (
@@ -321,7 +329,7 @@ const ContactPage: React.FC = () => {
                 <Button
                   type="submit"
                   disabled={submitting}
-                  className="bg-primary text-primary-foreground hover:bg-primary/90 flex items-center justify-center gap-2 rounded-lg px-6 py-3 text-sm font-semibold transition-colors disabled:opacity-60 h-auto"
+                  className="bg-primary text-primary-foreground hover:bg-primary/90 flex h-auto items-center justify-center gap-2 rounded-lg px-6 py-3 text-sm font-semibold transition-colors disabled:opacity-60"
                 >
                   {submitting ? (
                     <SpinnerIcon size={16} className="animate-spin" />

@@ -28,7 +28,7 @@ const en = {
   },
   brands: {
     badge: "We’ve partnered with amazing brands",
-    heading: "Trusted By Leaders",
+    heading: "Trusted by Brands",
   },
   team: {
     heroLine1: "The Minds Behind",

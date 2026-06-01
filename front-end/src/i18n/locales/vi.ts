@@ -28,7 +28,7 @@ const vi = {
   },
   brands: {
     badge: "Chúng tôi đã hợp tác cùng những thương hiệu lớn",
-    heading: "Được Tin Dùng Bởi Các Lãnh Đạo",
+    heading: "Được Tin Dùng Bởi Các Thương Hiệu",
   },
   team: {
     heroLine1: "Những người đứng sau",
