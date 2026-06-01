@@ -1,22 +1,23 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import ThemeToggle from "#components/molecules/ThemeToggle";
+import { Input } from "#components/ui/input";
+import { apiPost } from "#lib/api";
 import {
-  HouseIcon,
-  BriefcaseIcon,
-  UsersThreeIcon,
+  ArrowLeftIcon,
   ArrowRightIcon,
+  BriefcaseIcon,
   EnvelopeIcon,
-  LockIcon,
   EyeIcon,
   EyeSlashIcon,
+  HouseIcon,
+  LockIcon,
   SpinnerIcon,
-  ArrowLeftIcon,
   UserCircleIcon,
+  UsersThreeIcon,
 } from "@phosphor-icons/react";
-import LogoYellow from "../../assets/icons/LogoYellow";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import LogoBlack from "../../assets/icons/LogoBlack";
-import ThemeToggle from "#components/molecules/ThemeToggle";
-import { apiPost } from "#lib/api";
+import LogoYellow from "../../assets/icons/LogoYellow";
 
 type View = "continue" | "select" | "admin";
 
@@ -212,7 +213,7 @@ const PortalPage = () => {
                     size={15}
                     className="text-foreground/30 absolute top-1/2 left-3 -translate-y-1/2"
                   />
-                  <input
+                  <Input
                     id="email"
                     type="email"
                     autoComplete="email"
@@ -220,7 +221,7 @@ const PortalPage = () => {
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="you@beezvn.com"
                     required
-                    className="focus:border-primary/60 focus:ring-primary/40 border-foreground/10 bg-foreground/5 text-foreground placeholder:text-foreground/25 w-full rounded-lg border py-2.5 pr-4 pl-9 text-sm outline-none focus:ring-1"
+                    className="h-11 pr-4 pl-9"
                   />
                 </div>
               </div>
@@ -235,7 +236,7 @@ const PortalPage = () => {
                     size={15}
                     className="text-foreground/30 absolute top-1/2 left-3 -translate-y-1/2"
                   />
-                  <input
+                  <Input
                     id="password"
                     type={showPw ? "text" : "password"}
                     autoComplete="current-password"
@@ -243,7 +244,7 @@ const PortalPage = () => {
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="••••••••"
                     required
-                    className="focus:border-primary/60 focus:ring-primary/40 border-foreground/10 bg-foreground/5 text-foreground placeholder:text-foreground/25 w-full rounded-lg border py-2.5 pr-10 pl-9 text-sm outline-none focus:ring-1"
+                    className="h-11 pr-10 pl-9"
                   />
                   <button
                     type="button"

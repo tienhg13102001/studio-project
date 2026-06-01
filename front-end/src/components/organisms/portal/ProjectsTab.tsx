@@ -1,8 +1,3 @@
-import EditModal from "#components/ui/portal/EditModal";
-import ImageUpload from "#components/ui/portal/ImageUpload";
-import ImagesUpload from "#components/ui/portal/ImagesUpload";
-import { TableSkeleton } from "#components/ui/portal/TableSkeleton";
-import VideoUpload from "#components/ui/portal/VideoUpload";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -16,8 +11,14 @@ import {
 import { Badge } from "#components/ui/badge";
 import { Button } from "#components/ui/button";
 import { Checkbox } from "#components/ui/checkbox";
+import { DatePicker } from "#components/ui/date-picker";
 import { Input } from "#components/ui/input";
 import { Label } from "#components/ui/label";
+import EditModal from "#components/ui/portal/EditModal";
+import ImageUpload from "#components/ui/portal/ImageUpload";
+import ImagesUpload from "#components/ui/portal/ImagesUpload";
+import { TableSkeleton } from "#components/ui/portal/TableSkeleton";
+import VideoUpload from "#components/ui/portal/VideoUpload";
 import {
   Select,
   SelectContent,
@@ -308,10 +309,9 @@ export default function ProjectsTab({ data, raw, services, loading, onRefetch }:
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <Label>Shoot date</Label>
-                    <Input
-                      type="date"
+                    <DatePicker
                       value={form.shootDate}
-                      onChange={(e) => set("shootDate", e.target.value)}
+                      onChange={(v) => set("shootDate", v)}
                     />
                   </div>
                   <div>
