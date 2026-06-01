@@ -285,7 +285,7 @@ const ProjectDetail: FC<Props> = ({ project, onClose }) => {
                 <div className="border-border my-6 border-t" />
                 <div>
                   <h3 className="text-muted-foreground mb-3 text-xs font-semibold tracking-wider uppercase">
-                    {t.project.behindTheScenes}
+                    {t.project.productImages}
                   </h3>
                   <div className="-mx-5 flex gap-2 overflow-x-auto px-5 pb-2">
                     {project.photos.map((image, idx) => (

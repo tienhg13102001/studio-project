@@ -22,7 +22,7 @@ const en = {
   project: {
     about: "About",
     members: "Team",
-    behindTheScenes: "Behind the Scenes",
+    productImages: "Product Images / Behind the Scenes",
     watchMore: "Watch More",
     clickArrows: "Click arrows",
   },

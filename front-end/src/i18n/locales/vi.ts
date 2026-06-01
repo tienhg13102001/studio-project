@@ -22,7 +22,7 @@ const vi = {
   project: {
     about: "Giới Thiệu",
     members: "Người Thực Hiện",
-    behindTheScenes: "Hậu Trường",
+    productImages: "Ảnh sản phẩm / Hậu Trường",
     watchMore: "Xem Thêm",
     clickArrows: "Bấm mũi tên",
   },
