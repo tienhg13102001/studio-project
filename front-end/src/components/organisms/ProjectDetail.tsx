@@ -16,6 +16,7 @@ import {
   XIcon,
 } from "@phosphor-icons/react";
 import { useEffect, useRef, useState, type CSSProperties, type FC } from "react";
+import { useNavigate } from "react-router-dom";
 
 type Props = {
   project: ProjectDisplay;
@@ -30,6 +31,8 @@ function formatShootDate(value?: string): string {
 }
 
 const ProjectDetail: FC<Props> = ({ project, onClose }) => {
+  const navigate = useNavigate();
+
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isSheetExpanded, setIsSheetExpanded] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -210,7 +213,11 @@ const ProjectDetail: FC<Props> = ({ project, onClose }) => {
                   aria-label={copied ? "Đã copy đường dẫn" : "Copy đường dẫn"}
                   className="bg-foreground/10 text-foreground hover:bg-foreground/20 flex h-9 w-9 items-center justify-center rounded-full transition-colors"
                 >
-                  {copied ? <CheckIcon size={16} className="text-primary" /> : <LinkIcon size={16} />}
+                  {copied ? (
+                    <CheckIcon size={16} className="text-primary" />
+                  ) : (
+                    <LinkIcon size={16} />
+                  )}
                 </button>
                 <button
                   type="button"
@@ -347,7 +354,10 @@ const ProjectDetail: FC<Props> = ({ project, onClose }) => {
           </div>
 
           {/* Action Button */}
-          <button className="bg-primary text-primary-foreground hover:bg-primary/90 flex w-full items-center justify-center gap-2 rounded-lg py-3 font-semibold transition-colors">
+          <button
+            className="bg-primary text-primary-foreground hover:bg-primary/90 flex w-full items-center justify-center gap-2 rounded-lg py-3 font-semibold transition-colors"
+            onClick={() => navigate("/service")}
+          >
             Watch More <PlayCircleIcon size={20} />
           </button>
         </div>
