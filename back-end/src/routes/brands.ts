@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { sendSuccess, sendError } from "../lib/response.ts";
-import { Brand } from "../models/Brand.ts";
+import { Brand, type IBrand } from "../models/Brand.ts";
 
 const router = Router();
 
@@ -19,7 +19,7 @@ router.get("/", async (_req, res, next) => {
 /** POST /api/brands — create a brand */
 router.post("/", async (req, res, next) => {
   try {
-    const { name, logo, order } = req.body as Record<string, unknown>;
+    const { name, logo, order } = req.body as Partial<IBrand>;
 
     const missing: string[] = [];
     if (!name) missing.push("name");
