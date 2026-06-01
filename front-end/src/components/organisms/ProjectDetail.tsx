@@ -355,7 +355,7 @@ const ProjectDetail: FC<Props> = ({ project, onClose }) => {
 
           {/* Action Button */}
           <button
-            className="bg-primary text-primary-foreground hover:bg-primary/90 flex w-full items-center justify-center gap-2 rounded-lg py-3 font-semibold transition-colors"
+            className="bg-primary text-primary-foreground hover:bg-primary/90 flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg py-3 font-semibold transition-colors"
             onClick={() => navigate("/service")}
           >
             Watch More <PlayCircleIcon size={20} />
