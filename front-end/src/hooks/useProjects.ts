@@ -10,6 +10,8 @@ export type ProjectDisplay = {
   subtitle: string;
   video?: string;
   photos?: string[];
+  shootDate?: string;
+  shootLocation?: string;
 };
 
 function mapProject(f: ApiProject): ProjectDisplay {
@@ -21,6 +23,8 @@ function mapProject(f: ApiProject): ProjectDisplay {
     subtitle: f.subtitle,
     video: f.video,
     photos: f.photos,
+    shootDate: f.shootDate,
+    shootLocation: f.shootLocation,
   };
 }
 

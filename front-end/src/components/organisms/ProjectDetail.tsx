@@ -5,7 +5,9 @@ import { cn } from "#lib/utils";
 import {
   ArrowLeftIcon,
   ArrowRightIcon,
+  CalendarBlankIcon,
   CaretDownIcon,
+  CheckIcon,
   EyeIcon,
   FilmReelIcon,
   LinkIcon,
@@ -20,11 +22,35 @@ type Props = {
   onClose: () => void;
 };
 
+/** Formats an ISO/date string like "2024-05-01" → "01/05/2024"; returns "" if invalid. */
+function formatShootDate(value?: string): string {
+  if (!value) return "";
+  const d = new Date(value);
+  return Number.isNaN(d.getTime()) ? value : d.toLocaleDateString("vi-VN");
+}
+
 const ProjectDetail: FC<Props> = ({ project, onClose }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isSheetExpanded, setIsSheetExpanded] = useState(false);
+  const [copied, setCopied] = useState(false);
   const sheetTouchStartY = useRef<number | null>(null);
   const totalImages = project?.photos?.length || 0;
+
+  const handleCopyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+    } catch {
+      // Fallback for non-secure contexts where the Clipboard API is unavailable
+      const input = document.createElement("input");
+      input.value = window.location.href;
+      document.body.appendChild(input);
+      input.select();
+      document.execCommand("copy");
+      document.body.removeChild(input);
+    }
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   // Lock body scroll while modal is open
   useEffect(() => {
@@ -180,9 +206,11 @@ const ProjectDetail: FC<Props> = ({ project, onClose }) => {
               <div className="flex shrink-0 items-center gap-2">
                 <button
                   type="button"
+                  onClick={handleCopyLink}
+                  aria-label={copied ? "Đã copy đường dẫn" : "Copy đường dẫn"}
                   className="bg-foreground/10 text-foreground hover:bg-foreground/20 flex h-9 w-9 items-center justify-center rounded-full transition-colors"
                 >
-                  <LinkIcon size={16} />
+                  {copied ? <CheckIcon size={16} className="text-primary" /> : <LinkIcon size={16} />}
                 </button>
                 <button
                   type="button"
@@ -209,6 +237,21 @@ const ProjectDetail: FC<Props> = ({ project, onClose }) => {
               </h3>
               <p className="text-foreground/80 text-sm leading-relaxed">{project.subtitle}</p>
             </div>
+
+            {(project.shootLocation || project.shootDate) && (
+              <div className="text-muted-foreground mt-4 flex flex-wrap items-center gap-4 text-sm">
+                {project.shootLocation && (
+                  <div className="flex items-center gap-1.5">
+                    <MapPinIcon size={15} /> {project.shootLocation}
+                  </div>
+                )}
+                {project.shootDate && (
+                  <div className="flex items-center gap-1.5">
+                    <CalendarBlankIcon size={15} /> {formatShootDate(project.shootDate)}
+                  </div>
+                )}
+              </div>
+            )}
 
             {project.photos && totalImages > 0 && (
               <>
@@ -254,7 +297,17 @@ const ProjectDetail: FC<Props> = ({ project, onClose }) => {
           </div>
         )}
         {/* CỘT GIỮA: THÔNG TIN (Info Column) */}
-        <div className="border-border z-30 flex h-fit w-full flex-col justify-center space-y-8 rounded-3xl border px-10 py-20 backdrop-blur-sm lg:w-1/3">
+        <div className="border-border relative z-30 flex h-fit w-full flex-col justify-center space-y-8 rounded-3xl border px-10 py-20 backdrop-blur-sm lg:w-1/3">
+          {/* Copy link button — top-right corner */}
+          <button
+            type="button"
+            onClick={handleCopyLink}
+            aria-label={copied ? "Đã copy đường dẫn" : "Copy đường dẫn"}
+            className="bg-foreground/10 text-foreground hover:bg-foreground/20 absolute top-5 right-5 flex h-9 w-9 items-center justify-center rounded-full transition-colors"
+          >
+            {copied ? <CheckIcon size={16} className="text-primary" /> : <LinkIcon size={16} />}
+          </button>
+
           {/* Header Info */}
           <div>
             <span className="bg-primary/20 text-primary mb-4 inline-block rounded-md px-3 py-1 text-sm font-medium">
@@ -267,11 +320,20 @@ const ProjectDetail: FC<Props> = ({ project, onClose }) => {
               {project.title}
             </h1>
 
-            <div className="text-muted-foreground flex flex-wrap items-center gap-6 text-sm">
-              <div className="flex items-center gap-2">
-                <MapPinIcon size={16} /> {project.id}
+            {(project.shootLocation || project.shootDate) && (
+              <div className="text-muted-foreground flex flex-wrap items-center gap-6 text-sm">
+                {project.shootLocation && (
+                  <div className="flex items-center gap-2">
+                    <MapPinIcon size={16} /> {project.shootLocation}
+                  </div>
+                )}
+                {project.shootDate && (
+                  <div className="flex items-center gap-2">
+                    <CalendarBlankIcon size={16} /> {formatShootDate(project.shootDate)}
+                  </div>
+                )}
               </div>
-            </div>
+            )}
           </div>
 
           <div className="border-border border-t" />

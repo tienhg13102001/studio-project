@@ -26,7 +26,7 @@ const HeroCTA = () => {
         </Button>
       </div>
       <div className="mx-2 hidden h-10 w-px bg-gray-600 sm:block" />
-      <SocialLinks />
+      <SocialLinks showPhone={false}/>
     </div>
   );
 };

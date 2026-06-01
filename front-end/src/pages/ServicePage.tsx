@@ -22,6 +22,8 @@ function toProjectDisplay(f: ApiProject): ProjectDisplay {
     subtitle: f.subtitle,
     video: f.video ? resolveAssetUrl(f.video) : undefined,
     photos: f.photos?.map((p) => resolveAssetUrl(p)),
+    shootDate: f.shootDate,
+    shootLocation: f.shootLocation,
   };
 }
 

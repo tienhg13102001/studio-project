@@ -50,6 +50,8 @@ type ProjectForm = {
   service: string;
   video: string;
   photos: string[];
+  shootDate: string;
+  shootLocation: string;
 };
 
 function toForm(f: ApiProject): ProjectForm {
@@ -66,6 +68,8 @@ function toForm(f: ApiProject): ProjectForm {
     service,
     video: f.video ?? "",
     photos: f.photos ?? [],
+    shootDate: f.shootDate ? f.shootDate.slice(0, 10) : "",
+    shootLocation: f.shootLocation ?? "",
   };
 }
 
@@ -79,6 +83,8 @@ function emptyProjectForm(): ProjectForm {
     service: "",
     video: "",
     photos: [],
+    shootDate: "",
+    shootLocation: "",
   };
 }
 
@@ -137,6 +143,8 @@ export default function ProjectsTab({ data, raw, services, loading, onRefetch }:
         service: form.service,
         video: form.video || undefined,
         photos: form.photos,
+        shootDate: form.shootDate || undefined,
+        shootLocation: form.shootLocation || undefined,
       };
       if (creating) {
         await apiPost(`/api/projects`, payload);
@@ -296,6 +304,24 @@ export default function ProjectsTab({ data, raw, services, loading, onRefetch }:
                     onChange={(e) => set("subtitle", e.target.value)}
                     placeholder="Short description"
                   />
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <Label>Shoot date</Label>
+                    <Input
+                      type="date"
+                      value={form.shootDate}
+                      onChange={(e) => set("shootDate", e.target.value)}
+                    />
+                  </div>
+                  <div>
+                    <Label>Shoot location</Label>
+                    <Input
+                      value={form.shootLocation}
+                      onChange={(e) => set("shootLocation", e.target.value)}
+                      placeholder="Hà Nội"
+                    />
+                  </div>
                 </div>
                 <div>
                   <Label>Service</Label>

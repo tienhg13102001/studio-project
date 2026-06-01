@@ -10,6 +10,8 @@ export interface IProject extends Document {
   prominent: boolean;
   video?: string; // optional, path to video file
   photos?: string[]; // optional, list of product photo paths
+  shootDate?: Date; // optional, date the project was shot
+  shootLocation?: string; // optional, Vietnamese province/city where it was shot
 }
 
 const projectSchema = new Schema<IProject>(
@@ -22,6 +24,8 @@ const projectSchema = new Schema<IProject>(
     prominent:      { type: Boolean, default: false },
     video:          { type: String, required: false }, // path to video file (optional)
     photos:         { type: [String], required: false }, // array of product photo paths (optional)
+    shootDate:      { type: Date, required: false }, // date the project was shot (optional)
+    shootLocation:  { type: String, required: false }, // VN province/city (optional)
   },
   {
     toJSON: {

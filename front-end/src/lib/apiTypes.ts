@@ -41,6 +41,8 @@ export type ApiProject = {
   prominent:      boolean;
   video?: string; // optional, path to video file
   photos?: string[]; // optional, list of product photo paths
+  shootDate?: string; // optional, ISO date string
+  shootLocation?: string; // optional, VN province/city
 };
 
 export type ApiService = {
