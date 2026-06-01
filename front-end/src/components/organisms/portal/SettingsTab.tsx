@@ -25,10 +25,10 @@ const SettingsTab = () => {
   return (
     <>
       <div className="flex flex-col gap-4">
-        <h2 className="text-lg font-semibold text-white">Settings</h2>
+        <h2 className="text-lg font-semibold text-foreground">Settings</h2>
 
         {/* Tab strip */}
-        <div className="flex items-center gap-1 border-b border-white/8">
+        <div className="flex items-center gap-1 border-b border-foreground/8">
           {TABS.map((tab) => {
             const isActive = tab.id === active;
             return (
@@ -39,7 +39,7 @@ const SettingsTab = () => {
                   "flex items-center gap-2 border-b-2 px-4 py-2.5 text-sm transition-all",
                   isActive
                     ? "border-primary text-primary font-medium"
-                    : "border-transparent text-white/40 hover:text-white",
+                    : "border-transparent text-foreground/40 hover:text-foreground",
                 ].join(" ")}
               >
                 {tab.icon}

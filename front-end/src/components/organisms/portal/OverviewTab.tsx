@@ -34,11 +34,11 @@ export default function OverviewTab({
       {/* Stat cards */}
       <div className="grid grid-cols-4 gap-4">
         {stats.map((card) => (
-          <div key={card.label} className="rounded-xl border border-white/8 bg-white/3 p-5 flex flex-col gap-3">
+          <div key={card.label} className="rounded-xl border border-foreground/8 bg-foreground/3 p-5 flex flex-col gap-3">
             <div className={card.color}>{card.icon}</div>
             <div>
-              <p className="text-2xl font-bold text-white">{card.value}</p>
-              <p className="text-xs text-white/40 mt-0.5">{card.label}</p>
+              <p className="text-2xl font-bold text-foreground">{card.value}</p>
+              <p className="text-xs text-foreground/40 mt-0.5">{card.label}</p>
             </div>
           </div>
         ))}
@@ -47,7 +47,7 @@ export default function OverviewTab({
       {/* Team preview */}
       <section>
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-sm font-semibold text-white/80">Team Members</h2>
+          <h2 className="text-sm font-semibold text-foreground/80">Team Members</h2>
           <Button variant="link" onClick={() => onTabChange("team")} className="text-xs text-primary p-0 h-auto">
             View all
           </Button>
@@ -58,7 +58,7 @@ export default function OverviewTab({
       {/* Brands preview */}
       <section>
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-sm font-semibold text-white/80">Brands</h2>
+          <h2 className="text-sm font-semibold text-foreground/80">Brands</h2>
           <Button variant="link" onClick={() => onTabChange("brands")} className="text-xs text-primary p-0 h-auto">
             View all
           </Button>

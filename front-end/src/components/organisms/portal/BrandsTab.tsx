@@ -35,7 +35,7 @@ export function BrandsGrid({ data, loading, preview, onEdit }: GridProps) {
     return (
       <div className="grid grid-cols-6 gap-3">
         {Array.from({ length: 6 }).map((_, i) => (
-          <Skeleton key={i} className="h-20 rounded-xl border border-white/8" />
+          <Skeleton key={i} className="h-20 rounded-xl border border-foreground/8" />
         ))}
       </div>
     );
@@ -45,20 +45,20 @@ export function BrandsGrid({ data, loading, preview, onEdit }: GridProps) {
       {items.map((b) => (
         <div
           key={b.id}
-          className="group relative flex flex-col items-center justify-center gap-2 rounded-xl border border-white/8 bg-white/3 p-4 transition-all hover:border-primary/30 hover:bg-primary/5"
+          className="group relative flex flex-col items-center justify-center gap-2 rounded-xl border border-foreground/8 bg-foreground/3 p-4 transition-all hover:border-primary/30 hover:bg-primary/5"
         >
           <img
             src={resolveAssetUrl(b.logo)}
             alt={b.name}
             className="h-8 w-full object-contain grayscale opacity-50 transition-all group-hover:opacity-100 group-hover:grayscale-0"
           />
-          <p className="w-full truncate text-center text-[10px] text-white/30">{b.name}</p>
+          <p className="w-full truncate text-center text-[10px] text-foreground/30">{b.name}</p>
           {onEdit && (
             <Button
               variant="ghost"
               size="icon-xs"
               onClick={() => onEdit(b)}
-              className="absolute right-1.5 top-1.5 border border-white/10 bg-[#0d0d0d] text-white/40 opacity-0 transition-all group-hover:opacity-100 hover:border-primary/30 hover:text-primary"
+              className="absolute right-1.5 top-1.5 border border-foreground/10 bg-background text-foreground/40 opacity-0 transition-all group-hover:opacity-100 hover:border-primary/30 hover:text-primary"
             >
               <PencilSimpleIcon size={10} />
             </Button>
@@ -147,7 +147,7 @@ export default function BrandsTab({ data, loading, onRefetch }: TabProps) {
   return (
     <>
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold text-white">Brands</h2>
+        <h2 className="text-lg font-semibold text-foreground">Brands</h2>
         <Button size="sm" onClick={openCreate} className="bg-primary text-black hover:opacity-80">
           <PlusIcon size={12} weight="bold" />
           Add brand
@@ -209,7 +209,7 @@ export default function BrandsTab({ data, loading, onRefetch }: TabProps) {
           <AlertDialogHeader>
             <AlertDialogTitle>Delete brand?</AlertDialogTitle>
             <AlertDialogDescription>
-              "<span className="text-white/80">{confirmDelete?.name}</span>" will be permanently
+              "<span className="text-foreground/80">{confirmDelete?.name}</span>" will be permanently
               deleted.
             </AlertDialogDescription>
           </AlertDialogHeader>

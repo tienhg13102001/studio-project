@@ -176,7 +176,7 @@ export default function ServicesTab({ data, raw, loading, onRefetch }: TabProps)
     <>
       {/* ── Header ── */}
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold text-white">Services</h2>
+        <h2 className="text-lg font-semibold text-foreground">Services</h2>
         <Button size="sm" onClick={openCreate} className="bg-primary text-black hover:opacity-80">
           <PlusIcon size={12} weight="bold" />
           Add service
@@ -184,7 +184,7 @@ export default function ServicesTab({ data, raw, loading, onRefetch }: TabProps)
       </div>
 
       {/* ── Table ── */}
-      <div className="overflow-hidden rounded-xl border border-white/8">
+      <div className="overflow-hidden rounded-xl border border-foreground/8">
         <Table>
           <TableHeader>
             <TableRow className="hover:bg-transparent">
@@ -207,25 +207,25 @@ export default function ServicesTab({ data, raw, loading, onRefetch }: TabProps)
                           className="h-10 w-16 shrink-0 rounded object-cover opacity-80"
                         />
                       )}
-                      <p className="truncate text-xs font-medium text-white">{s.title}</p>
+                      <p className="truncate text-xs font-medium text-foreground">{s.title}</p>
                     </div>
                   </TableCell>
                   <TableCell>
-                    <Badge variant="outline" className="border-white/10 bg-white/5 text-white/60">
+                    <Badge variant="outline" className="border-foreground/10 bg-foreground/5 text-foreground/60">
                       {rawItem?.tag ?? ""}
                     </Badge>
                   </TableCell>
-                  <TableCell className="text-xs text-white/50">
+                  <TableCell className="text-xs text-foreground/50">
                     <p className="line-clamp-2 max-w-xs">{s.description}</p>
                   </TableCell>
-                  <TableCell className="text-xs text-white/60">{rawItem?.faqs.length ?? 0}</TableCell>
+                  <TableCell className="text-xs text-foreground/60">{rawItem?.faqs.length ?? 0}</TableCell>
                   <TableCell>
                     <div className="flex items-center gap-2">
                       <Button
                         variant="outline"
                         size="xs"
                         onClick={() => openEdit(s.id)}
-                        className="border-white/10 text-white/50 hover:border-primary/40 hover:text-primary"
+                        className="border-foreground/10 text-foreground/50 hover:border-primary/40 hover:text-primary"
                       >
                         <PencilSimpleIcon size={11} />
                         Edit
@@ -237,7 +237,7 @@ export default function ServicesTab({ data, raw, loading, onRefetch }: TabProps)
                           const r = (raw ?? []).find((x) => x.id === s.id);
                           if (r) { setConfirmDelete(r); setDeleteError(null); }
                         }}
-                        className="border border-white/10 text-white/50 hover:border-red-500/50 hover:text-red-400"
+                        className="border border-foreground/10 text-foreground/50 hover:border-red-500/50 hover:text-red-400"
                         title="Delete service"
                       >
                         <TrashIcon size={11} />
@@ -297,10 +297,10 @@ export default function ServicesTab({ data, raw, loading, onRefetch }: TabProps)
                     <Label>Linked Projects ({editing.projects.length})</Label>
                     <div className="flex flex-col gap-1.5">
                       {editing.projects.map((f) => (
-                        <div key={f.id} className="flex items-center gap-2.5 rounded-lg border border-white/8 bg-white/3 p-2">
+                        <div key={f.id} className="flex items-center gap-2.5 rounded-lg border border-foreground/8 bg-foreground/3 p-2">
                           <div className="min-w-0">
-                            <p className="truncate text-xs font-medium text-white/80">{f.title}</p>
-                            <p className="text-[10px] text-white/35">{f.subtitle}</p>
+                            <p className="truncate text-xs font-medium text-foreground/80">{f.title}</p>
+                            <p className="text-[10px] text-foreground/35">{f.subtitle}</p>
                           </div>
                           <Badge variant="outline" className="ml-auto shrink-0">{f.layout}</Badge>
                         </div>
@@ -326,7 +326,7 @@ export default function ServicesTab({ data, raw, loading, onRefetch }: TabProps)
                       variant="outline"
                       size="xs"
                       onClick={addFaq}
-                      className="border-white/10 text-white/50 hover:border-primary/40 hover:text-primary"
+                      className="border-foreground/10 text-foreground/50 hover:border-primary/40 hover:text-primary"
                     >
                       <PlusIcon size={10} />
                       Add FAQ
@@ -334,17 +334,17 @@ export default function ServicesTab({ data, raw, loading, onRefetch }: TabProps)
                   </div>
                   <div className="flex flex-col gap-3">
                     {form.faqs.map((faq, i) => (
-                      <div key={i} className="relative rounded-lg border border-white/8 bg-white/3 p-3">
+                      <div key={i} className="relative rounded-lg border border-foreground/8 bg-foreground/3 p-3">
                         <Button
                           type="button"
                           variant="ghost"
                           size="icon-xs"
                           onClick={() => removeFaq(i)}
-                          className="absolute right-2 top-2 text-white/25 hover:text-red-400"
+                          className="absolute right-2 top-2 text-foreground/25 hover:text-red-400"
                         >
                           <XIcon size={13} />
                         </Button>
-                        <p className="mb-2 text-[10px] font-medium uppercase tracking-wider text-white/30">
+                        <p className="mb-2 text-[10px] font-medium uppercase tracking-wider text-foreground/30">
                           FAQ {i + 1}
                         </p>
                         <div className="mb-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
@@ -370,7 +370,7 @@ export default function ServicesTab({ data, raw, loading, onRefetch }: TabProps)
                       </div>
                     ))}
                     {form.faqs.length === 0 && (
-                      <p className="rounded-lg border border-dashed border-white/8 py-4 text-center text-xs text-white/20">
+                      <p className="rounded-lg border border-dashed border-foreground/8 py-4 text-center text-xs text-foreground/20">
                         No FAQs yet — click Add FAQ
                       </p>
                     )}
@@ -390,7 +390,7 @@ export default function ServicesTab({ data, raw, loading, onRefetch }: TabProps)
           <AlertDialogHeader>
             <AlertDialogTitle>Delete service?</AlertDialogTitle>
             <AlertDialogDescription>
-              "<span className="text-white/80">{confirmDelete?.title.en}</span>" will be permanently deleted.
+              "<span className="text-foreground/80">{confirmDelete?.title.en}</span>" will be permanently deleted.
             </AlertDialogDescription>
           </AlertDialogHeader>
           {deleteError && <p className="text-xs text-red-400">{deleteError}</p>}

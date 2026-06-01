@@ -46,7 +46,7 @@ export default function ImagesUpload({ value, onChange }: ImagesUploadProps) {
       <div className="flex flex-wrap gap-2 mb-2">
         {value.map((img, idx) => (
           <div key={img} className="relative group">
-            <img src={resolveAssetUrl(img)} alt="photo" className="w-20 h-20 object-cover rounded border border-white/10" />
+            <img src={resolveAssetUrl(img)} alt="photo" className="w-20 h-20 object-cover rounded border border-foreground/10" />
             <button
               type="button"
               className="absolute top-0 right-0 bg-black/60 text-white p-1 rounded-bl-lg opacity-0 group-hover:opacity-100 transition"
@@ -63,7 +63,7 @@ export default function ImagesUpload({ value, onChange }: ImagesUploadProps) {
         tabIndex={0}
         onDrop={handleDrop}
         onDragOver={(e) => e.preventDefault()}
-        className="flex items-center gap-2 rounded-lg border border-dashed border-white/20 bg-black/10 px-4 py-3 text-white/60 hover:bg-white/5 cursor-pointer"
+        className="flex items-center gap-2 rounded-lg border border-dashed border-foreground/20 bg-foreground/5 px-4 py-3 text-foreground/60 hover:bg-foreground/5 cursor-pointer"
         onClick={() => inputRef.current?.click()}
       >
         <ImageIcon size={20} />

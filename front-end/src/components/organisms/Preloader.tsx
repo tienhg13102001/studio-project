@@ -42,22 +42,22 @@ const Preloader = ({ target, onComplete }: Props) => {
 
   return (
     <div
-      className={`fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#0a0a0a] transition-transform duration-700 ease-in-out ${
+      className={`bg-background fixed inset-0 z-50 flex flex-col items-center justify-center transition-transform duration-700 ease-in-out ${
         isExiting ? "-translate-y-full" : "translate-y-0"
       }`}
     >
       <LogoYellow className="mb-12 h-14 w-14 opacity-80" />
 
       <div className="flex w-64 flex-col gap-3 md:w-96">
-        <div className="h-0.5 w-full overflow-hidden rounded-full bg-white/10">
+        <div className="bg-muted h-0.5 w-full overflow-hidden rounded-full">
           <div
             className="bg-primary h-full rounded-full transition-[width] duration-75 ease-linear"
             style={{ width: `${progress}%` }}
           />
         </div>
-        <div className="flex items-center justify-between text-xs text-gray-500 tabular-nums select-none">
+        <div className="text-muted-foreground flex items-center justify-between text-xs tabular-nums select-none">
           <span className="tracking-widest uppercase">Loading</span>
-          <span className="font-medium text-white">{shown}%</span>
+          <span className="text-foreground font-medium">{shown}%</span>
         </div>
       </div>
     </div>

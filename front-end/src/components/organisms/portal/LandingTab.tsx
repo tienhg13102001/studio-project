@@ -82,7 +82,7 @@ const LandingTab = () => {
     return (
       <div className="flex flex-col gap-4">
         {Array.from({ length: 6 }).map((_, i) => (
-          <Skeleton key={i} className="h-14 rounded-lg border border-white/8" />
+          <Skeleton key={i} className="h-14 rounded-lg border border-foreground/8" />
         ))}
       </div>
     );
@@ -191,7 +191,7 @@ const LandingTab = () => {
         </p>
       )}
 
-      <div className="sticky bottom-0 -mx-8 flex items-center justify-end gap-3 border-t border-white/8 bg-[#0d0d0d]/95 px-8 py-4 backdrop-blur">
+      <div className="sticky bottom-0 -mx-8 flex items-center justify-end gap-3 border-t border-foreground/8 bg-background/95 px-8 py-4 backdrop-blur">
         {savedAt && !saving && (
           <span className="flex items-center gap-1.5 text-xs text-emerald-400">
             <CheckCircleIcon size={14} weight="fill" />
@@ -216,10 +216,10 @@ type SectionProps = {
 };
 
 const Section = ({ title, description, children }: SectionProps) => (
-  <section className="flex flex-col gap-4 rounded-xl border border-white/8 bg-white/2 p-5">
+  <section className="flex flex-col gap-4 rounded-xl border border-foreground/8 bg-foreground/2 p-5">
     <header>
-      <h3 className="text-sm font-semibold text-white">{title}</h3>
-      {description && <p className="mt-0.5 text-xs text-white/40">{description}</p>}
+      <h3 className="text-sm font-semibold text-foreground">{title}</h3>
+      {description && <p className="mt-0.5 text-xs text-foreground/40">{description}</p>}
     </header>
     <div className="flex flex-col gap-4">{children}</div>
   </section>
@@ -240,7 +240,7 @@ const BilingualField = ({ label, value, onChange, multiline }: BilingualFieldPro
       <Label>{label}</Label>
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <div>
-          <p className="mb-1 text-[10px] font-medium tracking-wider text-white/30 uppercase">
+          <p className="mb-1 text-[10px] font-medium tracking-wider text-foreground/30 uppercase">
             English
           </p>
           <InputComp
@@ -249,7 +249,7 @@ const BilingualField = ({ label, value, onChange, multiline }: BilingualFieldPro
           />
         </div>
         <div>
-          <p className="mb-1 text-[10px] font-medium tracking-wider text-white/30 uppercase">
+          <p className="mb-1 text-[10px] font-medium tracking-wider text-foreground/30 uppercase">
             Tiếng Việt
           </p>
           <InputComp

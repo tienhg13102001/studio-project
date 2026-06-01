@@ -19,15 +19,15 @@ export default function EditModal({ title, isOpen, onClose, onSubmit, saving, ch
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm">
-      <div className="w-full max-w-7xl rounded-2xl border border-white/10 bg-[#161616] shadow-2xl">
+      <div className="w-full max-w-7xl rounded-2xl border border-foreground/10 bg-card shadow-2xl">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-white/8 px-4 py-3 sm:px-6 sm:py-4">
-          <h3 className="font-semibold text-white">{title}</h3>
+        <div className="flex items-center justify-between border-b border-foreground/8 px-4 py-3 sm:px-6 sm:py-4">
+          <h3 className="font-semibold text-foreground">{title}</h3>
           <Button
             variant="ghost"
             size="icon-sm"
             onClick={onClose}
-            className="text-white/40 hover:bg-white/8 hover:text-white"
+            className="text-foreground/40 hover:bg-foreground/8 hover:text-foreground"
           >
             <XIcon size={14} />
           </Button>
@@ -39,7 +39,7 @@ export default function EditModal({ title, isOpen, onClose, onSubmit, saving, ch
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between gap-3 border-t border-white/8 px-4 py-3 sm:px-6 sm:py-4">
+        <div className="flex items-center justify-between gap-3 border-t border-foreground/8 px-4 py-3 sm:px-6 sm:py-4">
           <div>
             {onDelete && (
               <Button
@@ -56,7 +56,7 @@ export default function EditModal({ title, isOpen, onClose, onSubmit, saving, ch
             <Button
               variant="outline"
               onClick={onClose}
-              className="border-white/10 text-white/60 hover:border-white/30 hover:text-white"
+              className="border-foreground/10 text-foreground/60 hover:border-foreground/30 hover:text-foreground"
             >
               Cancel
             </Button>

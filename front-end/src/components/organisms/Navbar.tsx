@@ -7,6 +7,8 @@ import ThemeToggle from "#components/molecules/ThemeToggle";
 import MobileMenu from "#components/molecules/MobileMenu";
 import { useLanguage, useTranslation } from "#i18n";
 import { useLocation, useNavigate } from "react-router-dom";
+import UKFlag from "../../assets/icons/UKFlag";
+import VietNamFlag from "../../assets/icons/VietNamFlag";
 
 type Props = {};
 
@@ -41,7 +43,15 @@ const Navbar: React.FC<Props> = () => {
         <div className="flex items-center gap-2">
           {/* Language */}
           <Button variant="outline" onClick={() => setLang(lang === "en" ? "vi" : "en")}>
-            {lang === "en" ? "🇺🇸 EN" : "🇻🇳 VI"}
+            {lang === "en" ? (
+              <>
+                <UKFlag /> EN
+              </>
+            ) : (
+              <>
+                <VietNamFlag /> VI
+              </>
+            )}
           </Button>
 
           {/* Theme Toggle */}
@@ -53,7 +63,11 @@ const Navbar: React.FC<Props> = () => {
           </Button>
 
           {/* Let's Talk CTA */}
-          <Button variant="outline" className="hidden lg:inline-flex">
+          <Button
+            variant="outline"
+            className="hidden lg:inline-flex"
+            onClick={() => navigate("/contact")}
+          >
             {t.nav.letsTalk}
           </Button>
 

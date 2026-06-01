@@ -53,7 +53,7 @@ export default function VideoUpload({ value, onChange }: VideoUploadProps) {
         onDragOver={(e) => e.preventDefault()}
         onClick={() => inputRef.current?.click()}
         onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && inputRef.current?.click()}
-        className="hover:border-primary/30 hover:bg-primary/5 flex cursor-pointer items-center gap-3 rounded-lg border border-dashed border-white/15 bg-white/3 p-3 transition-colors"
+        className="hover:border-primary/30 hover:bg-primary/5 flex cursor-pointer items-center gap-3 rounded-lg border border-dashed border-foreground/15 bg-foreground/3 p-3 transition-colors"
       >
         {previewSrc ? (
           <video
@@ -64,21 +64,21 @@ export default function VideoUpload({ value, onChange }: VideoUploadProps) {
             className="h-10 w-16 shrink-0 rounded-md object-cover opacity-70"
           />
         ) : (
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-white/5 text-white/25">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-foreground/5 text-foreground/25">
             <FilmReelIcon size={18} />
           </div>
         )}
 
         <div className="min-w-0 flex-1">
-          <p className="flex items-center gap-1.5 text-xs text-white/50">
+          <p className="flex items-center gap-1.5 text-xs text-foreground/50">
             <UploadSimpleIcon size={13} />
             {uploading ? `Uploading… ${progress}%` : "Click or drag to upload"}
           </p>
-          <p className="mt-0.5 text-[10px] text-white/25">MP4, WebM, MOV, M4V · max 500 MB</p>
+          <p className="mt-0.5 text-[10px] text-foreground/25">MP4, WebM, MOV, M4V · max 500 MB</p>
         </div>
 
         {uploading && (
-          <div className="border-t-primary h-4 w-4 shrink-0 animate-spin rounded-full border-2 border-white/15" />
+          <div className="border-t-primary h-4 w-4 shrink-0 animate-spin rounded-full border-2 border-foreground/15" />
         )}
 
         <input

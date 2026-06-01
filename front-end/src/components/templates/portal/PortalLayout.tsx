@@ -34,7 +34,7 @@ const PortalLayout = () => {
   if (!user) return null;
 
   return (
-    <div className="flex h-screen overflow-hidden bg-[#0d0d0d] text-white">
+    <div className="flex h-screen overflow-hidden bg-background text-foreground">
       <PortalSidebar user={user} onLogout={handleLogout} />
 
       <main className="flex-1 overflow-y-auto">

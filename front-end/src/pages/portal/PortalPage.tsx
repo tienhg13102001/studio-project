@@ -15,6 +15,7 @@ import {
 } from "@phosphor-icons/react";
 import LogoYellow from "../../assets/icons/LogoYellow";
 import LogoBlack from "../../assets/icons/LogoBlack";
+import ThemeToggle from "#components/molecules/ThemeToggle";
 import { apiPost } from "#lib/api";
 
 type View = "continue" | "select" | "admin";
@@ -89,12 +90,17 @@ const PortalPage = () => {
       <div className="pointer-events-none absolute inset-0 bg-black/20" />
 
       {/* Card */}
-      <div className="relative w-full max-w-md overflow-hidden rounded-2xl border border-white/10 bg-black/60 shadow-2xl backdrop-blur-xl">
+      <div className="border-foreground/10 bg-background/70 relative w-full max-w-md overflow-hidden rounded-2xl border shadow-2xl backdrop-blur-xl">
+        {/* Theme toggle — top-right corner */}
+        <div className="absolute top-4 right-4 z-10">
+          <ThemeToggle />
+        </div>
+
         {/* Home breadcrumb */}
         <div className="px-6 pt-5">
           <button
             onClick={() => navigate("/")}
-            className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-white/60 transition-colors hover:text-white"
+            className="border-foreground/10 bg-foreground/5 text-foreground/60 hover:text-foreground inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs transition-colors"
           >
             <HouseIcon size={12} />
             Home
@@ -106,10 +112,10 @@ const PortalPage = () => {
           <div className="mb-8 flex flex-col gap-4">
             <LogoYellow className="text-primary h-9 w-9" />
             <div>
-              <h1 className="text-3xl font-bold text-white">
+              <h1 className="text-foreground text-3xl font-bold">
                 {view === "continue" ? "Welcome back" : "Welcome to Portal"}
               </h1>
-              <p className="mt-1 text-sm text-white/50">
+              <p className="text-foreground/50 mt-1 text-sm">
                 {view === "continue" && "Bạn đã đăng nhập trên thiết bị này"}
                 {view === "select" && "Please select your portal type"}
                 {view === "admin" && "Admin Portal — Sign in to continue"}
@@ -122,27 +128,27 @@ const PortalPage = () => {
             <div className="flex flex-col gap-3">
               <button
                 onClick={() => navigate("/portal/dashboard")}
-                className="group hover:border-primary/50 hover:bg-primary/10 flex items-center gap-4 rounded-xl border border-white/10 bg-white/5 px-5 py-4 text-left transition-all"
+                className="group hover:border-primary/50 hover:bg-primary/10 border-foreground/10 bg-foreground/5 flex items-center gap-4 rounded-xl border px-5 py-4 text-left transition-all"
               >
                 <div className="bg-primary/20 text-primary group-hover:bg-primary group-hover:text-primary-foreground flex h-12 w-12 shrink-0 items-center justify-center rounded-full text-base font-bold transition-colors">
                   {savedUser.name.charAt(0).toUpperCase()}
                 </div>
                 <div className="min-w-0 flex-1">
-                  <p className="text-[11px] tracking-wider text-white/40 uppercase">
+                  <p className="text-foreground/40 text-[11px] tracking-wider uppercase">
                     Truy cập với tài khoản
                   </p>
-                  <p className="truncate text-sm font-semibold text-white">{savedUser.name}</p>
-                  <p className="mt-0.5 truncate text-xs text-white/40">{savedUser.email}</p>
+                  <p className="text-foreground truncate text-sm font-semibold">{savedUser.name}</p>
+                  <p className="text-foreground/40 mt-0.5 truncate text-xs">{savedUser.email}</p>
                 </div>
                 <ArrowRightIcon
                   size={16}
-                  className="group-hover:text-primary shrink-0 text-white/30 transition-colors"
+                  className="group-hover:text-primary text-foreground/30 shrink-0 transition-colors"
                 />
               </button>
 
               <button
                 onClick={handleSwitchAccount}
-                className="inline-flex items-center justify-center gap-1.5 self-center rounded-lg px-3 py-1.5 text-xs text-white/40 transition-colors hover:text-white"
+                className="text-foreground/40 hover:text-foreground inline-flex items-center justify-center gap-1.5 self-center rounded-lg px-3 py-1.5 text-xs transition-colors"
               >
                 <UserCircleIcon size={14} />
                 Đăng nhập tài khoản khác
@@ -156,39 +162,39 @@ const PortalPage = () => {
               {/* Admin Portal */}
               <button
                 onClick={() => setView("admin")}
-                className="group hover:border-primary/50 hover:bg-primary/10 flex items-center gap-4 rounded-xl border border-white/10 bg-white/5 px-5 py-4 text-left transition-all"
+                className="group hover:border-primary/50 hover:bg-primary/10 border-foreground/10 bg-foreground/5 flex items-center gap-4 rounded-xl border px-5 py-4 text-left transition-all"
               >
                 <div className="bg-primary/20 text-primary group-hover:bg-primary group-hover:text-primary-foreground flex h-10 w-10 shrink-0 items-center justify-center rounded-lg transition-colors">
                   <BriefcaseIcon size={20} weight="duotone" />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <p className="text-sm font-semibold text-white">Admin Portal</p>
-                  <p className="mt-0.5 text-xs text-white/40">Access for BeeZ team members</p>
+                  <p className="text-foreground text-sm font-semibold">Admin Portal</p>
+                  <p className="text-foreground/40 mt-0.5 text-xs">Access for BeeZ team members</p>
                 </div>
                 <ArrowRightIcon
                   size={16}
-                  className="group-hover:text-primary shrink-0 text-white/30 transition-colors"
+                  className="group-hover:text-primary text-foreground/30 shrink-0 transition-colors"
                 />
               </button>
 
               {/* Client Portal — coming soon */}
               <button
                 disabled
-                className="group flex cursor-not-allowed items-center gap-4 rounded-xl border border-white/5 bg-white/3 px-5 py-4 text-left opacity-50"
+                className="group border-foreground/5 bg-foreground/3 flex cursor-not-allowed items-center gap-4 rounded-xl border px-5 py-4 text-left opacity-50"
               >
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-white/10 text-white/40">
+                <div className="bg-foreground/10 text-foreground/40 flex h-10 w-10 shrink-0 items-center justify-center rounded-lg">
                   <UsersThreeIcon size={20} weight="duotone" />
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
-                    <p className="text-sm font-semibold text-white/60">Client Portal</p>
-                    <span className="rounded-full border border-white/20 px-2 py-0.5 text-[10px] text-white/40">
+                    <p className="text-foreground/60 text-sm font-semibold">Client Portal</p>
+                    <span className="border-foreground/20 text-foreground/40 rounded-full border px-2 py-0.5 text-[10px]">
                       Coming soon
                     </span>
                   </div>
-                  <p className="mt-0.5 text-xs text-white/30">Access for our valued clients</p>
+                  <p className="text-foreground/30 mt-0.5 text-xs">Access for our valued clients</p>
                 </div>
-                <ArrowRightIcon size={16} className="shrink-0 text-white/20" />
+                <ArrowRightIcon size={16} className="text-foreground/20 shrink-0" />
               </button>
             </div>
           )}
@@ -198,13 +204,13 @@ const PortalPage = () => {
             <form onSubmit={handleLogin} className="flex flex-col gap-4" noValidate>
               {/* Email */}
               <div className="flex flex-col gap-1.5">
-                <label htmlFor="email" className="text-sm font-medium text-white/70">
+                <label htmlFor="email" className="text-foreground/70 text-sm font-medium">
                   Email
                 </label>
                 <div className="relative">
                   <EnvelopeIcon
                     size={15}
-                    className="absolute top-1/2 left-3 -translate-y-1/2 text-white/30"
+                    className="text-foreground/30 absolute top-1/2 left-3 -translate-y-1/2"
                   />
                   <input
                     id="email"
@@ -214,20 +220,20 @@ const PortalPage = () => {
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="you@beezvn.com"
                     required
-                    className="focus:border-primary/60 focus:ring-primary/40 w-full rounded-lg border border-white/10 bg-white/5 py-2.5 pr-4 pl-9 text-sm text-white outline-none placeholder:text-white/25 focus:ring-1"
+                    className="focus:border-primary/60 focus:ring-primary/40 border-foreground/10 bg-foreground/5 text-foreground placeholder:text-foreground/25 w-full rounded-lg border py-2.5 pr-4 pl-9 text-sm outline-none focus:ring-1"
                   />
                 </div>
               </div>
 
               {/* Password */}
               <div className="flex flex-col gap-1.5">
-                <label htmlFor="password" className="text-sm font-medium text-white/70">
+                <label htmlFor="password" className="text-foreground/70 text-sm font-medium">
                   Password
                 </label>
                 <div className="relative">
                   <LockIcon
                     size={15}
-                    className="absolute top-1/2 left-3 -translate-y-1/2 text-white/30"
+                    className="text-foreground/30 absolute top-1/2 left-3 -translate-y-1/2"
                   />
                   <input
                     id="password"
@@ -237,12 +243,12 @@ const PortalPage = () => {
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="••••••••"
                     required
-                    className="focus:border-primary/60 focus:ring-primary/40 w-full rounded-lg border border-white/10 bg-white/5 py-2.5 pr-10 pl-9 text-sm text-white outline-none placeholder:text-white/25 focus:ring-1"
+                    className="focus:border-primary/60 focus:ring-primary/40 border-foreground/10 bg-foreground/5 text-foreground placeholder:text-foreground/25 w-full rounded-lg border py-2.5 pr-10 pl-9 text-sm outline-none focus:ring-1"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPw((v) => !v)}
-                    className="absolute top-1/2 right-3 -translate-y-1/2 text-white/30 transition-colors hover:text-white/70"
+                    className="text-foreground/30 hover:text-foreground/70 absolute top-1/2 right-3 -translate-y-1/2 transition-colors"
                     aria-label={showPw ? "Hide password" : "Show password"}
                   >
                     {showPw ? <EyeSlashIcon size={15} /> : <EyeIcon size={15} />}
@@ -265,7 +271,7 @@ const PortalPage = () => {
                     setView("select");
                     setError(null);
                   }}
-                  className="flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-white/60 transition-colors hover:text-white"
+                  className="border-foreground/10 bg-foreground/5 text-foreground/60 hover:text-foreground flex items-center gap-1.5 rounded-lg border px-4 py-2.5 text-sm transition-colors"
                 >
                   <ArrowLeftIcon size={14} />
                   Back
@@ -283,7 +289,7 @@ const PortalPage = () => {
           )}
 
           {/* Footer */}
-          <p className="mt-8 text-center text-[11px] text-white/20">
+          <p className="text-foreground/20 mt-8 text-center text-[11px]">
             BeeZ Production © {new Date().getFullYear()}
           </p>
         </div>

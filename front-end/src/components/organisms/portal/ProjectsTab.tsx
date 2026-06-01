@@ -185,7 +185,7 @@ export default function ProjectsTab({ data, raw, services, loading, onRefetch }:
     <>
       {/* ── Header ── */}
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold text-white">Projects</h2>
+        <h2 className="text-lg font-semibold text-foreground">Projects</h2>
         <Button size="sm" onClick={openCreate} className="bg-primary text-black hover:opacity-80">
           <PlusIcon size={12} weight="bold" />
           Add project
@@ -193,7 +193,7 @@ export default function ProjectsTab({ data, raw, services, loading, onRefetch }:
       </div>
 
       {/* ── Table ── */}
-      <div className="overflow-hidden rounded-xl border border-white/8">
+      <div className="overflow-hidden rounded-xl border border-foreground/8">
         <Table>
           <TableHeader>
             <TableRow className="hover:bg-transparent">
@@ -215,20 +215,20 @@ export default function ProjectsTab({ data, raw, services, loading, onRefetch }:
                         className="h-10 w-16 shrink-0 rounded object-cover opacity-80"
                       />
                       <div className="min-w-0">
-                        <p className="line-clamp-1 text-xs font-medium text-white">{p.title}</p>
-                        <p className="line-clamp-1 text-[10px] text-white/40">{p.subtitle}</p>
+                        <p className="line-clamp-1 text-xs font-medium text-foreground">{p.title}</p>
+                        <p className="line-clamp-1 text-[10px] text-foreground/40">{p.subtitle}</p>
                       </div>
                     </div>
                   </TableCell>
                   <TableCell>
                     <Badge variant={"default"}>{p.tag}</Badge>
                   </TableCell>
-                  <TableCell className="text-xs text-white/60">{rawItem?.layout ?? "—"}</TableCell>
+                  <TableCell className="text-xs text-foreground/60">{rawItem?.layout ?? "—"}</TableCell>
                   <TableCell>
                     {rawItem?.prominent ? (
                       <Badge variant="primary">Yes</Badge>
                     ) : (
-                      <span className="text-[10px] text-white/30">—</span>
+                      <span className="text-[10px] text-foreground/30">—</span>
                     )}
                   </TableCell>
                   <TableCell>
@@ -237,7 +237,7 @@ export default function ProjectsTab({ data, raw, services, loading, onRefetch }:
                         variant="outline"
                         size="xs"
                         onClick={() => openEdit(p.id)}
-                        className="hover:border-primary/40 hover:text-primary border-white/10 text-white/50"
+                        className="hover:border-primary/40 hover:text-primary border-foreground/10 text-foreground/50"
                       >
                         <PencilSimpleIcon size={11} />
                         Edit
@@ -252,7 +252,7 @@ export default function ProjectsTab({ data, raw, services, loading, onRefetch }:
                             setDeleteError(null);
                           }
                         }}
-                        className="border border-white/10 text-white/50 hover:border-red-500/50 hover:text-red-400"
+                        className="border border-foreground/10 text-foreground/50 hover:border-red-500/50 hover:text-red-400"
                         title="Delete project"
                       >
                         <TrashIcon size={11} />
@@ -360,7 +360,7 @@ export default function ProjectsTab({ data, raw, services, loading, onRefetch }:
                         checked={form.prominent}
                         onCheckedChange={(checked) => set("prominent", !!checked)}
                       />
-                      <span className="text-xs text-white/50">Prominent</span>
+                      <span className="text-xs text-foreground/50">Prominent</span>
                     </label>
                   </div>
                 </div>
@@ -397,7 +397,7 @@ export default function ProjectsTab({ data, raw, services, loading, onRefetch }:
           <AlertDialogHeader>
             <AlertDialogTitle>Delete project?</AlertDialogTitle>
             <AlertDialogDescription>
-              "<span className="text-white/80">{confirmDelete?.title}</span>" will be permanently
+              "<span className="text-foreground/80">{confirmDelete?.title}</span>" will be permanently
               deleted.
             </AlertDialogDescription>
           </AlertDialogHeader>

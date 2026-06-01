@@ -35,7 +35,7 @@ export function TeamTable({ data, loading, preview, onEdit, onDelete }: TablePro
   if (loading) return <TableSkeleton cols={onEdit ? 6 : 5} rows={4} />;
 
   return (
-    <div className="overflow-hidden rounded-xl border border-white/8">
+    <div className="overflow-hidden rounded-xl border border-foreground/8">
       <Table>
         <TableHeader>
           <TableRow className="hover:bg-transparent">
@@ -57,19 +57,19 @@ export function TeamTable({ data, loading, preview, onEdit, onDelete }: TablePro
                     </div>
                   )}
                   <div>
-                    <p className="text-xs font-medium text-white">{u.name}</p>
+                    <p className="text-xs font-medium text-foreground">{u.name}</p>
                     {u.featured && <p className="text-[10px] text-primary">Featured</p>}
                   </div>
                 </div>
               </TableCell>
-              <TableCell className="text-xs text-white/60">{u.role.en}</TableCell>
+              <TableCell className="text-xs text-foreground/60">{u.role.en}</TableCell>
               <TableCell>
                 <div className="flex flex-wrap gap-1">
                   {u.skills.slice(0, 2).map((s) => (
                     <Badge key={s} variant="default" className="text-[10px]">{s}</Badge>
                   ))}
                   {u.skills.length > 2 && (
-                    <span className="text-[10px] text-white/30">+{u.skills.length - 2}</span>
+                    <span className="text-[10px] text-foreground/30">+{u.skills.length - 2}</span>
                   )}
                 </div>
               </TableCell>
@@ -91,7 +91,7 @@ export function TeamTable({ data, loading, preview, onEdit, onDelete }: TablePro
                       variant="outline"
                       size="xs"
                       onClick={() => onEdit(u)}
-                      className="border-white/10 text-white/50 hover:border-primary/40 hover:text-primary"
+                      className="border-foreground/10 text-foreground/50 hover:border-primary/40 hover:text-primary"
                     >
                       <PencilSimpleIcon size={11} />
                       Edit
@@ -101,7 +101,7 @@ export function TeamTable({ data, loading, preview, onEdit, onDelete }: TablePro
                         variant="ghost"
                         size="icon-xs"
                         onClick={() => onDelete(u)}
-                        className="border border-white/10 text-white/50 hover:border-red-500/50 hover:text-red-400"
+                        className="border border-foreground/10 text-foreground/50 hover:border-red-500/50 hover:text-red-400"
                         title="Delete user"
                       >
                         <TrashIcon size={11} />
@@ -243,7 +243,7 @@ export default function TeamTab({ data, loading, onRefetch }: TabProps) {
     <>
       {/* ── Header ── */}
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold text-white">Team Members</h2>
+        <h2 className="text-lg font-semibold text-foreground">Team Members</h2>
         <Button size="sm" onClick={openCreate} className="bg-primary text-black hover:opacity-80">
           <PlusIcon size={12} weight="bold" />
           Add member
@@ -351,7 +351,7 @@ export default function TeamTab({ data, loading, onRefetch }: TabProps) {
                     checked={form.featured}
                     onCheckedChange={(checked) => set("featured", !!checked)}
                   />
-                  <label htmlFor="team-featured" className="text-sm text-white/60 cursor-pointer">
+                  <label htmlFor="team-featured" className="text-sm text-foreground/60 cursor-pointer">
                     Featured member
                   </label>
                 </div>
@@ -376,7 +376,7 @@ export default function TeamTab({ data, loading, onRefetch }: TabProps) {
             <AlertDialogTitle>Delete user?</AlertDialogTitle>
             <AlertDialogDescription>
               Are you sure you want to delete{" "}
-              <span className="font-semibold text-white">{confirmDelete?.name}</span>? This action cannot be undone.
+              <span className="font-semibold text-foreground">{confirmDelete?.name}</span>? This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           {deleteError && <p className="text-xs text-red-400">{deleteError}</p>}

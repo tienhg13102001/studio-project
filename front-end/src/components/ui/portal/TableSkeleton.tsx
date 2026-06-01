@@ -12,7 +12,7 @@ type TableSkeletonProps = { cols: number; rows: number };
 
 export function TableSkeleton({ cols, rows }: TableSkeletonProps) {
   return (
-    <div className="overflow-hidden rounded-xl border border-white/8">
+    <div className="overflow-hidden rounded-xl border border-foreground/8">
       <Table>
         <TableHeader>
           <TableRow className="hover:bg-transparent">
