@@ -28,10 +28,9 @@ apiClient.interceptors.response.use(
 
 const API_BASE = import.meta.env.VITE_API_URL ?? "";
 
-// Base URL riêng cho upload video (file lớn). Trỏ tới subdomain DNS-only
-// (vd https://upload.beezvn.com) để bỏ qua giới hạn body 100MB của Cloudflare.
-// Để trống → dùng relative (local dev / khi không cần bypass).
-const UPLOAD_BASE = import.meta.env.VITE_UPLOAD_URL ?? "";
+// Giới hạn dung lượng video upload. Cloudflare (gói Free/Pro) chặn cứng body
+// ở 100MB, nên đặt 95MB chừa margin cho overhead multipart.
+const VIDEO_MAX_MB = 95;
 
 
 /**
@@ -135,7 +134,7 @@ export async function uploadImage(
 }
 
 /**
- * Upload a video (≤ 500MB). Streams the file with progress callback.
+ * Upload a video (≤ 95MB — Cloudflare body limit). Streams the file with progress callback.
  * Allowed: mp4, webm, mov, m4v. Returns the relative path under /videos.
  */
 export async function uploadVideo(
@@ -143,9 +142,11 @@ export async function uploadVideo(
   onProgress?: (p: UploadProgress) => void,
   signal?: AbortSignal,
 ): Promise<VideoUploadResult> {
-  const MAX = 500 * 1024 * 1024;
+  const MAX = VIDEO_MAX_MB * 1024 * 1024;
   if (file.size > MAX) {
-    throw new Error(`Video too large (${(file.size / 1024 / 1024).toFixed(1)}MB). Max 500MB.`);
+    throw new Error(
+      `Video quá lớn (${(file.size / 1024 / 1024).toFixed(0)}MB). Tối đa ${VIDEO_MAX_MB}MB — vui lòng nén nhỏ hơn rồi thử lại.`,
+    );
   }
 
   const form = new FormData();
@@ -155,7 +156,7 @@ export async function uploadVideo(
     success: boolean;
     data?: VideoUploadResult;
     error?: string;
-  }>(`${UPLOAD_BASE}/api/upload/video`, form, {
+  }>("/api/upload/video", form, {
     headers: { "Content-Type": "multipart/form-data" },
     timeout: 30 * 60 * 1000, // 30 min — matches nginx proxy_read_timeout
     maxContentLength: Infinity,

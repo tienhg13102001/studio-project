@@ -74,7 +74,7 @@ export default function VideoUpload({ value, onChange }: VideoUploadProps) {
             <UploadSimpleIcon size={13} />
             {uploading ? `Uploading… ${progress}%` : "Click or drag to upload"}
           </p>
-          <p className="mt-0.5 text-[10px] text-foreground/25">MP4, WebM, MOV, M4V · max 500 MB</p>
+          <p className="mt-0.5 text-[10px] text-foreground/25">MP4, WebM, MOV, M4V · tối đa 95 MB</p>
         </div>
 
         {uploading && (
