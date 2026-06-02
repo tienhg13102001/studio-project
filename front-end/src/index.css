@@ -151,18 +151,18 @@
   }
 
   /* Marquee animations for FeatureSection */
-  /* translateX(-25%) = exactly 1 copy width out of 4 copies → seamless loop */
+  /* MarqueeRow render 2 track giống hệt → translateX(-50%) = đúng 1 track → loop liền mạch */
   @keyframes marquee-left {
     from {
       transform: translateX(0);
     }
     to {
-      transform: translateX(-25%);
+      transform: translateX(-50%);
     }
   }
   @keyframes marquee-right {
     from {
-      transform: translateX(-25%);
+      transform: translateX(-50%);
     }
     to {
       transform: translateX(0);

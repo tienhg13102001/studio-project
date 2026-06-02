@@ -8,6 +8,9 @@ import { useSearchParams } from "react-router-dom";
 import ProjectDetail from "./ProjectDetail";
 
 const PROJECT_PARAM = "project";
+// Số card tối đa render trong mỗi hàng marquee. Marquee lặp vô hạn nên không cần
+// nhiều hơn; giữ con số này có chủ đích để phần tử không quá rộng làm vỡ render iOS.
+const MARQUEE_MAX = 12;
 
 type Props = {};
 
@@ -54,7 +57,7 @@ const FeatureSection: FC<Props> = () => {
 
         <div className="flex flex-col gap-6 md:gap-8">
           <MarqueeRow direction="left">
-            {top.map((card) => (
+            {top.slice(0, MARQUEE_MAX).map((card) => (
               <FeatureCard
                 key={card.id}
                 card={card}
@@ -65,7 +68,7 @@ const FeatureSection: FC<Props> = () => {
           </MarqueeRow>
 
           <MarqueeRow direction="right">
-            {bottom.map((card) => (
+            {bottom.slice(0, MARQUEE_MAX).map((card) => (
               <FeatureCard
                 key={card.id}
                 card={card}
