@@ -1,8 +1,8 @@
-import { Router, type Request } from "express";
+import { Router, type Request, type Response, type NextFunction } from "express";
 import multer from "multer";
 import sharp from "sharp";
 import ffmpeg from "fluent-ffmpeg";
-import { mkdir, unlink, rename } from "fs/promises";
+import { mkdir, unlink, rename, appendFile, stat } from "fs/promises";
 import { tmpdir } from "os";
 import { join, extname, basename, dirname } from "path";
 import { fileURLToPath } from "url";
@@ -70,7 +70,7 @@ const ALLOWED_VIDEO_MIME = new Set([
   "video/quicktime",
   "video/x-m4v",
 ]);
-const VIDEO_MAX_BYTES = 500 * 1024 * 1024; // 500 MB (thử nghiệm — lưu ý Cloudflare chặn body >100MB)
+const VIDEO_MAX_BYTES = 100 * 1024 * 1024; // 100 MB — Cloudflare chặn body >100MB; FE giới hạn 95MB
 
 const VIDEO_DIR = join(__dirname, "../../public/videos");
 /** Chiều rộng tối đa của video output (px). Video nhỏ hơn KHÔNG bị phóng to. */
@@ -135,6 +135,67 @@ const videoUpload = multer({
   },
 });
 
+// ─── Chunked upload (vượt giới hạn body 100MB của Cloudflare) ─────────────────
+// File lớn được cắt thành mảnh <100MB ở client, mỗi mảnh upload riêng qua Cloudflare,
+// server append vào 1 file tạm theo uploadId, xong thì transcode như bình thường.
+const CHUNK_TMP_DIR = join(tmpdir(), "beez-video-chunks");
+const CHUNK_MAX_BYTES = 60 * 1024 * 1024; // mỗi mảnh tối đa 60MB (< 100MB Cloudflare)
+const VIDEO_TOTAL_MAX_BYTES = 500 * 1024 * 1024; // tổng video tối đa 500MB
+
+/** uploadId do client tạo (uuid) — sanitize để tránh path traversal. */
+function safeUploadId(id: string): string | null {
+  return /^[a-zA-Z0-9_-]{8,64}$/.test(id) ? id : null;
+}
+
+const chunkUpload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: CHUNK_MAX_BYTES },
+});
+
+/**
+ * Nhận 1 file gốc (raw video) → trả response NGAY (status processing) → transcode
+ * nền vào file tạm rồi rename nguyên tử sang tên thật. Dùng chung cho cả luồng
+ * single-shot lẫn chunked. Tự xóa `rawPath` khi xong.
+ */
+async function startVideoTranscodeJob(
+  rawPath: string,
+  originalname: string,
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> {
+  const outName = buildFilename(originalname, ".mp4");
+  const outPath = join(VIDEO_DIR, outName);
+  // Transcode vào file TẠM (dotfile → express.static không serve) rồi rename
+  // nguyên tử sang outPath khi XONG → URL cuối hoặc 404 (chưa xong) hoặc file
+  // ĐẦY ĐỦ, không bao giờ dở dang → Cloudflare không cache bản cắt cụt.
+  const tmpOut = join(VIDEO_DIR, `.processing-${outName}`);
+  try {
+    await mkdir(VIDEO_DIR, { recursive: true });
+  } catch (e) {
+    await unlink(rawPath).catch(() => {});
+    next(e);
+    return;
+  }
+
+  const base = getBaseUrl(req);
+  sendSuccess(res, {
+    url: `${base}/api/videos/${outName}`,
+    path: `/videos/${outName}`,
+    mimetype: "video/mp4",
+    status: "processing",
+  });
+
+  transcodeToMp4(rawPath, tmpOut)
+    .then(() => rename(tmpOut, outPath)) // atomic: file chỉ xuất hiện khi đã hoàn chỉnh
+    .then(() => console.log(`[video] transcode done: ${outName}`))
+    .catch(async (err) => {
+      console.error(`[video] transcode FAILED for ${outName}:`, err);
+      await unlink(tmpOut).catch(() => {});
+    })
+    .finally(() => void unlink(rawPath).catch(() => {}));
+}
+
 const router = Router();
 
 /** POST /api/upload — resize + compress to WebP, returns { url: "https://…/api/public/uploads/…" } */
@@ -165,51 +226,72 @@ router.post("/", imageUpload.single("image"), async (req, res, next) => {
   }
 });
 
-/** POST /api/upload/video — upload + transcode sang MP4 H.264 (max width 1080), returns { url: "https://…/api/videos/….mp4" } */
+/** POST /api/upload/video — single-shot (≤100MB, qua Cloudflare). Lớn hơn dùng chunked bên dưới. */
 router.post("/video", videoUpload.single("video"), async (req, res, next) => {
   if (!req.file) {
     sendError(
       res,
-      "No video file received (allowed: mp4, webm, mov, m4v; max 500MB)",
+      "No video file received (allowed: mp4, webm, mov, m4v; max 95MB)",
       400,
     );
     return;
   }
-  const rawPath = req.file.path;
-  const outName = buildFilename(req.file.originalname, ".mp4");
-  const outPath = join(VIDEO_DIR, outName);
-  // Transcode vào file TẠM (dotfile → express.static không serve) rồi rename
-  // nguyên tử sang outPath khi XONG. Nhờ vậy URL cuối hoặc 404 (chưa xong) hoặc
-  // trả file ĐẦY ĐỦ — không bao giờ serve file dở dang → Cloudflare không thể
-  // cache bản bị cắt cụt (đây là nguyên nhân video 0:00/đen trước đây).
-  const tmpOut = join(VIDEO_DIR, `.processing-${outName}`);
+  await startVideoTranscodeJob(req.file.path, req.file.originalname, req, res, next);
+});
+
+/** POST /api/upload/video/chunk — nhận 1 mảnh, append vào file tạm theo uploadId. */
+router.post("/video/chunk", chunkUpload.single("chunk"), async (req, res, next) => {
   try {
-    await mkdir(VIDEO_DIR, { recursive: true });
+    const uploadId = safeUploadId(String(req.body.uploadId ?? ""));
+    if (!uploadId || !req.file) {
+      sendError(res, "Invalid chunk payload", 400);
+      return;
+    }
+    await mkdir(CHUNK_TMP_DIR, { recursive: true });
+    const partPath = join(CHUNK_TMP_DIR, `${uploadId}.part`);
+    // Chặn vượt tổng dung lượng (phòng client gửi quá nhiều mảnh).
+    const current = await stat(partPath)
+      .then((s) => s.size)
+      .catch(() => 0);
+    if (current + req.file.size > VIDEO_TOTAL_MAX_BYTES) {
+      await unlink(partPath).catch(() => {});
+      sendError(res, "Video too large (max 500MB)", 413);
+      return;
+    }
+    await appendFile(partPath, req.file.buffer); // client upload tuần tự → đúng thứ tự
+    sendSuccess(res, { received: true });
   } catch (e) {
-    await unlink(rawPath).catch(() => {});
     next(e);
+  }
+});
+
+/** POST /api/upload/video/complete — ghép xong → transcode nền, trả { url, status: processing }. */
+router.post("/video/complete", async (req, res, next) => {
+  const uploadId = safeUploadId(String(req.body?.uploadId ?? ""));
+  const filename = String(req.body?.filename ?? "video.mp4");
+  if (!uploadId) {
+    sendError(res, "Invalid uploadId", 400);
     return;
   }
-
-  // Upload xong 100% → trả response NGAY (user không phải chờ transcode).
-  // Frontend poll URL tới khi sẵn sàng. Cloudflare KHÔNG cache 404 lúc chưa xong
-  // nhờ Cache-Control no-store (set ở nginx cho response không phải 200/206).
-  const base = getBaseUrl(req);
-  sendSuccess(res, {
-    url: `${base}/api/videos/${outName}`,
-    path: `/videos/${outName}`,
-    mimetype: "video/mp4",
-    status: "processing",
-  });
-
-  transcodeToMp4(rawPath, tmpOut)
-    .then(() => rename(tmpOut, outPath)) // atomic: file chỉ xuất hiện khi đã hoàn chỉnh
-    .then(() => console.log(`[video] transcode done: ${outName}`))
-    .catch(async (err) => {
-      console.error(`[video] transcode FAILED for ${outName}:`, err);
-      await unlink(tmpOut).catch(() => {});
-    })
-    .finally(() => void unlink(rawPath).catch(() => {}));
+  if (!ALLOWED_VIDEO_EXT.has(extname(filename).toLowerCase())) {
+    sendError(res, "Unsupported video type (allowed: mp4, webm, mov, m4v)", 400);
+    return;
+  }
+  const partPath = join(CHUNK_TMP_DIR, `${uploadId}.part`);
+  let size = 0;
+  try {
+    size = (await stat(partPath)).size;
+  } catch {
+    sendError(res, "Upload not found or already processed", 404);
+    return;
+  }
+  if (size === 0 || size > VIDEO_TOTAL_MAX_BYTES) {
+    await unlink(partPath).catch(() => {});
+    sendError(res, "Invalid upload size", 400);
+    return;
+  }
+  // partPath = file gốc đã ghép → tái dùng pipeline transcode (tự xóa partPath khi xong).
+  await startVideoTranscodeJob(partPath, filename, req, res, next);
 });
 
 export default router;

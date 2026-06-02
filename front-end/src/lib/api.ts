@@ -28,10 +28,11 @@ apiClient.interceptors.response.use(
 
 const API_BASE = import.meta.env.VITE_API_URL ?? "";
 
-// Giới hạn dung lượng video upload.
-// LƯU Ý: Cloudflare (Free/Pro) chặn cứng body ở 100MB → file >100MB vẫn có thể
-// bị CF trả 413 trước khi tới server, dù số này là 500. Đang thử nghiệm 500MB.
+// Giới hạn dung lượng video upload. File được cắt thành mảnh <100MB (chunked)
+// để vượt giới hạn body 100MB của Cloudflare → cho phép tới 500MB.
 const VIDEO_MAX_MB = 500;
+// Kích thước mỗi mảnh (< 100MB Cloudflare). 50MB cân bằng tốc độ/độ an toàn.
+const VIDEO_CHUNK_SIZE = 50 * 1024 * 1024;
 
 
 /**
@@ -136,8 +137,9 @@ export async function uploadImage(
 }
 
 /**
- * Upload a video (≤ 95MB — Cloudflare body limit). Streams the file with progress callback.
- * Allowed: mp4, webm, mov, m4v. Returns the relative path under /videos.
+ * Upload a video (≤ 500MB). Cắt file thành mảnh < 100MB và upload từng mảnh qua
+ * Cloudflare (lách giới hạn body 100MB), server ghép lại rồi transcode.
+ * Allowed: mp4, webm, mov, m4v. Trả về { url, path, status: "processing" }.
  */
 export async function uploadVideo(
   file: File,
@@ -151,28 +153,60 @@ export async function uploadVideo(
     );
   }
 
-  const form = new FormData();
-  form.append("video", file);
+  const uploadId = crypto.randomUUID();
+  const totalChunks = Math.max(1, Math.ceil(file.size / VIDEO_CHUNK_SIZE));
+  let uploadedBytes = 0;
 
+  for (let i = 0; i < totalChunks; i++) {
+    const start = i * VIDEO_CHUNK_SIZE;
+    const blob = file.slice(start, Math.min(start + VIDEO_CHUNK_SIZE, file.size));
+    const form = new FormData();
+    form.append("uploadId", uploadId);
+    form.append("chunkIndex", String(i));
+    form.append("totalChunks", String(totalChunks));
+    form.append("chunk", blob);
+
+    const chunkRes = await apiClient.post<{ success: boolean; error?: string }>(
+      "/api/upload/video/chunk",
+      form,
+      {
+        headers: { "Content-Type": "multipart/form-data" },
+        timeout: 15 * 60 * 1000,
+        maxContentLength: Infinity,
+        maxBodyLength: Infinity,
+        signal,
+        onUploadProgress: (e) => {
+          if (!onProgress) return;
+          const loaded = uploadedBytes + (e.loaded ?? 0);
+          onProgress({
+            loaded,
+            total: file.size,
+            percent: Math.round((loaded / file.size) * 100),
+          });
+        },
+      },
+    );
+    if (!chunkRes.data.success) {
+      throw new Error(chunkRes.data.error ?? "Chunk upload failed");
+    }
+    uploadedBytes += blob.size;
+    onProgress?.({
+      loaded: uploadedBytes,
+      total: file.size,
+      percent: Math.round((uploadedBytes / file.size) * 100),
+    });
+  }
+
+  // Báo server đã upload đủ → ghép + transcode nền.
   const res = await apiClient.post<{
     success: boolean;
     data?: VideoUploadResult;
     error?: string;
-  }>("/api/upload/video", form, {
-    headers: { "Content-Type": "multipart/form-data" },
-    timeout: 30 * 60 * 1000, // 30 min — matches nginx proxy_read_timeout
-    maxContentLength: Infinity,
-    maxBodyLength: Infinity,
-    signal,
-    onUploadProgress: (e) => {
-      if (!onProgress || !e.total) return;
-      onProgress({
-        loaded: e.loaded,
-        total: e.total,
-        percent: Math.round((e.loaded / e.total) * 100),
-      });
-    },
-  });
+  }>(
+    "/api/upload/video/complete",
+    { uploadId, filename: file.name },
+    { timeout: 60 * 1000, signal },
+  );
 
   if (!res.data.success || !res.data.data) {
     throw new Error(res.data.error ?? "Video upload failed");
