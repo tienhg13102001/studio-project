@@ -75,34 +75,39 @@ const VIDEO_MAX_BYTES = 500 * 1024 * 1024; // 500 MB
 const VIDEO_DIR = join(__dirname, "../../public/videos");
 /** Chiều rộng tối đa của video output (px). Video nhỏ hơn KHÔNG bị phóng to. */
 const VIDEO_MAX_WIDTH = 1080;
-/** VP9 CRF (0-63): thấp = nét hơn + nặng hơn. ~33 cân bằng tốt cho web. */
-const VIDEO_CRF = 33;
+/** H.264 CRF (0-51): thấp = nét hơn + nặng hơn. ~28 cân bằng tốt cho web. */
+const VIDEO_CRF = 28;
 
 /**
- * Transcode bất kỳ video input nào sang WebM (VP9 + Opus),
+ * Transcode bất kỳ video input nào sang MP4 (H.264 + AAC),
  * scale chiều rộng tối đa VIDEO_MAX_WIDTH, giữ tỉ lệ, chiều cao auto (chia hết 2).
+ * Dùng H.264 preset ultrafast để encode nhanh nhất (nhanh hơn VP9 ~10x),
+ * phù hợp khi cần phản hồi upload nhanh trên server CPU yếu.
  */
-function transcodeToWebm(input: string, output: string): Promise<void> {
+function transcodeToMp4(input: string, output: string): Promise<void> {
   return new Promise((resolve, reject) => {
     ffmpeg(input)
-      .videoCodec("libvpx-vp9")
-      .audioCodec("libopus")
+      .videoCodec("libx264")
+      .audioCodec("aac")
       .outputOptions([
         // chỉ thu nhỏ khi iw > max; height -2 = auto theo tỉ lệ, chia hết cho 2
         "-vf",
         `scale='min(${VIDEO_MAX_WIDTH},iw)':-2`,
+        "-preset",
+        "ultrafast",
         "-crf",
         String(VIDEO_CRF),
-        "-b:v",
+        // pixel format bảo đảm tương thích trình duyệt rộng rãi
+        "-pix_fmt",
+        "yuv420p",
+        // đưa moov atom lên đầu file để phát ngay khi tải (streaming)
+        "-movflags",
+        "+faststart",
+        // dùng toàn bộ CPU core
+        "-threads",
         "0",
-        "-row-mt",
-        "1",
-        "-deadline",
-        "good",
-        "-cpu-used",
-        "2",
       ])
-      .format("webm")
+      .format("mp4")
       .on("end", () => resolve())
       .on("error", (err) => reject(err))
       .save(output);
@@ -160,7 +165,7 @@ router.post("/", imageUpload.single("image"), async (req, res, next) => {
   }
 });
 
-/** POST /api/upload/video — upload + transcode sang WebM (max width 1080), returns { url: "https://…/api/videos/….webm" } */
+/** POST /api/upload/video — upload + transcode sang MP4 H.264 (max width 1080), returns { url: "https://…/api/videos/….mp4" } */
 router.post("/video", videoUpload.single("video"), async (req, res, next) => {
   if (!req.file) {
     sendError(
@@ -171,17 +176,17 @@ router.post("/video", videoUpload.single("video"), async (req, res, next) => {
     return;
   }
   const rawPath = req.file.path;
-  const outName = buildFilename(req.file.originalname, ".webm");
+  const outName = buildFilename(req.file.originalname, ".mp4");
   const outPath = join(VIDEO_DIR, outName);
   try {
     await mkdir(VIDEO_DIR, { recursive: true });
-    await transcodeToWebm(rawPath, outPath);
+    await transcodeToMp4(rawPath, outPath);
     const base = getBaseUrl(req);
     const url = `${base}/api/videos/${outName}`;
     sendSuccess(res, {
       url,
       path: `/videos/${outName}`,
-      mimetype: "video/webm",
+      mimetype: "video/mp4",
     });
   } catch (e) {
     next(e);

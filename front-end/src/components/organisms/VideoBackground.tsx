@@ -2,6 +2,13 @@ type Props = {
   src?: string;
 };
 
+const mimeFromSrc = (url?: string) => {
+  const ext = url?.split("?")[0].split(".").pop()?.toLowerCase();
+  if (ext === "webm") return "video/webm";
+  if (ext === "mov") return "video/quicktime";
+  return "video/mp4";
+};
+
 const VideoBackground = ({ src }: Props) => {
   const videoSrc = src;
 
@@ -15,7 +22,7 @@ const VideoBackground = ({ src }: Props) => {
         playsInline
         className="absolute top-0 left-0 h-full w-full object-cover"
       >
-        <source src={videoSrc} type="video/webm" />
+        <source src={videoSrc} type={mimeFromSrc(videoSrc)} />
         Trình duyệt của bạn không hỗ trợ thẻ video.
       </video>
       <div className="absolute inset-0 bg-black/75" />
