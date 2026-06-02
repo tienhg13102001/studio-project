@@ -1,7 +1,9 @@
 import { Router, type Request } from "express";
 import multer from "multer";
 import sharp from "sharp";
-import { mkdir } from "fs/promises";
+import ffmpeg from "fluent-ffmpeg";
+import { mkdir, unlink } from "fs/promises";
+import { tmpdir } from "os";
 import { join, extname, basename, dirname } from "path";
 import { fileURLToPath } from "url";
 import { sendSuccess, sendError } from "../lib/response.ts";
@@ -70,10 +72,48 @@ const ALLOWED_VIDEO_MIME = new Set([
 ]);
 const VIDEO_MAX_BYTES = 500 * 1024 * 1024; // 500 MB
 
+const VIDEO_DIR = join(__dirname, "../../public/videos");
+/** Chiều rộng tối đa của video output (px). Video nhỏ hơn KHÔNG bị phóng to. */
+const VIDEO_MAX_WIDTH = 1080;
+/** VP9 CRF (0-63): thấp = nét hơn + nặng hơn. ~33 cân bằng tốt cho web. */
+const VIDEO_CRF = 33;
+
+/**
+ * Transcode bất kỳ video input nào sang WebM (VP9 + Opus),
+ * scale chiều rộng tối đa VIDEO_MAX_WIDTH, giữ tỉ lệ, chiều cao auto (chia hết 2).
+ */
+function transcodeToWebm(input: string, output: string): Promise<void> {
+  return new Promise((resolve, reject) => {
+    ffmpeg(input)
+      .videoCodec("libvpx-vp9")
+      .audioCodec("libopus")
+      .outputOptions([
+        // chỉ thu nhỏ khi iw > max; height -2 = auto theo tỉ lệ, chia hết cho 2
+        "-vf",
+        `scale='min(${VIDEO_MAX_WIDTH},iw)':-2`,
+        "-crf",
+        String(VIDEO_CRF),
+        "-b:v",
+        "0",
+        "-row-mt",
+        "1",
+        "-deadline",
+        "good",
+        "-cpu-used",
+        "2",
+      ])
+      .format("webm")
+      .on("end", () => resolve())
+      .on("error", (err) => reject(err))
+      .save(output);
+  });
+}
+
+// File gốc được lưu tạm ở thư mục temp, transcode xong sẽ xóa.
 const videoStorage = multer.diskStorage({
-  destination: join(__dirname, "../../public/videos"),
+  destination: tmpdir(),
   filename: (_req, file, cb) => {
-    cb(null, buildFilename(file.originalname));
+    cb(null, `raw-${buildFilename(file.originalname)}`);
   },
 });
 
@@ -120,8 +160,8 @@ router.post("/", imageUpload.single("image"), async (req, res, next) => {
   }
 });
 
-/** POST /api/upload/video — upload a single video (≤ 500MB), returns { url: "https://…/api/videos/…" } */
-router.post("/video", videoUpload.single("video"), (req, res) => {
+/** POST /api/upload/video — upload + transcode sang WebM (max width 1080), returns { url: "https://…/api/videos/….webm" } */
+router.post("/video", videoUpload.single("video"), async (req, res, next) => {
   if (!req.file) {
     sendError(
       res,
@@ -130,14 +170,25 @@ router.post("/video", videoUpload.single("video"), (req, res) => {
     );
     return;
   }
-  const base = getBaseUrl(req);
-  const url = `${base}/api/videos/${req.file.filename}`;
-  sendSuccess(res, {
-    url,
-    path: `/videos/${req.file.filename}`,
-    size: req.file.size,
-    mimetype: req.file.mimetype,
-  });
+  const rawPath = req.file.path;
+  const outName = buildFilename(req.file.originalname, ".webm");
+  const outPath = join(VIDEO_DIR, outName);
+  try {
+    await mkdir(VIDEO_DIR, { recursive: true });
+    await transcodeToWebm(rawPath, outPath);
+    const base = getBaseUrl(req);
+    const url = `${base}/api/videos/${outName}`;
+    sendSuccess(res, {
+      url,
+      path: `/videos/${outName}`,
+      mimetype: "video/webm",
+    });
+  } catch (e) {
+    next(e);
+  } finally {
+    // luôn dọn file gốc tạm dù transcode thành công hay lỗi
+    await unlink(rawPath).catch(() => {});
+  }
 });
 
 export default router;
