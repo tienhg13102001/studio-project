@@ -101,8 +101,9 @@ export interface UploadProgress {
 export interface VideoUploadResult {
   url: string;  // full absolute URL e.g. https://beezvn.com/api/videos/file.mp4
   path: string; // legacy relative path e.g. /videos/file.mp4 (kept for backwards compat)
-  size: number;
+  size?: number;
   mimetype: string;
+  status?: "processing"; // transcode đang chạy nền; poll url tới khi trả 200
 }
 
 /**
@@ -176,6 +177,30 @@ export async function uploadVideo(
     throw new Error(res.data.error ?? "Video upload failed");
   }
   return res.data.data;
+}
+
+/**
+ * Poll một URL video (HEAD) tới khi server trả 200 (transcode nền đã xong).
+ * Trả về true nếu sẵn sàng trong thời hạn, false nếu quá lâu / bị huỷ.
+ */
+export async function waitForVideoReady(
+  url: string,
+  opts: { intervalMs?: number; timeoutMs?: number; signal?: AbortSignal } = {},
+): Promise<boolean> {
+  const intervalMs = opts.intervalMs ?? 3000;
+  const timeoutMs = opts.timeoutMs ?? 5 * 60 * 1000; // 5 phút
+  const start = Date.now();
+  while (Date.now() - start < timeoutMs) {
+    if (opts.signal?.aborted) return false;
+    try {
+      const r = await fetch(url, { method: "HEAD", cache: "no-store", signal: opts.signal });
+      if (r.ok) return true;
+    } catch {
+      // bỏ qua lỗi mạng tạm thời, thử lại ở vòng sau
+    }
+    await new Promise((res) => setTimeout(res, intervalMs));
+  }
+  return false;
 }
 
 export default apiClient;

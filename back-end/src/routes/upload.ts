@@ -180,22 +180,28 @@ router.post("/video", videoUpload.single("video"), async (req, res, next) => {
   const outPath = join(VIDEO_DIR, outName);
   try {
     await mkdir(VIDEO_DIR, { recursive: true });
-    // Đồng bộ: chờ transcode xong mới trả response → URL chỉ được dùng khi
-    // file đã sẵn sàng, tránh việc Cloudflare cache lại 404 "chưa xử lý xong".
-    await transcodeToMp4(rawPath, outPath);
-    const base = getBaseUrl(req);
-    const url = `${base}/api/videos/${outName}`;
-    sendSuccess(res, {
-      url,
-      path: `/videos/${outName}`,
-      mimetype: "video/mp4",
-    });
   } catch (e) {
-    next(e);
-  } finally {
-    // luôn dọn file gốc tạm dù transcode thành công hay lỗi
     await unlink(rawPath).catch(() => {});
+    next(e);
+    return;
   }
+
+  // Upload xong 100% → trả response NGAY (user không phải chờ transcode).
+  // Transcode chạy nền; video xuất hiện tại `path` khi xong, frontend poll URL
+  // tới khi sẵn sàng. Cloudflare KHÔNG cache 404 lúc chưa xong nhờ Cache-Control
+  // no-store (set ở nginx cho mọi response không phải 200/206 trên /api/videos/).
+  const base = getBaseUrl(req);
+  sendSuccess(res, {
+    url: `${base}/api/videos/${outName}`,
+    path: `/videos/${outName}`,
+    mimetype: "video/mp4",
+    status: "processing",
+  });
+
+  transcodeToMp4(rawPath, outPath)
+    .then(() => console.log(`[video] transcode done: ${outName}`))
+    .catch((err) => console.error(`[video] transcode FAILED for ${outName}:`, err))
+    .finally(() => void unlink(rawPath).catch(() => {}));
 });
 
 export default router;
