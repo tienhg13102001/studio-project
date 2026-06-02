@@ -29,3 +29,6 @@ Thumbs.db
 # User-uploaded assets — keep folder, ignore contents
 public/uploads/*
 !public/uploads/.gitkeep
+
+public/videos/*
+!public/videos/.gitkeep
