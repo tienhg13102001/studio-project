@@ -28,6 +28,11 @@ apiClient.interceptors.response.use(
 
 const API_BASE = import.meta.env.VITE_API_URL ?? "";
 
+// Base URL riêng cho upload video (file lớn). Trỏ tới subdomain DNS-only
+// (vd https://upload.beezvn.com) để bỏ qua giới hạn body 100MB của Cloudflare.
+// Để trống → dùng relative (local dev / khi không cần bypass).
+const UPLOAD_BASE = import.meta.env.VITE_UPLOAD_URL ?? "";
+
 
 /**
  * Turns a stored image/video value into a displayable URL.
@@ -150,7 +155,7 @@ export async function uploadVideo(
     success: boolean;
     data?: VideoUploadResult;
     error?: string;
-  }>("/api/upload/video", form, {
+  }>(`${UPLOAD_BASE}/api/upload/video`, form, {
     headers: { "Content-Type": "multipart/form-data" },
     timeout: 30 * 60 * 1000, // 30 min — matches nginx proxy_read_timeout
     maxContentLength: Infinity,
