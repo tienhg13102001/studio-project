@@ -44,7 +44,7 @@ const PageHero: React.FC<PageHeroProps> = (props) => {
           loading="eager"
           decoding="async"
           fetchPriority="high"
-          className="h-full w-full object-cover"
+          className="mt-17 h-full w-full object-cover object-top"
         />
         <div className="from-background via-background/40 absolute inset-0 bg-linear-to-t to-transparent" />
         <div className="absolute bottom-0 left-0 px-6 pb-10 md:px-12">
@@ -62,12 +62,10 @@ const PageHero: React.FC<PageHeroProps> = (props) => {
   // Default: centered text hero
   const { title, subtitle } = props;
   return (
-    <div className="pt-32 pb-16 text-center flex flex-col items-center justify-center">
-      <h1 className="text-foreground text-4xl font-bold md:text-5xl">
-        {renderTitle(title)}
-      </h1>
+    <div className="flex flex-col items-center justify-center pt-32 pb-16 text-center">
+      <h1 className="text-foreground text-4xl font-bold md:text-5xl">{renderTitle(title)}</h1>
       <div
-        className={`h-px bg-primary mt-2 w-50 origin-left transition-transform duration-1500 ease-out ${
+        className={`bg-primary mt-2 h-px w-50 origin-left transition-transform duration-1500 ease-out ${
           lineReady ? "scale-x-100" : "scale-x-0"
         }`}
       />

@@ -319,7 +319,7 @@ const ProjectDetail: FC<Props> = ({ project, onClose }) => {
       {/* DESKTOP LAYOUT */}
       <div
         className={cn(
-          "relative hidden w-full items-center gap-10 px-8 lg:flex lg:flex-row",
+          "relative hidden w-full items-center gap-10 px-8 lg:flex lg:flex-row max-w-480",
           totalImages > 0 ? "lg:justify-start" : "lg:justify-center",
         )}
       >
@@ -330,8 +330,10 @@ const ProjectDetail: FC<Props> = ({ project, onClose }) => {
               src={project.video}
               poster={project.thumbnailImage}
               alt={project.title}
-              className="max-h-[80vh] w-full rounded-2xl shadow-2xl"
-              videoClassName="object-cover"
+              // Box co theo video: cao tối đa 80vh, rộng tối đa cột → giữ NGUYÊN
+              // tỉ lệ gốc (video dọc hay ngang đều không bị crop / méo).
+              className="max-h-[80vh] max-w-full rounded-2xl shadow-2xl"
+              videoClassName="h-auto max-h-[80vh] w-auto max-w-full object-contain"
             />
           </div>
         )}
