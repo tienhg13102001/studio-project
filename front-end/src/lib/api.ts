@@ -97,8 +97,9 @@ export interface UploadProgress {
 export interface VideoUploadResult {
   url: string;  // full absolute URL e.g. https://beezvn.com/api/videos/file.mp4
   path: string; // legacy relative path e.g. /videos/file.mp4 (kept for backwards compat)
-  size: number;
+  size?: number;
   mimetype: string;
+  status?: "processing"; // video đang được transcode ở background, sẽ sẵn sàng sau ~2-3 phút
 }
 
 /**

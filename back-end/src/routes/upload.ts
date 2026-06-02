@@ -180,20 +180,33 @@ router.post("/video", videoUpload.single("video"), async (req, res, next) => {
   const outPath = join(VIDEO_DIR, outName);
   try {
     await mkdir(VIDEO_DIR, { recursive: true });
-    await transcodeToMp4(rawPath, outPath);
-    const base = getBaseUrl(req);
-    const url = `${base}/api/videos/${outName}`;
-    sendSuccess(res, {
-      url,
-      path: `/videos/${outName}`,
-      mimetype: "video/mp4",
-    });
   } catch (e) {
-    next(e);
-  } finally {
-    // luôn dọn file gốc tạm dù transcode thành công hay lỗi
     await unlink(rawPath).catch(() => {});
+    next(e);
+    return;
   }
+
+  // File gốc đã upload xong 100% (multer nhận đủ). Trả response NGAY,
+  // transcode chạy nền — video sẽ xuất hiện tại `path` sau khi xử lý xong (~2-3 phút).
+  const base = getBaseUrl(req);
+  sendSuccess(res, {
+    url: `${base}/api/videos/${outName}`,
+    path: `/videos/${outName}`,
+    mimetype: "video/mp4",
+    status: "processing",
+  });
+
+  // Background job: không await để không giữ request. Luôn dọn file tạm khi xong.
+  transcodeToMp4(rawPath, outPath)
+    .then(() => {
+      console.log(`[video] transcode done: ${outName}`);
+    })
+    .catch((err) => {
+      console.error(`[video] transcode FAILED for ${outName}:`, err);
+    })
+    .finally(() => {
+      void unlink(rawPath).catch(() => {});
+    });
 });
 
 export default router;
