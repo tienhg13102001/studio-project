@@ -92,7 +92,7 @@ export default function VideoUpload({ value, onChange }: VideoUploadProps) {
           <p className="mt-0.5 text-[10px] text-foreground/25">
             {processing
               ? "Có thể tiếp tục thao tác — video sẽ tự hiển thị khi xử lý xong."
-              : "MP4, WebM, MOV, M4V · tối đa 95 MB"}
+              : "MP4, WebM, MOV, M4V · tối đa 500 MB"}
           </p>
         </div>
 

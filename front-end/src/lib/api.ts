@@ -28,9 +28,10 @@ apiClient.interceptors.response.use(
 
 const API_BASE = import.meta.env.VITE_API_URL ?? "";
 
-// Giới hạn dung lượng video upload. Cloudflare (gói Free/Pro) chặn cứng body
-// ở 100MB, nên đặt 95MB chừa margin cho overhead multipart.
-const VIDEO_MAX_MB = 95;
+// Giới hạn dung lượng video upload.
+// LƯU Ý: Cloudflare (Free/Pro) chặn cứng body ở 100MB → file >100MB vẫn có thể
+// bị CF trả 413 trước khi tới server, dù số này là 500. Đang thử nghiệm 500MB.
+const VIDEO_MAX_MB = 500;
 
 
 /**

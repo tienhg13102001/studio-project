@@ -70,7 +70,7 @@ const ALLOWED_VIDEO_MIME = new Set([
   "video/quicktime",
   "video/x-m4v",
 ]);
-const VIDEO_MAX_BYTES = 100 * 1024 * 1024; // 100 MB — Cloudflare chặn body >100MB; FE giới hạn 95MB
+const VIDEO_MAX_BYTES = 500 * 1024 * 1024; // 500 MB (thử nghiệm — lưu ý Cloudflare chặn body >100MB)
 
 const VIDEO_DIR = join(__dirname, "../../public/videos");
 /** Chiều rộng tối đa của video output (px). Video nhỏ hơn KHÔNG bị phóng to. */
@@ -170,7 +170,7 @@ router.post("/video", videoUpload.single("video"), async (req, res, next) => {
   if (!req.file) {
     sendError(
       res,
-      "No video file received (allowed: mp4, webm, mov, m4v; max 95MB)",
+      "No video file received (allowed: mp4, webm, mov, m4v; max 500MB)",
       400,
     );
     return;
