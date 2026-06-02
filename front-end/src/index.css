@@ -178,8 +178,12 @@
     width: max-content;
     animation: marquee-right 40s linear infinite;
   }
-  .animate-marquee-left:hover,
-  .animate-marquee-right:hover {
-    animation-play-state: paused;
+  /* Chỉ pause khi hover bằng chuột thật. Trên cảm ứng, :hover bị "dính" sau khi
+     chạm → marquee đứng yên vĩnh viễn. @media (hover: hover) loại trừ điều đó. */
+  @media (hover: hover) {
+    .animate-marquee-left:hover,
+    .animate-marquee-right:hover {
+      animation-play-state: paused;
+    }
   }
 }
