@@ -1,6 +1,6 @@
 import { Input } from "#components/ui/input";
 import { resolveAssetUrl, uploadVideo } from "#lib/api";
-import { CheckCircleIcon, FilmReelIcon, UploadSimpleIcon } from "@phosphor-icons/react";
+import { FilmReelIcon, UploadSimpleIcon } from "@phosphor-icons/react";
 import { useRef, useState } from "react";
 
 export type VideoUploadProps = {
@@ -12,22 +12,15 @@ export default function VideoUpload({ value, onChange }: VideoUploadProps) {
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState<number>(0);
   const [uploadError, setUploadError] = useState<string | null>(null);
-  const [notice, setNotice] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleFile = async (file: File) => {
     setUploading(true);
     setUploadError(null);
-    setNotice(null);
     setProgress(0);
     try {
       const result = await uploadVideo(file, (p) => setProgress(p.percent));
       onChange(result.url ?? result.path);
-      if (result.status === "processing") {
-        setNotice(
-          "Upload video thành công! Video đang được xử lý, sẽ hiển thị trong vòng 2-3 phút tới.",
-        );
-      }
     } catch (e) {
       setUploadError((e as Error).message);
     } finally {
@@ -102,13 +95,6 @@ export default function VideoUpload({ value, onChange }: VideoUploadProps) {
       </div>
 
       {uploadError && <p className="text-[10px] text-red-400">{uploadError}</p>}
-
-      {notice && (
-        <div className="flex items-start gap-2 rounded-lg border border-primary/25 bg-primary/10 p-2.5">
-          <CheckCircleIcon size={15} className="mt-px shrink-0 text-primary" weight="fill" />
-          <p className="text-[11px] leading-relaxed text-foreground/70">{notice}</p>
-        </div>
-      )}
     </div>
   );
 }
