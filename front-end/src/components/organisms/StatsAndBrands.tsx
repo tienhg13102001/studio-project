@@ -68,7 +68,7 @@ const StatsAndBrands: React.FC = () => {
           {/* Row 1 — left */}
           <div className="mb-4">
             <MarqueeRow direction="left">
-              {[...row1, ...row1, ...row1].map((brand, i) => (
+              {row1.map((brand, i) => (
                 <div
                   key={`${brand.id}-${i}`}
                   className="flex shrink-0 items-center justify-center px-4 py-2"
@@ -77,7 +77,7 @@ const StatsAndBrands: React.FC = () => {
                     src={resolveAssetUrl(brand.logo)}
                     alt={brand.name}
                     decoding="async"
-                    className="h-12 max-w-30 object-contain opacity-50 grayscale transition-all duration-300 hover:opacity-100 hover:grayscale-0"
+                    className="brand-logo h-12 max-w-30 object-contain hover:scale-105"
                   />
                 </div>
               ))}
