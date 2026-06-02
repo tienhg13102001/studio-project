@@ -151,21 +151,4 @@
   }
   /* Marquee của FeatureSection giờ điều khiển bằng JS (rAF + translate3d) trong
      MarqueeRow.tsx — không còn dùng CSS animation ở đây nữa. */
-
-  /* Logo brand: phủ lớp đơn sắc theo theme để luôn rõ; hover hiện màu gốc.
-     - Theme sáng: silhouette tối (brightness 0).
-     - Theme tối: silhouette sáng (brightness 0 + invert).
-     - Hover: bỏ filter → màu gốc thương hiệu. */
-  .brand-logo {
-    filter: brightness(0) opacity(0.55);
-    transition:
-      filter 300ms ease,
-      transform 300ms ease;
-  }
-  .dark .brand-logo {
-    filter: brightness(0) invert(1) opacity(0.6);
-  }
-  .brand-logo:hover {
-    filter: none;
-  }
 }
