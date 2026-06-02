@@ -149,41 +149,6 @@
   .bg-facebook-gradient {
     background: var(--facebook-gradient);
   }
-
-  /* Marquee animations for FeatureSection */
-  /* MarqueeRow render 2 track giống hệt → translateX(-50%) = đúng 1 track → loop liền mạch */
-  @keyframes marquee-left {
-    from {
-      transform: translateX(0);
-    }
-    to {
-      transform: translateX(-50%);
-    }
-  }
-  @keyframes marquee-right {
-    from {
-      transform: translateX(-50%);
-    }
-    to {
-      transform: translateX(0);
-    }
-  }
-  .animate-marquee-left {
-    display: flex;
-    width: max-content;
-    animation: marquee-left 40s linear infinite;
-  }
-  .animate-marquee-right {
-    display: flex;
-    width: max-content;
-    animation: marquee-right 40s linear infinite;
-  }
-  /* Chỉ pause khi hover bằng chuột thật. Trên cảm ứng, :hover bị "dính" sau khi
-     chạm → marquee đứng yên vĩnh viễn. @media (hover: hover) loại trừ điều đó. */
-  @media (hover: hover) {
-    .animate-marquee-left:hover,
-    .animate-marquee-right:hover {
-      animation-play-state: paused;
-    }
-  }
+  /* Marquee của FeatureSection giờ điều khiển bằng JS (rAF + translate3d) trong
+     MarqueeRow.tsx — không còn dùng CSS animation ở đây nữa. */
 }
