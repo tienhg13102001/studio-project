@@ -57,7 +57,7 @@ const StatsAndBrands: React.FC = () => {
       {brands && brands.length > 0 && (
         <div className="mt-24">
           {/* Section header */}
-          <div className="mb-10 flex flex-col items-center gap-3 text-center">
+          <div className="mb-20 flex flex-col items-center gap-3 text-center">
             <p className="text-muted-foreground text-xs font-semibold tracking-[0.2em] uppercase">
               {t.brands.badge}
             </p>
