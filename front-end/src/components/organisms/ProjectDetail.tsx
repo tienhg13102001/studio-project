@@ -417,7 +417,7 @@ const ProjectDetail: FC<Props> = ({ project, onClose }) => {
         {project.photos && totalImages > 0 && (
           <div className="relative flex h-100 w-full items-center lg:h-150 lg:w-1/3">
             {/* Khu vực chứa các thẻ ảnh */}
-            <div className="relative flex h-full w-full items-center justify-center md:h-[80%]">
+            <div className="relative flex h-full w-full items-center justify-center md:h-full">
               {project.photos.map((image, index) => {
                 const overlayOpacity = Math.min(Math.max(index - currentIndex, 0) * 0.3, 0.85);
                 return (
@@ -433,7 +433,7 @@ const ProjectDetail: FC<Props> = ({ project, onClose }) => {
 
                     {/* Lớp phủ đen tối dần theo khoảng cách */}
                     <div
-                      className="absolute inset-0 bg-black transition-all duration-700"
+                      className="absolute inset-0 bg-black transition-all duration-700 rounded-lg"
                       style={{ opacity: overlayOpacity }}
                     ></div>
 
@@ -462,7 +462,7 @@ const ProjectDetail: FC<Props> = ({ project, onClose }) => {
             </div>
 
             {/* Navigation Controls */}
-            <div className="absolute -bottom-20 left-0 z-40 flex w-full flex-col items-center gap-4 md:-bottom-10">
+            <div className="absolute bottom-0 left-0 z-40 flex w-full flex-col items-center gap-4 translate-y-[200%]">
               <div className="flex items-center gap-6">
                 <button
                   onClick={handlePrev}

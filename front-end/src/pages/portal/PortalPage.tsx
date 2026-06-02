@@ -73,15 +73,17 @@ const PortalPage = () => {
   };
 
   return (
-    <div className="bg-primary relative flex min-h-screen items-center justify-center overflow-hidden px-4">
-      {/* Tiled logo pattern background — offset brick rows */}
+    <div className="bg-primary relative flex min-h-dvh items-center justify-center overflow-hidden px-4">
+      {/* Tiled logo pattern background — offset brick rows.
+          Số hàng/cột rộng rãi để luôn phủ kín mọi tỉ lệ màn (kể cả 21:9 / siêu rộng);
+          phần dư bị overflow-hidden cắt bỏ. */}
       <div className="pointer-events-none absolute inset-0 flex flex-col justify-center gap-8 overflow-hidden opacity-90">
-        {Array.from({ length: 16 }).map((_, r) => (
+        {Array.from({ length: 22 }).map((_, r) => (
           <div
             key={r}
             className={`flex shrink-0 justify-center gap-16 ${r % 2 ? "translate-x-15" : ""}`}
           >
-            {Array.from({ length: 18 }).map((_, c) => (
+            {Array.from({ length: 30 }).map((_, c) => (
               <LogoBlack key={c} className="h-14 w-14 shrink-0" />
             ))}
           </div>
