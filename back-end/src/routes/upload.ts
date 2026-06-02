@@ -2,7 +2,7 @@ import { Router, type Request } from "express";
 import multer from "multer";
 import sharp from "sharp";
 import ffmpeg from "fluent-ffmpeg";
-import { mkdir, unlink } from "fs/promises";
+import { mkdir, unlink, rename } from "fs/promises";
 import { tmpdir } from "os";
 import { join, extname, basename, dirname } from "path";
 import { fileURLToPath } from "url";
@@ -178,6 +178,11 @@ router.post("/video", videoUpload.single("video"), async (req, res, next) => {
   const rawPath = req.file.path;
   const outName = buildFilename(req.file.originalname, ".mp4");
   const outPath = join(VIDEO_DIR, outName);
+  // Transcode vào file TẠM (dotfile → express.static không serve) rồi rename
+  // nguyên tử sang outPath khi XONG. Nhờ vậy URL cuối hoặc 404 (chưa xong) hoặc
+  // trả file ĐẦY ĐỦ — không bao giờ serve file dở dang → Cloudflare không thể
+  // cache bản bị cắt cụt (đây là nguyên nhân video 0:00/đen trước đây).
+  const tmpOut = join(VIDEO_DIR, `.processing-${outName}`);
   try {
     await mkdir(VIDEO_DIR, { recursive: true });
   } catch (e) {
@@ -187,9 +192,8 @@ router.post("/video", videoUpload.single("video"), async (req, res, next) => {
   }
 
   // Upload xong 100% → trả response NGAY (user không phải chờ transcode).
-  // Transcode chạy nền; video xuất hiện tại `path` khi xong, frontend poll URL
-  // tới khi sẵn sàng. Cloudflare KHÔNG cache 404 lúc chưa xong nhờ Cache-Control
-  // no-store (set ở nginx cho mọi response không phải 200/206 trên /api/videos/).
+  // Frontend poll URL tới khi sẵn sàng. Cloudflare KHÔNG cache 404 lúc chưa xong
+  // nhờ Cache-Control no-store (set ở nginx cho response không phải 200/206).
   const base = getBaseUrl(req);
   sendSuccess(res, {
     url: `${base}/api/videos/${outName}`,
@@ -198,9 +202,13 @@ router.post("/video", videoUpload.single("video"), async (req, res, next) => {
     status: "processing",
   });
 
-  transcodeToMp4(rawPath, outPath)
+  transcodeToMp4(rawPath, tmpOut)
+    .then(() => rename(tmpOut, outPath)) // atomic: file chỉ xuất hiện khi đã hoàn chỉnh
     .then(() => console.log(`[video] transcode done: ${outName}`))
-    .catch((err) => console.error(`[video] transcode FAILED for ${outName}:`, err))
+    .catch(async (err) => {
+      console.error(`[video] transcode FAILED for ${outName}:`, err);
+      await unlink(tmpOut).catch(() => {});
+    })
     .finally(() => void unlink(rawPath).catch(() => {}));
 });
 
