@@ -40,6 +40,8 @@ const ProjectDetail: FC<Props> = ({ project, onClose }) => {
   const [copied, setCopied] = useState(false);
   const sheetTouchStartY = useRef<number | null>(null);
   const totalImages = project?.photos?.length || 0;
+  // Ảnh đang phóng to (lightbox). null = đóng.
+  const [lightboxSrc, setLightboxSrc] = useState<string | null>(null);
 
   const handleCopyLink = async () => {
     try {
@@ -65,6 +67,16 @@ const ProjectDetail: FC<Props> = ({ project, onClose }) => {
       document.body.style.overflow = original;
     };
   }, []);
+
+  // Đóng lightbox bằng phím Escape
+  useEffect(() => {
+    if (!lightboxSrc) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setLightboxSrc(null);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [lightboxSrc]);
 
   const handleSheetTouchStart = (e: React.TouchEvent) => {
     sheetTouchStartY.current = e.touches[0].clientY;
@@ -435,7 +447,12 @@ const ProjectDetail: FC<Props> = ({ project, onClose }) => {
                       <h2 className="text-xl font-semibold text-white drop-shadow-sm md:text-2xl">
                         {project.title}
                       </h2>
-                      <button className="rounded-full bg-black/40 p-3 backdrop-blur-md transition-colors hover:bg-black/60">
+                      <button
+                        type="button"
+                        onClick={() => setLightboxSrc(image)}
+                        aria-label="Phóng to ảnh"
+                        className="rounded-full bg-black/40 p-3 backdrop-blur-md transition-colors hover:bg-black/60"
+                      >
                         <EyeIcon size={20} className="text-white" />
                       </button>
                     </div>
@@ -495,6 +512,31 @@ const ProjectDetail: FC<Props> = ({ project, onClose }) => {
           </div>
         )}
       </div>
+
+      {/* Lightbox: phóng to ảnh khi bấm icon con mắt */}
+      {lightboxSrc && (
+        <div
+          className="animate-in fade-in fixed inset-0 z-120 flex items-center justify-center bg-black/90 p-4 backdrop-blur-sm duration-200"
+          onClick={() => setLightboxSrc(null)}
+          role="dialog"
+          aria-modal="true"
+        >
+          <button
+            type="button"
+            onClick={() => setLightboxSrc(null)}
+            aria-label="Đóng"
+            className="absolute top-4 right-4 rounded-full bg-white/10 p-2 text-white transition-colors hover:bg-white/20"
+          >
+            <XIcon size={24} />
+          </button>
+          <img
+            src={lightboxSrc}
+            alt={project.title}
+            onClick={(e) => e.stopPropagation()}
+            className="max-h-[90vh] max-w-[95vw] rounded-lg object-contain shadow-2xl"
+          />
+        </div>
+      )}
     </div>
   );
 };
