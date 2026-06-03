@@ -1,6 +1,7 @@
 import Seo from "#components/Seo";
 import PageHero from "#components/organisms/PageHero";
 import ServiceCard from "#components/molecules/ServiceCard";
+import Reveal from "#components/Reveal";
 import { useServices } from "#hooks/useServices";
 import { useLanguage, useTranslation } from "#i18n";
 
@@ -31,8 +32,10 @@ const ServicesPage = () => {
 
         {!loading && !error && (
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {services?.map((service) => (
-              <ServiceCard key={service.id} service={service} />
+            {services?.map((service, i) => (
+              <Reveal key={service.id} delay={i * 80} className="h-full">
+                <ServiceCard service={service} />
+              </Reveal>
             ))}
           </div>
         )}

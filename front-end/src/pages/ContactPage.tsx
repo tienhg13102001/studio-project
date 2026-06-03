@@ -18,6 +18,7 @@ import { useLanguage } from "#i18n";
 import { apiPost } from "#lib/api";
 import { localized } from "#lib/localized";
 import PageHero from "#components/organisms/PageHero";
+import Reveal from "#components/Reveal";
 import { Button } from "#components/ui/button";
 import { Input } from "#components/ui/input";
 import { Label } from "#components/ui/label";
@@ -111,6 +112,7 @@ const ContactPage: React.FC = () => {
       <div className="mx-auto max-w-5xl px-6 pb-24 md:px-12">
         <div className="grid gap-8 lg:grid-cols-2">
           {/* ── Left: Contact info ─────────────────────────── */}
+          <Reveal direction="right">
           <div className="flex flex-col gap-6">
             <div>
               <h2 className="text-foreground text-xl font-bold">
@@ -212,8 +214,10 @@ const ContactPage: React.FC = () => {
               </div>
             )}
           </div>
+          </Reveal>
 
           {/* ── Right: Form ────────────────────────────────── */}
+          <Reveal direction="left" delay={120}>
           <div className="border-border bg-background/40 rounded-2xl border p-6 backdrop-blur-sm">
             <h2 className="text-foreground mb-5 text-lg font-bold">
               {lang === "vi" ? "Gửi Tin Nhắn" : "Send a Message"}
@@ -342,6 +346,7 @@ const ContactPage: React.FC = () => {
               </form>
             )}
           </div>
+          </Reveal>
         </div>
       </div>
     </div>

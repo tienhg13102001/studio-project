@@ -1,4 +1,5 @@
 import { UserIcon, UsersThreeIcon, VideoIcon } from "@phosphor-icons/react";
+import Reveal from "#components/Reveal";
 import MarqueeRow from "#components/molecules/MarqueeRow";
 import { useTranslation } from "#i18n";
 import { useBrands } from "#hooks/useBrands";
@@ -21,34 +22,33 @@ const StatsAndBrands: React.FC = () => {
       {/* ── Stats cards ────────────────────────────────────────────────────── */}
       <div className="mx-auto max-w-7xl px-6 md:px-12">
         <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-          {t.stats.items.map((stat) => (
-            <div
-              key={stat.label}
-              className="border-border bg-card flex flex-col gap-4 rounded-2xl border p-6 shadow-sm"
-            >
-              {/* Header */}
-              <div className="flex items-center gap-3">
-                <div className="bg-primary/10 text-primary flex h-9 w-9 items-center justify-center rounded-lg">
-                  {ICON_MAP[stat.icon]}
+          {t.stats.items.map((stat, i) => (
+            <Reveal key={stat.label} delay={i * 100}>
+              <div className="border-border bg-card flex flex-col gap-4 rounded-2xl border p-6 shadow-sm">
+                {/* Header */}
+                <div className="flex items-center gap-3">
+                  <div className="bg-primary/10 text-primary flex h-9 w-9 items-center justify-center rounded-lg">
+                    {ICON_MAP[stat.icon]}
+                  </div>
+                  <div>
+                    <span className="text-primary text-3xl font-bold">{stat.value}</span>
+                    <p className="text-muted-foreground text-xs font-medium tracking-widest uppercase">
+                      {stat.label}
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <span className="text-primary text-3xl font-bold">{stat.value}</span>
-                  <p className="text-muted-foreground text-xs font-medium tracking-widest uppercase">
-                    {stat.label}
-                  </p>
-                </div>
+                {/* Divider */}
+                <div className="bg-border h-px" />
+                {/* Details */}
+                <ul className="flex flex-col gap-1.5">
+                  {stat.details.map((d) => (
+                    <li key={d} className="text-muted-foreground text-sm">
+                      {d}
+                    </li>
+                  ))}
+                </ul>
               </div>
-              {/* Divider */}
-              <div className="bg-border h-px" />
-              {/* Details */}
-              <ul className="flex flex-col gap-1.5">
-                {stat.details.map((d) => (
-                  <li key={d} className="text-muted-foreground text-sm">
-                    {d}
-                  </li>
-                ))}
-              </ul>
-            </div>
+            </Reveal>
           ))}
         </div>
       </div>
@@ -57,13 +57,15 @@ const StatsAndBrands: React.FC = () => {
       {brands && brands.length > 0 && (
         <div className="mt-24">
           {/* Section header */}
-          <div className="mb-20 flex flex-col items-center gap-3 text-center">
-            <p className="text-muted-foreground text-xs font-semibold tracking-[0.2em] uppercase">
-              {t.brands.badge}
-            </p>
-            <div className="bg-primary h-px w-12" />
-            <h2 className="text-foreground text-3xl font-bold md:text-4xl">{t.brands.heading}</h2>
-          </div>
+          <Reveal>
+            <div className="mb-20 flex flex-col items-center gap-3 text-center">
+              <p className="text-muted-foreground text-xs font-semibold tracking-[0.2em] uppercase">
+                {t.brands.badge}
+              </p>
+              <div className="bg-primary h-px w-12" />
+              <h2 className="text-foreground text-3xl font-bold md:text-4xl">{t.brands.heading}</h2>
+            </div>
+          </Reveal>
 
           {/* Row 1 — left */}
           <div className="border-border/50 bg-muted/30 overflow-hidden border-y">

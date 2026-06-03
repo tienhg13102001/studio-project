@@ -16,6 +16,7 @@ import {
 import { apiFetch, resolveAssetUrl } from "#lib/api";
 import { useLanguage, type Lang } from "#i18n";
 import { localized } from "#lib/localized";
+import Reveal from "#components/Reveal";
 import Seo from "#components/Seo";
 import { Button } from "#components/ui/button";
 import ProjectDetail from "#components/organisms/ProjectDetail";
@@ -232,32 +233,36 @@ const ServicePage: React.FC = () => {
       {/* ── FAQ ──────────────────────────────────────────────────────────── */}
       {service.faqs.length > 0 && (
         <section className="mx-auto max-w-3xl px-6 py-16">
-          <h2 className="text-foreground mb-10 text-center text-3xl font-bold">
-            {vi ? "Câu Hỏi Thường Gặp" : "Frequently Asked Questions"}
-          </h2>
+          <Reveal>
+            <h2 className="text-foreground mb-10 text-center text-3xl font-bold">
+              {vi ? "Câu Hỏi Thường Gặp" : "Frequently Asked Questions"}
+            </h2>
+          </Reveal>
           <div className="flex flex-col gap-3">
             {service.faqs.map((faq, i) => (
-              <div key={i} className="border-border bg-card overflow-hidden rounded-2xl border">
-                <button
-                  onClick={() => setOpenFaq(openFaq === i ? null : i)}
-                  className="text-foreground hover:bg-muted/50 flex w-full items-center justify-between gap-4 px-6 py-4 text-left text-sm font-medium transition-colors"
-                >
-                  <span>{localized(faq.question, lang)}</span>
-                  <PlusIcon
-                    size={18}
-                    className={`text-primary shrink-0 transition-transform duration-300 ${openFaq === i ? "rotate-45" : ""}`}
-                  />
-                </button>
-                <div
-                  className={`grid transition-all duration-300 ${openFaq === i ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"}`}
-                >
-                  <div className="overflow-hidden">
-                    <p className="border-border text-muted-foreground border-t px-6 py-4 text-sm leading-relaxed">
-                      {localized(faq.answer, lang)}
-                    </p>
+              <Reveal key={i} delay={i * 70}>
+                <div className="border-border bg-card overflow-hidden rounded-2xl border">
+                  <button
+                    onClick={() => setOpenFaq(openFaq === i ? null : i)}
+                    className="text-foreground hover:bg-muted/50 flex w-full items-center justify-between gap-4 px-6 py-4 text-left text-sm font-medium transition-colors"
+                  >
+                    <span>{localized(faq.question, lang)}</span>
+                    <PlusIcon
+                      size={18}
+                      className={`text-primary shrink-0 transition-transform duration-300 ${openFaq === i ? "rotate-45" : ""}`}
+                    />
+                  </button>
+                  <div
+                    className={`grid transition-all duration-300 ${openFaq === i ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"}`}
+                  >
+                    <div className="overflow-hidden">
+                      <p className="border-border text-muted-foreground border-t px-6 py-4 text-sm leading-relaxed">
+                        {localized(faq.answer, lang)}
+                      </p>
+                    </div>
                   </div>
                 </div>
-              </div>
+              </Reveal>
             ))}
           </div>
         </section>
@@ -266,50 +271,53 @@ const ServicePage: React.FC = () => {
       {/* ── Video Showcase ───────────────────────────────────────────────── */}
       {projects.length > 0 && (
         <section id="showcase" className="mx-auto max-w-7xl scroll-mt-24 px-6 py-16">
-          <div className="mb-10 text-center">
-            <h2 className="text-foreground text-3xl font-bold">
-              {vi ? "Thư Viện Video" : "Video Showcase"}
-            </h2>
-            <p className="text-muted-foreground mt-2 text-sm">
-              {vi
-                ? "Một số dự án nội dung dạng ngắn của chúng tôi"
-                : "Sample work from our shortform content production"}
-            </p>
-          </div>
+          <Reveal>
+            <div className="mb-10 text-center">
+              <h2 className="text-foreground text-3xl font-bold">
+                {vi ? "Thư Viện Video" : "Video Showcase"}
+              </h2>
+              <p className="text-muted-foreground mt-2 text-sm">
+                {vi
+                  ? "Một số dự án nội dung dạng ngắn của chúng tôi"
+                  : "Sample work from our shortform content production"}
+              </p>
+            </div>
+          </Reveal>
 
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
-            {projects.map((f) => (
-              <button
-                key={f.id}
-                type="button"
-                onClick={() => openProject(f.id)}
-                className="group border-border bg-muted relative aspect-9/16 overflow-hidden rounded-2xl border text-left"
-              >
-                <img
-                  src={resolveAssetUrl(f.thumbnailImage)}
-                  alt={f.title}
-                  className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                />
-                <div className="absolute inset-0 bg-linear-to-t from-black/85 via-black/15 to-transparent" />
+            {projects.map((f, i) => (
+              <Reveal key={f.id} delay={i * 60}>
+                <button
+                  type="button"
+                  onClick={() => openProject(f.id)}
+                  className="group border-border bg-muted relative aspect-9/16 w-full overflow-hidden rounded-2xl border text-left"
+                >
+                  <img
+                    src={resolveAssetUrl(f.thumbnailImage)}
+                    alt={f.title}
+                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+                  <div className="absolute inset-0 bg-linear-to-t from-black/85 via-black/15 to-transparent" />
 
-                {/* Play button */}
-                <span className="bg-primary/90 text-primary-foreground absolute top-1/2 left-1/2 flex h-12 w-12 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full opacity-90 shadow-lg transition-transform duration-300 group-hover:scale-110">
-                  <PlayIcon size={20} weight="fill" />
-                </span>
-
-                {/* Featured badge */}
-                {f.prominent && (
-                  <span className="bg-primary text-primary-foreground absolute top-3 left-3 flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold">
-                    <StarIcon size={11} weight="fill" />
-                    {vi ? "Nổi bật" : "Featured"}
+                  {/* Play button */}
+                  <span className="bg-primary/90 text-primary-foreground absolute top-1/2 left-1/2 flex h-12 w-12 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full opacity-90 shadow-lg transition-transform duration-300 group-hover:scale-110">
+                    <PlayIcon size={20} weight="fill" />
                   </span>
-                )}
 
-                <div className="absolute right-0 bottom-0 left-0 p-3">
-                  <p className="line-clamp-2 text-sm font-semibold text-white">{f.title}</p>
-                  <p className="text-xs text-white/70">{localized(f.subtitle, lang)}</p>
-                </div>
-              </button>
+                  {/* Featured badge */}
+                  {f.prominent && (
+                    <span className="bg-primary text-primary-foreground absolute top-3 left-3 flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold">
+                      <StarIcon size={11} weight="fill" />
+                      {vi ? "Nổi bật" : "Featured"}
+                    </span>
+                  )}
+
+                  <div className="absolute right-0 bottom-0 left-0 p-3">
+                    <p className="line-clamp-2 text-sm font-semibold text-white">{f.title}</p>
+                    <p className="text-xs text-white/70">{localized(f.subtitle, lang)}</p>
+                  </div>
+                </button>
+              </Reveal>
             ))}
           </div>
         </section>
@@ -318,55 +326,60 @@ const ServicePage: React.FC = () => {
       {/* ── Feature highlights ───────────────────────────────────────────── */}
       <section className="mx-auto max-w-7xl px-6 py-12">
         <div className="grid gap-6 md:grid-cols-3">
-          {highlights.map((h) => (
-            <div
-              key={h.title}
-              className="border-border bg-card flex flex-col gap-3 rounded-2xl border p-6"
-            >
-              <div className="bg-primary/10 text-primary flex h-11 w-11 items-center justify-center rounded-xl">
-                {h.icon}
+          {highlights.map((h, i) => (
+            <Reveal key={h.title} delay={i * 100}>
+              <div className="border-border bg-card flex flex-col gap-3 rounded-2xl border p-6">
+                <div className="bg-primary/10 text-primary flex h-11 w-11 items-center justify-center rounded-xl">
+                  {h.icon}
+                </div>
+                <h3 className="text-foreground text-base font-semibold">{h.title}</h3>
+                <p className="text-muted-foreground text-sm leading-relaxed">{h.desc}</p>
               </div>
-              <h3 className="text-foreground text-base font-semibold">{h.title}</h3>
-              <p className="text-muted-foreground text-sm leading-relaxed">{h.desc}</p>
-            </div>
+            </Reveal>
           ))}
         </div>
       </section>
 
       {/* ── Stats ────────────────────────────────────────────────────────── */}
       <section className="mx-auto max-w-7xl px-6 py-16">
-        <div className="border-border bg-card grid grid-cols-2 gap-8 rounded-3xl border px-6 py-10 md:grid-cols-4">
-          {stats.map((s) => (
-            <div key={s.label} className="flex flex-col items-center gap-1 text-center">
-              <span className="text-primary text-4xl font-bold md:text-5xl">{s.value}</span>
-              <span className="text-muted-foreground text-xs font-medium tracking-widest uppercase">
-                {s.label}
-              </span>
-            </div>
-          ))}
-        </div>
+        <Reveal>
+          <div className="border-border bg-card grid grid-cols-2 gap-8 rounded-3xl border px-6 py-10 md:grid-cols-4">
+            {stats.map((s, i) => (
+              <Reveal key={s.label} delay={i * 80}>
+                <div className="flex flex-col items-center gap-1 text-center">
+                  <span className="text-primary text-4xl font-bold md:text-5xl">{s.value}</span>
+                  <span className="text-muted-foreground text-xs font-medium tracking-widest uppercase">
+                    {s.label}
+                  </span>
+                </div>
+              </Reveal>
+            ))}
+          </div>
+        </Reveal>
       </section>
 
       {/* ── CTA ──────────────────────────────────────────────────────────── */}
       <section className="relative overflow-hidden px-6 py-24 text-center">
         <div className="from-primary/10 via-background to-background pointer-events-none absolute inset-0 bg-linear-to-t" />
         <div className="relative mx-auto max-w-2xl">
-          <h2 className="text-foreground text-3xl font-bold md:text-4xl">
-            {vi ? "Sẵn Sàng Tạo Nội Dung Viral?" : "Ready to Go Viral?"}
-          </h2>
-          <p className="text-muted-foreground mt-3 text-base">
-            {vi
-              ? "Cùng nhau xây dựng hệ thống nội dung dạng ngắn cho thương hiệu của bạn"
-              : "Let's build your short-form content empire together"}
-          </p>
-          <Button
-            onClick={() => navigate("/contact")}
-            className="bg-primary text-primary-foreground hover:bg-primary/90 mt-8 h-auto gap-2 rounded-full px-8 py-3 text-sm font-semibold"
-          >
-            <ChartLineUpIcon size={18} weight="bold" />
-            {vi ? "Bắt Đầu Ngay" : "Start Creating"}
-            <ArrowRightIcon size={16} weight="bold" />
-          </Button>
+          <Reveal>
+            <h2 className="text-foreground text-3xl font-bold md:text-4xl">
+              {vi ? "Sẵn Sàng Tạo Nội Dung Viral?" : "Ready to Go Viral?"}
+            </h2>
+            <p className="text-muted-foreground mt-3 text-base">
+              {vi
+                ? "Cùng nhau xây dựng hệ thống nội dung dạng ngắn cho thương hiệu của bạn"
+                : "Let's build your short-form content empire together"}
+            </p>
+            <Button
+              onClick={() => navigate("/contact")}
+              className="bg-primary text-primary-foreground hover:bg-primary/90 mt-8 h-auto gap-2 rounded-full px-8 py-3 text-sm font-semibold"
+            >
+              <ChartLineUpIcon size={18} weight="bold" />
+              {vi ? "Bắt Đầu Ngay" : "Start Creating"}
+              <ArrowRightIcon size={16} weight="bold" />
+            </Button>
+          </Reveal>
         </div>
       </section>
 

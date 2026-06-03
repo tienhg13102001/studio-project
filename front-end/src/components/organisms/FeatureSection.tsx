@@ -1,3 +1,4 @@
+import Reveal from "#components/Reveal";
 import { default as FeatureCard } from "#components/molecules/FeatureCard";
 import MarqueeRow from "#components/molecules/MarqueeRow";
 import SectionHeader from "#components/molecules/SectionHeader";
@@ -52,31 +53,37 @@ const FeatureSection: FC<Props> = () => {
     <>
       <section className="flex min-h-screen flex-col justify-center overflow-hidden py-16 font-sans">
         <div className="mx-auto mb-10 w-full max-w-7xl px-6">
-          <SectionHeader title={t.featured.sectionTitle} subtitle="" />
+          <Reveal>
+            <SectionHeader title={t.featured.sectionTitle} subtitle="" />
+          </Reveal>
         </div>
 
         <div className="flex flex-col gap-6 md:gap-8">
-          <MarqueeRow direction="left">
-            {top.slice(0, MARQUEE_MAX).map((card) => (
-              <FeatureCard
-                key={card.id}
-                card={card}
-                variant="vertical"
-                onClick={() => openProject(card)}
-              />
-            ))}
-          </MarqueeRow>
+          <Reveal direction="up" duration={900}>
+            <MarqueeRow direction="left">
+              {top.slice(0, MARQUEE_MAX).map((card) => (
+                <FeatureCard
+                  key={card.id}
+                  card={card}
+                  variant="vertical"
+                  onClick={() => openProject(card)}
+                />
+              ))}
+            </MarqueeRow>
+          </Reveal>
 
-          <MarqueeRow direction="right">
-            {bottom.slice(0, MARQUEE_MAX).map((card) => (
-              <FeatureCard
-                key={card.id}
-                card={card}
-                variant="horizontal"
-                onClick={() => openProject(card)}
-              />
-            ))}
-          </MarqueeRow>
+          <Reveal direction="up" duration={900}>
+            <MarqueeRow direction="right">
+              {bottom.slice(0, MARQUEE_MAX).map((card) => (
+                <FeatureCard
+                  key={card.id}
+                  card={card}
+                  variant="horizontal"
+                  onClick={() => openProject(card)}
+                />
+              ))}
+            </MarqueeRow>
+          </Reveal>
         </div>
       </section>
 
