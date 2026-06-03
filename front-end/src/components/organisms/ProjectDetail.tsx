@@ -170,7 +170,7 @@ const ProjectDetail: FC<Props> = ({ project, onClose }) => {
   };
 
   return (
-    <div className="bg-background/95 text-foreground fixed inset-0 z-50 flex h-dvh w-screen items-start justify-center overflow-hidden font-sans transition-opacity duration-300 lg:items-center lg:overflow-y-auto">
+    <div className="bg-background/95 text-foreground animate-in fade-in fixed inset-0 z-50 flex h-dvh w-screen items-start justify-center overflow-hidden font-sans duration-300 lg:items-center lg:overflow-y-auto">
       {/* Icon close */}
       <Button
         onClick={onClose}
@@ -209,7 +209,7 @@ const ProjectDetail: FC<Props> = ({ project, onClose }) => {
 
         {/* Draggable Bottom Sheet */}
         <div
-          className="bg-card/95 text-card-foreground absolute right-0 bottom-0 left-0 z-40 flex flex-col rounded-t-3xl backdrop-blur-md"
+          className="bg-card/95 text-card-foreground animate-in slide-in-from-bottom-10 fade-in absolute right-0 bottom-0 left-0 z-40 flex flex-col rounded-t-3xl backdrop-blur-md duration-500"
           style={{
             height: `${sheetHeight}px`,
             transition: dragging ? "none" : "height 300ms ease-out",
@@ -361,7 +361,7 @@ const ProjectDetail: FC<Props> = ({ project, onClose }) => {
       >
         {/* CỘT TRÁI: VIDEO NẾU CÓ */}
         {project.video && (
-          <div className="grow relative flex w-full justify-center lg:w-1/3">
+          <div className="animate-in fade-in slide-in-from-left-[100vw] grow relative flex w-full justify-center duration-700 ease-out lg:w-1/3">
             <MediaPlayer
               src={project.video}
               poster={project.thumbnailImage}
@@ -374,7 +374,10 @@ const ProjectDetail: FC<Props> = ({ project, onClose }) => {
           </div>
         )}
         {/* CỘT GIỮA: THÔNG TIN (Info Column) */}
-        <div className="border-border relative z-30 flex h-fit w-full flex-col justify-center space-y-8 rounded-3xl border px-10 py-20 backdrop-blur-sm lg:w-1/3">
+        <div
+          style={{ animationDelay: "120ms", animationFillMode: "backwards" }}
+          className="border-border animate-in fade-in slide-in-from-bottom-[100vh] relative z-30 flex h-fit w-full flex-col justify-center space-y-8 rounded-3xl border px-10 py-20 backdrop-blur-sm duration-700 ease-out lg:w-1/3"
+        >
           {/* Copy link button — top-right corner */}
           <button
             type="button"
@@ -453,7 +456,10 @@ const ProjectDetail: FC<Props> = ({ project, onClose }) => {
 
         {/* CỘT PHẢI: SLIDER HÌNH ẢNH (Slider Column) */}
         {project.photos && totalImages > 0 && (
-          <div className="relative flex h-100 w-full items-center lg:h-150 lg:w-1/3">
+          <div
+            style={{ animationDelay: "240ms", animationFillMode: "backwards" }}
+            className="animate-in fade-in slide-in-from-right-[100vw] relative flex h-100 w-full items-center duration-700 ease-out lg:h-150 lg:w-1/3"
+          >
             {/* Khu vực chứa các thẻ ảnh */}
             <div className="relative flex h-full w-full items-center justify-center md:h-full">
               {project.photos.map((image, index) => {
