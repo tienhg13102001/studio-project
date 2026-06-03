@@ -12,21 +12,41 @@ const Preloader = ({ target, onComplete }: Props) => {
   const [isExiting, setIsExiting] = useState(false);
   const exitedRef = useRef(false);
 
-  // Smoothly animate current progress toward the target (no jumpy 25 / 50 / 75 steps).
+  const progressRef = useRef(0); // latest progress, readable inside callbacks
+  const targetRef = useRef(target);
+  const lastRef = useRef(0); // last rAF timestamp (for dt)
+  // Fill speed in % per ms. Each completed API (one 25% step) should take
+  // 0.5–1s, so the bar deliberately trails the (instant) API completion.
+  const STEP = 25;
+  const speedRef = useRef(STEP / 750);
+
+  // Whenever the target rises, pick a fresh speed so each 25% step lasts 0.5–1s.
+  useEffect(() => {
+    targetRef.current = target;
+    if (target > progressRef.current) {
+      const perStepMs = 500 + Math.random() * 500; // 0.5s – 1s for one API step
+      speedRef.current = STEP / perStepMs;
+    }
+  }, [target]);
+
+  // Advance progress at the current speed, scaled by real elapsed time (dt).
   useEffect(() => {
     let raf = 0;
-    const tick = () => {
+    const tick = (now: number) => {
+      if (!lastRef.current) lastRef.current = now;
+      const dt = Math.min(50, now - lastRef.current); // clamp if the tab was backgrounded
+      lastRef.current = now;
       setProgress((current) => {
-        if (current >= target) return current;
-        const delta = Math.max(0.5, (target - current) * 0.06); // ease-out: faster when far
-        const next = Math.min(target, current + delta);
+        if (current >= targetRef.current) return current;
+        const next = Math.min(targetRef.current, current + speedRef.current * dt);
+        progressRef.current = next;
         return next;
       });
       raf = requestAnimationFrame(tick);
     };
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
-  }, [target]);
+  }, []);
 
   // When fully loaded AND the bar visually caught up → trigger exit once.
   useEffect(() => {
@@ -51,7 +71,7 @@ const Preloader = ({ target, onComplete }: Props) => {
       <div className="flex w-64 flex-col gap-3 md:w-96">
         <div className="bg-muted h-0.5 w-full overflow-hidden rounded-full">
           <div
-            className="bg-primary h-full rounded-full transition-[width] duration-75 ease-linear"
+            className="bg-primary h-full rounded-full"
             style={{ width: `${progress}%` }}
           />
         </div>
