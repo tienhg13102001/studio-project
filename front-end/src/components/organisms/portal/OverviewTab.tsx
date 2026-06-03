@@ -32,9 +32,9 @@ export default function OverviewTab({
   return (
     <>
       {/* Stat cards */}
-      <div className="grid grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
         {stats.map((card) => (
-          <div key={card.label} className="rounded-xl border border-foreground/8 bg-foreground/3 p-5 flex flex-col gap-3">
+          <div key={card.label} className="rounded-xl border border-foreground/8 bg-foreground/3 p-4 sm:p-5 flex flex-col gap-3">
             <div className={card.color}>{card.icon}</div>
             <div>
               <p className="text-2xl font-bold text-foreground">{card.value}</p>

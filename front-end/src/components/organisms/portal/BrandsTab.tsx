@@ -33,7 +33,7 @@ export function BrandsGrid({ data, loading, preview, onEdit }: GridProps) {
 
   if (loading)
     return (
-      <div className="grid grid-cols-6 gap-3">
+      <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 lg:grid-cols-6">
         {Array.from({ length: 6 }).map((_, i) => (
           <Skeleton key={i} className="h-20 rounded-xl border border-foreground/8" />
         ))}
@@ -41,7 +41,7 @@ export function BrandsGrid({ data, loading, preview, onEdit }: GridProps) {
     );
 
   return (
-    <div className="grid grid-cols-6 gap-3">
+    <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 lg:grid-cols-6">
       {items.map((b) => (
         <div
           key={b.id}

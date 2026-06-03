@@ -2,11 +2,13 @@ import type { PortalUser } from "#lib/portal.types";
 import {
   BriefcaseIcon,
   GearIcon,
+  HouseIcon,
   ImageSquareIcon,
   SignOutIcon,
   SquaresFourIcon,
   StarIcon,
   UsersThreeIcon,
+  XIcon,
 } from "@phosphor-icons/react";
 import { Link, useLocation } from "react-router-dom";
 import LogoYellow from "../../../assets/icons/LogoYellow";
@@ -30,20 +32,30 @@ const NAV: NavItem[] = [
 type Props = {
   user: PortalUser;
   onLogout: () => void;
+  /** Close the mobile drawer (no-op affordance on desktop). */
+  onClose?: () => void;
 };
 
-export default function PortalSidebar({ user, onLogout }: Props) {
+export default function PortalSidebar({ user, onLogout, onClose }: Props) {
   const { pathname } = useLocation();
 
   return (
-    <aside className="flex w-60 shrink-0 flex-col border-r border-foreground/8 bg-card">
+    <aside className="flex h-full w-60 shrink-0 flex-col border-r border-foreground/8 bg-card">
       {/* LogoYellow */}
       <div className="flex items-center gap-2.5 border-b border-foreground/8 px-5 py-5">
         <LogoYellow className="text-primary h-7 w-7 shrink-0" />
-        <div className="min-w-0">
+        <div className="min-w-0 flex-1">
           <p className="truncate text-sm leading-tight font-bold text-foreground">BeeZ Portal</p>
           <p className="text-[10px] leading-tight text-foreground/30">Admin Dashboard</p>
         </div>
+        {/* Close button — mobile drawer only */}
+        <button
+          onClick={onClose}
+          aria-label="Đóng menu"
+          className="flex h-8 w-8 items-center justify-center rounded-lg text-foreground/50 hover:bg-foreground/5 hover:text-foreground lg:hidden"
+        >
+          <XIcon size={18} />
+        </button>
       </div>
 
       {/* Nav */}
@@ -83,8 +95,15 @@ export default function PortalSidebar({ user, onLogout }: Props) {
         })}
       </nav>
 
-      {/* User + Logout */}
+      {/* User + Home + Logout */}
       <div className="flex flex-col gap-2 border-t border-foreground/8 p-3">
+        <Link
+          to="/"
+          className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-foreground/50 transition-colors hover:bg-foreground/5 hover:text-foreground"
+        >
+          <HouseIcon size={15} weight="duotone" />
+          Về trang chủ
+        </Link>
         <div className="flex items-center gap-2.5 rounded-lg bg-foreground/5 px-3 py-2.5">
           <div className="bg-primary/20 text-primary flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold">
             {user.name.charAt(0)}
