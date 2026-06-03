@@ -35,15 +35,12 @@ const PageHero: React.FC<PageHeroProps> = (props) => {
   }, []);
 
   if (props.variant === "image") {
-    const { title, image, icon, height = "h-[60vh]" } = props;
+    const { title, image, icon, height = "h-[80dvh]" } = props;
     return (
-      <div className={`relative ${height} w-full overflow-hidden`}>
+      <div className={`relative ${height} w-full overflow-hidden mx-auto`}>
         <img
           src={image}
           alt={title}
-          loading="eager"
-          decoding="async"
-          fetchPriority="high"
           className="mt-17 h-full w-full object-cover object-top"
         />
         <div className="from-background via-background/40 absolute inset-0 bg-linear-to-t to-transparent" />
