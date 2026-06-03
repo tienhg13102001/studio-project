@@ -32,8 +32,8 @@ export default function Reveal({
   className,
   direction = "up",
   delay = 0,
-  duration = 700,
-  distance = 28,
+  duration = 800,
+  distance = 40,
   repeat = false,
 }: Props) {
   const ref = useRef<HTMLDivElement>(null);
@@ -56,8 +56,9 @@ export default function Reveal({
           setShown(false);
         }
       },
-      // Trigger slightly before fully in view so it feels responsive.
-      { threshold: 0.15, rootMargin: "0px 0px -8% 0px" },
+      // Fire as soon as the element crosses ~15% up from the bottom edge, so
+      // the motion plays where the eye is looking (not at the very bottom).
+      { threshold: 0, rootMargin: "0px 0px -15% 0px" },
     );
     io.observe(el);
     return () => io.disconnect();
