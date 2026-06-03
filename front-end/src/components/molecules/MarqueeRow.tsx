@@ -9,6 +9,10 @@ type Props = {
 const TARGET_PER_GROUP = 10;
 // Tốc độ cuộn (px/giây).
 const SPEED_PX_PER_SEC = 40;
+// Khi hover: tốc độ mục tiêu (theo tỉ lệ so với bình thường) — vẫn trôi chậm, không dừng hẳn.
+const HOVER_SPEED_FACTOR = 0.15;
+// Độ "đằm" của quá trình tăng/giảm tốc (cao = đổi nhanh hơn). ~0.4s để về tốc độ mới.
+const EASE_RATE = 4;
 
 /**
  * Marquee cuộn ngang vô hạn — điều khiển bằng requestAnimationFrame + translate3d
@@ -22,7 +26,9 @@ const SPEED_PX_PER_SEC = 40;
  */
 const MarqueeRow: FC<Props> = ({ direction, children }) => {
   const trackRef = useRef<HTMLDivElement>(null);
-  const pausedRef = useRef(false);
+  // speedRef = hệ số tốc độ hiện tại; targetRef = hệ số đang hướng tới (1 = full).
+  const speedRef = useRef(1);
+  const targetRef = useRef(1);
   const hoverCapableRef = useRef(false);
 
   const baseCount = Math.max(1, Children.count(children));
@@ -47,9 +53,12 @@ const MarqueeRow: FC<Props> = ({ direction, children }) => {
       const dt = Math.min(0.05, (now - last) / 1000); // clamp tránh nhảy khi tab quay lại
       last = now;
 
+      // Nội suy mượt hệ số tốc độ về mục tiêu → tăng/giảm tốc từ từ thay vì giật.
+      speedRef.current += (targetRef.current - speedRef.current) * Math.min(1, dt * EASE_RATE);
+
       if (half <= 0) half = track.scrollWidth / 2;
-      if (half > 0 && !pausedRef.current) {
-        offset += dir * SPEED_PX_PER_SEC * dt;
+      if (half > 0) {
+        offset += dir * SPEED_PX_PER_SEC * speedRef.current * dt;
         if (offset <= -half) offset += half;
         else if (offset >= 0) offset -= half;
         track.style.transform = `translate3d(${offset}px, 0, 0)`;
@@ -73,10 +82,10 @@ const MarqueeRow: FC<Props> = ({ direction, children }) => {
     <div
       className="relative w-full overflow-hidden"
       onMouseEnter={() => {
-        if (hoverCapableRef.current) pausedRef.current = true;
+        if (hoverCapableRef.current) targetRef.current = HOVER_SPEED_FACTOR;
       }}
       onMouseLeave={() => {
-        pausedRef.current = false;
+        targetRef.current = 1;
       }}
     >
       <div ref={trackRef} className="flex w-max will-change-transform">
