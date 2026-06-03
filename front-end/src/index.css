@@ -152,6 +152,14 @@
   /* Marquee của FeatureSection giờ điều khiển bằng JS (rAF + translate3d) trong
      MarqueeRow.tsx — không còn dùng CSS animation ở đây nữa. */
 
+  /* ── Brand glow (hero "loang vàng") — sways + breathes + drifts ──────── */
+  .animate-glow {
+    animation: glow-breathe 5s ease-in-out infinite;
+  }
+  .animate-glow2 {
+    animation: glow-drift 8s ease-in-out infinite;
+  }
+
   /* ── NotFound page motion ─────────────────────────────────────────────── */
   .animate-nf-drift {
     animation: nf-drift 9s ease-in-out infinite;
@@ -167,6 +175,38 @@
   }
   .animate-nf-glitch {
     animation: nf-glitch 5s steps(1) infinite;
+  }
+}
+
+/* Hero glow: sways left↔right while breathing (scale + opacity). Centering is
+   baked into the keyframe so it overrides Tailwind's translate. */
+@keyframes glow-breathe {
+  0% {
+    opacity: 0.45;
+    transform: translate(-78%, -10px) scale(0.95);
+  }
+  50% {
+    opacity: 1;
+    transform: translate(-22%, 36px) scale(1.35);
+  }
+  100% {
+    opacity: 0.45;
+    transform: translate(-78%, -10px) scale(0.95);
+  }
+}
+/* Secondary glow that travels in a wide arc for an obviously living wash. */
+@keyframes glow-drift {
+  0% {
+    opacity: 0.25;
+    transform: translate(-40px, 0) scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: translate(180px, 60px) scale(1.3);
+  }
+  100% {
+    opacity: 0.25;
+    transform: translate(-40px, 0) scale(1);
   }
 }
 
@@ -236,6 +276,8 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .animate-glow,
+  .animate-glow2,
   .animate-nf-drift,
   .animate-nf-drift2,
   .animate-nf-float,

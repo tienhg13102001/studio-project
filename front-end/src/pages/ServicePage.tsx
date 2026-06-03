@@ -172,9 +172,13 @@ const ServicePage: React.FC = () => {
 
       {/* ── Hero ─────────────────────────────────────────────────────────── */}
       <section className="relative overflow-hidden px-6 pt-36 pb-20 text-center md:pb-28">
-        {/* Soft brand glow */}
-        <div className="from-primary/15 via-background to-background pointer-events-none absolute inset-0 bg-linear-to-b" />
-        <div className="bg-primary/20 pointer-events-none absolute -top-24 left-1/2 h-72 w-72 -translate-x-1/2 rounded-full blur-3xl" />
+        {/* Base wash — fades to transparent at the bottom so the global page
+            background flows continuously into the FAQ (no hard seam). */}
+        <div className="from-primary/15 via-background pointer-events-none absolute inset-0 bg-linear-to-b to-transparent" />
+        {/* Animated brand glow ("vùng loang vàng") — sways + breathes, plus a
+            wider-travelling twin so the movement reads clearly. */}
+        <div className="animate-glow bg-primary/35 pointer-events-none absolute -top-24 left-1/2 h-80 w-80 rounded-full blur-3xl" />
+        <div className="animate-glow2 bg-primary/25 pointer-events-none absolute -top-8 left-1/4 h-64 w-64 rounded-full blur-3xl" />
 
         <div className="relative mx-auto max-w-4xl">
           <span
