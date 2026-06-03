@@ -17,8 +17,10 @@ const TeamPage = () => {
       <PageHero
         title={
           <>
-            {t.team.heroLine1} <br />{" "}
-            <span className="text-primary text-7xl mt-2">{t.team.heroLine2}</span>
+            {t.team.heroLine1}{" "}
+            <span className="text-primary mt-2 block text-4xl sm:text-5xl md:text-7xl">
+              {t.team.heroLine2}
+            </span>
           </>
         }
         subtitle={t.team.heroSubtitle}

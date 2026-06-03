@@ -37,12 +37,8 @@ const PageHero: React.FC<PageHeroProps> = (props) => {
   if (props.variant === "image") {
     const { title, image, icon, height = "h-[80dvh]" } = props;
     return (
-      <div className={`relative ${height} w-full overflow-hidden mx-auto`}>
-        <img
-          src={image}
-          alt={title}
-          className="mt-17 h-full w-full object-cover object-top"
-        />
+      <div className={`relative ${height} mx-auto w-full overflow-hidden`}>
+        <img src={image} alt={title} className="mt-17 h-full w-full object-cover object-top" />
         <div className="from-background via-background/40 absolute inset-0 bg-linear-to-t to-transparent" />
         <div className="absolute bottom-0 left-0 px-6 pb-10 md:px-12">
           {icon && (
@@ -59,15 +55,17 @@ const PageHero: React.FC<PageHeroProps> = (props) => {
   // Default: centered text hero
   const { title, subtitle } = props;
   return (
-    <div className="flex flex-col items-center justify-center pt-32 pb-16 text-center">
-      <h1 className="text-foreground text-4xl font-bold md:text-5xl">{renderTitle(title)}</h1>
+    <div className="flex flex-col items-center justify-center px-6 pt-32 pb-10 text-center sm:pt-32 sm:pb-16">
+      <h1 className="text-foreground text-3xl font-bold sm:text-4xl md:text-5xl">
+        {renderTitle(title)}
+      </h1>
       <div
-        className={`bg-primary mt-2 h-px w-50 origin-left transition-transform duration-1500 ease-out ${
+        className={`bg-primary mt-2 h-px w-36 origin-left transition-transform duration-1500 ease-out sm:w-50 ${
           lineReady ? "scale-x-100" : "scale-x-0"
         }`}
       />
       {subtitle && (
-        <p className="text-muted-foreground mx-auto mt-4 max-w-xl text-base leading-relaxed">
+        <p className="text-muted-foreground mx-auto mt-3 max-w-xl text-sm leading-relaxed sm:mt-4 sm:text-base">
           {subtitle}
         </p>
       )}
