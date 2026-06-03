@@ -3,6 +3,7 @@ import { Router } from "express";
 import { Landing } from "../models/Landing.ts";
 import { Contact } from "../models/Contact.ts";
 import { sendError, sendSuccess } from "../lib/response.ts";
+import { generateQrDataUrl, SOCIAL_PLATFORMS, type SocialPlatform } from "../lib/qr.ts";
 
 const router = Router();
 
@@ -27,6 +28,11 @@ router.get("/", async (_req, res, next) => {
           zalo: contact.socials?.zalo,
           facebook: contact.socials?.facebook,
           instagram: contact.socials?.instagram,
+        },
+        socialQrs: {
+          zalo: contact.socialQrs?.zalo,
+          facebook: contact.socialQrs?.facebook,
+          instagram: contact.socialQrs?.instagram,
         },
       }),
     };
@@ -68,6 +74,39 @@ router.put("/", async (req, res, next) => {
     }
 
     sendSuccess(res, landing);
+  } catch (e) { next(e); }
+});
+
+/**
+ * POST /api/landing/social-qr — generate a QR code for one social URL, persist
+ * both the URL and the QR (PNG data-URL) on the Contact, and return the QR.
+ * Body: { platform: "zalo" | "facebook" | "instagram" | ..., url: string }
+ */
+router.post("/social-qr", async (req, res, next) => {
+  try {
+    const { platform, url } = req.body as { platform?: string; url?: string };
+
+    if (!platform || !SOCIAL_PLATFORMS.includes(platform as SocialPlatform)) {
+      sendError(res, "Invalid social platform", 400);
+      return;
+    }
+    const trimmed = (url ?? "").trim();
+    if (!trimmed) { sendError(res, "URL is required to generate a QR code", 400); return; }
+
+    const landing = await Landing.findOne();
+    const contact = landing?.contactId
+      ? await Contact.findById(landing.contactId)
+      : await Contact.findOne();
+    if (!contact) { sendError(res, "Contact not found", 404); return; }
+
+    const qr = await generateQrDataUrl(trimmed);
+    const key = platform as SocialPlatform;
+    // Keep the stored URL and its QR consistent.
+    contact.socials = { ...contact.socials, [key]: trimmed };
+    contact.socialQrs = { ...contact.socialQrs, [key]: qr };
+    await contact.save();
+
+    sendSuccess(res, { platform: key, url: trimmed, qr });
   } catch (e) { next(e); }
 });
 

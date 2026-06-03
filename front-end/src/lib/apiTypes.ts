@@ -17,6 +17,12 @@ export type ApiLanding = {
     facebook?: string;
     instagram?: string;
   };
+  /** QR code PNG data-URLs generated per social URL (portal only). */
+  socialQrs?: {
+    zalo?: string;
+    facebook?: string;
+    instagram?: string;
+  };
 };
 
 export type ApiFaqItem = {

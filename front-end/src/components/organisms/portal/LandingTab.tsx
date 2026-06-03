@@ -5,10 +5,18 @@ import { Skeleton } from "#components/ui/skeleton";
 import { Textarea } from "#components/ui/textarea";
 import VideoUpload from "#components/ui/portal/VideoUpload";
 import { useLanding } from "#hooks/useLanding";
-import { apiPut } from "#lib/api";
+import { apiPost, apiPut } from "#lib/api";
 import type { ApiLanding } from "#lib/apiTypes";
-import { CheckCircleIcon, FloppyDiskIcon } from "@phosphor-icons/react";
+import {
+  CheckCircleIcon,
+  DownloadSimpleIcon,
+  FloppyDiskIcon,
+  QrCodeIcon,
+  SpinnerIcon,
+} from "@phosphor-icons/react";
 import { useEffect, useState } from "react";
+
+type SocialPlatform = "zalo" | "facebook" | "instagram";
 
 type Form = {
   heroLine1: { en: string; vi: string };
@@ -19,6 +27,11 @@ type Form = {
   email: string;
   address: { en: string; vi: string };
   socials: {
+    zalo: string;
+    facebook: string;
+    instagram: string;
+  };
+  socialQrs: {
     zalo: string;
     facebook: string;
     instagram: string;
@@ -34,6 +47,7 @@ const EMPTY_FORM: Form = {
   email: "",
   address: { en: "", vi: "" },
   socials: { zalo: "", facebook: "", instagram: "" },
+  socialQrs: { zalo: "", facebook: "", instagram: "" },
 };
 
 function toForm(raw: ApiLanding): Form {
@@ -49,6 +63,11 @@ function toForm(raw: ApiLanding): Form {
       zalo: raw.socials?.zalo ?? "",
       facebook: raw.socials?.facebook ?? "",
       instagram: raw.socials?.instagram ?? "",
+    },
+    socialQrs: {
+      zalo: raw.socialQrs?.zalo ?? "",
+      facebook: raw.socialQrs?.facebook ?? "",
+      instagram: raw.socialQrs?.instagram ?? "",
     },
   };
 }
@@ -76,6 +95,17 @@ const LandingTab = () => {
     } finally {
       setSaving(false);
     }
+  };
+
+  // Generate a QR for one social URL — the backend persists both URL + QR to the
+  // DB and returns the PNG data-URL, which we stash in the form for preview/download.
+  const generateQr = async (platform: SocialPlatform) => {
+    const url = form.socials[platform].trim();
+    const res = await apiPost<{ platform: string; url: string; qr: string }>(
+      "/api/landing/social-qr",
+      { platform, url },
+    );
+    setForm((f) => ({ ...f, socialQrs: { ...f.socialQrs, [platform]: res.qr } }));
   };
 
   if (loading) {
@@ -152,37 +182,29 @@ const LandingTab = () => {
       </Section>
 
       {/* Socials */}
-      <Section title="Mạng xã hội" description="URL trang Zalo / Facebook / Instagram. Để trống nếu không dùng.">
-        <div>
-          <Label>Zalo URL</Label>
-          <Input
-            value={form.socials.zalo}
-            onChange={(e) =>
-              setForm((f) => ({ ...f, socials: { ...f.socials, zalo: e.target.value } }))
+      <Section
+        title="Mạng xã hội"
+        description="URL trang Zalo / Facebook / Instagram. Bấm “Tạo QR” để sinh và lưu mã QR vào DB, “Tải QR” để tải ảnh PNG."
+      >
+        {(
+          [
+            { platform: "zalo", label: "Zalo URL", placeholder: "https://zalo.me/..." },
+            { platform: "facebook", label: "Facebook URL", placeholder: "https://facebook.com/..." },
+            { platform: "instagram", label: "Instagram URL", placeholder: "https://instagram.com/..." },
+          ] as const
+        ).map(({ platform, label, placeholder }) => (
+          <SocialField
+            key={platform}
+            label={label}
+            placeholder={placeholder}
+            url={form.socials[platform]}
+            qr={form.socialQrs[platform]}
+            onUrlChange={(v) =>
+              setForm((f) => ({ ...f, socials: { ...f.socials, [platform]: v } }))
             }
-            placeholder="https://zalo.me/..."
+            onGenerate={() => generateQr(platform)}
           />
-        </div>
-        <div>
-          <Label>Facebook URL</Label>
-          <Input
-            value={form.socials.facebook}
-            onChange={(e) =>
-              setForm((f) => ({ ...f, socials: { ...f.socials, facebook: e.target.value } }))
-            }
-            placeholder="https://facebook.com/..."
-          />
-        </div>
-        <div>
-          <Label>Instagram URL</Label>
-          <Input
-            value={form.socials.instagram}
-            onChange={(e) =>
-              setForm((f) => ({ ...f, socials: { ...f.socials, instagram: e.target.value } }))
-            }
-            placeholder="https://instagram.com/..."
-          />
-        </div>
+        ))}
       </Section>
 
       {error && (
@@ -258,6 +280,94 @@ const BilingualField = ({ label, value, onChange, multiline }: BilingualFieldPro
           />
         </div>
       </div>
+    </div>
+  );
+};
+
+type SocialFieldProps = {
+  label: string;
+  placeholder: string;
+  url: string;
+  qr: string;
+  onUrlChange: (v: string) => void;
+  onGenerate: () => Promise<void>;
+};
+
+const SocialField = ({ label, placeholder, url, qr, onUrlChange, onGenerate }: SocialFieldProps) => {
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
+
+  const handleGenerate = async () => {
+    if (!url.trim()) {
+      setErr("Nhập URL trước khi tạo QR.");
+      return;
+    }
+    setBusy(true);
+    setErr(null);
+    try {
+      await onGenerate();
+    } catch (e) {
+      setErr((e as Error).message);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const handleDownload = () => {
+    if (!qr) return;
+    const a = document.createElement("a");
+    a.href = qr;
+    a.download = `qr-${label.toLowerCase().replace(/\s+/g, "-")}.png`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+  };
+
+  return (
+    <div>
+      <Label>{label}</Label>
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+        <Input
+          value={url}
+          onChange={(e) => onUrlChange(e.target.value)}
+          placeholder={placeholder}
+          className="sm:flex-1"
+        />
+        <div className="flex gap-2">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={handleGenerate}
+            disabled={busy}
+            className="gap-1.5"
+          >
+            {busy ? (
+              <SpinnerIcon size={14} className="animate-spin" />
+            ) : (
+              <QrCodeIcon size={14} />
+            )}
+            Tạo QR
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={handleDownload}
+            disabled={!qr}
+            className="gap-1.5"
+          >
+            <DownloadSimpleIcon size={14} />
+            Tải QR
+          </Button>
+        </div>
+      </div>
+      {err && <p className="mt-1 text-xs text-red-400">{err}</p>}
+      {qr && (
+        <img
+          src={qr}
+          alt={`QR ${label}`}
+          className="mt-3 h-28 w-28 rounded-lg border border-foreground/10 bg-white p-1.5"
+        />
+      )}
     </div>
   );
 };
