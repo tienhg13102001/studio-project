@@ -51,6 +51,9 @@ const ServicePage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+  // Mount animation for the hero — flips on after first paint so the
+  // staggered fade-up transitions actually play.
+  const [heroIn, setHeroIn] = useState(false);
 
   const openProject = (projectId: string) => {
     setSearchParams((prev) => {
@@ -65,6 +68,14 @@ const ServicePage: React.FC = () => {
       return prev;
     });
   };
+
+  // Fire only once the hero is actually in the DOM (after the loading
+  // spinner clears), otherwise the transition would settle while hidden.
+  useEffect(() => {
+    if (loading || !service) return;
+    const raf = requestAnimationFrame(() => setHeroIn(true));
+    return () => cancelAnimationFrame(raf);
+  }, [loading, service]);
 
   useEffect(() => {
     if (!id) return;
@@ -98,6 +109,13 @@ const ServicePage: React.FC = () => {
   const title = localized(service.title, lang);
   const description = localized(service.description, lang);
   const imageUrl = resolveAssetUrl(service.thumbnailImage);
+
+  // Staggered fade-up: each hero element shares the same transition and only
+  // differs by delay, so they cascade in after mount.
+  const reveal = (delay: string) =>
+    `transition-all duration-700 ease-out ${delay} ${
+      heroIn ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"
+    }`;
 
   // Prominent projects float to the front of the showcase grid.
   const projects = [
@@ -158,28 +176,38 @@ const ServicePage: React.FC = () => {
         <div className="bg-primary/20 pointer-events-none absolute -top-24 left-1/2 h-72 w-72 -translate-x-1/2 rounded-full blur-3xl" />
 
         <div className="relative mx-auto max-w-4xl">
-          <span className="border-primary/30 bg-primary/10 text-primary mb-6 inline-flex items-center gap-2 rounded-full border px-4 py-1.5 text-xs font-medium tracking-wide">
+          <span
+            className={`border-primary/30 bg-primary/10 text-primary mb-6 inline-flex items-center gap-2 rounded-full border px-4 py-1.5 text-xs font-medium tracking-wide ${reveal("delay-0")}`}
+          >
             <LightningIcon size={14} weight="fill" />
             {vi ? "5+ Năm Kinh Nghiệm Đa Nền Tảng" : "5+ Years Multi-Platform Experience"}
           </span>
 
-          <h1 className="text-foreground text-4xl font-bold tracking-tight md:text-6xl">
+          <h1
+            className={`text-foreground text-4xl font-bold tracking-tight md:text-6xl ${reveal("delay-100")}`}
+          >
             {title}
             <span className="from-primary via-chart-2 to-chart-4 mt-1 block bg-linear-to-r bg-clip-text text-transparent">
               {vi ? "Sản Xuất Video" : "Video Production"}
             </span>
           </h1>
 
-          <p className="text-muted-foreground mx-auto mt-6 max-w-2xl text-base leading-relaxed md:text-lg">
+          <p
+            className={`text-muted-foreground mx-auto mt-6 max-w-2xl text-base leading-relaxed md:text-lg ${reveal("delay-200")}`}
+          >
             {description}
           </p>
-          <p className="text-muted-foreground/70 mx-auto mt-3 max-w-2xl text-sm leading-relaxed">
+          <p
+            className={`text-muted-foreground/70 mx-auto mt-3 max-w-2xl text-sm leading-relaxed ${reveal("delay-300")}`}
+          >
             {vi
               ? "Talking head chuyên nghiệp, motion graphics phức tạp, meme giải trí và video bắt trend cho mọi ngành hàng và phong cách!"
               : "Professional talking head content, complex motion graphics, entertainment memes, and trend-based videos for every industry and style!"}
           </p>
 
-          <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
+          <div
+            className={`mt-9 flex flex-wrap items-center justify-center gap-3 ${reveal("delay-500")}`}
+          >
             <Button
               onClick={() => navigate("/contact")}
               className="bg-primary text-primary-foreground hover:bg-primary/90 h-auto gap-2 rounded-full px-6 py-3 text-sm font-semibold"
