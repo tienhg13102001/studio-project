@@ -15,10 +15,10 @@ const WhoWeAre: React.FC = () => {
   return (
     <section className="relative overflow-hidden">
       {/* Main content row */}
-      <div className="mx-auto max-w-7xl px-6 md:px-12 pb-16 grid grid-cols-1 gap-10 md:grid-cols-2 md:gap-16 items-center">
+      <div className="mx-auto max-w-7xl px-6 md:px-12 pb-16 pt-10 grid grid-cols-1 gap-10 md:grid-cols-2 md:gap-16 items-center">
         {/* Left — featured image */}
         <div className="relative">
-          <div className="overflow-hidden rounded-2xl shadow-2xl aspect-4/3">
+          <div className="overflow-hidden rounded-2xl shadow-2xl aspect-5/6">
             <img
               src={"/user1.webp"}
               alt="BeeZ Production team"
