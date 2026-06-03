@@ -36,6 +36,12 @@ type Form = {
     facebook: string;
     instagram: string;
   };
+  /** The URL each stored QR was generated for — used to gate the "Tạo QR" button. */
+  qrUrls: {
+    zalo: string;
+    facebook: string;
+    instagram: string;
+  };
 };
 
 const EMPTY_FORM: Form = {
@@ -48,6 +54,7 @@ const EMPTY_FORM: Form = {
   address: { en: "", vi: "" },
   socials: { zalo: "", facebook: "", instagram: "" },
   socialQrs: { zalo: "", facebook: "", instagram: "" },
+  qrUrls: { zalo: "", facebook: "", instagram: "" },
 };
 
 function toForm(raw: ApiLanding): Form {
@@ -68,6 +75,13 @@ function toForm(raw: ApiLanding): Form {
       zalo: raw.socialQrs?.zalo ?? "",
       facebook: raw.socialQrs?.facebook ?? "",
       instagram: raw.socialQrs?.instagram ?? "",
+    },
+    // A stored QR was generated for the currently-saved URL → seed qrUrls so the
+    // "Tạo QR" button stays disabled until the URL is edited.
+    qrUrls: {
+      zalo: raw.socialQrs?.zalo ? (raw.socials?.zalo ?? "") : "",
+      facebook: raw.socialQrs?.facebook ? (raw.socials?.facebook ?? "") : "",
+      instagram: raw.socialQrs?.instagram ? (raw.socials?.instagram ?? "") : "",
     },
   };
 }
@@ -105,7 +119,11 @@ const LandingTab = () => {
       "/api/landing/social-qr",
       { platform, url },
     );
-    setForm((f) => ({ ...f, socialQrs: { ...f.socialQrs, [platform]: res.qr } }));
+    setForm((f) => ({
+      ...f,
+      socialQrs: { ...f.socialQrs, [platform]: res.qr },
+      qrUrls: { ...f.qrUrls, [platform]: res.url },
+    }));
   };
 
   if (loading) {
@@ -199,6 +217,7 @@ const LandingTab = () => {
             placeholder={placeholder}
             url={form.socials[platform]}
             qr={form.socialQrs[platform]}
+            generatedUrl={form.qrUrls[platform]}
             onUrlChange={(v) =>
               setForm((f) => ({ ...f, socials: { ...f.socials, [platform]: v } }))
             }
@@ -289,13 +308,29 @@ type SocialFieldProps = {
   placeholder: string;
   url: string;
   qr: string;
+  /** URL the existing QR was generated for. */
+  generatedUrl: string;
   onUrlChange: (v: string) => void;
   onGenerate: () => Promise<void>;
 };
 
-const SocialField = ({ label, placeholder, url, qr, onUrlChange, onGenerate }: SocialFieldProps) => {
+const SocialField = ({
+  label,
+  placeholder,
+  url,
+  qr,
+  generatedUrl,
+  onUrlChange,
+  onGenerate,
+}: SocialFieldProps) => {
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
+
+  const trimmed = url.trim();
+  // Allow generating only for a non-empty URL that differs from the one the
+  // current QR was made for (first time, or after the URL changed).
+  const upToDate = !!qr && trimmed === generatedUrl.trim();
+  const canGenerate = trimmed !== "" && !upToDate;
 
   const handleGenerate = async () => {
     if (!url.trim()) {
@@ -338,7 +373,8 @@ const SocialField = ({ label, placeholder, url, qr, onUrlChange, onGenerate }: S
             type="button"
             variant="outline"
             onClick={handleGenerate}
-            disabled={busy}
+            disabled={busy || !canGenerate}
+            title={upToDate ? "QR đã được tạo cho URL này" : undefined}
             className="gap-1.5"
           >
             {busy ? (
@@ -346,7 +382,7 @@ const SocialField = ({ label, placeholder, url, qr, onUrlChange, onGenerate }: S
             ) : (
               <QrCodeIcon size={14} />
             )}
-            Tạo QR
+            {upToDate ? "Đã tạo" : "Tạo QR"}
           </Button>
           <Button
             type="button"
