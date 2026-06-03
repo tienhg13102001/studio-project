@@ -31,14 +31,25 @@ function formatShootDate(value?: string): string {
   return Number.isNaN(d.getTime()) ? value : d.toLocaleDateString("vi-VN");
 }
 
+/** Bottom-sheet bounds: collapsed peek (px) and max share of the viewport. */
+const SHEET_PEEK = 150;
+const SHEET_MAX_RATIO = 0.6; // tối đa 50dvh
+
+const maxSheetHeight = () =>
+  typeof window !== "undefined" ? window.innerHeight * SHEET_MAX_RATIO : 400;
+
 const ProjectDetail: FC<Props> = ({ project, onClose }) => {
   const navigate = useNavigate();
   const t = useTranslation();
 
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [isSheetExpanded, setIsSheetExpanded] = useState(false);
   const [copied, setCopied] = useState(false);
-  const sheetTouchStartY = useRef<number | null>(null);
+  // Bottom sheet drag state — free-drag in px, capped at SHEET_MAX_RATIO of the
+  // viewport. Lives where released ("kéo tới đâu dừng tới đó").
+  const [sheetHeight, setSheetHeight] = useState(SHEET_PEEK);
+  const [dragging, setDragging] = useState(false);
+  const dragStart = useRef<{ y: number; h: number } | null>(null);
+  const isSheetExpanded = sheetHeight > SHEET_PEEK + 4;
   const totalImages = project?.photos?.length || 0;
   // Ảnh đang phóng to (lightbox). null = đóng.
   const [lightboxSrc, setLightboxSrc] = useState<string | null>(null);
@@ -79,16 +90,26 @@ const ProjectDetail: FC<Props> = ({ project, onClose }) => {
   }, [lightboxSrc]);
 
   const handleSheetTouchStart = (e: React.TouchEvent) => {
-    sheetTouchStartY.current = e.touches[0].clientY;
+    dragStart.current = { y: e.touches[0].clientY, h: sheetHeight };
+    setDragging(true);
   };
 
-  const handleSheetTouchEnd = (e: React.TouchEvent) => {
-    if (sheetTouchStartY.current === null) return;
-    const delta = e.changedTouches[0].clientY - sheetTouchStartY.current;
-    if (delta < -30) setIsSheetExpanded(true);
-    else if (delta > 30) setIsSheetExpanded(false);
-    sheetTouchStartY.current = null;
+  const handleSheetTouchMove = (e: React.TouchEvent) => {
+    if (!dragStart.current) return;
+    // Drag up grows the sheet; clamp between the peek and 50dvh.
+    const delta = dragStart.current.y - e.touches[0].clientY;
+    const next = Math.min(Math.max(dragStart.current.h + delta, SHEET_PEEK), maxSheetHeight());
+    setSheetHeight(next);
   };
+
+  const handleSheetTouchEnd = () => {
+    dragStart.current = null;
+    setDragging(false); // stays exactly where released
+  };
+
+  // Caret button: snap between peek and full (50dvh).
+  const toggleSheet = () =>
+    setSheetHeight((h) => (h > SHEET_PEEK + 4 ? SHEET_PEEK : maxSheetHeight()));
 
   const handleNext = () => {
     if (currentIndex < totalImages - 1) {
@@ -160,40 +181,46 @@ const ProjectDetail: FC<Props> = ({ project, onClose }) => {
 
       {/* MOBILE LAYOUT */}
       <div className="relative h-dvh w-full overflow-hidden lg:hidden">
-        {/* Background: Video / Thumbnail (full screen) */}
-        <div className="absolute inset-0 flex items-center justify-center bg-black">
+        {/* Video / Thumbnail — height tracks the sheet so the media always sits
+            flush above its top edge, shrinking as the sheet is dragged up. */}
+        <div
+          className="absolute top-0 right-0 left-0 flex items-center justify-center bg-black"
+          style={{
+            height: `calc(100dvh - ${sheetHeight}px)`,
+            transition: dragging ? "none" : "height 300ms ease-out",
+          }}
+        >
           {project.video ? (
             <MediaPlayer
               src={project.video}
               poster={project.thumbnailImage}
               alt={project.title}
               className="h-full w-full"
-              videoClassName="object-cover"
+              videoClassName="object-contain"
             />
           ) : (
             <img
               src={project.thumbnailImage}
               alt={project.title}
-              className="h-full w-full object-cover"
+              className="h-full w-full object-contain"
             />
           )}
         </div>
 
         {/* Draggable Bottom Sheet */}
         <div
-          className="bg-card/95 text-card-foreground absolute right-0 bottom-0 left-0 z-40 flex flex-col rounded-t-3xl backdrop-blur-md transition-transform duration-300 ease-out"
+          className="bg-card/95 text-card-foreground absolute right-0 bottom-0 left-0 z-40 flex flex-col rounded-t-3xl backdrop-blur-md"
           style={{
-            height: "85dvh",
-            transform: isSheetExpanded ? "translateY(0)" : "translateY(calc(100% - 130px))",
+            height: `${sheetHeight}px`,
+            transition: dragging ? "none" : "height 300ms ease-out",
           }}
-          onTouchStart={handleSheetTouchStart}
-          onTouchEnd={handleSheetTouchEnd}
         >
-          {/* Drag handle + Header (peek area, always visible) */}
+          {/* Drag handle + Header — the grab zone that resizes the sheet */}
           <div
             onTouchStart={handleSheetTouchStart}
+            onTouchMove={handleSheetTouchMove}
             onTouchEnd={handleSheetTouchEnd}
-            className="shrink-0 touch-none select-none"
+            className="shrink-0 cursor-grab touch-none select-none active:cursor-grabbing"
           >
             <div className="flex justify-center pt-3 pb-2">
               <div className="bg-muted-foreground/40 h-1 w-10 rounded-full" />
@@ -235,7 +262,7 @@ const ProjectDetail: FC<Props> = ({ project, onClose }) => {
                 </button>
                 <button
                   type="button"
-                  onClick={() => setIsSheetExpanded((v) => !v)}
+                  onClick={toggleSheet}
                   className="bg-foreground/10 text-foreground hover:bg-foreground/20 flex h-9 w-9 items-center justify-center rounded-full transition-colors"
                 >
                   <CaretDownIcon
@@ -299,14 +326,23 @@ const ProjectDetail: FC<Props> = ({ project, onClose }) => {
                   <h3 className="text-muted-foreground mb-3 text-xs font-semibold tracking-wider uppercase">
                     {t.project.productImages}
                   </h3>
-                  <div className="-mx-5 flex gap-2 overflow-x-auto px-5 pb-2">
+                  {/* Masonry — keeps each photo's natural ratio (Pinterest style) */}
+                  <div className="columns-2 gap-2">
                     {project.photos.map((image, idx) => (
-                      <img
+                      <button
                         key={idx}
-                        src={image}
-                        alt={`Behind the scenes ${idx + 1}`}
-                        className="h-24 w-20 shrink-0 rounded-lg object-cover"
-                      />
+                        type="button"
+                        onClick={() => setLightboxSrc(image)}
+                        aria-label={`Xem ảnh ${idx + 1}`}
+                        className="group focus-visible:ring-primary mb-2 block w-full break-inside-avoid overflow-hidden rounded-lg focus-visible:ring-2 focus-visible:outline-none"
+                      >
+                        <img
+                          src={image}
+                          alt={`Behind the scenes ${idx + 1}`}
+                          loading="lazy"
+                          className="h-auto w-full transition-transform duration-300 group-active:scale-95"
+                        />
+                      </button>
                     ))}
                   </div>
                 </div>
@@ -325,7 +361,7 @@ const ProjectDetail: FC<Props> = ({ project, onClose }) => {
       >
         {/* CỘT TRÁI: VIDEO NẾU CÓ */}
         {project.video && (
-          <div className="relative flex w-full justify-center lg:w-1/3">
+          <div className="grow relative flex w-full justify-center lg:w-1/3">
             <MediaPlayer
               src={project.video}
               poster={project.thumbnailImage}
