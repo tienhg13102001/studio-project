@@ -2,11 +2,48 @@ import Reveal from "#components/Reveal";
 import SectionHeader from "#components/molecules/SectionHeader";
 import { useProjectPhotos } from "#hooks/useProjectPhotos";
 import { useTranslation } from "#i18n";
+import { cn } from "#lib/utils";
 import { XIcon } from "@phosphor-icons/react";
 import { useEffect, useState, type FC } from "react";
 
 // Số ảnh tối đa render để section không quá dài / nặng trên mobile.
 const MAX_PHOTOS = 18;
+
+/**
+ * Một ô ảnh trong gallery: hiện skeleton pulse trong lúc ảnh tải, rồi fade-in
+ * mượt khi `onLoad` — tránh cảnh ảnh "nhảy" ra đột ngột hoặc khoảng trắng khi
+ * mạng chậm. Bấm vào để mở lightbox.
+ */
+const GalleryImage: FC<{ src: string; index: number; onOpen: (src: string) => void }> = ({
+  src,
+  index,
+  onOpen,
+}) => {
+  const [loaded, setLoaded] = useState(false);
+
+  return (
+    <button
+      type="button"
+      onClick={() => onOpen(src)}
+      aria-label={`Xem ảnh ${index + 1}`}
+      className="group border-border bg-muted focus-visible:ring-primary relative block w-full break-inside-avoid overflow-hidden rounded-2xl border focus-visible:ring-2 focus-visible:outline-none"
+    >
+      {/* Skeleton giữ chỗ + nhịp pulse trong lúc chờ tải; min-height để cột không sụp. */}
+      {!loaded && <div className="bg-foreground/8 absolute inset-0 min-h-50 animate-pulse" />}
+      <img
+        src={src}
+        alt=""
+        loading="lazy"
+        decoding="async"
+        onLoad={() => setLoaded(true)}
+        className={cn(
+          "h-auto w-full object-cover transition-all duration-700 ease-out group-hover:scale-105",
+          loaded ? "scale-100 opacity-100 blur-0" : "scale-105 opacity-0 blur-sm",
+        )}
+      />
+    </button>
+  );
+};
 
 const ProductGallery: FC = () => {
   const t = useTranslation();
@@ -29,8 +66,30 @@ const ProductGallery: FC = () => {
     };
   }, [lightboxSrc]);
 
-  // Ẩn hẳn section khi đang tải hoặc không có ảnh nào — tránh khoảng trống.
-  if (loading || !photos || photos.length === 0) return null;
+  if (loading) {
+    // Skeleton grid trong lúc gọi API — giữ bố cục ổn định, không nhảy layout.
+    return (
+      <section className="overflow-hidden py-16 font-sans md:py-24">
+        <div className="mx-auto w-full max-w-7xl px-6">
+          <SectionHeader title={t.gallery.sectionTitle} subtitle={t.gallery.sectionSubtitle} />
+          <div className="columns-2 gap-4 sm:columns-3 lg:columns-4 *:mb-4">
+            {Array.from({ length: 8 }).map((_, i) => (
+              <div
+                key={i}
+                className={cn(
+                  "bg-foreground/8 w-full break-inside-avoid animate-pulse rounded-2xl",
+                  i % 3 === 0 ? "h-72" : i % 3 === 1 ? "h-56" : "h-64",
+                )}
+              />
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // Không có ảnh nào → ẩn hẳn section, tránh khoảng trống.
+  if (!photos || photos.length === 0) return null;
 
   const items = photos.slice(0, MAX_PHOTOS);
 
@@ -42,22 +101,10 @@ const ProductGallery: FC = () => {
         </Reveal>
 
         {/* Masonry-style layout qua CSS columns: ảnh giữ nguyên tỉ lệ, lấp đầy đẹp mắt. */}
-        <div className="columns-2 gap-4 sm:columns-3 lg:columns-4 [&>*]:mb-4">
+        <div className="columns-2 gap-4 sm:columns-3 lg:columns-4 *:mb-4">
           {items.map((src, i) => (
             <Reveal key={`${src}-${i}`} direction="up" delay={(i % 4) * 80}>
-              <button
-                type="button"
-                onClick={() => setLightboxSrc(src)}
-                aria-label={`Xem ảnh ${i + 1}`}
-                className="group border-border bg-muted focus-visible:ring-primary block w-full break-inside-avoid overflow-hidden rounded-2xl border focus-visible:ring-2 focus-visible:outline-none"
-              >
-                <img
-                  src={src}
-                  alt=""
-                  loading="lazy"
-                  className="h-auto w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                />
-              </button>
+              <GalleryImage src={src} index={i} onOpen={setLightboxSrc} />
             </Reveal>
           ))}
         </div>
