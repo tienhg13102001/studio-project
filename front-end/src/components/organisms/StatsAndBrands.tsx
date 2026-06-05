@@ -1,9 +1,9 @@
-import { UserIcon, UsersThreeIcon, VideoIcon } from "@phosphor-icons/react";
 import Reveal from "#components/Reveal";
 import MarqueeRow from "#components/molecules/MarqueeRow";
-import { useTranslation } from "#i18n";
 import { useBrands } from "#hooks/useBrands";
+import { useTranslation } from "#i18n";
 import { resolveAssetUrl } from "#lib/api";
+import { UserIcon, UsersThreeIcon, VideoIcon } from "@phosphor-icons/react";
 
 const ICON_MAP: Record<string, React.ReactNode> = {
   UserIcon: <UserIcon size={20} weight="duotone" />,

@@ -60,6 +60,63 @@ const en = {
     followUs: "Follow Us",
     rights: "© {year} BeeZ Production. All rights reserved.",
   },
+  contact: {
+    title: "Contact",
+    intro:
+      "Whether you have questions about services, pricing, or anything else, our team is ready to answer.",
+    emailLabel: "Email",
+    phoneLabel: "Phone",
+    locationLabel: "Location",
+    workingHours: "Working Hours",
+    connectWithUs: "Connect With Us",
+    formTitle: "Send a Message",
+    sentTitle: "Message sent!",
+    sentDesc: "We'll get back to you as soon as possible.",
+    sendAnother: "Send another message",
+    nameLabel: "Full Name",
+    namePlaceholder: "Your name",
+    phoneFieldLabel: "Phone",
+    serviceLabel: "Service of Interest",
+    servicePlaceholder: "Select a service",
+    messageLabel: "Message",
+    messagePlaceholder: "Tell us about your project...",
+    submit: "Send Message",
+  },
+  service: {
+    experienceBadge: "5+ Years Multi-Platform Experience",
+    heroAccent: "Video Production",
+    heroTagline:
+      "Professional talking head content, complex motion graphics, entertainment memes, and trend-based videos for every industry and style!",
+    startProject: "Let's Talk",
+    viewWork: "View Work",
+    faqTitle: "Frequently Asked Questions",
+    showcaseTitle: "Video Showcase",
+    showcaseSubtitle: "Sample work from our shortform content production",
+    featuredBadge: "Featured",
+    ctaTitle: "Ready to Go Viral?",
+    ctaSubtitle: "Let's build your short-form content empire together",
+    ctaButton: "Start Creating",
+    highlights: [
+      {
+        title: "Talking Head Videos",
+        desc: "Expert-led content with complex motion graphics.",
+      },
+      {
+        title: "Trend-Based Content",
+        desc: "Memes, trending audio, viral formats across industries.",
+      },
+      {
+        title: "Multi-Platform",
+        desc: "TikTok, YouTube Shorts, Facebook & Instagram Reels.",
+      },
+    ],
+    stats: [
+      { value: "1000+", label: "Videos Produced" },
+      { value: "5+", label: "Years Experience" },
+      { value: "1B+", label: "Combined Views" },
+      { value: "4", label: "Platforms" },
+    ],
+  },
 } as const;
 
 export default en;

@@ -60,6 +60,63 @@ const vi = {
     followUs: "Theo Dõi",
     rights: "Bản quyền © {year} BeeZ Production. Mọi quyền được bảo lưu.",
   },
+  contact: {
+    title: "Liên Hệ",
+    intro:
+      "Dù bạn có câu hỏi về dịch vụ, giá cả hay bất cứ điều gì, đội ngũ của chúng tôi sẵn sàng trả lời.",
+    emailLabel: "Email",
+    phoneLabel: "Điện Thoại",
+    locationLabel: "Địa Điểm",
+    workingHours: "Giờ Làm Việc",
+    connectWithUs: "Kết Nối Với Chúng Tôi",
+    formTitle: "Gửi Tin Nhắn",
+    sentTitle: "Đã gửi thành công!",
+    sentDesc: "Chúng tôi sẽ phản hồi sớm nhất có thể.",
+    sendAnother: "Gửi tin nhắn khác",
+    nameLabel: "Họ và Tên",
+    namePlaceholder: "Tên của bạn",
+    phoneFieldLabel: "Điện Thoại",
+    serviceLabel: "Dịch Vụ Quan Tâm",
+    servicePlaceholder: "Chọn dịch vụ",
+    messageLabel: "Tin Nhắn",
+    messagePlaceholder: "Chia sẻ về dự án của bạn...",
+    submit: "Gửi Tin Nhắn",
+  },
+  service: {
+    experienceBadge: "5+ Năm Kinh Nghiệm Đa Nền Tảng",
+    heroAccent: "Sản Xuất Video",
+    heroTagline:
+      "Talking head chuyên nghiệp, motion graphics phức tạp, meme giải trí và video bắt trend cho mọi ngành hàng và phong cách!",
+    startProject: "Bắt Đầu Dự Án",
+    viewWork: "Xem Dự Án",
+    faqTitle: "Câu Hỏi Thường Gặp",
+    showcaseTitle: "Thư Viện Video",
+    showcaseSubtitle: "Một số dự án nội dung dạng ngắn của chúng tôi",
+    featuredBadge: "Nổi bật",
+    ctaTitle: "Sẵn Sàng Tạo Nội Dung Viral?",
+    ctaSubtitle: "Cùng nhau xây dựng hệ thống nội dung dạng ngắn cho thương hiệu của bạn",
+    ctaButton: "Bắt Đầu Ngay",
+    highlights: [
+      {
+        title: "Talking Head",
+        desc: "Nội dung dẫn dắt bởi chuyên gia với motion graphics phức tạp.",
+      },
+      {
+        title: "Nội Dung Bắt Trend",
+        desc: "Meme, audio thịnh hành, các format viral trên mọi lĩnh vực.",
+      },
+      {
+        title: "Đa Nền Tảng",
+        desc: "TikTok, YouTube Shorts, Facebook & Instagram Reels.",
+      },
+    ],
+    stats: [
+      { value: "1000+", label: "Video Đã Sản Xuất" },
+      { value: "5+", label: "Năm Kinh Nghiệm" },
+      { value: "1B+", label: "Lượt Xem" },
+      { value: "4", label: "Nền Tảng" },
+    ],
+  },
 } as const;
 
 export default vi;

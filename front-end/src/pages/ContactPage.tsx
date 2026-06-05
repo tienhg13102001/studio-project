@@ -1,24 +1,6 @@
-import { useState } from "react";
-import {
-  PhoneIcon,
-  EnvelopeSimpleIcon,
-  MapPinIcon,
-  ClockIcon,
-  FacebookLogoIcon,
-  InstagramLogoIcon,
-  YoutubeLogo,
-  TiktokLogoIcon,
-  PaperPlaneTiltIcon,
-  SpinnerIcon,
-} from "@phosphor-icons/react";
-import Seo from "#components/Seo";
-import { useContact } from "#hooks/useContact";
-import { useServices } from "#hooks/useServices";
-import { useLanguage } from "#i18n";
-import { apiPost } from "#lib/api";
-import { localized } from "#lib/localized";
 import PageHero from "#components/organisms/PageHero";
 import Reveal from "#components/Reveal";
+import Seo from "#components/Seo";
 import { Button } from "#components/ui/button";
 import { Input } from "#components/ui/input";
 import { Label } from "#components/ui/label";
@@ -30,6 +12,22 @@ import {
   SelectValue,
 } from "#components/ui/select";
 import { Textarea } from "#components/ui/textarea";
+import { useContact } from "#hooks/useContact";
+import { useServices } from "#hooks/useServices";
+import { useLanguage, useTranslation } from "#i18n";
+import { apiPost } from "#lib/api";
+import { localized } from "#lib/localized";
+import {
+  ClockIcon,
+  EnvelopeSimpleIcon,
+  FacebookLogoIcon,
+  InstagramLogoIcon,
+  MapPinIcon,
+  PaperPlaneTiltIcon,
+  PhoneIcon,
+  SpinnerIcon,
+} from "@phosphor-icons/react";
+import { useState } from "react";
 import LogoZalo from "../assets/icons/LogoZalo";
 
 type FormState = {
@@ -44,6 +42,7 @@ const EMPTY_FORM: FormState = { name: "", email: "", phone: "", service: "", mes
 
 const ContactPage: React.FC = () => {
   const { lang } = useLanguage();
+  const t = useTranslation();
   const { data: contact, loading, error } = useContact();
   const { data: services } = useServices(lang);
 
@@ -105,245 +104,229 @@ const ContactPage: React.FC = () => {
         description="Liên hệ BeeZ Production để bắt đầu dự án video tiếp theo của bạn — TVC, phim quảng cáo, brand film. Đội ngũ tại Hà Nội luôn sẵn sàng tư vấn."
         path="/contact"
       />
-      <PageHero title={localized(contact.heading, lang)} subtitle={localized(contact.subheading, lang)} />
+      <PageHero
+        title={localized(contact.heading, lang)}
+        subtitle={localized(contact.subheading, lang)}
+      />
 
       <div className="mx-auto max-w-5xl px-6 pb-24 md:px-12">
         <div className="grid gap-8 lg:grid-cols-2">
           {/* ── Left: Contact info ─────────────────────────── */}
           <Reveal direction="right">
-          <div className="flex flex-col gap-6">
-            <div>
-              <h2 className="text-foreground text-xl font-bold">
-                {lang === "vi" ? "Liên Hệ" : "Contact"}
-              </h2>
-              <p className="text-muted-foreground mt-2 text-sm leading-relaxed">
-                {lang === "vi"
-                  ? "Dù bạn có câu hỏi về dịch vụ, giá cả hay bất cứ điều gì, đội ngũ của chúng tôi sẵn sàng trả lời."
-                  : "Whether you have questions about services, pricing, or anything else, our team is ready to answer."}
-              </p>
-            </div>
+            <div className="flex flex-col gap-6">
+              <div>
+                <h2 className="text-foreground text-xl font-bold">{t.contact.title}</h2>
+                <p className="text-muted-foreground mt-2 text-sm leading-relaxed">
+                  {t.contact.intro}
+                </p>
+              </div>
 
-            {/* Info items */}
-            <div className="flex flex-col gap-4">
-              {[
-                {
-                  icon: <EnvelopeSimpleIcon size={18} weight="duotone" />,
-                  label: "Email",
-                  value: contact.email,
-                  href: `mailto:${contact.email}`,
-                },
-                {
-                  icon: <PhoneIcon size={18} weight="duotone" />,
-                  label: lang === "vi" ? "Điện Thoại" : "Phone",
-                  value: contact.phone,
-                  href: `tel:${contact.phone.replace(/\s/g, "")}`,
-                },
-                {
-                  icon: <MapPinIcon size={18} weight="duotone" />,
-                  label: lang === "vi" ? "Địa Điểm" : "Location",
-                  value: localized(contact.address, lang),
-                  href: undefined,
-                },
-              ].map(({ icon, label, value, href }) => (
-                <div key={label} className="flex items-start gap-3">
-                  <div className="bg-muted text-muted-foreground mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg">
-                    {icon}
+              {/* Info items */}
+              <div className="flex flex-col gap-4">
+                {[
+                  {
+                    icon: <EnvelopeSimpleIcon size={18} weight="duotone" />,
+                    label: t.contact.emailLabel,
+                    value: contact.email,
+                    href: `mailto:${contact.email}`,
+                  },
+                  {
+                    icon: <PhoneIcon size={18} weight="duotone" />,
+                    label: t.contact.phoneLabel,
+                    value: contact.phone,
+                    href: `tel:${contact.phone.replace(/\s/g, "")}`,
+                  },
+                  {
+                    icon: <MapPinIcon size={18} weight="duotone" />,
+                    label: t.contact.locationLabel,
+                    value: localized(contact.address, lang),
+                    href: undefined,
+                  },
+                ].map(({ icon, label, value, href }) => (
+                  <div key={label} className="flex items-start gap-3">
+                    <div className="bg-muted text-muted-foreground mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg">
+                      {icon}
+                    </div>
+                    <div>
+                      <p className="text-muted-foreground text-xs">{label}</p>
+                      {href ? (
+                        <a
+                          href={href}
+                          className="text-foreground hover:text-primary text-sm font-medium transition-colors"
+                        >
+                          {value}
+                        </a>
+                      ) : (
+                        <p className="text-foreground text-sm font-medium">{value}</p>
+                      )}
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-muted-foreground text-xs">{label}</p>
-                    {href ? (
-                      <a
-                        href={href}
-                        className="text-foreground hover:text-primary text-sm font-medium transition-colors"
-                      >
-                        {value}
-                      </a>
-                    ) : (
-                      <p className="text-foreground text-sm font-medium">{value}</p>
+                ))}
+              </div>
+
+              {/* Working hours */}
+              {contact.workingHours.length > 0 && (
+                <div>
+                  <div className="mb-2 flex items-center gap-2">
+                    <ClockIcon size={15} className="text-muted-foreground" />
+                    <p className="text-foreground text-sm font-semibold">
+                      {t.contact.workingHours}
+                    </p>
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    {contact.workingHours.map((row, i) => (
+                      <div key={i} className="flex items-center justify-between text-sm">
+                        <span className="text-muted-foreground">{localized(row.label, lang)}</span>
+                        <span className="text-foreground font-medium">
+                          {localized(row.hours, lang)}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Social links */}
+              {Object.values(contact.socials).some(Boolean) && (
+                <div>
+                  <p className="text-foreground mb-2 text-sm font-semibold">
+                    {t.contact.connectWithUs}
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {socialItems.map(
+                      ({ key, icon, label }) =>
+                        contact.socials[key] && (
+                          <a
+                            key={key}
+                            href={contact.socials[key]}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="border-border text-muted-foreground hover:text-foreground hover:border-primary flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs transition-colors"
+                          >
+                            {icon}
+                            {label}
+                          </a>
+                        ),
                     )}
                   </div>
                 </div>
-              ))}
+              )}
             </div>
-
-            {/* Working hours */}
-            {contact.workingHours.length > 0 && (
-              <div>
-                <div className="mb-2 flex items-center gap-2">
-                  <ClockIcon size={15} className="text-muted-foreground" />
-                  <p className="text-foreground text-sm font-semibold">
-                    {lang === "vi" ? "Giờ Làm Việc" : "Working Hours"}
-                  </p>
-                </div>
-                <div className="flex flex-col gap-1">
-                  {contact.workingHours.map((row, i) => (
-                    <div key={i} className="flex items-center justify-between text-sm">
-                      <span className="text-muted-foreground">{localized(row.label, lang)}</span>
-                      <span className="text-foreground font-medium">{localized(row.hours, lang)}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Social links */}
-            {Object.values(contact.socials).some(Boolean) && (
-              <div>
-                <p className="text-foreground mb-2 text-sm font-semibold">
-                  {lang === "vi" ? "Kết Nối Với Chúng Tôi" : "Connect With Us"}
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  {socialItems.map(
-                    ({ key, icon, label }) =>
-                      contact.socials[key] && (
-                        <a
-                          key={key}
-                          href={contact.socials[key]}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="border-border text-muted-foreground hover:text-foreground hover:border-primary flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs transition-colors"
-                        >
-                          {icon}
-                          {label}
-                        </a>
-                      ),
-                  )}
-                </div>
-              </div>
-            )}
-          </div>
           </Reveal>
 
           {/* ── Right: Form ────────────────────────────────── */}
           <Reveal direction="left" delay={120}>
-          <div className="border-border bg-background/40 rounded-2xl border p-6 backdrop-blur-sm">
-            <h2 className="text-foreground mb-5 text-lg font-bold">
-              {lang === "vi" ? "Gửi Tin Nhắn" : "Send a Message"}
-            </h2>
+            <div className="border-border bg-background/40 rounded-2xl border p-6 backdrop-blur-sm">
+              <h2 className="text-foreground mb-5 text-lg font-bold">{t.contact.formTitle}</h2>
 
-            {sent ? (
-              <div className="flex flex-col items-center gap-3 py-12 text-center">
-                <div className="bg-primary/10 text-primary flex h-14 w-14 items-center justify-center rounded-full">
-                  <PaperPlaneTiltIcon size={28} weight="duotone" />
-                </div>
-                <p className="text-foreground font-semibold">
-                  {lang === "vi" ? "Đã gửi thành công!" : "Message sent!"}
-                </p>
-                <p className="text-muted-foreground text-sm">
-                  {lang === "vi"
-                    ? "Chúng tôi sẽ phản hồi sớm nhất có thể."
-                    : "We'll get back to you as soon as possible."}
-                </p>
-                <Button
-                  variant="link"
-                  onClick={() => setSent(false)}
-                  className="text-primary mt-2 h-auto p-0 text-sm underline underline-offset-2"
-                >
-                  {lang === "vi" ? "Gửi tin nhắn khác" : "Send another message"}
-                </Button>
-              </div>
-            ) : (
-              <form onSubmit={handleSubmit} className="flex flex-col gap-4" noValidate>
-                <div>
-                  <Label className="text-foreground mb-1 text-xs">
-                    {lang === "vi" ? "Họ và Tên" : "Full Name"}{" "}
-                    <span className="text-primary">*</span>
-                  </Label>
-                  <Input
-                    type="text"
-                    required
-                    placeholder={lang === "vi" ? "Tên của bạn" : "Your name"}
-                    value={form.name}
-                    onChange={set("name")}
-                    className="border-border bg-background/60 text-foreground placeholder:text-muted-foreground focus:border-primary"
-                  />
-                </div>
-
-                <div>
-                  <Label className="text-foreground mb-1 text-xs">
-                    Email <span className="text-primary">*</span>
-                  </Label>
-                  <Input
-                    type="email"
-                    required
-                    placeholder="email@example.com"
-                    value={form.email}
-                    onChange={set("email")}
-                    className="border-border bg-background/60 text-foreground placeholder:text-muted-foreground focus:border-primary"
-                  />
-                </div>
-
-                <div>
-                  <Label className="text-foreground mb-1 text-xs">
-                    {lang === "vi" ? "Điện Thoại" : "Phone"}
-                  </Label>
-                  <Input
-                    type="tel"
-                    placeholder="+84 xxx xxx xxx"
-                    value={form.phone}
-                    onChange={set("phone")}
-                    className="border-border bg-background/60 text-foreground placeholder:text-muted-foreground focus:border-primary"
-                  />
-                </div>
-
-                <div>
-                  <Label className="text-foreground mb-1 text-xs">
-                    {lang === "vi" ? "Dịch Vụ Quan Tâm" : "Service of Interest"}
-                  </Label>
-                  <Select
-                    value={form.service}
-                    onValueChange={(v) => setForm((prev) => ({ ...prev, service: v }))}
+              {sent ? (
+                <div className="flex flex-col items-center gap-3 py-12 text-center">
+                  <div className="bg-primary/10 text-primary flex h-14 w-14 items-center justify-center rounded-full">
+                    <PaperPlaneTiltIcon size={28} weight="duotone" />
+                  </div>
+                  <p className="text-foreground font-semibold">{t.contact.sentTitle}</p>
+                  <p className="text-muted-foreground text-sm">{t.contact.sentDesc}</p>
+                  <Button
+                    variant="link"
+                    onClick={() => setSent(false)}
+                    className="text-primary mt-2 h-auto p-0 text-sm underline underline-offset-2"
                   >
-                    <SelectTrigger className="border-border bg-background/60 text-foreground focus:border-primary focus:ring-primary w-full rounded-lg border px-4 py-2.5 text-sm transition-colors focus:ring-1 focus:outline-none">
-                      <SelectValue
-                        placeholder={lang === "vi" ? "Chọn dịch vụ" : "Select a service"}
-                      />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {(services ?? []).map((s) => (
-                        <SelectItem key={s.id} value={s.id}>
-                          {s.title}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                    {t.contact.sendAnother}
+                  </Button>
                 </div>
+              ) : (
+                <form onSubmit={handleSubmit} className="flex flex-col gap-4" noValidate>
+                  <div>
+                    <Label className="text-foreground mb-1 text-xs">
+                      {t.contact.nameLabel} <span className="text-primary">*</span>
+                    </Label>
+                    <Input
+                      type="text"
+                      required
+                      placeholder={t.contact.namePlaceholder}
+                      value={form.name}
+                      onChange={set("name")}
+                      className="border-border bg-background/60 text-foreground placeholder:text-muted-foreground focus:border-primary"
+                    />
+                  </div>
 
-                <div>
-                  <Label className="text-foreground mb-1 text-xs">
-                    {lang === "vi" ? "Tin Nhắn" : "Message"} <span className="text-primary">*</span>
-                  </Label>
-                  <Textarea
-                    required
-                    rows={4}
-                    placeholder={
-                      lang === "vi"
-                        ? "Chia sẻ về dự án của bạn..."
-                        : "Tell us about your project..."
-                    }
-                    value={form.message}
-                    onChange={set("message")}
-                    className="border-border bg-background/60 text-foreground placeholder:text-muted-foreground focus:border-primary min-h-25"
-                  />
-                </div>
+                  <div>
+                    <Label className="text-foreground mb-1 text-xs">
+                      Email <span className="text-primary">*</span>
+                    </Label>
+                    <Input
+                      type="email"
+                      required
+                      placeholder="email@example.com"
+                      value={form.email}
+                      onChange={set("email")}
+                      className="border-border bg-background/60 text-foreground placeholder:text-muted-foreground focus:border-primary"
+                    />
+                  </div>
 
-                {submitError && <p className="text-destructive text-xs">{submitError}</p>}
+                  <div>
+                    <Label className="text-foreground mb-1 text-xs">
+                      {t.contact.phoneFieldLabel}
+                    </Label>
+                    <Input
+                      type="tel"
+                      placeholder="+84 xxx xxx xxx"
+                      value={form.phone}
+                      onChange={set("phone")}
+                      className="border-border bg-background/60 text-foreground placeholder:text-muted-foreground focus:border-primary"
+                    />
+                  </div>
 
-                <Button
-                  type="submit"
-                  disabled={submitting}
-                  className="bg-primary text-primary-foreground hover:bg-primary/90 flex h-auto items-center justify-center gap-2 rounded-lg px-6 py-3 text-sm font-semibold transition-colors disabled:opacity-60"
-                >
-                  {submitting ? (
-                    <SpinnerIcon size={16} className="animate-spin" />
-                  ) : (
-                    <PaperPlaneTiltIcon size={16} weight="fill" />
-                  )}
-                  {lang === "vi" ? "Gửi Tin Nhắn" : "Send Message"}
-                </Button>
-              </form>
-            )}
-          </div>
+                  <div>
+                    <Label className="text-foreground mb-1 text-xs">{t.contact.serviceLabel}</Label>
+                    <Select
+                      value={form.service}
+                      onValueChange={(v) => setForm((prev) => ({ ...prev, service: v }))}
+                    >
+                      <SelectTrigger className="border-border bg-background/60 text-foreground focus:border-primary focus:ring-primary w-full rounded-lg border px-4 py-2.5 text-sm transition-colors focus:ring-1 focus:outline-none">
+                        <SelectValue placeholder={t.contact.servicePlaceholder} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {(services ?? []).map((s) => (
+                          <SelectItem key={s.id} value={s.id}>
+                            {s.title}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div>
+                    <Label className="text-foreground mb-1 text-xs">
+                      {t.contact.messageLabel} <span className="text-primary">*</span>
+                    </Label>
+                    <Textarea
+                      required
+                      rows={4}
+                      placeholder={t.contact.messagePlaceholder}
+                      value={form.message}
+                      onChange={set("message")}
+                      className="border-border bg-background/60 text-foreground placeholder:text-muted-foreground focus:border-primary min-h-25"
+                    />
+                  </div>
+
+                  {submitError && <p className="text-destructive text-xs">{submitError}</p>}
+
+                  <Button
+                    type="submit"
+                    disabled={submitting}
+                    className="bg-primary text-primary-foreground hover:bg-primary/90 flex h-auto items-center justify-center gap-2 rounded-lg px-6 py-3 text-sm font-semibold transition-colors disabled:opacity-60"
+                  >
+                    {submitting ? (
+                      <SpinnerIcon size={16} className="animate-spin" />
+                    ) : (
+                      <PaperPlaneTiltIcon size={16} weight="fill" />
+                    )}
+                    {t.contact.submit}
+                  </Button>
+                </form>
+              )}
+            </div>
           </Reveal>
         </div>
       </div>

@@ -14,7 +14,7 @@ import {
   TrendUpIcon,
 } from "@phosphor-icons/react";
 import { apiFetch, resolveAssetUrl } from "#lib/api";
-import { useLanguage, type Lang } from "#i18n";
+import { useLanguage, useTranslation, type Lang } from "#i18n";
 import { localized } from "#lib/localized";
 import Reveal from "#components/Reveal";
 import Seo from "#components/Seo";
@@ -45,8 +45,8 @@ const ServicePage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { lang } = useLanguage();
+  const t = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
-  const vi = lang === "vi";
 
   const [service, setService] = useState<ApiService | null>(null);
   const [loading, setLoading] = useState(true);
@@ -130,36 +130,14 @@ const ServicePage: React.FC = () => {
     : null;
 
   // ── Static, localized supporting content (mirrors the 96hz shortform page) ──
-  const highlights = [
-    {
-      icon: <MicrophoneStageIcon size={22} weight="duotone" />,
-      title: vi ? "Talking Head" : "Talking Head Videos",
-      desc: vi
-        ? "Nội dung dẫn dắt bởi chuyên gia với motion graphics phức tạp."
-        : "Expert-led content with complex motion graphics.",
-    },
-    {
-      icon: <TrendUpIcon size={22} weight="duotone" />,
-      title: vi ? "Nội Dung Bắt Trend" : "Trend-Based Content",
-      desc: vi
-        ? "Meme, audio thịnh hành, các format viral trên mọi lĩnh vực."
-        : "Memes, trending audio, viral formats across industries.",
-    },
-    {
-      icon: <DeviceMobileIcon size={22} weight="duotone" />,
-      title: vi ? "Đa Nền Tảng" : "Multi-Platform",
-      desc: vi
-        ? "TikTok, YouTube Shorts, Facebook & Instagram Reels."
-        : "TikTok, YouTube Shorts, Facebook & Instagram Reels.",
-    },
+  const highlightIcons = [
+    <MicrophoneStageIcon size={22} weight="duotone" />,
+    <TrendUpIcon size={22} weight="duotone" />,
+    <DeviceMobileIcon size={22} weight="duotone" />,
   ];
+  const highlights = t.service.highlights.map((h, i) => ({ ...h, icon: highlightIcons[i] }));
 
-  const stats = [
-    { value: "1000+", label: vi ? "Video Đã Sản Xuất" : "Videos Produced" },
-    { value: "5+", label: vi ? "Năm Kinh Nghiệm" : "Years Experience" },
-    { value: "1B+", label: vi ? "Lượt Xem" : "Combined Views" },
-    { value: "4", label: vi ? "Nền Tảng" : "Platforms" },
-  ];
+  const stats = t.service.stats;
 
   return (
     <div className="min-h-screen">
@@ -185,7 +163,7 @@ const ServicePage: React.FC = () => {
             className={`border-primary/30 bg-primary/10 text-primary mb-6 inline-flex items-center gap-2 rounded-full border px-4 py-1.5 text-xs font-medium tracking-wide ${reveal("delay-0")}`}
           >
             <LightningIcon size={14} weight="fill" />
-            {vi ? "5+ Năm Kinh Nghiệm Đa Nền Tảng" : "5+ Years Multi-Platform Experience"}
+            {t.service.experienceBadge}
           </span>
 
           <h1
@@ -193,7 +171,7 @@ const ServicePage: React.FC = () => {
           >
             {title}
             <span className="from-primary via-chart-2 to-chart-4 mt-1 block bg-linear-to-r bg-clip-text text-transparent">
-              {vi ? "Sản Xuất Video" : "Video Production"}
+              {t.service.heroAccent}
             </span>
           </h1>
 
@@ -205,9 +183,7 @@ const ServicePage: React.FC = () => {
           <p
             className={`text-muted-foreground/70 mx-auto mt-3 max-w-2xl text-sm leading-relaxed ${reveal("delay-300")}`}
           >
-            {vi
-              ? "Talking head chuyên nghiệp, motion graphics phức tạp, meme giải trí và video bắt trend cho mọi ngành hàng và phong cách!"
-              : "Professional talking head content, complex motion graphics, entertainment memes, and trend-based videos for every industry and style!"}
+            {t.service.heroTagline}
           </p>
 
           <div
@@ -218,7 +194,7 @@ const ServicePage: React.FC = () => {
               className="bg-primary text-primary-foreground hover:bg-primary/90 h-auto gap-2 rounded-full px-6 py-3 text-sm font-semibold"
             >
               <RocketLaunchIcon size={18} weight="fill" />
-              {vi ? "Bắt Đầu Dự Án" : "Let's Talk"}
+              {t.service.startProject}
             </Button>
             <Button
               variant="outline"
@@ -227,7 +203,7 @@ const ServicePage: React.FC = () => {
             >
               <a href="#showcase">
                 <PlayIcon size={16} weight="fill" />
-                {vi ? "Xem Dự Án" : "View Work"}
+                {t.service.viewWork}
               </a>
             </Button>
           </div>
@@ -239,7 +215,7 @@ const ServicePage: React.FC = () => {
         <section className="mx-auto max-w-3xl px-6 py-16">
           <Reveal>
             <h2 className="text-foreground mb-10 text-center text-3xl font-bold">
-              {vi ? "Câu Hỏi Thường Gặp" : "Frequently Asked Questions"}
+              {t.service.faqTitle}
             </h2>
           </Reveal>
           <div className="flex flex-col gap-3">
@@ -278,13 +254,9 @@ const ServicePage: React.FC = () => {
           <Reveal>
             <div className="mb-10 text-center">
               <h2 className="text-foreground text-3xl font-bold">
-                {vi ? "Thư Viện Video" : "Video Showcase"}
+                {t.service.showcaseTitle}
               </h2>
-              <p className="text-muted-foreground mt-2 text-sm">
-                {vi
-                  ? "Một số dự án nội dung dạng ngắn của chúng tôi"
-                  : "Sample work from our shortform content production"}
-              </p>
+              <p className="text-muted-foreground mt-2 text-sm">{t.service.showcaseSubtitle}</p>
             </div>
           </Reveal>
 
@@ -312,7 +284,7 @@ const ServicePage: React.FC = () => {
                   {f.prominent && (
                     <span className="bg-primary text-primary-foreground absolute top-3 left-3 flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold">
                       <StarIcon size={11} weight="fill" />
-                      {vi ? "Nổi bật" : "Featured"}
+                      {t.service.featuredBadge}
                     </span>
                   )}
 
@@ -368,19 +340,15 @@ const ServicePage: React.FC = () => {
         <div className="relative mx-auto max-w-2xl">
           <Reveal>
             <h2 className="text-foreground text-3xl font-bold md:text-4xl">
-              {vi ? "Sẵn Sàng Tạo Nội Dung Viral?" : "Ready to Go Viral?"}
+              {t.service.ctaTitle}
             </h2>
-            <p className="text-muted-foreground mt-3 text-base">
-              {vi
-                ? "Cùng nhau xây dựng hệ thống nội dung dạng ngắn cho thương hiệu của bạn"
-                : "Let's build your short-form content empire together"}
-            </p>
+            <p className="text-muted-foreground mt-3 text-base">{t.service.ctaSubtitle}</p>
             <Button
               onClick={() => navigate("/contact")}
               className="bg-primary text-primary-foreground hover:bg-primary/90 mt-8 h-auto gap-2 rounded-full px-8 py-3 text-sm font-semibold"
             >
               <ChartLineUpIcon size={18} weight="bold" />
-              {vi ? "Bắt Đầu Ngay" : "Start Creating"}
+              {t.service.ctaButton}
               <ArrowRightIcon size={16} weight="bold" />
             </Button>
           </Reveal>
