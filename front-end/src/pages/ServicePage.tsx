@@ -2,8 +2,6 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import {
   ArrowLeftIcon,
-  ArrowRightIcon,
-  ChartLineUpIcon,
   DeviceMobileIcon,
   LightningIcon,
   MicrophoneStageIcon,
@@ -22,6 +20,7 @@ import { Button } from "#components/ui/button";
 import ProjectDetail from "#components/organisms/ProjectDetail";
 import type { ApiProject, ApiService } from "#lib/apiTypes";
 import type { ProjectDisplay } from "#hooks/useProjects";
+import CTASection from "#components/organisms/CTASection";
 
 const PROJECT_PARAM = "project";
 
@@ -126,7 +125,7 @@ const ServicePage: React.FC = () => {
 
   const selectedProjectId = searchParams.get(PROJECT_PARAM);
   const selectedProject = selectedProjectId
-    ? service.projects.find((f) => f.id === selectedProjectId) ?? null
+    ? (service.projects.find((f) => f.id === selectedProjectId) ?? null)
     : null;
 
   // ── Static, localized supporting content (mirrors the 96hz shortform page) ──
@@ -253,9 +252,7 @@ const ServicePage: React.FC = () => {
         <section id="showcase" className="mx-auto max-w-7xl scroll-mt-24 px-6 py-16">
           <Reveal>
             <div className="mb-10 text-center">
-              <h2 className="text-foreground text-3xl font-bold">
-                {t.service.showcaseTitle}
-              </h2>
+              <h2 className="text-foreground text-3xl font-bold">{t.service.showcaseTitle}</h2>
               <p className="text-muted-foreground mt-2 text-sm">{t.service.showcaseSubtitle}</p>
             </div>
           </Reveal>
@@ -335,25 +332,7 @@ const ServicePage: React.FC = () => {
       </section>
 
       {/* ── CTA ──────────────────────────────────────────────────────────── */}
-      <section className="relative overflow-hidden px-6 py-24 text-center">
-        <div className="from-primary/10 via-background to-background pointer-events-none absolute inset-0 bg-linear-to-t" />
-        <div className="relative mx-auto max-w-2xl">
-          <Reveal>
-            <h2 className="text-foreground text-3xl font-bold md:text-4xl">
-              {t.service.ctaTitle}
-            </h2>
-            <p className="text-muted-foreground mt-3 text-base">{t.service.ctaSubtitle}</p>
-            <Button
-              onClick={() => navigate("/contact")}
-              className="bg-primary text-primary-foreground hover:bg-primary/90 mt-8 h-auto gap-2 rounded-full px-8 py-3 text-sm font-semibold"
-            >
-              <ChartLineUpIcon size={18} weight="bold" />
-              {t.service.ctaButton}
-              <ArrowRightIcon size={16} weight="bold" />
-            </Button>
-          </Reveal>
-        </div>
-      </section>
+      <CTASection />
 
       {selectedProject && (
         <ProjectDetail project={toProjectDisplay(selectedProject, lang)} onClose={closeProject} />

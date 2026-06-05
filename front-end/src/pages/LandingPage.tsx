@@ -1,7 +1,9 @@
 import Seo from "#components/Seo";
+import CTASection from "#components/organisms/CTASection";
 import FeatureSection from "#components/organisms/FeatureSection";
 import HeroSection from "#components/organisms/HeroSection";
 import Preloader from "#components/organisms/Preloader";
+import ProductGallery from "#components/organisms/ProductGallery";
 import ServiceSection from "#components/organisms/ServiceSection";
 import StatsAndBrands from "#components/organisms/StatsAndBrands";
 import { useLandingProgress } from "#hooks/useLandingProgress";
@@ -28,7 +30,9 @@ const LandingPage = () => {
         <HeroSection />
         <ServiceSection />
         <FeatureSection />
+        <ProductGallery />
         <StatsAndBrands />
+        <CTASection />
       </div>
     </>
   );

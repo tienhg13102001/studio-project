@@ -19,6 +19,10 @@ const vi = {
   featured: {
     sectionTitle: "Nổi Bật",
   },
+  gallery: {
+    sectionTitle: "Hình Ảnh Sản Phẩm",
+    sectionSubtitle: "Tuyển tập hình ảnh hậu trường và sản phẩm từ các dự án của chúng tôi",
+  },
   project: {
     about: "Giới Thiệu",
     members: "Người Thực Hiện",

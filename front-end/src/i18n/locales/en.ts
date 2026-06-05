@@ -19,6 +19,10 @@ const en = {
   featured: {
     sectionTitle: "Featured",
   },
+  gallery: {
+    sectionTitle: "Product Images",
+    sectionSubtitle: "A collection of behind-the-scenes and product shots from our projects",
+  },
   project: {
     about: "About",
     members: "Team",

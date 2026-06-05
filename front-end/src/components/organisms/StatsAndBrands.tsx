@@ -70,7 +70,24 @@ const StatsAndBrands: React.FC = () => {
           {/* Row 1 — left */}
           <div className="border-border/50 bg-muted/30 overflow-hidden border-y">
             <MarqueeRow direction="left">
-              {[...row1, ...row1, ...row1].map((brand, i) => (
+              {[...row1, ...row1].map((brand, i) => (
+                <div
+                  key={`${brand.id}-${i}`}
+                  className="flex shrink-0 items-center justify-center px-4 py-6"
+                >
+                  <img
+                    src={resolveAssetUrl(brand.logo)}
+                    alt={brand.name}
+                    decoding="async"
+                    className="h-12 max-w-30 object-contain transition-all duration-300"
+                  />
+                </div>
+              ))}
+            </MarqueeRow>
+          </div>
+          <div className="border-border/50 bg-muted/30 overflow-hidden border-y mt-10">
+            <MarqueeRow direction="right">
+              {[...row1, ...row1].map((brand, i) => (
                 <div
                   key={`${brand.id}-${i}`}
                   className="flex shrink-0 items-center justify-center px-4 py-6"

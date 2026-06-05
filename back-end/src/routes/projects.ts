@@ -17,6 +17,24 @@ router.get("/", async (_req, res, next) => {
   }
 });
 
+/**
+ * GET /api/projects/photos
+ * Gathers the `photos` of every project that has any and flattens them into a
+ * single array — used by the product-image gallery section on the landing page.
+ */
+router.get("/photos", async (_req, res, next) => {
+  try {
+    const projects = await Project.find(
+      { photos: { $exists: true, $ne: [] } },
+      { photos: 1, _id: 0 },
+    ).lean();
+    const photos = projects.flatMap((p) => p.photos ?? []);
+    sendSuccess(res, photos);
+  } catch (e) {
+    next(e);
+  }
+});
+
 /** POST /api/projects */
 router.post("/", async (req, res, next) => {
   try {
