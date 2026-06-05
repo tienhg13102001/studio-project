@@ -79,7 +79,7 @@ const StatsAndBrands: React.FC = () => {
                     src={resolveAssetUrl(brand.logo)}
                     alt={brand.name}
                     decoding="async"
-                    className="h-12 max-w-30 object-contain opacity-50 grayscale transition-all duration-300 hover:opacity-100 hover:grayscale-0"
+                    className="h-12 max-w-30 object-contain transition-all duration-300"
                   />
                 </div>
               ))}
