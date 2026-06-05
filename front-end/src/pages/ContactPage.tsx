@@ -92,8 +92,6 @@ const ContactPage: React.FC = () => {
     [
       { key: "instagram", icon: <InstagramLogoIcon size={16} />, label: "Instagram" },
       { key: "facebook", icon: <FacebookLogoIcon size={16} />, label: "Facebook" },
-      { key: "youtube", icon: <YoutubeLogo size={16} />, label: "YouTube" },
-      { key: "tiktok", icon: <TiktokLogoIcon size={16} />, label: "TikTok" },
       { key: "zalo", icon: <LogoZalo className="h-4 w-4" />, label: "Zalo" },
     ];
 
