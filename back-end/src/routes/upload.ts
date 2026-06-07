@@ -148,16 +148,21 @@ const IMAGE_CHUNK_TMP_DIR = join(tmpdir(), "beez-image-chunks");
 // stream from disk, not buffer, to avoid OOM at 500MB
 const IMAGE_TOTAL_MAX_BYTES = 500 * 1024 * 1024; // tổng ảnh tối đa 500MB
 
-const ALLOWED_IMAGE_MIME = new Set([
-  "image/jpeg",
-  "image/png",
-  "image/webp",
-  "image/heic",
-  "image/heif",
-  "image/gif",
-  "image/avif",
-  "image/tiff",
-  "image/bmp",
+// Extensions we accept for chunked image uploads. Chunks arrive as opaque bytes
+// (a sliced Blob has no MIME), so the assembled file is validated by its
+// original filename's extension here + sharp decode at /image/complete.
+const ALLOWED_IMAGE_EXT = new Set([
+  ".jpg",
+  ".jpeg",
+  ".png",
+  ".webp",
+  ".heic",
+  ".heif",
+  ".gif",
+  ".avif",
+  ".tiff",
+  ".tif",
+  ".bmp",
 ]);
 
 // Safety headroom on top of what a job actually needs. The source file is
@@ -184,13 +189,12 @@ function requiredDiskBytes(size: number): number {
   return Math.ceil(size * 1.5) + DISK_FREE_BUFFER_BYTES;
 }
 
+// No fileFilter: chunks are raw byte slices with no usable MIME (a sliced Blob
+// arrives as application/octet-stream). The real type is checked at
+// /image/complete. Mirrors how video chunks are handled.
 const imageChunkUpload = multer({
   storage: multer.memoryStorage(),
   limits: { fileSize: 95 * 1024 * 1024 }, // 95MB safe-side multer limit
-  fileFilter: (_req, file, cb) => {
-    if (ALLOWED_IMAGE_MIME.has(file.mimetype)) cb(null, true);
-    else cb(new Error("415") as unknown as null, false);
-  },
 });
 
 /** uploadId do client tạo (uuid) — sanitize để tránh path traversal. */
@@ -354,15 +358,7 @@ router.post("/video/complete", async (req, res, next) => {
 router.post("/image/chunk", imageChunkUpload.single("chunk"), async (req, res, next) => {
   try {
     if (!req.file) {
-      if ((req as Request & { multerError?: Error }).multerError?.message === "415") {
-        sendError(res, "Unsupported image type", 415);
-        return;
-      }
       sendError(res, "Invalid chunk payload", 400);
-      return;
-    }
-    if (!ALLOWED_IMAGE_MIME.has(req.file.mimetype)) {
-      sendError(res, "Unsupported image type", 415);
       return;
     }
     const uploadId = safeUploadId(String(req.body.uploadId ?? ""));
@@ -401,6 +397,11 @@ router.post("/image/complete", async (req, res, next) => {
     size = (await stat(partPath)).size;
   } catch {
     sendError(res, "Upload not found or already processed", 404);
+    return;
+  }
+  if (!ALLOWED_IMAGE_EXT.has(extname(originalName).toLowerCase())) {
+    await unlink(partPath).catch(() => {});
+    sendError(res, "Unsupported image type (allowed: jpg, png, webp, gif, avif, heic, tiff, bmp)", 415);
     return;
   }
   if (size === 0 || size > IMAGE_TOTAL_MAX_BYTES) {
