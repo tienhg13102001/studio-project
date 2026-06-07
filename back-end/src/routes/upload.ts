@@ -160,16 +160,28 @@ const ALLOWED_IMAGE_MIME = new Set([
   "image/bmp",
 ]);
 
-const DISK_FREE_MIN_BYTES = 10 * 1024 * 1024 * 1024; // 10GB threshold
+// Safety headroom on top of what a job actually needs. The source file is
+// already on disk at this point; processing (transcode / sharp) writes ONE more
+// output of roughly the source size before atomically replacing it, so we need
+// room for ~source size again. We require source*1.5 + this buffer — scaled to
+// the real file instead of a flat threshold, which wrongly blocked small
+// uploads on small disks (e.g. a 1.6GB file on a 29GB disk).
+const DISK_FREE_BUFFER_BYTES = 1 * 1024 * 1024 * 1024; // 1GB
 
-async function checkDiskSpace(dir: string): Promise<boolean> {
+/** True if `dir`'s filesystem has at least `requiredBytes` available. */
+async function checkDiskSpace(dir: string, requiredBytes: number): Promise<boolean> {
   try {
     await mkdir(dir, { recursive: true });
     const s = await statfs(dir);
-    return s.bavail * s.bsize >= DISK_FREE_MIN_BYTES;
+    return s.bavail * s.bsize >= requiredBytes;
   } catch {
     return true; // statfs unavailable — don't block upload
   }
+}
+
+/** Disk space a processing job needs given the assembled source `size`. */
+function requiredDiskBytes(size: number): number {
+  return Math.ceil(size * 1.5) + DISK_FREE_BUFFER_BYTES;
 }
 
 const imageChunkUpload = multer({
@@ -329,7 +341,7 @@ router.post("/video/complete", async (req, res, next) => {
     sendError(res, "Invalid upload size", 413);
     return;
   }
-  if (!(await checkDiskSpace(VIDEO_DIR))) {
+  if (!(await checkDiskSpace(VIDEO_DIR, requiredDiskBytes(size)))) {
     await unlink(partPath).catch(() => {});
     sendError(res, "Server tạm thời không đủ dung lượng. Vui lòng thử lại sau.", 503);
     return;
@@ -396,7 +408,7 @@ router.post("/image/complete", async (req, res, next) => {
     sendError(res, "Invalid upload size", 413);
     return;
   }
-  if (!(await checkDiskSpace(IMAGE_DIR))) {
+  if (!(await checkDiskSpace(IMAGE_DIR, requiredDiskBytes(size)))) {
     await unlink(partPath).catch(() => {});
     sendError(res, "Server tạm thời không đủ dung lượng. Vui lòng thử lại sau.", 503);
     return;

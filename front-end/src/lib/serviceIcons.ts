@@ -26,7 +26,7 @@ import {
 } from "@phosphor-icons/react";
 
 /** Common icons resolved synchronously — kept small to keep the public bundle light. */
-const COMMON_ICONS: Record<string, Icon> = {
+export const COMMON_ICONS: Record<string, Icon> = {
   MicrophoneStageIcon,
   TrendUpIcon,
   DeviceMobileIcon,
@@ -75,14 +75,6 @@ const DEFAULT_ROTATION = ["MicrophoneStageIcon", "TrendUpIcon", "DeviceMobileIco
 export function canonicalIconName(key: string | undefined, index = 0): string {
   if (!key) return DEFAULT_ROTATION[index % DEFAULT_ROTATION.length];
   return LEGACY_ALIASES[key] ?? key;
-}
-
-/**
- * Resolve a stored icon to a component if it's one of the common ones. Returns
- * null when the caller must fall back to the lazily-loaded full registry.
- */
-export function resolveCommonIcon(key: string | undefined, index = 0): Icon | null {
-  return COMMON_ICONS[canonicalIconName(key, index)] ?? null;
 }
 
 /** Lazily load the full icon registry (heavy — code-split into its own chunk). */

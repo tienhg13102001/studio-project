@@ -38,13 +38,12 @@ export default function IconPicker({ value, onChange }: Props) {
     };
   }, []);
 
-  const names = registry?.ICON_NAMES ?? [];
   const q = query.trim().toLowerCase();
 
-  const allMatches = useMemo(
-    () => (q ? names.filter((n) => n.toLowerCase().includes(q)) : names),
-    [names, q],
-  );
+  const allMatches = useMemo(() => {
+    const names = registry?.ICON_NAMES ?? [];
+    return q ? names.filter((n) => n.toLowerCase().includes(q)) : names;
+  }, [registry, q]);
   const matches = allMatches.slice(0, MAX_RESULTS);
 
   // Canonicalise so legacy short keys (e.g. "film") still display correctly.

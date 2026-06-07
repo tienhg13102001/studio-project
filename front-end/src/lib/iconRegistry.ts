@@ -2,7 +2,14 @@
 // This module is intentionally HEAVY and is only ever loaded lazily (admin icon
 // picker, or the public page's fallback for an uncommon icon) so it never lands
 // in the critical bundle. See serviceIcons.ts for the light synchronous path.
-import * as PhosphorIcons from "@phosphor-icons/react";
+//
+// We deliberately import the SSR icon variant: the rest of the app uses the CSR
+// icons (the bare "@phosphor-icons/react" specifier), so importing SSR here
+// keeps this module's graph disjoint from the app's. That disjointness is what
+// lets the bundler keep the whole 1500-icon barrel in this dynamic-only chunk
+// instead of hoisting it into the shared entry chunk. The icons render
+// identically client-side.
+import * as PhosphorIcons from "@phosphor-icons/react/ssr";
 import type { Icon } from "@phosphor-icons/react";
 
 // The library exports each icon under its canonical "*Icon" name (e.g.

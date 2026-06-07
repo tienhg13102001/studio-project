@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { PencilSimpleIcon, PlusIcon, TrashIcon, XIcon } from "@phosphor-icons/react";
-import { apiFetch, apiPost, apiPut, apiDelete } from "#lib/api";
+import { apiFetch, apiPost, apiPut, apiDelete, invalidateApiCache } from "#lib/api";
 import { localized } from "#lib/localized";
 import type { ApiService } from "#lib/apiTypes";
 import type { ServiceDisplay } from "#hooks/useServices";
@@ -136,6 +136,9 @@ export default function ServicesTab({ data, raw, loading, onRefetch }: TabProps)
     setCreating(false);
     setError(null);
     try {
+      // Always pull the latest from the server — the detail response is cached
+      // in-memory, so without this a re-open after a save would show stale data.
+      invalidateApiCache(`/api/services/${displayId}`);
       const full = await apiFetch<ApiService>(`/api/services/${displayId}`);
       setEditing(full);
       setForm(toForm(full));
@@ -186,6 +189,8 @@ export default function ServicesTab({ data, raw, loading, onRefetch }: TabProps)
         await apiPost(`/api/services`, payload);
       } else {
         await apiPut(`/api/services/${editing!.id}`, payload);
+        // Drop the cached detail so the public page / a re-open reads fresh data.
+        invalidateApiCache(`/api/services/${editing!.id}`);
       }
       onRefetch();
       closeEdit();
@@ -202,6 +207,7 @@ export default function ServicesTab({ data, raw, loading, onRefetch }: TabProps)
     setDeleteError(null);
     try {
       await apiDelete(`/api/services/${confirmDelete.id}`);
+      invalidateApiCache(`/api/services/${confirmDelete.id}`);
       onRefetch();
       setConfirmDelete(null);
       closeEdit();
