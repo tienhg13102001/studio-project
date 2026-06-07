@@ -78,6 +78,7 @@ export type ApiService = {
   faqs:           ApiFaqItem[];
   highlights:     ApiHighlight[];
   stats:          ApiStat[];
+  order:          number; // sort order — lower shows first (gallery tabs, lists)
   projects:       ApiProject[]; // populated from Project collection
 };
 

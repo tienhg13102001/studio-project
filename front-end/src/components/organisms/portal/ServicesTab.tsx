@@ -63,6 +63,7 @@ type ServiceForm = {
   descVi: string;
   thumbnailImage: string;
   tag: string;
+  order: number;
   faqs: FaqForm[];
   highlights: HighlightForm[];
   stats: StatForm[];
@@ -76,6 +77,7 @@ function toForm(s: ApiService): ServiceForm {
     descVi: s.description.vi,
     thumbnailImage: s.thumbnailImage,
     tag: s.tag,
+    order: s.order ?? 0,
     faqs: (s.faqs ?? []).map((f) => ({
       questionEn: f.question.en,
       questionVi: f.question.vi,
@@ -105,6 +107,7 @@ function emptyServiceForm(): ServiceForm {
     descVi: "",
     thumbnailImage: "",
     tag: "",
+    order: 0,
     faqs: [],
     highlights: [],
     stats: [],
@@ -171,6 +174,7 @@ export default function ServicesTab({ data, raw, loading, onRefetch }: TabProps)
         description: { en: form.descEn, vi: form.descVi },
         thumbnailImage: form.thumbnailImage,
         tag: form.tag,
+        order: form.order,
         faqs: form.faqs.map((f) => ({
           question: { en: f.questionEn, vi: f.questionVi },
           answer: { en: f.answerEn, vi: f.answerVi },
@@ -414,9 +418,19 @@ export default function ServicesTab({ data, raw, loading, onRefetch }: TabProps)
                     onChange={(e) => set("descVi", e.target.value)}
                   />
                 </div>
-                <div>
-                  <Label>Tag (slug)</Label>
-                  <Input value={form.tag} onChange={(e) => set("tag", e.target.value)} />
+                <div className="grid grid-cols-[2fr_1fr] gap-3">
+                  <div>
+                    <Label>Tag (slug)</Label>
+                    <Input value={form.tag} onChange={(e) => set("tag", e.target.value)} />
+                  </div>
+                  <div>
+                    <Label>Order</Label>
+                    <Input
+                      type="number"
+                      value={form.order}
+                      onChange={(e) => set("order", Number(e.target.value) || 0)}
+                    />
+                  </div>
                 </div>
                 {/* Feature highlights */}
                 <div>

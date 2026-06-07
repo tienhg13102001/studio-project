@@ -29,30 +29,32 @@ router.get("/photos", async (_req, res, next) => {
       { photos: { $exists: true, $ne: [] } },
       { photos: 1, service: 1, _id: 0 },
     )
-      .populate<{ service: { tag: string; title: { en: string; vi: string } } | null }>(
-        "service",
-        "tag title",
-      )
+      .populate<{
+        service: { tag: string; title: { en: string; vi: string }; order?: number } | null;
+      }>("service", "tag title order")
       .lean();
 
-    // Group every project's photos under its service tag, preserving first-seen
-    // order so the tabs stay stable.
+    // Group every project's photos under its service tag.
     const groups = new Map<
       string,
-      { tag: string; title: { en: string; vi: string }; photos: string[] }
+      { tag: string; title: { en: string; vi: string }; order: number; photos: string[] }
     >();
     for (const p of projects) {
       const svc = p.service;
       if (!svc) continue; // skip projects whose service was deleted
       let group = groups.get(svc.tag);
       if (!group) {
-        group = { tag: svc.tag, title: svc.title, photos: [] };
+        group = { tag: svc.tag, title: svc.title, order: svc.order ?? 0, photos: [] };
         groups.set(svc.tag, group);
       }
       group.photos.push(...(p.photos ?? []));
     }
 
-    sendSuccess(res, [...groups.values()]);
+    // Order tabs by the service's `order` (lower first); tie-break by tag name.
+    const ordered = [...groups.values()].sort(
+      (a, b) => a.order - b.order || a.tag.localeCompare(b.tag),
+    );
+    sendSuccess(res, ordered);
   } catch (e) {
     next(e);
   }

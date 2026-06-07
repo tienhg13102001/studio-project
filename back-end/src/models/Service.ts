@@ -54,6 +54,7 @@ export interface IService extends Document {
   faqs:           IFaqItem[];
   highlights:     IHighlightItem[];
   stats:          IStatItem[];
+  order:          number; // sort order — lower shows first (gallery tabs, lists)
   projects:       PopulatedDoc<IProject>[];
 }
 
@@ -66,6 +67,7 @@ const serviceSchema = new Schema<IService>(
     faqs:           { type: [faqItemSchema], default: [] },
     highlights:     { type: [highlightItemSchema], default: [] },
     stats:          { type: [statItemSchema], default: [] },
+    order:          { type: Number, default: 0 },
     projects:       [{ type: Schema.Types.ObjectId, ref: "Project" }],
   },
   {
