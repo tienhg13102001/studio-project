@@ -8,7 +8,6 @@ import {
   SquaresFourIcon,
   StarIcon,
   UsersThreeIcon,
-  VideoIcon,
   XIcon,
 } from "@phosphor-icons/react";
 import { Link, useLocation } from "react-router-dom";
@@ -24,7 +23,6 @@ type NavItem = {
 const NAV: NavItem[] = [
   { icon: <SquaresFourIcon size={18} weight="duotone" />, label: "Overview",     to: "/portal/dashboard" },
   { icon: <UsersThreeIcon  size={18} weight="duotone" />, label: "Team Members", to: "/portal/team" },
-  { icon: <VideoIcon       size={18} weight="duotone" />, label: "Team Page",    to: "/portal/team-content" },
   { icon: <StarIcon        size={18} weight="duotone" />, label: "Brands",       to: "/portal/brands" },
   { icon: <BriefcaseIcon   size={18} weight="duotone" />, label: "Services",     to: "/portal/services" },
   { icon: <ImageSquareIcon size={18} weight="duotone" />, label: "Projects",     to: "/portal/projects" },
