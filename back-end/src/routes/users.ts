@@ -68,6 +68,63 @@ router.put("/:id", async (req, res, next) => {
   }
 });
 
+/** PUT /api/users/:id/password — change a user's password
+ *  Rules:
+ *   - A user may change their own password — must supply the correct currentPassword.
+ *   - An admin may change ANY other user's password — no currentPassword needed.
+ *  The actor's admin status is verified server-side (actorRole from the client is
+ *  never trusted) to stay consistent regardless of what the client sends.
+ */
+router.put("/:id/password", async (req, res, next) => {
+  try {
+    const { newPassword, currentPassword, actorId } = req.body as {
+      newPassword?: string;
+      currentPassword?: string;
+      actorId?: string;
+    };
+
+    if (!newPassword || newPassword.length < 6) {
+      sendError(res, "New password must be at least 6 characters", 400);
+      return;
+    }
+    if (!actorId) {
+      sendError(res, "Not authenticated", 401);
+      return;
+    }
+
+    const isSelf = actorId === req.params.id;
+
+    // Changing someone else's password is admin-only — verified against the DB.
+    if (!isSelf) {
+      const actor = await User.findById(actorId);
+      if (!actor || actor.accountRole !== "admin") {
+        sendError(res, "You can only change your own password", 403);
+        return;
+      }
+    }
+
+    const user = await User.findById(req.params.id).select("+password");
+    if (!user) { sendError(res, "User not found", 404); return; }
+
+    // Self-service change always requires confirming the current password.
+    if (isSelf) {
+      if (!currentPassword) {
+        sendError(res, "Current password is required", 400);
+        return;
+      }
+      const valid = await user.comparePassword(currentPassword);
+      if (!valid) { sendError(res, "Current password is incorrect", 401); return; }
+    }
+
+    user.password = newPassword; // pre-save hook re-hashes
+    await user.save();
+
+    sendSuccess(res, { id: user.id });
+  } catch (e) {
+    next(e);
+  }
+});
+
 /** DELETE /api/users/:id — remove user */
 router.delete("/:id", async (req, res, next) => {
   try {

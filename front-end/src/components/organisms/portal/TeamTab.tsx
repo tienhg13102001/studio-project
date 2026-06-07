@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { PencilSimpleIcon, TrashIcon, PlusIcon } from "@phosphor-icons/react";
+import { PencilSimpleIcon, TrashIcon, PlusIcon, KeyIcon } from "@phosphor-icons/react";
 import { apiPut, apiPost, apiDelete, resolveAssetUrl } from "#lib/api";
 import type { ApiUser } from "#lib/apiTypes";
-import { ROLE_COLOR } from "#lib/portal.types";
+import { ROLE_COLOR, type PortalUser } from "#lib/portal.types";
 import { TableSkeleton } from "#components/ui/portal/TableSkeleton";
 import EditModal from "#components/ui/portal/EditModal";
 import ImageUpload from "#components/ui/portal/ImageUpload";
@@ -27,9 +27,11 @@ type TableProps = {
   preview?:  boolean;
   onEdit?:   (u: ApiUser) => void;
   onDelete?: (u: ApiUser) => void;
+  onChangePassword?:  (u: ApiUser) => void;
+  canChangePassword?: (u: ApiUser) => boolean;
 };
 
-export function TeamTable({ data, loading, preview, onEdit, onDelete }: TableProps) {
+export function TeamTable({ data, loading, preview, onEdit, onDelete, onChangePassword, canChangePassword }: TableProps) {
   const rows = preview ? (data ?? []).slice(0, 4) : (data ?? []);
 
   if (loading) return <TableSkeleton cols={onEdit ? 6 : 5} rows={4} />;
@@ -96,6 +98,17 @@ export function TeamTable({ data, loading, preview, onEdit, onDelete }: TablePro
                       <PencilSimpleIcon size={11} />
                       Edit
                     </Button>
+                    {onChangePassword && (!canChangePassword || canChangePassword(u)) && (
+                      <Button
+                        variant="ghost"
+                        size="icon-xs"
+                        onClick={() => onChangePassword(u)}
+                        className="border border-foreground/10 text-foreground/50 hover:border-primary/40 hover:text-primary"
+                        title="Change password"
+                      >
+                        <KeyIcon size={11} />
+                      </Button>
+                    )}
                     {onDelete && (
                       <Button
                         variant="ghost"
@@ -120,10 +133,20 @@ export function TeamTable({ data, loading, preview, onEdit, onDelete }: TablePro
 
 // ─── Edit form ───────────────────────────────────────────────────────────────
 
+// Reads the currently logged-in portal user (same store PortalLayout uses).
+function readCurrentUser(): PortalUser | null {
+  try {
+    const raw = localStorage.getItem("portal_user");
+    return raw ? (JSON.parse(raw) as PortalUser) : null;
+  } catch {
+    return null;
+  }
+}
+
 type TeamForm = {
   name:        string;
   email:       string;
-  password:    string;
+  password:    string; // create flow only
   roleEn:      string;
   roleVi:      string;
   quoteEn:     string;
@@ -165,11 +188,22 @@ function emptyForm(): TeamForm {
   };
 }
 
+// ─── Password-change form ─────────────────────────────────────────────────────
+
+type PwForm = {
+  currentPassword: string;
+  newPassword:     string;
+  confirmPassword: string;
+};
+
+const emptyPwForm = (): PwForm => ({ currentPassword: "", newPassword: "", confirmPassword: "" });
+
 // ─── Tab ─────────────────────────────────────────────────────────────────────
 
 type TabProps = { data: ApiUser[] | null; loading: boolean; onRefetch: () => void };
 
 export default function TeamTab({ data, loading, onRefetch }: TabProps) {
+  const [currentUser] = useState<PortalUser | null>(() => readCurrentUser());
   const [editing, setEditing] = useState<ApiUser | null>(null);
   const [creating, setCreating] = useState(false);
   const [form, setForm]       = useState<TeamForm | null>(null);
@@ -179,9 +213,54 @@ export default function TeamTab({ data, loading, onRefetch }: TabProps) {
   const [error, setError]     = useState<string | null>(null);
   const [deleteError, setDeleteError] = useState<string | null>(null);
 
+  // ── Password-change modal state ──
+  const [pwUser, setPwUser]   = useState<ApiUser | null>(null);
+  const [pwForm, setPwForm]   = useState<PwForm>(emptyPwForm);
+  const [pwSaving, setPwSaving] = useState(false);
+  const [pwError, setPwError] = useState<string | null>(null);
+
+  const isAdmin = currentUser?.accountRole === "admin";
+  // Admin can change anyone's password; a normal user only their own.
+  const allowPasswordChange = (u: ApiUser) => isAdmin || currentUser?.id === u.id;
+  const pwIsSelf = !!pwUser && currentUser?.id === pwUser.id;
+
   const openEdit   = (u: ApiUser) => { setEditing(u); setCreating(false); setForm(toForm(u)); setError(null); };
   const openCreate = () => { setCreating(true); setEditing(null); setForm(emptyForm()); setError(null); };
   const closeEdit  = () => { setEditing(null); setCreating(false); setForm(null); };
+
+  const openPassword  = (u: ApiUser) => { setPwUser(u); setPwForm(emptyPwForm()); setPwError(null); };
+  const closePassword = () => { setPwUser(null); setPwForm(emptyPwForm()); setPwError(null); };
+  const setPw = (k: keyof PwForm, v: string) => setPwForm((f) => ({ ...f, [k]: v }));
+
+  const handleChangePassword = async () => {
+    if (!pwUser) return;
+    if (pwForm.newPassword.length < 6) {
+      setPwError("New password must be at least 6 characters.");
+      return;
+    }
+    if (pwForm.newPassword !== pwForm.confirmPassword) {
+      setPwError("New password and confirmation do not match.");
+      return;
+    }
+    if (pwIsSelf && !pwForm.currentPassword) {
+      setPwError("Please enter your current password.");
+      return;
+    }
+    setPwSaving(true);
+    setPwError(null);
+    try {
+      await apiPut(`/api/users/${pwUser.id}/password`, {
+        actorId:         currentUser?.id,
+        newPassword:     pwForm.newPassword,
+        currentPassword: pwIsSelf ? pwForm.currentPassword : undefined,
+      });
+      closePassword();
+    } catch (e) {
+      setPwError((e as Error).message);
+    } finally {
+      setPwSaving(false);
+    }
+  };
 
   const handleSave = async () => {
     if (!form) return;
@@ -193,6 +272,7 @@ export default function TeamTab({ data, loading, onRefetch }: TabProps) {
     } else if (!editing) {
       return;
     }
+
     setSaving(true);
     setError(null);
     try {
@@ -255,6 +335,8 @@ export default function TeamTab({ data, loading, onRefetch }: TabProps) {
         loading={loading}
         onEdit={openEdit}
         onDelete={(u) => { setConfirmDelete(u); setDeleteError(null); }}
+        onChangePassword={openPassword}
+        canChangePassword={allowPasswordChange}
       />
 
       {/* ── Edit Modal ── */}
@@ -366,6 +448,51 @@ export default function TeamTab({ data, loading, onRefetch }: TabProps) {
 
             {error && <p className="text-xs text-red-400">{error}</p>}
           </>
+        )}
+      </EditModal>
+
+      {/* ── Change Password Modal ── */}
+      <EditModal
+        title={pwIsSelf ? "Change your password" : `Change password — ${pwUser?.name ?? ""}`}
+        isOpen={!!pwUser}
+        onClose={closePassword}
+        onSubmit={handleChangePassword}
+        saving={pwSaving}
+      >
+        {pwUser && (
+          <div className="flex max-w-md flex-col gap-4">
+            {pwIsSelf && (
+              <div>
+                <Label>Current password</Label>
+                <Input
+                  type="password"
+                  autoComplete="current-password"
+                  value={pwForm.currentPassword}
+                  onChange={(e) => setPw("currentPassword", e.target.value)}
+                />
+              </div>
+            )}
+            <div>
+              <Label>New password</Label>
+              <Input
+                type="password"
+                autoComplete="new-password"
+                placeholder="At least 6 characters"
+                value={pwForm.newPassword}
+                onChange={(e) => setPw("newPassword", e.target.value)}
+              />
+            </div>
+            <div>
+              <Label>Confirm new password</Label>
+              <Input
+                type="password"
+                autoComplete="new-password"
+                value={pwForm.confirmPassword}
+                onChange={(e) => setPw("confirmPassword", e.target.value)}
+              />
+            </div>
+            {pwError && <p className="text-xs text-red-400">{pwError}</p>}
+          </div>
         )}
       </EditModal>
 
