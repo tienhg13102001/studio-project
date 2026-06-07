@@ -81,6 +81,13 @@ export type ApiService = {
   projects:       ApiProject[]; // populated from Project collection
 };
 
+/** A tag-grouped set of product photos — powers the landing-page gallery. */
+export type ApiPhotoGroup = {
+  tag:    string;
+  title:  LocalizedString;
+  photos: string[];
+};
+
 export type ApiProjectsContent = {
   verticalCards:   ApiProject[];
   horizontalCards: ApiProject[];

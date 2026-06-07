@@ -1,13 +1,17 @@
 import { apiFetch, resolveAssetUrl } from "#lib/api";
+import type { ApiPhotoGroup } from "#lib/apiTypes";
 import { useEffect, useRef, useState } from "react";
 
+/** A tag-grouped set of product photos with display-ready (resolved) URLs. */
+export type PhotoGroup = ApiPhotoGroup;
+
 /**
- * Fetches the flattened list of product photos across every project
- * (GET /api/projects/photos) and resolves each stored path into a
- * displayable URL. Powers the product-image gallery on the landing page.
+ * Fetches product photos grouped by service tag (GET /api/projects/photos) and
+ * resolves each stored path into a displayable URL. Powers the tabbed bento
+ * gallery on the landing page.
  */
 export function useProjectPhotos() {
-  const [photos, setPhotos] = useState<string[] | null>(null);
+  const [groups, setGroups] = useState<PhotoGroup[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const fetched = useRef(false);
@@ -15,11 +19,17 @@ export function useProjectPhotos() {
   useEffect(() => {
     if (fetched.current) return;
     fetched.current = true;
-    apiFetch<string[]>("/api/projects/photos")
-      .then((paths) => setPhotos(paths.map((p) => resolveAssetUrl(p))))
+    apiFetch<ApiPhotoGroup[]>("/api/projects/photos")
+      .then((gs) =>
+        setGroups(
+          gs
+            .map((g) => ({ ...g, photos: g.photos.map((p) => resolveAssetUrl(p)) }))
+            .filter((g) => g.photos.length > 0),
+        ),
+      )
       .catch((err: Error) => setError(err.message))
       .finally(() => setLoading(false));
   }, []);
 
-  return { photos, loading, error };
+  return { groups, loading, error };
 }

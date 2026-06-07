@@ -19,17 +19,40 @@ router.get("/", async (_req, res, next) => {
 
 /**
  * GET /api/projects/photos
- * Gathers the `photos` of every project that has any and flattens them into a
- * single array — used by the product-image gallery section on the landing page.
+ * Gathers the `photos` of every project that has any and groups them by the
+ * project's service tag — powers the tabbed bento gallery on the landing page.
+ * Returns: [{ tag, title, photos: string[] }]
  */
 router.get("/photos", async (_req, res, next) => {
   try {
     const projects = await Project.find(
       { photos: { $exists: true, $ne: [] } },
-      { photos: 1, _id: 0 },
-    ).lean();
-    const photos = projects.flatMap((p) => p.photos ?? []);
-    sendSuccess(res, photos);
+      { photos: 1, service: 1, _id: 0 },
+    )
+      .populate<{ service: { tag: string; title: { en: string; vi: string } } | null }>(
+        "service",
+        "tag title",
+      )
+      .lean();
+
+    // Group every project's photos under its service tag, preserving first-seen
+    // order so the tabs stay stable.
+    const groups = new Map<
+      string,
+      { tag: string; title: { en: string; vi: string }; photos: string[] }
+    >();
+    for (const p of projects) {
+      const svc = p.service;
+      if (!svc) continue; // skip projects whose service was deleted
+      let group = groups.get(svc.tag);
+      if (!group) {
+        group = { tag: svc.tag, title: svc.title, photos: [] };
+        groups.set(svc.tag, group);
+      }
+      group.photos.push(...(p.photos ?? []));
+    }
+
+    sendSuccess(res, [...groups.values()]);
   } catch (e) {
     next(e);
   }
