@@ -25,11 +25,13 @@ const EMPTY_FORM: Form = {
 };
 
 function toForm(raw: ApiTeamContent): Form {
+  // A freshly-created doc may have only { pageType, id } — every content field
+  // can be absent, so default each one rather than reading `.en` off undefined.
   return {
-    aboutBadge:       { en: raw.aboutBadge.en,       vi: raw.aboutBadge.vi },
-    aboutHeading:     { en: raw.aboutHeading.en,     vi: raw.aboutHeading.vi },
-    aboutDescription: { en: raw.aboutDescription.en, vi: raw.aboutDescription.vi },
-    aboutImage:       raw.aboutImage,
+    aboutBadge:       { en: raw.aboutBadge?.en ?? "",       vi: raw.aboutBadge?.vi ?? "" },
+    aboutHeading:     { en: raw.aboutHeading?.en ?? "",     vi: raw.aboutHeading?.vi ?? "" },
+    aboutDescription: { en: raw.aboutDescription?.en ?? "", vi: raw.aboutDescription?.vi ?? "" },
+    aboutImage:       raw.aboutImage ?? "",
   };
 }
 

@@ -59,10 +59,10 @@ const EMPTY_FORM: Form = {
 
 function toForm(raw: ApiLanding): Form {
   return {
-    heroLine1: { en: raw.heroLine1.en, vi: raw.heroLine1.vi },
-    heroLine2: { en: raw.heroLine2.en, vi: raw.heroLine2.vi },
-    subheading: { en: raw.subheading.en, vi: raw.subheading.vi },
-    videoBackground: raw.videoBackground,
+    heroLine1: { en: raw.heroLine1?.en ?? "", vi: raw.heroLine1?.vi ?? "" },
+    heroLine2: { en: raw.heroLine2?.en ?? "", vi: raw.heroLine2?.vi ?? "" },
+    subheading: { en: raw.subheading?.en ?? "", vi: raw.subheading?.vi ?? "" },
+    videoBackground: raw.videoBackground ?? "",
     phone: raw.phone ?? "",
     email: raw.email ?? "",
     address: { en: raw.address?.en ?? "", vi: raw.address?.vi ?? "" },

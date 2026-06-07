@@ -143,8 +143,9 @@ export type ApiBrand = {
 };
 
 export type ApiTeamContent = {
-  aboutBadge:       LocalizedString;
-  aboutHeading:     LocalizedString;
-  aboutDescription: LocalizedString;
-  aboutImage:       string;
+  // All optional — a freshly-created doc may contain only { pageType, id }.
+  aboutBadge?:       LocalizedString;
+  aboutHeading?:     LocalizedString;
+  aboutDescription?: LocalizedString;
+  aboutImage?:       string;
 };
