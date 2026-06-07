@@ -9,7 +9,7 @@ import { useEffect, useMemo, useRef, useState, type CSSProperties, type FC } fro
 
 // Số ảnh tối đa mỗi nhóm — giữ khối gallery gọn trong khung, không dàn quá dài.
 const MAX_PER_GROUP = 12;
-const GAP = 12; // khoảng cách giữa các ảnh (px)
+const GAP = 6; // khoảng cách giữa các ảnh (px) — nhỏ cho thoáng nhẹ
 // Tỉ lệ mặc định (w/h) khi chưa đo được ảnh — đa số ảnh là chân dung nên giả định dọc.
 const DEFAULT_RATIO = 0.72;
 
@@ -63,7 +63,7 @@ const GalleryImage: FC<{
       onClick={() => onOpen(src)}
       aria-label={`Xem ảnh ${index + 1}`}
       style={style}
-      className="group border-border bg-muted focus-visible:ring-primary relative block shrink-0 overflow-hidden rounded-2xl border focus-visible:ring-2 focus-visible:outline-none"
+      className="group border-border/40 bg-muted focus-visible:ring-primary relative block shrink-0 overflow-hidden rounded-lg border focus-visible:ring-2 focus-visible:outline-none"
     >
       {!loaded && <div className="bg-foreground/8 absolute inset-0 animate-pulse" />}
       <img
@@ -144,11 +144,11 @@ const ProductGallery: FC = () => {
       <section className="overflow-hidden py-16 font-sans md:py-24">
         <div className="mx-auto w-full max-w-7xl px-6">
           <SectionHeader title={t.gallery.sectionTitle} subtitle={t.gallery.sectionSubtitle} />
-          <div className="mx-auto flex max-w-3xl flex-wrap gap-3">
+          <div className="mx-auto flex max-w-3xl flex-wrap gap-1.5">
             {Array.from({ length: 6 }).map((_, i) => (
               <div
                 key={i}
-                className="bg-foreground/8 h-60 flex-1 animate-pulse rounded-2xl"
+                className="bg-foreground/8 h-60 flex-1 animate-pulse rounded-lg"
                 style={{ minWidth: i % 2 ? 180 : 220 }}
               />
             ))}
