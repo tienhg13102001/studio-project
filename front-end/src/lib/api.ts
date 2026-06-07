@@ -29,10 +29,13 @@ apiClient.interceptors.response.use(
 const API_BASE = import.meta.env.VITE_API_URL ?? "";
 
 // Giới hạn dung lượng video upload. File được cắt thành mảnh <100MB (chunked)
-// để vượt giới hạn body 100MB của Cloudflare → cho phép tới 500MB.
-const VIDEO_MAX_MB = 500;
+// để vượt giới hạn body 100MB của Cloudflare → cho phép tới 5GB.
+export const VIDEO_MAX_MB = 5120;
 // Kích thước mỗi mảnh (< 100MB Cloudflare). 50MB cân bằng tốc độ/độ an toàn.
 const VIDEO_CHUNK_SIZE = 50 * 1024 * 1024;
+
+export const IMAGE_MAX_MB = 500;
+const IMAGE_CHUNK_SIZE = 50 * 1024 * 1024;
 
 
 /**
@@ -136,8 +139,34 @@ export async function uploadImage(
   return res.data.data;
 }
 
+async function postChunkWithRetry(
+  url: string,
+  form: FormData,
+  signal: AbortSignal | undefined,
+  onUploadProgress: (e: { loaded?: number }) => void,
+): Promise<void> {
+  const delays = [500, 1000, 2000];
+  for (let attempt = 0; attempt <= 3; attempt++) {
+    try {
+      const res = await apiClient.post<{ success: boolean; error?: string }>(url, form, {
+        headers: { "Content-Type": "multipart/form-data" },
+        timeout: 15 * 60 * 1000,
+        maxContentLength: Infinity,
+        maxBodyLength: Infinity,
+        signal,
+        onUploadProgress,
+      });
+      if (!res.data.success) throw new Error(res.data.error ?? "Chunk upload failed");
+      return;
+    } catch (e) {
+      if (attempt === 3) throw e;
+      await new Promise((r) => setTimeout(r, delays[attempt]));
+    }
+  }
+}
+
 /**
- * Upload a video (≤ 500MB). Cắt file thành mảnh < 100MB và upload từng mảnh qua
+ * Upload a video (≤ 5GB). Cắt file thành mảnh < 100MB và upload từng mảnh qua
  * Cloudflare (lách giới hạn body 100MB), server ghép lại rồi transcode.
  * Allowed: mp4, webm, mov, m4v. Trả về { url, path, status: "processing" }.
  */
@@ -166,29 +195,17 @@ export async function uploadVideo(
     form.append("totalChunks", String(totalChunks));
     form.append("chunk", blob);
 
-    const chunkRes = await apiClient.post<{ success: boolean; error?: string }>(
+    const bytesAtChunkStart = uploadedBytes;
+    await postChunkWithRetry(
       "/api/upload/video/chunk",
       form,
-      {
-        headers: { "Content-Type": "multipart/form-data" },
-        timeout: 15 * 60 * 1000,
-        maxContentLength: Infinity,
-        maxBodyLength: Infinity,
-        signal,
-        onUploadProgress: (e) => {
-          if (!onProgress) return;
-          const loaded = uploadedBytes + (e.loaded ?? 0);
-          onProgress({
-            loaded,
-            total: file.size,
-            percent: Math.round((loaded / file.size) * 100),
-          });
-        },
+      signal,
+      (e) => {
+        if (!onProgress) return;
+        const loaded = bytesAtChunkStart + (e.loaded ?? 0);
+        onProgress({ loaded, total: file.size, percent: Math.round((loaded / file.size) * 100) });
       },
     );
-    if (!chunkRes.data.success) {
-      throw new Error(chunkRes.data.error ?? "Chunk upload failed");
-    }
     uploadedBytes += blob.size;
     onProgress?.({
       loaded: uploadedBytes,
@@ -210,6 +227,72 @@ export async function uploadVideo(
 
   if (!res.data.success || !res.data.data) {
     throw new Error(res.data.error ?? "Video upload failed");
+  }
+  return res.data.data;
+}
+
+/**
+ * Upload an image (≤ 500MB) via chunked upload. Cắt file thành mảnh < 100MB và
+ * upload từng mảnh, server ghép lại rồi resize + convert WebP.
+ * Trả về { url, path }.
+ */
+export async function uploadImageChunked(
+  file: File,
+  onProgress?: (p: UploadProgress) => void,
+  signal?: AbortSignal,
+): Promise<{ url: string; path: string }> {
+  const MAX = IMAGE_MAX_MB * 1024 * 1024;
+  if (file.size > MAX) {
+    throw new Error(
+      `Ảnh quá lớn (${(file.size / 1024 / 1024).toFixed(0)}MB). Tối đa ${IMAGE_MAX_MB}MB.`,
+    );
+  }
+
+  const uploadId = crypto.randomUUID();
+  const totalChunks = Math.max(1, Math.ceil(file.size / IMAGE_CHUNK_SIZE));
+  let uploadedBytes = 0;
+
+  for (let i = 0; i < totalChunks; i++) {
+    const start = i * IMAGE_CHUNK_SIZE;
+    const blob = file.slice(start, Math.min(start + IMAGE_CHUNK_SIZE, file.size));
+    const form = new FormData();
+    form.append("uploadId", uploadId);
+    form.append("chunkIndex", String(i));
+    form.append("totalChunks", String(totalChunks));
+    form.append("originalName", file.name);
+    form.append("chunk", blob);
+
+    const bytesAtChunkStart = uploadedBytes;
+    await postChunkWithRetry(
+      "/api/upload/image/chunk",
+      form,
+      signal,
+      (e) => {
+        if (!onProgress) return;
+        const loaded = bytesAtChunkStart + (e.loaded ?? 0);
+        onProgress({ loaded, total: file.size, percent: Math.round((loaded / file.size) * 100) });
+      },
+    );
+    uploadedBytes += blob.size;
+    onProgress?.({
+      loaded: uploadedBytes,
+      total: file.size,
+      percent: Math.round((uploadedBytes / file.size) * 100),
+    });
+  }
+
+  const res = await apiClient.post<{
+    success: boolean;
+    data?: { url: string; path: string };
+    error?: string;
+  }>(
+    "/api/upload/image/complete",
+    { uploadId, originalName: file.name },
+    { timeout: 5 * 60 * 1000, signal },
+  );
+
+  if (!res.data.success || !res.data.data) {
+    throw new Error(res.data.error ?? "Image upload failed");
   }
   return res.data.data;
 }

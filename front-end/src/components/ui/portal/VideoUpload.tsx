@@ -1,5 +1,5 @@
 import { Input } from "#components/ui/input";
-import { resolveAssetUrl, uploadVideo, waitForVideoReady } from "#lib/api";
+import { VIDEO_MAX_MB, resolveAssetUrl, uploadVideo, waitForVideoReady } from "#lib/api";
 import { FilmReelIcon, UploadSimpleIcon } from "@phosphor-icons/react";
 import { useRef, useState } from "react";
 
@@ -16,6 +16,10 @@ export default function VideoUpload({ value, onChange }: VideoUploadProps) {
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleFile = async (file: File) => {
+    if (file.size > VIDEO_MAX_MB * 1024 * 1024) {
+      setUploadError(`File quá lớn, tối đa ${VIDEO_MAX_MB} MB`);
+      return;
+    }
     setUploading(true);
     setUploadError(null);
     setProgress(0);
@@ -92,7 +96,7 @@ export default function VideoUpload({ value, onChange }: VideoUploadProps) {
           <p className="mt-0.5 text-[10px] text-foreground/25">
             {processing
               ? "Có thể tiếp tục thao tác — video sẽ tự hiển thị khi xử lý xong."
-              : "MP4, WebM, MOV, M4V · tối đa 500 MB"}
+              : "MP4, WebM, MOV, M4V · tối đa 5 GB"}
           </p>
         </div>
 

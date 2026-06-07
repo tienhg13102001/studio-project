@@ -2,7 +2,7 @@ import { Router, type Request, type Response, type NextFunction } from "express"
 import multer from "multer";
 import sharp from "sharp";
 import ffmpeg from "fluent-ffmpeg";
-import { mkdir, unlink, rename, appendFile, stat } from "fs/promises";
+import { mkdir, unlink, rename, appendFile, stat, statfs } from "fs/promises";
 import { tmpdir } from "os";
 import { join, extname, basename, dirname } from "path";
 import { fileURLToPath } from "url";
@@ -140,7 +140,46 @@ const videoUpload = multer({
 // server append vào 1 file tạm theo uploadId, xong thì transcode như bình thường.
 const CHUNK_TMP_DIR = join(tmpdir(), "beez-video-chunks");
 const CHUNK_MAX_BYTES = 60 * 1024 * 1024; // mỗi mảnh tối đa 60MB (< 100MB Cloudflare)
-const VIDEO_TOTAL_MAX_BYTES = 500 * 1024 * 1024; // tổng video tối đa 500MB
+const VIDEO_TOTAL_MAX_BYTES = 5 * 1024 * 1024 * 1024; // tổng video tối đa 5GB
+
+// ─── Image chunked upload config ─────────────────────────────────────────────
+const IMAGE_DIR = join(__dirname, "../../public/uploads");
+const IMAGE_CHUNK_TMP_DIR = join(tmpdir(), "beez-image-chunks");
+// stream from disk, not buffer, to avoid OOM at 500MB
+const IMAGE_TOTAL_MAX_BYTES = 500 * 1024 * 1024; // tổng ảnh tối đa 500MB
+
+const ALLOWED_IMAGE_MIME = new Set([
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+  "image/heic",
+  "image/heif",
+  "image/gif",
+  "image/avif",
+  "image/tiff",
+  "image/bmp",
+]);
+
+const DISK_FREE_MIN_BYTES = 10 * 1024 * 1024 * 1024; // 10GB threshold
+
+async function checkDiskSpace(dir: string): Promise<boolean> {
+  try {
+    await mkdir(dir, { recursive: true });
+    const s = await statfs(dir);
+    return s.bavail * s.bsize >= DISK_FREE_MIN_BYTES;
+  } catch {
+    return true; // statfs unavailable — don't block upload
+  }
+}
+
+const imageChunkUpload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 95 * 1024 * 1024 }, // 95MB safe-side multer limit
+  fileFilter: (_req, file, cb) => {
+    if (ALLOWED_IMAGE_MIME.has(file.mimetype)) cb(null, true);
+    else cb(new Error("415") as unknown as null, false);
+  },
+});
 
 /** uploadId do client tạo (uuid) — sanitize để tránh path traversal. */
 function safeUploadId(id: string): string | null {
@@ -255,7 +294,7 @@ router.post("/video/chunk", chunkUpload.single("chunk"), async (req, res, next) 
       .catch(() => 0);
     if (current + req.file.size > VIDEO_TOTAL_MAX_BYTES) {
       await unlink(partPath).catch(() => {});
-      sendError(res, "Video too large (max 500MB)", 413);
+      sendError(res, "Video too large (max 5GB)", 413);
       return;
     }
     await appendFile(partPath, req.file.buffer); // client upload tuần tự → đúng thứ tự
@@ -287,11 +326,103 @@ router.post("/video/complete", async (req, res, next) => {
   }
   if (size === 0 || size > VIDEO_TOTAL_MAX_BYTES) {
     await unlink(partPath).catch(() => {});
-    sendError(res, "Invalid upload size", 400);
+    sendError(res, "Invalid upload size", 413);
+    return;
+  }
+  if (!(await checkDiskSpace(VIDEO_DIR))) {
+    await unlink(partPath).catch(() => {});
+    sendError(res, "Server tạm thời không đủ dung lượng. Vui lòng thử lại sau.", 503);
     return;
   }
   // partPath = file gốc đã ghép → tái dùng pipeline transcode (tự xóa partPath khi xong).
   await startVideoTranscodeJob(partPath, filename, req, res, next);
+});
+
+/** POST /api/upload/image/chunk — nhận 1 mảnh ảnh, append vào file tạm theo uploadId. */
+router.post("/image/chunk", imageChunkUpload.single("chunk"), async (req, res, next) => {
+  try {
+    if (!req.file) {
+      if ((req as Request & { multerError?: Error }).multerError?.message === "415") {
+        sendError(res, "Unsupported image type", 415);
+        return;
+      }
+      sendError(res, "Invalid chunk payload", 400);
+      return;
+    }
+    if (!ALLOWED_IMAGE_MIME.has(req.file.mimetype)) {
+      sendError(res, "Unsupported image type", 415);
+      return;
+    }
+    const uploadId = safeUploadId(String(req.body.uploadId ?? ""));
+    if (!uploadId) {
+      sendError(res, "Invalid chunk payload", 400);
+      return;
+    }
+    await mkdir(IMAGE_CHUNK_TMP_DIR, { recursive: true });
+    const partPath = join(IMAGE_CHUNK_TMP_DIR, `${uploadId}.part`);
+    const current = await stat(partPath)
+      .then((s) => s.size)
+      .catch(() => 0);
+    if (current + req.file.size > IMAGE_TOTAL_MAX_BYTES) {
+      await unlink(partPath).catch(() => {});
+      sendError(res, "Image too large (max 500MB)", 413);
+      return;
+    }
+    await appendFile(partPath, req.file.buffer);
+    sendSuccess(res, { received: true });
+  } catch (e) {
+    next(e);
+  }
+});
+
+/** POST /api/upload/image/complete — ghép xong → sharp resize+WebP, trả { url, path }. */
+router.post("/image/complete", async (req, res, next) => {
+  const uploadId = safeUploadId(String(req.body?.uploadId ?? ""));
+  const originalName = String(req.body?.originalName ?? "image.jpg");
+  if (!uploadId) {
+    sendError(res, "Invalid uploadId", 400);
+    return;
+  }
+  const partPath = join(IMAGE_CHUNK_TMP_DIR, `${uploadId}.part`);
+  let size = 0;
+  try {
+    size = (await stat(partPath)).size;
+  } catch {
+    sendError(res, "Upload not found or already processed", 404);
+    return;
+  }
+  if (size === 0 || size > IMAGE_TOTAL_MAX_BYTES) {
+    await unlink(partPath).catch(() => {});
+    sendError(res, "Invalid upload size", 413);
+    return;
+  }
+  if (!(await checkDiskSpace(IMAGE_DIR))) {
+    await unlink(partPath).catch(() => {});
+    sendError(res, "Server tạm thời không đủ dung lượng. Vui lòng thử lại sau.", 503);
+    return;
+  }
+  const filename = buildFilename(originalName, ".webp");
+  try {
+    await mkdir(IMAGE_DIR, { recursive: true });
+    // stream from disk, not buffer, to avoid OOM at 500MB
+    await sharp(partPath)
+      .rotate()
+      .resize({
+        width: IMAGE_MAX_DIM,
+        height: IMAGE_MAX_DIM,
+        fit: "inside",
+        withoutEnlargement: true,
+      })
+      .webp({ quality: IMAGE_QUALITY })
+      .toFile(join(IMAGE_DIR, filename));
+    await unlink(partPath).catch(() => {});
+    const base = getBaseUrl(req);
+    const url = `${base}/api/public/uploads/${filename}`;
+    sendSuccess(res, { url, path: `/uploads/${filename}` });
+  } catch (e) {
+    await unlink(partPath).catch(() => {});
+    next(e);
+  }
 });
 
 export default router;

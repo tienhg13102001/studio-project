@@ -1,7 +1,6 @@
 import { useRef, useState } from "react";
 import { UploadSimpleIcon, ImageIcon } from "@phosphor-icons/react";
-import axios from "axios";
-import { resolveAssetUrl } from "#lib/api";
+import { resolveAssetUrl, uploadImageChunked, IMAGE_MAX_MB } from "#lib/api";
 import { Input } from "#components/ui/input";
 
 type Props = {
@@ -11,24 +10,23 @@ type Props = {
 
 export default function ImageUpload({ value, onChange }: Props) {
   const [uploading, setUploading] = useState(false);
+  const [progress, setProgress] = useState<number>(0);
   const [uploadError, setUploadError] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleFile = async (file: File) => {
+    if (file.size > IMAGE_MAX_MB * 1024 * 1024) {
+      setUploadError(`File quá lớn, tối đa ${IMAGE_MAX_MB} MB`);
+      return;
+    }
     setUploading(true);
     setUploadError(null);
+    setProgress(0);
     try {
-      const formData = new FormData();
-      formData.append("image", file);
-      const res = await axios.post<{ success: boolean; data: { url: string; path: string } }>(
-        `${import.meta.env.VITE_API_URL ?? ""}/api/upload`,
-        formData,
-      );
-      // prefer full url; fall back to path for older API versions
-      if (res.data.success) onChange(res.data.data.url ?? res.data.data.path);
-      else setUploadError("Upload failed");
-    } catch {
-      setUploadError("Upload failed");
+      const result = await uploadImageChunked(file, (p) => setProgress(p.percent));
+      onChange(result.url ?? result.path);
+    } catch (e) {
+      setUploadError((e as Error).message);
     } finally {
       setUploading(false);
     }
@@ -77,9 +75,9 @@ export default function ImageUpload({ value, onChange }: Props) {
         <div className="min-w-0 flex-1">
           <p className="flex items-center gap-1.5 text-xs text-foreground/50">
             <UploadSimpleIcon size={13} />
-            {uploading ? "Uploading…" : "Click or drag to upload"}
+            {uploading ? `Đang tải lên… ${progress}%` : "Click or drag to upload"}
           </p>
-          <p className="mt-0.5 text-[10px] text-foreground/25">JPG, PNG, WebP · max 10 MB</p>
+          <p className="mt-0.5 text-[10px] text-foreground/25">JPG, PNG, WebP · tối đa 500 MB</p>
         </div>
 
         {uploading && (

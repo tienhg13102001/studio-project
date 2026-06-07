@@ -1,6 +1,5 @@
-import { resolveAssetUrl } from "#lib/api";
+import { resolveAssetUrl, uploadImageChunked, IMAGE_MAX_MB } from "#lib/api";
 import { ImageIcon, TrashIcon } from "@phosphor-icons/react";
-import axios from "axios";
 import { useRef, useState } from "react";
 
 export type ImagesUploadProps = {
@@ -13,23 +12,23 @@ export type ImagesUploadProps = {
 
 export default function ImagesUpload({ value, onChange }: ImagesUploadProps) {
   const [uploading, setUploading] = useState(false);
+  const [progress, setProgress] = useState<number>(0);
   const [uploadError, setUploadError] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleFile = async (file: File) => {
+    if (file.size > IMAGE_MAX_MB * 1024 * 1024) {
+      setUploadError(`File quá lớn, tối đa ${IMAGE_MAX_MB} MB`);
+      return;
+    }
     setUploading(true);
     setUploadError(null);
+    setProgress(0);
     try {
-      const formData = new FormData();
-      formData.append("image", file);
-      const res = await axios.post<{ success: boolean; data: { url: string; path: string } }>(
-        `${import.meta.env.VITE_API_URL ?? ""}/api/upload`,
-        formData,
-      );
-      if (res.data.success) onChange([...value, res.data.data.url ?? res.data.data.path]);
-      else setUploadError("Upload failed");
-    } catch {
-      setUploadError("Upload failed");
+      const result = await uploadImageChunked(file, (p) => setProgress(p.percent));
+      onChange([...value, result.url ?? result.path]);
+    } catch (e) {
+      setUploadError((e as Error).message);
     } finally {
       setUploading(false);
     }
@@ -68,9 +67,12 @@ export default function ImagesUpload({ value, onChange }: ImagesUploadProps) {
       >
         <ImageIcon size={20} />
         {uploading ? (
-          <span>Uploading…</span>
+          <span>Đang tải lên… {progress}%</span>
         ) : (
-          <span>Click or drop image (jpg/png/webp)</span>
+          <span>Click or drop image (jpg/png/webp · tối đa 500 MB)</span>
+        )}
+        {uploading && (
+          <div className="border-t-primary ml-auto h-4 w-4 shrink-0 animate-spin rounded-full border-2 border-foreground/15" />
         )}
         <input
           ref={inputRef}
