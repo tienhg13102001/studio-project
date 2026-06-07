@@ -1,7 +1,7 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { MagnifyingGlassIcon } from "@phosphor-icons/react";
-import { ICON_NAMES, ICON_REGISTRY } from "#lib/iconRegistry";
-import { canonicalIconName } from "#lib/serviceIcons";
+import type { Icon } from "@phosphor-icons/react";
+import { canonicalIconName, loadIconRegistry } from "#lib/serviceIcons";
 import { cn } from "#lib/utils";
 import { Button } from "#components/ui/button";
 import { Input } from "#components/ui/input";
@@ -11,29 +11,46 @@ import { Popover, PopoverContent, PopoverTrigger } from "#components/ui/popover"
 // unfiltered 1500-icon grid would be needlessly heavy to paint.
 const MAX_RESULTS = 150;
 
+type Registry = { ICON_REGISTRY: Record<string, Icon>; ICON_NAMES: string[] };
+
 type Props = {
   value: string;
   onChange: (name: string) => void;
 };
 
-/** Searchable picker over the entire phosphor icon library. */
+/**
+ * Searchable picker over the entire phosphor icon library. The library is heavy
+ * (~1500 icons) so it's loaded lazily into its own chunk on mount — keeping it
+ * out of both the public and the critical portal bundles.
+ */
 export default function IconPicker({ value, onChange }: Props) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
+  const [registry, setRegistry] = useState<Registry | null>(null);
 
-  const matches = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    const names = q ? ICON_NAMES.filter((n) => n.toLowerCase().includes(q)) : ICON_NAMES;
-    return names.slice(0, MAX_RESULTS);
-  }, [query]);
+  useEffect(() => {
+    let active = true;
+    void loadIconRegistry().then((m) => {
+      if (active) setRegistry({ ICON_REGISTRY: m.ICON_REGISTRY, ICON_NAMES: m.ICON_NAMES });
+    });
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const names = registry?.ICON_NAMES ?? [];
+  const q = query.trim().toLowerCase();
+
+  const allMatches = useMemo(
+    () => (q ? names.filter((n) => n.toLowerCase().includes(q)) : names),
+    [names, q],
+  );
+  const matches = allMatches.slice(0, MAX_RESULTS);
 
   // Canonicalise so legacy short keys (e.g. "film") still display correctly.
   const canonical = value ? canonicalIconName(value) : "";
-  const Selected = canonical ? ICON_REGISTRY[canonical] : undefined;
+  const Selected = canonical ? registry?.ICON_REGISTRY[canonical] : undefined;
   const label = canonical ? canonical.replace(/Icon$/, "") : "Pick an icon";
-  const totalMatches = query.trim()
-    ? ICON_NAMES.filter((n) => n.toLowerCase().includes(query.trim().toLowerCase())).length
-    : ICON_NAMES.length;
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -62,38 +79,42 @@ export default function IconPicker({ value, onChange }: Props) {
           />
         </div>
         <div className="grid max-h-60 grid-cols-6 gap-1 overflow-y-auto">
-          {matches.map((name) => {
-            const Ico = ICON_REGISTRY[name];
-            return (
-              <button
-                key={name}
-                type="button"
-                title={name.replace(/Icon$/, "")}
-                onClick={() => {
-                  onChange(name);
-                  setOpen(false);
-                  setQuery("");
-                }}
-                className={cn(
-                  "hover:bg-foreground/10 flex aspect-square items-center justify-center rounded-md transition-colors",
-                  canonical === name && "bg-primary/15 text-primary ring-primary/40 ring-1",
-                )}
-              >
-                <Ico size={18} weight="duotone" />
-              </button>
-            );
-          })}
-          {matches.length === 0 && (
-            <p className="text-foreground/30 col-span-6 py-6 text-center text-xs">
-              No icons found
-            </p>
+          {registry &&
+            matches.map((name) => {
+              const Ico = registry.ICON_REGISTRY[name];
+              return (
+                <button
+                  key={name}
+                  type="button"
+                  title={name.replace(/Icon$/, "")}
+                  onClick={() => {
+                    onChange(name);
+                    setOpen(false);
+                    setQuery("");
+                  }}
+                  className={cn(
+                    "hover:bg-foreground/10 flex aspect-square items-center justify-center rounded-md transition-colors",
+                    canonical === name && "bg-primary/15 text-primary ring-primary/40 ring-1",
+                  )}
+                >
+                  <Ico size={18} weight="duotone" />
+                </button>
+              );
+            })}
+          {registry && matches.length === 0 && (
+            <p className="text-foreground/30 col-span-6 py-6 text-center text-xs">No icons found</p>
+          )}
+          {!registry && (
+            <p className="text-foreground/30 col-span-6 py-6 text-center text-xs">Loading icons…</p>
           )}
         </div>
-        <p className="text-foreground/40 mt-1.5 text-[10px]">
-          {totalMatches > MAX_RESULTS
-            ? `Showing first ${MAX_RESULTS} of ${totalMatches} — refine your search.`
-            : `${totalMatches} icon${totalMatches === 1 ? "" : "s"}.`}
-        </p>
+        {registry && (
+          <p className="text-foreground/40 mt-1.5 text-[10px]">
+            {allMatches.length > MAX_RESULTS
+              ? `Showing first ${MAX_RESULTS} of ${allMatches.length} — refine your search.`
+              : `${allMatches.length} icon${allMatches.length === 1 ? "" : "s"}.`}
+          </p>
+        )}
       </PopoverContent>
     </Popover>
   );
