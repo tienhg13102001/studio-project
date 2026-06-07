@@ -125,6 +125,38 @@ async function seed() {
           },
         },
       ],
+      highlights: [
+        {
+          icon: "FilmSlateIcon",
+          title: { en: "Cinematic Storytelling", vi: "Kể Chuyện Điện Ảnh" },
+          desc: {
+            en: "Concept-driven films shot on cinema-grade cameras.",
+            vi: "Phim dẫn dắt bằng ý tưởng, quay trên máy quay điện ảnh.",
+          },
+        },
+        {
+          icon: "MegaphoneIcon",
+          title: { en: "Brand-Driven", vi: "Định Hướng Thương Hiệu" },
+          desc: {
+            en: "Visuals built around your brand's message and value.",
+            vi: "Hình ảnh xây quanh thông điệp và giá trị thương hiệu.",
+          },
+        },
+        {
+          icon: "CameraIcon",
+          title: { en: "Full Production", vi: "Sản Xuất Trọn Gói" },
+          desc: {
+            en: "Concept, scripting, shooting, color & final delivery.",
+            vi: "Ý tưởng, kịch bản, quay, màu và bàn giao thành phẩm.",
+          },
+        },
+      ],
+      stats: [
+        { value: "500+", label: { en: "TVCs Delivered", vi: "TVC Đã Bàn Giao" } },
+        { value: "5+", label: { en: "Years Experience", vi: "Năm Kinh Nghiệm" } },
+        { value: "50M+", label: { en: "Total Reach", vi: "Lượt Tiếp Cận" } },
+        { value: "20+", label: { en: "Brands", vi: "Thương Hiệu" } },
+      ],
     },
     {
       tag: "SHORT",
@@ -165,6 +197,38 @@ async function seed() {
             vi: "Có, đội sáng tạo của chúng tôi đảm nhận nghiên cứu, viết kịch bản, quay và dựng từ đầu đến cuối.",
           },
         },
+      ],
+      highlights: [
+        {
+          icon: "MicrophoneStageIcon",
+          title: { en: "Talking Head Videos", vi: "Video Talking Head" },
+          desc: {
+            en: "Expert-led content with complex motion graphics.",
+            vi: "Nội dung dẫn dắt bởi chuyên gia với motion graphics phức tạp.",
+          },
+        },
+        {
+          icon: "TrendUpIcon",
+          title: { en: "Trend-Based Content", vi: "Nội Dung Bắt Trend" },
+          desc: {
+            en: "Memes, trending audio, viral formats across industries.",
+            vi: "Meme, âm thanh thịnh hành, định dạng viral cho mọi ngành.",
+          },
+        },
+        {
+          icon: "DeviceMobileIcon",
+          title: { en: "Multi-Platform", vi: "Đa Nền Tảng" },
+          desc: {
+            en: "TikTok, YouTube Shorts, Facebook & Instagram Reels.",
+            vi: "TikTok, YouTube Shorts, Facebook & Instagram Reels.",
+          },
+        },
+      ],
+      stats: [
+        { value: "1000+", label: { en: "Videos Produced", vi: "Video Đã Sản Xuất" } },
+        { value: "5+", label: { en: "Years Experience", vi: "Năm Kinh Nghiệm" } },
+        { value: "1B+", label: { en: "Combined Views", vi: "Tổng Lượt Xem" } },
+        { value: "4", label: { en: "Platforms", vi: "Nền Tảng" } },
       ],
     },
     {
@@ -207,6 +271,38 @@ async function seed() {
           },
         },
       ],
+      highlights: [
+        {
+          icon: "PaletteIcon",
+          title: { en: "Food Styling", vi: "Tạo Hình Món Ăn" },
+          desc: {
+            en: "In-house stylist preps every dish before the shoot.",
+            vi: "Stylist nội bộ chuẩn bị từng món trước mỗi buổi quay.",
+          },
+        },
+        {
+          icon: "CameraIcon",
+          title: { en: "On-Location Shoots", vi: "Quay Tại Địa Điểm" },
+          desc: {
+            en: "Compact kit that works in any venue, no disruption.",
+            vi: "Thiết bị gọn nhẹ, quay được mọi nơi, không gián đoạn.",
+          },
+        },
+        {
+          icon: "RocketLaunchIcon",
+          title: { en: "Fast Turnaround", vi: "Bàn Giao Nhanh" },
+          desc: {
+            en: "Most shoots delivered within 5–7 business days.",
+            vi: "Hầu hết bàn giao trong 5–7 ngày làm việc.",
+          },
+        },
+      ],
+      stats: [
+        { value: "300+", label: { en: "Dishes Filmed", vi: "Món Đã Quay" } },
+        { value: "80+", label: { en: "F&B Brands", vi: "Thương Hiệu F&B" } },
+        { value: "5–7", label: { en: "Day Delivery", vi: "Ngày Bàn Giao" } },
+        { value: "4K", label: { en: "Quality", vi: "Chất Lượng" } },
+      ],
     },
     {
       tag: "INTERVIEW",
@@ -244,6 +340,38 @@ async function seed() {
             vi: "Có, chúng tôi cung cấp cả phụ đề tự động và được kiểm tra thủ công bằng tiếng Việt và tiếng Anh.",
           },
         },
+      ],
+      highlights: [
+        {
+          icon: "VideoCameraIcon",
+          title: { en: "Multi-Camera Setup", vi: "Nhiều Góc Máy" },
+          desc: {
+            en: "2–3 cameras for dynamic, broadcast-quality interviews.",
+            vi: "2–3 máy quay cho phỏng vấn sống động, chuẩn phát sóng.",
+          },
+        },
+        {
+          icon: "UsersThreeIcon",
+          title: { en: "Authentic Storytelling", vi: "Kể Chuyện Chân Thực" },
+          desc: {
+            en: "In-depth stories that build trust and connection.",
+            vi: "Câu chuyện chuyên sâu, xây niềm tin và kết nối.",
+          },
+        },
+        {
+          icon: "MonitorPlayIcon",
+          title: { en: "Broadcast Quality", vi: "Chất Lượng Phát Sóng" },
+          desc: {
+            en: "Subtitles in Vietnamese and English, fully reviewed.",
+            vi: "Phụ đề tiếng Việt và tiếng Anh, kiểm tra kỹ lưỡng.",
+          },
+        },
+      ],
+      stats: [
+        { value: "200+", label: { en: "Interviews", vi: "Phỏng Vấn" } },
+        { value: "3", label: { en: "Camera Angles", vi: "Góc Máy" } },
+        { value: "5", label: { en: "Panelists Max", vi: "Khách Tối Đa" } },
+        { value: "EN/VI", label: { en: "Subtitles", vi: "Phụ Đề" } },
       ],
     },
   ]);

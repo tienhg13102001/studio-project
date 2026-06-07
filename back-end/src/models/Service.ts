@@ -16,12 +16,44 @@ export interface IFaqItem {
   answer:   { en: string; vi: string };
 }
 
+// ── Feature highlight cards shown on the service detail page ──────────────────
+const highlightItemSchema = new Schema(
+  {
+    icon:  { type: String, default: "" }, // phosphor icon key (see serviceIcons on FE)
+    title: { type: localizedString, required: true },
+    desc:  { type: localizedString, required: true },
+  },
+  { _id: false },
+);
+
+export interface IHighlightItem {
+  icon:  string;
+  title: { en: string; vi: string };
+  desc:  { en: string; vi: string };
+}
+
+// ── Stat counters shown below the highlights ─────────────────────────────────
+const statItemSchema = new Schema(
+  {
+    value: { type: String, required: true },        // e.g. "1000+", "1B+"
+    label: { type: localizedString, required: true },
+  },
+  { _id: false },
+);
+
+export interface IStatItem {
+  value: string;
+  label: { en: string; vi: string };
+}
+
 export interface IService extends Document {
   tag:            string;
   thumbnailImage: string;
   title:          { en: string; vi: string };
   description:    { en: string; vi: string };
   faqs:           IFaqItem[];
+  highlights:     IHighlightItem[];
+  stats:          IStatItem[];
   projects:       PopulatedDoc<IProject>[];
 }
 
@@ -32,6 +64,8 @@ const serviceSchema = new Schema<IService>(
     title:          { type: localizedString, required: true },
     description:    { type: localizedString, required: true },
     faqs:           { type: [faqItemSchema], default: [] },
+    highlights:     { type: [highlightItemSchema], default: [] },
+    stats:          { type: [statItemSchema], default: [] },
     projects:       [{ type: Schema.Types.ObjectId, ref: "Project" }],
   },
   {

@@ -58,6 +58,17 @@ export type ApiProjectMember = {
   photo?: string;
 };
 
+export type ApiHighlight = {
+  icon:  string; // phosphor icon key (see lib/serviceIcons)
+  title: LocalizedString;
+  desc:  LocalizedString;
+};
+
+export type ApiStat = {
+  value: string; // e.g. "1000+", "1B+"
+  label: LocalizedString;
+};
+
 export type ApiService = {
   id:             string;
   tag:            string;
@@ -65,6 +76,8 @@ export type ApiService = {
   title:          LocalizedString;
   description:    LocalizedString;
   faqs:           ApiFaqItem[];
+  highlights:     ApiHighlight[];
+  stats:          ApiStat[];
   projects:       ApiProject[]; // populated from Project collection
 };
 

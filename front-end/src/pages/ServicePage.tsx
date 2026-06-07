@@ -2,16 +2,14 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import {
   ArrowLeftIcon,
-  DeviceMobileIcon,
   LightningIcon,
-  MicrophoneStageIcon,
   PlayIcon,
   PlusIcon,
   RocketLaunchIcon,
   StarIcon,
-  TrendUpIcon,
 } from "@phosphor-icons/react";
 import { apiFetch, resolveAssetUrl } from "#lib/api";
+import HighlightIcon from "#components/HighlightIcon";
 import { useLanguage, useTranslation, type Lang } from "#i18n";
 import { localized } from "#lib/localized";
 import Reveal from "#components/Reveal";
@@ -128,15 +126,22 @@ const ServicePage: React.FC = () => {
     ? (service.projects.find((f) => f.id === selectedProjectId) ?? null)
     : null;
 
-  // ── Static, localized supporting content (mirrors the 96hz shortform page) ──
-  const highlightIcons = [
-    <MicrophoneStageIcon size={22} weight="duotone" />,
-    <TrendUpIcon size={22} weight="duotone" />,
-    <DeviceMobileIcon size={22} weight="duotone" />,
-  ];
-  const highlights = t.service.highlights.map((h, i) => ({ ...h, icon: highlightIcons[i] }));
+  // ── Supporting content — sourced from the service document, with a fall-back
+  //    to the localized defaults so services created before these fields
+  //    existed still render something sensible. ──
+  const highlights: { title: string; desc: string; icon: string | undefined }[] =
+    service.highlights.length > 0
+      ? service.highlights.map((h) => ({
+          title: localized(h.title, lang),
+          desc: localized(h.desc, lang),
+          icon: h.icon,
+        }))
+      : t.service.highlights.map((h) => ({ ...h, icon: undefined }));
 
-  const stats = t.service.stats;
+  const stats =
+    service.stats.length > 0
+      ? service.stats.map((s) => ({ value: s.value, label: localized(s.label, lang) }))
+      : t.service.stats;
 
   return (
     <div className="min-h-screen">
@@ -303,7 +308,7 @@ const ServicePage: React.FC = () => {
             <Reveal key={h.title} delay={i * 100}>
               <div className="border-border bg-card flex flex-col gap-3 rounded-2xl border p-6">
                 <div className="bg-primary/10 text-primary flex h-11 w-11 items-center justify-center rounded-xl">
-                  {h.icon}
+                  <HighlightIcon icon={h.icon} index={i} size={22} weight="duotone" />
                 </div>
                 <h3 className="text-foreground text-base font-semibold">{h.title}</h3>
                 <p className="text-muted-foreground text-sm leading-relaxed">{h.desc}</p>
