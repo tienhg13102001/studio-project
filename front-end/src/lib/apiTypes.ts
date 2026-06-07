@@ -141,3 +141,10 @@ export type ApiBrand = {
   features: ApiProject[];
   order:    number;
 };
+
+export type ApiTeamContent = {
+  aboutBadge:       LocalizedString;
+  aboutHeading:     LocalizedString;
+  aboutDescription: LocalizedString;
+  aboutImage:       string;
+};

@@ -12,6 +12,7 @@ import usersRouter from "./routes/users.ts";
 import brandsRouter from "./routes/brands.ts";
 import authRouter from "./routes/auth.ts";
 import uploadRouter from "./routes/upload.ts";
+import teamContentRouter from "./routes/team-content.ts";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -57,6 +58,7 @@ app.use("/api/users", usersRouter);
 app.use("/api/brands", brandsRouter);
 app.use("/api/auth", authRouter);
 app.use("/api/upload", uploadRouter);
+app.use("/api/team-content", teamContentRouter);
 
 // ─── 404 ─────────────────────────────────────────────────────────────────────
 app.use((_req, res) => {

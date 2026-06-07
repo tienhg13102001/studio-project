@@ -1,6 +1,8 @@
 import MarqueeRow from "#components/molecules/MarqueeRow";
-import { useTranslation } from "#i18n";
+import { useLanguage, useTranslation } from "#i18n";
 import Reveal from "#components/Reveal";
+import { useTeamContent } from "#hooks/useTeamContent";
+import { resolveAssetUrl } from "#lib/api";
 
 const GALLERY_IMAGES = [
   "/NAQ03133.webp",
@@ -12,6 +14,13 @@ const GALLERY_IMAGES = [
 
 const WhoWeAre: React.FC = () => {
   const t = useTranslation();
+  const { lang } = useLanguage();
+  const { data } = useTeamContent();
+
+  const aboutBadge = data?.aboutBadge?.[lang] || t.team.aboutBadge;
+  const aboutHeading = data?.aboutHeading?.[lang] || t.team.aboutHeading;
+  const aboutDescription = data?.aboutDescription?.[lang] || t.team.aboutDescription;
+  const aboutImageSrc = data?.aboutImage ? resolveAssetUrl(data.aboutImage) : "/user1.webp";
 
   return (
     <section className="relative overflow-hidden">
@@ -22,7 +31,7 @@ const WhoWeAre: React.FC = () => {
           <div className="relative">
             <div className="overflow-hidden rounded-2xl shadow-2xl aspect-5/6">
               <img
-                src={"/user1.webp"}
+                src={aboutImageSrc}
                 alt="BeeZ Production team"
                 className="h-full w-full object-cover"
               />
@@ -37,13 +46,13 @@ const WhoWeAre: React.FC = () => {
         <Reveal direction="left" delay={120}>
           <div className="flex flex-col gap-6">
             <span className="inline-flex w-fit items-center rounded-full border border-primary/40 bg-primary/10 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-primary">
-              {t.team.aboutBadge}
+              {aboutBadge}
             </span>
             <h2 className="text-foreground text-4xl font-bold leading-tight md:text-5xl">
-              {t.team.aboutHeading}
+              {aboutHeading}
             </h2>
             <p className="text-muted-foreground text-base leading-relaxed max-w-lg">
-              {t.team.aboutDescription}
+              {aboutDescription}
             </p>
           </div>
         </Reveal>

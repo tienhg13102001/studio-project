@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import { Router } from "express";
-import { Landing } from "../models/Landing.ts";
+import { PageContent } from "../models/PageContent.ts";
 import { Contact } from "../models/Contact.ts";
 import { sendError, sendSuccess } from "../lib/response.ts";
 import { generateQrDataUrl, SOCIAL_PLATFORMS, type SocialPlatform } from "../lib/qr.ts";
@@ -9,7 +9,7 @@ const router = Router();
 
 router.get("/", async (_req, res, next) => {
   try {
-    const landing = await Landing.findOne();
+    const landing = await PageContent.findOne({ pageType: "landing" });
     if (!landing) { sendError(res, "Landing content not found", 404); return; }
 
     // Contact is the single source of truth for phone/email/address/socials.
@@ -46,8 +46,8 @@ router.put("/", async (req, res, next) => {
     const { heroLine1, heroLine2, subheading, videoBackground, contactId, phone, email, address, socials } =
       req.body as Record<string, unknown>;
 
-    const landing = await Landing.findOneAndUpdate(
-      {},
+    const landing = await PageContent.findOneAndUpdate(
+      { pageType: "landing" },
       { heroLine1, heroLine2, subheading, videoBackground, ...(contactId ? { contactId } : {}) },
       { new: true, upsert: true, runValidators: true, setDefaultsOnInsert: true },
     );
@@ -93,7 +93,7 @@ router.post("/social-qr", async (req, res, next) => {
     const trimmed = (url ?? "").trim();
     if (!trimmed) { sendError(res, "URL is required to generate a QR code", 400); return; }
 
-    const landing = await Landing.findOne();
+    const landing = await PageContent.findOne({ pageType: "landing" });
     const contact = landing?.contactId
       ? await Contact.findById(landing.contactId)
       : await Contact.findOne();

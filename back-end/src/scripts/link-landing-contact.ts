@@ -28,7 +28,7 @@
 
 import "dotenv/config";
 import { connectDB, disconnectDB } from "../lib/db.ts";
-import { Landing } from "../models/Landing.ts";
+import { PageContent } from "../models/PageContent.ts";
 import { Contact } from "../models/Contact.ts";
 
 const DRY_RUN = process.env.APPLY !== "true";
@@ -48,9 +48,10 @@ async function migrate() {
   console.log(`  → Using Contact ${contact._id.toString()} (${contact.email})`);
 
   // Use the raw collection so we can read & $unset the legacy fields that are
-  // no longer part of the Landing schema.
-  const collection = Landing.collection;
-  const landings = await collection.find({}).toArray();
+  // no longer part of the schema. (Legacy one-off migration — landing content
+  // now lives in PageContent with pageType "landing".)
+  const collection = PageContent.collection;
+  const landings = await collection.find({ pageType: "landing" }).toArray();
   console.log(`  → Found ${landings.length} Landing document(s)`);
 
   let linked = 0;

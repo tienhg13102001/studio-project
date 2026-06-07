@@ -13,7 +13,7 @@
  *   PROD_URI  — production MongoDB connection string  (required)
  *   LOCAL_URI — local/test MongoDB connection string  (falls back to MONGODB_URI)
  *
- * Collections cloned: Landing, Service, Project, Contact, User, Brand
+ * Collections cloned: PageContent, Service, Project, Contact, User, Brand
  * Users: passwords are preserved as-is (already hashed in prod). Admin
  *        account is kept so you can log in with the real credentials.
  */
@@ -37,7 +37,7 @@ if (!LOCAL_URI) {
 
 // Collections to clone — order matters (Service before Project due to refs)
 const COLLECTIONS = [
-  "landings",
+  "pagecontents",
   "services",
   "projects",
   "contacts",

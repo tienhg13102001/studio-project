@@ -1,6 +1,6 @@
 import "dotenv/config";
 import { connectDB, disconnectDB } from "../lib/db.ts";
-import { Landing } from "../models/Landing.ts";
+import { PageContent } from "../models/PageContent.ts";
 import { Service } from "../models/Service.ts";
 import { Project } from "../models/Project.ts";
 import { Contact } from "../models/Contact.ts";
@@ -12,7 +12,7 @@ async function seed() {
   console.log("🌱 Seeding database....");
 
   await Promise.all([
-    Landing.deleteMany({}),
+    PageContent.deleteMany({}),
     Service.deleteMany({}),
     Project.deleteMany({}),
     Contact.deleteMany({}),
@@ -63,8 +63,9 @@ async function seed() {
   });
   console.log("  ✓ Contact");
 
-  // ─── Landing ──────────────────────────────────────────────────────────────
-  await Landing.create({
+  // ─── Page content: Landing ────────────────────────────────────────────────
+  await PageContent.create({
+    pageType: "landing",
     heroLine1: { en: "We Are", vi: "Chúng Tôi Là" },
     heroLine2: { en: "BeeZ Production", vi: "BeeZ Production" },
     subheading: {
@@ -74,7 +75,20 @@ async function seed() {
     videoBackground: "/videos/video-bg.webm",
     contactId: contact._id,
   });
-  console.log("  ✓ Landing (linked → Contact)");
+  console.log("  ✓ PageContent: landing (linked → Contact)");
+
+  // ─── Page content: Team (Who We Are) ──────────────────────────────────────
+  await PageContent.create({
+    pageType: "team",
+    aboutBadge: { en: "About Us", vi: "Về Chúng Tôi" },
+    aboutHeading: { en: "Who We Are", vi: "Chúng Tôi Là Ai" },
+    aboutDescription: {
+      en: "We are a creative team passionate about visual storytelling. From TVCs and short films to social media content — every project receives our cinematic attention to detail and commitment to excellence.",
+      vi: "Chúng tôi là đội ngũ sáng tạo đam mê kể chuyện bằng hình ảnh. Từ TVC và phim ngắn đến nội dung mạng xã hội — mỗi dự án đều nhận được sự chú ý tỉ mỉ theo phong cách điện ảnh và cam kết về chất lượng.",
+    },
+    aboutImage: "/user1.webp",
+  });
+  console.log("  ✓ PageContent: team");
 
   // ─── Services ─────────────────────────────────────────────────────────────
   const insertedServices = await Service.insertMany([
