@@ -5,32 +5,56 @@ import { useLanguage, useTranslation } from "#i18n";
 import { localized } from "#lib/localized";
 import { cn } from "#lib/utils";
 import { XIcon } from "@phosphor-icons/react";
-import { useEffect, useMemo, useState, type FC } from "react";
+import { useEffect, useMemo, useRef, useState, type CSSProperties, type FC } from "react";
 
-// Số ảnh tối đa mỗi nhóm — giữ khối bento gọn trong khung, không dàn quá dài.
+// Số ảnh tối đa mỗi nhóm — giữ khối gallery gọn trong khung, không dàn quá dài.
 const MAX_PER_GROUP = 12;
+const GAP = 12; // khoảng cách giữa các ảnh (px)
+// Tỉ lệ mặc định (w/h) khi chưa đo được ảnh — đa số ảnh là chân dung nên giả định dọc.
+const DEFAULT_RATIO = 0.72;
+
+type Row = { indexes: number[]; height: number };
 
 /**
- * Vị trí của một ô trong lưới bento (chỉ áp dụng từ breakpoint sm trở lên — trên
- * mobile mọi ô là 1x1 cho gọn). Mẫu lặp mỗi 4 ô lấp đầy đúng khối 4 cột × 2 hàng
- * nên đáy luôn phẳng, không bị lởm chởm. grid-flow-dense lấp các khe trống.
+ * Justified-rows layout (kiểu Flickr): mỗi ảnh giữ NGUYÊN tỉ lệ gốc (không crop);
+ * mỗi hàng được scale để lấp đầy đúng chiều rộng khung, các hàng cao bằng nhau.
+ * Hàng cuối không bị kéo giãn full-width (giữ chiều cao mục tiêu) để ảnh lẻ không
+ * phình to bất thường.
  */
-function bentoSpan(i: number): string {
-  const m = i % 4;
-  if (m === 0) return "sm:col-span-2 sm:row-span-2"; // ô lớn vuông
-  if (m === 3) return "sm:col-span-2"; // ô ngang
-  return ""; // ô vuông nhỏ
+function justify(ratios: number[], width: number, targetHeight: number): Row[] {
+  if (width <= 0) return [];
+  const rows: Row[] = [];
+  let cur: number[] = [];
+  let ratioSum = 0;
+  for (let i = 0; i < ratios.length; i++) {
+    cur.push(i);
+    ratioSum += ratios[i];
+    const rowWidth = ratioSum * targetHeight + GAP * (cur.length - 1);
+    if (rowWidth >= width) {
+      const avail = width - GAP * (cur.length - 1);
+      rows.push({ indexes: cur, height: avail / ratioSum });
+      cur = [];
+      ratioSum = 0;
+    }
+  }
+  if (cur.length) {
+    const avail = width - GAP * (cur.length - 1);
+    rows.push({ indexes: cur, height: Math.min(targetHeight, avail / ratioSum) });
+  }
+  return rows;
 }
 
 /**
- * Một ô ảnh trong gallery: hiện skeleton pulse trong lúc ảnh tải, rồi fade-in
- * mượt khi `onLoad`. Bấm vào để mở lightbox.
+ * Một ô ảnh: hiện skeleton pulse trong lúc tải, fade-in mượt khi `onLoad`, đồng
+ * thời báo tỉ lệ gốc lên trên để layout justified tính toán. Bấm để mở lightbox.
  */
-const GalleryImage: FC<{ src: string; index: number; onOpen: (src: string) => void }> = ({
-  src,
-  index,
-  onOpen,
-}) => {
+const GalleryImage: FC<{
+  src: string;
+  index: number;
+  style: CSSProperties;
+  onOpen: (src: string) => void;
+  onRatio: (src: string, ratio: number) => void;
+}> = ({ src, index, style, onOpen, onRatio }) => {
   const [loaded, setLoaded] = useState(false);
 
   return (
@@ -38,7 +62,8 @@ const GalleryImage: FC<{ src: string; index: number; onOpen: (src: string) => vo
       type="button"
       onClick={() => onOpen(src)}
       aria-label={`Xem ảnh ${index + 1}`}
-      className="group border-border bg-muted focus-visible:ring-primary relative block h-full w-full overflow-hidden rounded-2xl border focus-visible:ring-2 focus-visible:outline-none"
+      style={style}
+      className="group border-border bg-muted focus-visible:ring-primary relative block shrink-0 overflow-hidden rounded-2xl border focus-visible:ring-2 focus-visible:outline-none"
     >
       {!loaded && <div className="bg-foreground/8 absolute inset-0 animate-pulse" />}
       <img
@@ -46,7 +71,11 @@ const GalleryImage: FC<{ src: string; index: number; onOpen: (src: string) => vo
         alt=""
         loading="lazy"
         decoding="async"
-        onLoad={() => setLoaded(true)}
+        onLoad={(e) => {
+          const { naturalWidth: w, naturalHeight: h } = e.currentTarget;
+          if (w > 0 && h > 0) onRatio(src, w / h);
+          setLoaded(true);
+        }}
         className={cn(
           "h-full w-full object-cover transition-all duration-700 ease-out group-hover:scale-105",
           loaded ? "scale-100 opacity-100 blur-0" : "scale-105 opacity-0 blur-sm",
@@ -62,15 +91,40 @@ const ProductGallery: FC = () => {
   const { groups, loading } = useProjectPhotos();
   // Tag đang chọn. null = chưa chọn → mặc định rơi về nhóm đầu tiên (xem `active`).
   const [activeTag, setActiveTag] = useState<string | null>(null);
-  // Ảnh đang phóng to (lightbox). null = đóng.
   const [lightboxSrc, setLightboxSrc] = useState<string | null>(null);
+  // Tỉ lệ gốc (w/h) của từng ảnh, đo khi ảnh load — dùng cho layout justified.
+  const [ratios, setRatios] = useState<Record<string, number>>({});
+  // Chiều rộng thật của khung gallery — theo dõi để layout co giãn theo màn hình.
+  const [width, setWidth] = useState(0);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const active = useMemo(
     () => groups?.find((g) => g.tag === activeTag) ?? groups?.[0] ?? null,
     [groups, activeTag],
   );
+  const items = useMemo(() => active?.photos.slice(0, MAX_PER_GROUP) ?? [], [active]);
 
-  // Đóng lightbox bằng phím Escape + khoá scroll body khi đang mở.
+  // Theo dõi chiều rộng khung để tính lại layout khi resize.
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    setWidth(el.clientWidth);
+    const ro = new ResizeObserver(([entry]) => setWidth(entry.contentRect.width));
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [active]);
+
+  const rows = useMemo(() => {
+    if (!width) return [];
+    const targetHeight = width < 480 ? 190 : width < 640 ? 230 : 260;
+    const rs = items.map((src) => ratios[src] ?? DEFAULT_RATIO);
+    return justify(rs, width, targetHeight);
+  }, [items, ratios, width]);
+
+  const onRatio = (src: string, ratio: number) =>
+    setRatios((prev) => (prev[src] === ratio ? prev : { ...prev, [src]: ratio }));
+
+  // Đóng lightbox bằng Escape + khoá scroll body khi đang mở.
   useEffect(() => {
     if (!lightboxSrc) return;
     const onKey = (e: KeyboardEvent) => {
@@ -90,11 +144,12 @@ const ProductGallery: FC = () => {
       <section className="overflow-hidden py-16 font-sans md:py-24">
         <div className="mx-auto w-full max-w-7xl px-6">
           <SectionHeader title={t.gallery.sectionTitle} subtitle={t.gallery.sectionSubtitle} />
-          <div className="mx-auto grid max-w-3xl auto-rows-[110px] grid-cols-2 gap-3 grid-flow-dense sm:auto-rows-[150px] sm:grid-cols-4">
-            {Array.from({ length: 8 }).map((_, i) => (
+          <div className="mx-auto flex max-w-3xl flex-wrap gap-3">
+            {Array.from({ length: 6 }).map((_, i) => (
               <div
                 key={i}
-                className={cn("bg-foreground/8 animate-pulse rounded-2xl", bentoSpan(i))}
+                className="bg-foreground/8 h-60 flex-1 animate-pulse rounded-2xl"
+                style={{ minWidth: i % 2 ? 180 : 220 }}
               />
             ))}
           </div>
@@ -103,10 +158,7 @@ const ProductGallery: FC = () => {
     );
   }
 
-  // Không có ảnh nào → ẩn hẳn section, tránh khoảng trống.
   if (!groups || groups.length === 0 || !active) return null;
-
-  const items = active.photos.slice(0, MAX_PER_GROUP);
 
   return (
     <section className="overflow-hidden py-16 font-sans md:py-24">
@@ -142,17 +194,25 @@ const ProductGallery: FC = () => {
           </Reveal>
         )}
 
-        {/* Lưới bento — đóng khung trong max-w-3xl, đáy phẳng, không dàn hết section. */}
-        <div className="mx-auto grid max-w-3xl auto-rows-[110px] grid-cols-2 gap-3 grid-flow-dense sm:auto-rows-[150px] sm:grid-cols-4">
-          {items.map((src, i) => (
-            <Reveal
-              key={`${active.tag}-${src}-${i}`}
-              direction="up"
-              delay={(i % 4) * 80}
-              className={bentoSpan(i)}
-            >
-              <GalleryImage src={src} index={i} onOpen={setLightboxSrc} />
-            </Reveal>
+        {/* Justified rows — đóng khung trong max-w-3xl, ảnh giữ đúng tỉ lệ (không crop). */}
+        <div ref={containerRef} className="mx-auto flex max-w-3xl flex-col" style={{ gap: GAP }}>
+          {rows.map((row, ri) => (
+            <div key={`${active.tag}-${ri}`} className="flex" style={{ gap: GAP }}>
+              {row.indexes.map((i) => {
+                const src = items[i];
+                const ratio = ratios[src] ?? DEFAULT_RATIO;
+                return (
+                  <GalleryImage
+                    key={`${src}-${i}`}
+                    src={src}
+                    index={i}
+                    style={{ width: row.height * ratio, height: row.height }}
+                    onOpen={setLightboxSrc}
+                    onRatio={onRatio}
+                  />
+                );
+              })}
+            </div>
           ))}
         </div>
       </div>
