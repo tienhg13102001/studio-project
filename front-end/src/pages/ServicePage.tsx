@@ -106,6 +106,10 @@ const ServicePage: React.FC = () => {
 
   const title = localized(service.title, lang);
   const description = localized(service.description, lang);
+  // Hero accent line — sourced from the service document, falling back to the
+  // localized default so services created before this field render something.
+  const heroTagline =
+    (service.heroTagline && localized(service.heroTagline, lang)) || t.service.heroTagline;
   const imageUrl = resolveAssetUrl(service.thumbnailImage);
 
   // Staggered fade-up: each hero element shares the same transition and only
@@ -187,7 +191,7 @@ const ServicePage: React.FC = () => {
           <p
             className={`text-muted-foreground/70 mx-auto mt-3 max-w-2xl text-sm leading-relaxed ${reveal("delay-300")}`}
           >
-            {t.service.heroTagline}
+            {heroTagline}
           </p>
 
           <div

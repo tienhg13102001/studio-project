@@ -75,6 +75,7 @@ export type ApiService = {
   thumbnailImage: string;
   title:          LocalizedString;
   description:    LocalizedString;
+  heroTagline?:   LocalizedString; // accent line under the hero description
   faqs:           ApiFaqItem[];
   highlights:     ApiHighlight[];
   stats:          ApiStat[];

@@ -61,6 +61,8 @@ type ServiceForm = {
   titleVi: string;
   descEn: string;
   descVi: string;
+  taglineEn: string;
+  taglineVi: string;
   thumbnailImage: string;
   tag: string;
   order: number;
@@ -75,6 +77,8 @@ function toForm(s: ApiService): ServiceForm {
     titleVi: s.title.vi,
     descEn: s.description.en,
     descVi: s.description.vi,
+    taglineEn: s.heroTagline?.en ?? "",
+    taglineVi: s.heroTagline?.vi ?? "",
     thumbnailImage: s.thumbnailImage,
     tag: s.tag,
     order: s.order ?? 0,
@@ -105,6 +109,8 @@ function emptyServiceForm(): ServiceForm {
     titleVi: "",
     descEn: "",
     descVi: "",
+    taglineEn: "",
+    taglineVi: "",
     thumbnailImage: "",
     tag: "",
     order: 0,
@@ -172,6 +178,7 @@ export default function ServicesTab({ data, raw, loading, onRefetch }: TabProps)
       const payload = {
         title: { en: form.titleEn, vi: form.titleVi },
         description: { en: form.descEn, vi: form.descVi },
+        heroTagline: { en: form.taglineEn, vi: form.taglineVi },
         thumbnailImage: form.thumbnailImage,
         tag: form.tag,
         order: form.order,
@@ -416,6 +423,20 @@ export default function ServicesTab({ data, raw, loading, onRefetch }: TabProps)
                   <AutoTextarea
                     value={form.descVi}
                     onChange={(e) => set("descVi", e.target.value)}
+                  />
+                </div>
+                <div>
+                  <Label>Hero tagline (EN)</Label>
+                  <AutoTextarea
+                    value={form.taglineEn}
+                    onChange={(e) => set("taglineEn", e.target.value)}
+                  />
+                </div>
+                <div>
+                  <Label>Hero tagline (VI)</Label>
+                  <AutoTextarea
+                    value={form.taglineVi}
+                    onChange={(e) => set("taglineVi", e.target.value)}
                   />
                 </div>
                 <div className="grid grid-cols-[2fr_1fr] gap-3">

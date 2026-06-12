@@ -51,6 +51,8 @@ export interface IService extends Document {
   thumbnailImage: string;
   title:          { en: string; vi: string };
   description:    { en: string; vi: string };
+  /** Small accent line under the description in the service hero. */
+  heroTagline?:   { en: string; vi: string };
   faqs:           IFaqItem[];
   highlights:     IHighlightItem[];
   stats:          IStatItem[];
@@ -64,6 +66,7 @@ const serviceSchema = new Schema<IService>(
     thumbnailImage: { type: String, required: true },
     title:          { type: localizedString, required: true },
     description:    { type: localizedString, required: true },
+    heroTagline:    { type: localizedString },
     faqs:           { type: [faqItemSchema], default: [] },
     highlights:     { type: [highlightItemSchema], default: [] },
     stats:          { type: [statItemSchema], default: [] },
