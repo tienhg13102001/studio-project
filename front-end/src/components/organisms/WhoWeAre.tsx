@@ -51,7 +51,7 @@ const WhoWeAre: React.FC = () => {
             <h2 className="text-foreground text-4xl font-bold leading-tight md:text-5xl">
               {aboutHeading}
             </h2>
-            <p className="text-muted-foreground text-base leading-relaxed max-w-lg">
+            <p className="text-muted-foreground text-base leading-relaxed max-w-lg whitespace-pre-line">
               {aboutDescription}
             </p>
           </div>
