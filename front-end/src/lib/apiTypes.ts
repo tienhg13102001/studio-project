@@ -150,3 +150,15 @@ export type ApiTeamContent = {
   aboutDescription?: LocalizedString;
   aboutImage?:       string;
 };
+
+/** A contact-form submission stored from the public Contact page. */
+export type ApiInquiry = {
+  id:           string;
+  name:         string;
+  email:        string;
+  phone?:       string;
+  service?:     string; // raw Service id as submitted
+  serviceName?: string; // resolved service title (EN), "" if none/unknown
+  message:      string;
+  createdAt:    string;
+};
