@@ -17,7 +17,7 @@ const PortfolioPage = () => {
       />
 
       {/* Gallery — capped width on large screens, responsive grid */}
-      <section className="border-foreground/8 bg-foreground/3 max-w-480 mx-auto overflow-hidden rounded-b-2xl border">
+      <section className="border-foreground/8 bg-foreground/3 max-w-341.5 mx-auto overflow-hidden rounded-b-2xl border mb-10">
         {loading ? (
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {Array.from({ length: 6 }).map((_, i) => (
