@@ -8,6 +8,7 @@ const ServicesPage = lazy(() => import("../pages/ServicesPage"));
 const ServicePage = lazy(() => import("../pages/ServicePage"));
 const ContactPage = lazy(() => import("../pages/ContactPage"));
 const TeamPage = lazy(() => import("../pages/TeamPage"));
+const PortfolioPage = lazy(() => import("../pages/PortfolioPage"));
 const ScriptPage = lazy(() => import("../pages/ScriptPage"));
 const NotFoundPage = lazy(() => import("../pages/NotFoundPage"));
 const PortalPage = lazy(() => import("../pages/portal/PortalPage"));
@@ -62,6 +63,7 @@ export const router = createBrowserRouter([
       { path: "service/:id", element: withSuspense(ServicePage) },
       { path: "contact", element: withSuspense(ContactPage) },
       { path: "team", element: withSuspense(TeamPage) },
+      { path: "portfolio", element: withSuspense(PortfolioPage) },
     ],
   },
   {

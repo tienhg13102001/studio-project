@@ -5,8 +5,13 @@ const vi = {
     rental: "Cho Thuê",
     blog: "Blog",
     team: "Đội Ngũ",
+    portfolio: "Portfolio",
     contact: "Liên Hệ",
     letsTalk: "Kết Nối",
+  },
+  portfolio: {
+    subtitle: "Tuyển chọn những dự án và hình ảnh tiêu biểu của chúng tôi.",
+    empty: "Chưa có hình ảnh nào — vui lòng quay lại sau.",
   },
   cta: {
     contactBeez: "Liên Hệ BeeZ",

@@ -1,6 +1,7 @@
 import LandingTab from "#components/organisms/portal/LandingTab";
 import TeamContentTab from "#components/organisms/portal/TeamContentTab";
-import { HouseIcon, UsersThreeIcon } from "@phosphor-icons/react";
+import PortfolioManager from "#components/organisms/portal/PortfolioManager";
+import { HouseIcon, ImagesSquareIcon, UsersThreeIcon } from "@phosphor-icons/react";
 import { useState } from "react";
 
 type TabDef = {
@@ -22,6 +23,12 @@ const TABS: TabDef[] = [
     label: "Team page",
     icon: <UsersThreeIcon size={14} weight="duotone" />,
     render: () => <TeamContentTab />,
+  },
+  {
+    id: "portfolio",
+    label: "Portfolio",
+    icon: <ImagesSquareIcon size={14} weight="duotone" />,
+    render: () => <PortfolioManager />,
   },
 ];
 

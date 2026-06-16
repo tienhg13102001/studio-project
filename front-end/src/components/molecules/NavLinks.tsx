@@ -17,6 +17,7 @@ const NAV_ITEMS: {
   // { key: "rental", to: "/rental" },
   // { key: "blog",   to: "/blog" },
   { key: "team", to: "/team" },
+  { key: "portfolio", to: "/portfolio" },
   { key: "contact", to: "/contact" },
 ];
 

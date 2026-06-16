@@ -143,6 +143,14 @@ export type ApiBrand = {
   order:    number;
 };
 
+/** A single portfolio image — managed in the portal, shown on /portfolio. */
+export type ApiPortfolioItem = {
+  id:    string;
+  image: string;
+  title: string; // optional caption / alt text
+  order: number;
+};
+
 export type ApiTeamContent = {
   // All optional — a freshly-created doc may contain only { pageType, id }.
   aboutBadge?:       LocalizedString;

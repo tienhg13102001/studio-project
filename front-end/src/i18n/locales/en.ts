@@ -5,8 +5,13 @@ const en = {
     rental: "Rental",
     blog: "Blog",
     team: "Team",
+    portfolio: "Portfolio",
     contact: "Contact",
     letsTalk: "Let's Talk",
+  },
+  portfolio: {
+    subtitle: "A selection of our standout projects and visuals.",
+    empty: "No images yet — check back soon.",
   },
   cta: {
     contactBeez: "Contact BeeZ",
