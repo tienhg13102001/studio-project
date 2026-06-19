@@ -66,9 +66,7 @@ function toForm(f: ApiProject): ProjectForm {
   return {
     title: f.title,
     subtitle:
-      typeof sub === "string"
-        ? { en: sub, vi: sub }
-        : { en: sub?.en ?? "", vi: sub?.vi ?? "" },
+      typeof sub === "string" ? { en: sub, vi: sub } : { en: sub?.en ?? "", vi: sub?.vi ?? "" },
     thumbnailImage: f.thumbnailImage,
     layout: f.layout,
     prominent: f.prominent,
@@ -196,7 +194,7 @@ export default function ProjectsTab({ data, raw, services, users, loading, onRef
     <>
       {/* ── Header ── */}
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold text-foreground">Projects</h2>
+        <h2 className="text-foreground text-lg font-semibold">Projects</h2>
         <Button size="sm" onClick={openCreate} className="bg-primary text-black hover:opacity-80">
           <PlusIcon size={12} weight="bold" />
           Add project
@@ -204,7 +202,7 @@ export default function ProjectsTab({ data, raw, services, users, loading, onRef
       </div>
 
       {/* ── Table ── */}
-      <div className="overflow-hidden rounded-xl border border-foreground/8">
+      <div className="border-foreground/8 overflow-hidden rounded-xl border">
         <Table>
           <TableHeader>
             <TableRow className="hover:bg-transparent">
@@ -226,20 +224,24 @@ export default function ProjectsTab({ data, raw, services, users, loading, onRef
                         className="h-10 w-16 shrink-0 rounded object-cover opacity-80"
                       />
                       <div className="min-w-0">
-                        <p className="line-clamp-1 text-xs font-medium text-foreground">{p.title}</p>
-                        <p className="line-clamp-1 text-[10px] text-foreground/40">{p.subtitle}</p>
+                        <p className="text-foreground line-clamp-1 text-xs font-medium">
+                          {p.title}
+                        </p>
+                        <p className="text-foreground/40 line-clamp-1 text-[10px]">{p.subtitle}</p>
                       </div>
                     </div>
                   </TableCell>
                   <TableCell>
                     <Badge variant={"default"}>{p.tag}</Badge>
                   </TableCell>
-                  <TableCell className="text-xs text-foreground/60">{rawItem?.layout ?? "—"}</TableCell>
+                  <TableCell className="text-foreground/60 text-xs">
+                    {rawItem?.layout ?? "—"}
+                  </TableCell>
                   <TableCell>
                     {rawItem?.prominent ? (
                       <Badge variant="primary">Yes</Badge>
                     ) : (
-                      <span className="text-[10px] text-foreground/30">—</span>
+                      <span className="text-foreground/30 text-[10px]">—</span>
                     )}
                   </TableCell>
                   <TableCell>
@@ -263,7 +265,7 @@ export default function ProjectsTab({ data, raw, services, users, loading, onRef
                             setDeleteError(null);
                           }
                         }}
-                        className="border border-foreground/10 text-foreground/50 hover:border-red-500/50 hover:text-red-400"
+                        className="border-foreground/10 text-foreground/50 border hover:border-red-500/50 hover:text-red-400"
                         title="Delete project"
                       >
                         <TrashIcon size={11} />
@@ -326,10 +328,7 @@ export default function ProjectsTab({ data, raw, services, users, loading, onRef
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <Label>Shoot date</Label>
-                    <DatePicker
-                      value={form.shootDate}
-                      onChange={(v) => set("shootDate", v)}
-                    />
+                    <DatePicker value={form.shootDate} onChange={(v) => set("shootDate", v)} />
                   </div>
                   <div>
                     <Label>Shoot location</Label>
@@ -358,14 +357,16 @@ export default function ProjectsTab({ data, raw, services, users, loading, onRef
                     </PopoverTrigger>
                     <PopoverContent className="max-h-64 w-(--radix-popover-trigger-width) overflow-y-auto p-2">
                       {(users ?? []).length === 0 ? (
-                        <p className="px-2 py-1.5 text-xs text-foreground/40">Chưa có thành viên nào</p>
+                        <p className="text-foreground/40 px-2 py-1.5 text-xs">
+                          Chưa có thành viên nào
+                        </p>
                       ) : (
                         (users ?? []).map((u) => {
                           const checked = form.members.includes(u.id);
                           return (
                             <label
                               key={u.id}
-                              className="flex cursor-pointer items-center gap-2.5 rounded-md px-2 py-1.5 hover:bg-foreground/5"
+                              className="hover:bg-foreground/5 flex cursor-pointer items-center gap-2.5 rounded-md px-2 py-1.5"
                             >
                               <Checkbox
                                 checked={checked}
@@ -378,7 +379,7 @@ export default function ProjectsTab({ data, raw, services, users, loading, onRef
                                   )
                                 }
                               />
-                              <span className="text-sm text-foreground/80">{u.name}</span>
+                              <span className="text-foreground/80 text-sm">{u.name}</span>
                             </label>
                           );
                         })
@@ -451,7 +452,7 @@ export default function ProjectsTab({ data, raw, services, users, loading, onRef
                         checked={form.prominent}
                         onCheckedChange={(checked) => set("prominent", !!checked)}
                       />
-                      <span className="text-xs text-foreground/50">Prominent</span>
+                      <span className="text-foreground/50 text-xs">Prominent</span>
                     </label>
                   </div>
                 </div>
@@ -462,7 +463,12 @@ export default function ProjectsTab({ data, raw, services, users, loading, onRef
                 <div>
                   <Label>Thumbnail Image</Label>
                   <ImageUpload
-                    value={form.thumbnailImage}
+                    value={
+                      form.thumbnailImage ||
+                      (creating && form.layout === "vertical"
+                        ? "https://beezvn.com/api/public/uploads/LOGO_BEEZ-PRODUCTION-01-20260619_031721.webp"
+                        : "https://beezvn.com/api/public/uploads/LOGO_BEEZ-PRODUCTION-01-1-20260619_031737.webp")
+                    }
                     onChange={(path) => set("thumbnailImage", path)}
                   />
                 </div>
@@ -488,8 +494,8 @@ export default function ProjectsTab({ data, raw, services, users, loading, onRef
           <AlertDialogHeader>
             <AlertDialogTitle>Delete project?</AlertDialogTitle>
             <AlertDialogDescription>
-              "<span className="text-foreground/80">{confirmDelete?.title}</span>" will be permanently
-              deleted.
+              "<span className="text-foreground/80">{confirmDelete?.title}</span>" will be
+              permanently deleted.
             </AlertDialogDescription>
           </AlertDialogHeader>
           {deleteError && <p className="text-xs text-red-400">{deleteError}</p>}
