@@ -6,7 +6,7 @@ const apiClient = axios.create({
   headers: { "Content-Type": "application/json" },
 });
 
-// ─── Response interceptor ─────────────────────────────────────────────────────
+// ─── Response interceptor ────── ───────────────────────────────────────────────
 // When the server returns a non-2xx status, Axios throws before we can read
 // res.data. This interceptor extracts the actual error message from the
 // response body (res.data.error / res.data.message) so callers get a
