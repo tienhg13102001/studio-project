@@ -99,6 +99,7 @@ export function useQuoteBuilder() {
   const [optionList, setOptionList] = useState<string[]>([]);
   const [selectedOption, setSelectedOption] = useState("");
   const [hiddenData, setHiddenData] = useState<Record<string, QuoteForm>>({});
+  const [loadingFile, setLoadingFile] = useState(false);
 
   // Modals & submission
   const [modals, setModals] = useState<ModalsState>({
@@ -532,6 +533,7 @@ export function useQuoteBuilder() {
       setOptionList([]);
       setSelectedOption("");
       setHiddenData({});
+      setLoadingFile(true);
       getQuoteDataFromFile(f.id)
         .then((res) => {
           if (res.success) {
@@ -541,7 +543,8 @@ export function useQuoteBuilder() {
             showToast("Lỗi khi đọc file: " + (res.message || ""));
           }
         })
-        .catch((err: unknown) => showToast("Không đọc được file (mạng/quota): " + errMsg(err)));
+        .catch((err: unknown) => showToast("Không đọc được file (mạng/quota): " + errMsg(err)))
+        .finally(() => setLoadingFile(false));
     },
     [showToast],
   );
@@ -907,6 +910,7 @@ export function useQuoteBuilder() {
     selectedFileId,
     optionList,
     selectedOption,
+    loadingFile,
     modals,
     pendingAction,
     resultData,

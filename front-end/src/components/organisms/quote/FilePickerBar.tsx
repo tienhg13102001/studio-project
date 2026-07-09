@@ -6,6 +6,7 @@ import {
   CaretDownIcon,
   FolderOpenIcon,
   InfoIcon,
+  SpinnerIcon,
   StackIcon,
 } from "@phosphor-icons/react";
 import type { QuoteBuilder } from "./useQuoteBuilder";
@@ -72,7 +73,17 @@ const FilePickerBar = ({ q }: Props) => {
         )}
       </div>
 
-      {q.selectedFileId && q.optionList.length > 0 && (
+      {q.loadingFile && (
+        <div
+          className="info-banner"
+          style={{ alignItems: "center", color: "var(--gold)" }}
+        >
+          <SpinnerIcon size={15} className="animate-spin" />
+          <span>Đang tải báo giá…</span>
+        </div>
+      )}
+
+      {q.selectedFileId && !q.loadingFile && q.optionList.length > 0 && (
         <div className="form-group" style={{ margin: 0 }}>
           <label style={{ color: "var(--gold)" }}>2. Chọn Option muốn nạp:</label>
           <div className="custom-dropdown-container">
