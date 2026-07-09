@@ -159,6 +159,9 @@ export type ApiTeamContent = {
   aboutImage?:       string;
 };
 
+/** Global/shared site settings (e.g. background image used across pages). */
+export type ApiSettings = { id?: string; backgroundImage: string };
+
 /** A contact-form submission stored from the public Contact page. */
 export type ApiInquiry = {
   id:           string;

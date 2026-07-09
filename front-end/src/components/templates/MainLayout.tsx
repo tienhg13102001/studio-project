@@ -3,12 +3,16 @@ import { Outlet } from "react-router-dom";
 import Footer from "../organisms/Footer";
 import Navbar from "../organisms/Navbar";
 import ScrollToTop from "../atoms/ScrollToTop";
+import { useSettings } from "#hooks/useSettings";
 
 type Props = {};
 
-const BG_URL = "/bg-main.webp";
+const DEFAULT_BG_URL = "/bg-main.webp";
 
 const MainLayout: React.FC<Props> = () => {
+  const { backgroundImage } = useSettings();
+  const bgUrl = backgroundImage || DEFAULT_BG_URL;
+
   return (
     <div className="relative min-h-screen">
       <ScrollToTop />
@@ -19,7 +23,7 @@ const MainLayout: React.FC<Props> = () => {
       {/* Global background image */}
       <div
         className="fixed inset-0 -z-10 bg-cover bg-center bg-no-repeat opacity-10"
-        style={{ backgroundImage: `url(${BG_URL})` }}
+        style={{ backgroundImage: `url(${bgUrl})` }}
       >
         {/* Vignette: black edges → transparent center */}
         <div

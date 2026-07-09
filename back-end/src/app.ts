@@ -14,6 +14,7 @@ import portfolioRouter from "./routes/portfolio.ts";
 import authRouter from "./routes/auth.ts";
 import uploadRouter from "./routes/upload.ts";
 import teamContentRouter from "./routes/team-content.ts";
+import settingsRouter from "./routes/settings.ts";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -61,6 +62,7 @@ app.use("/api/portfolio", portfolioRouter);
 app.use("/api/auth", authRouter);
 app.use("/api/upload", uploadRouter);
 app.use("/api/team-content", teamContentRouter);
+app.use("/api/settings", settingsRouter);
 
 // ─── 404 ─────────────────────────────────────────────────────────────────────
 app.use((_req, res) => {
