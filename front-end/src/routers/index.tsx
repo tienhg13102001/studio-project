@@ -10,6 +10,7 @@ const ContactPage = lazy(() => import("../pages/ContactPage"));
 const TeamPage = lazy(() => import("../pages/TeamPage"));
 const PortfolioPage = lazy(() => import("../pages/PortfolioPage"));
 const BaoGiaPage = lazy(() => import("../pages/BaoGiaPage"));
+const HopDongPage = lazy(() => import("../pages/HopDongPage"));
 const NotFoundPage = lazy(() => import("../pages/NotFoundPage"));
 const PortalPage = lazy(() => import("../pages/portal/PortalPage"));
 
@@ -69,6 +70,10 @@ export const router = createBrowserRouter([
   {
     path: "/bao-gia",
     element: withSuspense(BaoGiaPage),
+  },
+  {
+    path: "/hop-dong",
+    element: withSuspense(HopDongPage),
   },
   {
     path: "*",

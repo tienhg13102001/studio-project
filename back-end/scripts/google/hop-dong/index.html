@@ -1,0 +1,2481 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <base target="_top">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Hợp Đồng - Bee Z Production</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    /* === VARIABLES === */
+    /* DARK = Luxe gold–charcoal (vàng dùng dè) */
+    :root {
+      /* Đồng bộ Báo Giá App: 1 sắc vàng chóe #fcd125, nền đen–tím, chữ mát */
+      --gold:#fcd125; --gold-ink:#fcd125; --gold-brand:#fcd125; --brand:252,209,37;
+      --gold-dim:rgba(252,209,37,0.12); --gold-glow:rgba(252,209,37,0.35);
+      --bg:#0d0c15; --panel:rgba(18,16,26,0.42);
+      --glass:rgba(245,228,190,0.05); --glass-b:rgba(235,210,150,0.12); --glass-h:rgba(245,228,190,0.09);
+      --glass-hi:rgba(255,242,210,0.18); --glass-blur:blur(22px) saturate(160%);
+      --hair:rgba(255,242,210,0.16); --ring:0 0 0 3px rgba(252,209,37,0.14);
+      --elev-1:0 2px 10px rgba(0,0,0,.20); --elev-2:0 12px 32px rgba(0,0,0,.32); --elev-3:0 22px 60px rgba(0,0,0,.46);
+      --text:#f0ede8; --dim:#9aa0a6;
+      --border:rgba(235,210,150,0.12); --red:#ef4444; --green:#22c55e; --amber:#f59e0b;
+      --r:14px; --r-lg:16px; --inp:rgba(0,0,0,0.5); --hdr:78px;
+      --font-head:'Sora','Inter',sans-serif;
+    }
+    /* LIGHT = Light frosted (nền sáng ấm, kính trắng mờ) */
+    [data-theme="light"] {
+      --gold:#c9930b; --gold-ink:#8a6206; --gold-dim:rgba(201,147,11,0.12); --gold-glow:rgba(201,147,11,0.22);
+      --bg:#e9e6dd; --panel:rgba(255,255,255,0.5);
+      --glass:rgba(255,255,255,0.72); --glass-b:rgba(30,25,15,0.10); --glass-h:rgba(255,255,255,0.85);
+      --glass-hi:rgba(255,255,255,0.95);
+      --text:#1c1a15; --dim:#5a554b; --border:rgba(30,25,15,0.11); --inp:rgba(255,255,255,0.85);
+    }
+    /* Light: chữ vàng nhỏ dùng tông đậm hơn cho đủ tương phản */
+    [data-theme="light"] .stitle,[data-theme="light"] .fc-c,[data-theme="light"] .pi-price,
+    [data-theme="light"] .picker-grp,[data-theme="light"] .tot-lbl{color:var(--gold-ink)}
+    [v-cloak]{display:none!important}
+    *,*::before,*::after{box-sizing:border-box}
+    html,body{height:100%;margin:0;padding:0;overflow:hidden}
+    body{font-family:'Inter','Segoe UI',sans-serif;color:var(--text);transition:color .4s;position:relative}
+    /* Nền sống: mesh gradient + blob vàng/tím mờ — làm cho kính có gì để "làm mờ" phía sau */
+    body::before{
+      content:'';position:fixed;inset:0;z-index:-2;pointer-events:none;
+      background:
+        radial-gradient(ellipse 70% 50% at 85% 6%, rgba(252,209,37,0.16), transparent 100%),
+        radial-gradient(ellipse 60% 60% at 10% 94%, rgba(110,70,210,0.16), transparent 100%),
+        radial-gradient(ellipse 100% 60% at 50% -10%, rgba(55,38,10,0.80), transparent 55%),
+        linear-gradient(160deg,#0d0c15 0%,#09080e 50%,#0a0907 100%);
+    }
+    [data-theme="light"] body::before{
+      background:
+        radial-gradient(44% 54% at 12% 4%, rgba(var(--brand),.24), transparent 60%),
+        radial-gradient(48% 56% at 88% 12%, rgba(150,170,210,.14), transparent 62%),
+        radial-gradient(62% 64% at 50% 112%, rgba(var(--brand),.16), transparent 72%),
+        var(--bg);
+    }
+
+    /* === APP SHELL === */
+    #app{display:flex;flex-direction:column;height:100vh;overflow:hidden}
+    /* B5: chuyển theme mượt */
+    body,.hdr,.wb-left,.wb-right,.a4-stage,.sbox,.tw{transition:background-color .4s ease,color .35s ease,border-color .35s ease}
+
+    /* === HEADER === */
+    .hdr{
+      flex-shrink:0;min-height:var(--hdr);display:flex;align-items:center;justify-content:center;gap:12px;padding:10px 56px;
+      background:rgba(13,12,21,0.55);border-bottom:1px solid var(--glass-b);
+      backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);
+      box-shadow:0 1px 0 var(--glass-hi) inset;z-index:100;position:relative
+    }
+    [data-theme="light"] .hdr{background:rgba(255,255,255,0.5)}
+    .hdr-logo{position:relative;width:50px;height:50px;flex-shrink:0}
+    .hdr-ring{position:absolute;inset:0;border-radius:50%;
+      background:conic-gradient(from 0deg,var(--gold),rgba(252,209,37,.28),var(--gold),rgba(252,209,37,.28),var(--gold))}
+    .hdr-logo img{position:absolute;inset:3px;width:calc(100% - 6px);height:calc(100% - 6px);border-radius:50%;object-fit:contain;background:#0a0a0a;padding:5px}
+    .hdr-info{display:flex;flex-direction:column;gap:2px;align-items:flex-start}
+    .hdr-title{font-family:var(--font-head);font-size:20px;font-weight:900;letter-spacing:.6px;line-height:1}
+    .hdr-sub{font-size:9.5px;color:var(--dim);letter-spacing:2.4px;text-transform:uppercase;font-weight:600}
+    .hdr-badge{
+      font-size:10.5px;background:var(--gold-dim);border:1px solid rgba(var(--brand),.25);
+      color:var(--gold);padding:5px 13px;border-radius:20px;font-weight:700;letter-spacing:.3px;
+      max-width:230px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap
+    }
+    .hdr-tools{position:absolute;top:50%;right:12px;transform:translateY(-50%);display:flex;gap:6px;align-items:center}
+    .hdr .draft-chip{position:absolute;left:12px;top:50%;transform:translateY(-50%);z-index:2}
+    @media(max-width:620px){ .hdr{padding:8px 46px} .hdr-badge{display:none} }
+    .icon-btn{
+      width:30px;height:30px;border-radius:50%;background:var(--glass);border:1px solid var(--glass-b);
+      color:var(--text);font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;
+      transition:all .2s
+    }
+    .icon-btn:hover{background:var(--gold-dim);border-color:var(--gold);color:var(--gold)}
+
+    /* Toggle Sáng/Tối = 2 nút ☀/☾ */
+    .theme-seg{display:flex;gap:2px;padding:2px;border-radius:20px;background:var(--glass);border:1px solid var(--glass-b)}
+    .ts{width:26px;height:26px;border-radius:50%;border:none;background:transparent;color:var(--dim);font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;font-family:inherit}
+    .ts:hover{color:var(--text)}
+    .ts.on{background:var(--gold-dim);color:var(--gold)}
+
+    /* VIEW-MODE TOGGLE (Gọn ⇄ Xem trước) */
+    .btn-viewmode{
+      display:flex;align-items:center;gap:6px;height:30px;padding:0 12px;
+      background:var(--glass);border:1px solid var(--glass-b);border-radius:20px;
+      color:var(--dim);font-family:'Inter',sans-serif;font-weight:700;font-size:11px;
+      cursor:pointer;transition:all .2s;white-space:nowrap
+    }
+    .btn-viewmode:hover{background:var(--glass-h);color:var(--text);border-color:var(--gold)}
+    .btn-viewmode.on{background:var(--gold-dim);border-color:rgba(var(--brand),.45);color:var(--gold)}
+
+    /* Chip nháp đã lưu */
+    .draft-chip{display:flex;align-items:center;gap:5px;font-size:10px;font-weight:700;color:var(--dim);
+      background:var(--glass);border:1px solid var(--glass-b);border-radius:20px;padding:4px 10px;white-space:nowrap;transition:all .3s}
+    .draft-chip i{color:var(--green)}
+    .draft-chip.restored{color:var(--gold);border-color:rgba(var(--brand),.4)}
+    .draft-chip.restored i{color:var(--gold)}
+    .draft-restore{cursor:pointer;font-family:inherit;color:var(--gold);background:var(--gold-dim);border-color:rgba(var(--brand),.5)}
+    .draft-restore:hover{background:rgba(var(--brand),.16);border-color:var(--gold)}
+    .draft-restore i{color:var(--gold)}
+    @media(max-width:899px){.draft-chip{padding:4px 7px;font-size:9px}.draft-chip .dc-txt{display:none}}
+    /* Nút nhân bản (ghost glass) */
+    .btn-dup{width:calc(100% - 28px);margin:10px 14px 0;padding:11px;
+      background:var(--glass);border:1px solid var(--glass-b);border-radius:30px;
+      color:var(--text);font-family:'Inter',sans-serif;font-weight:700;font-size:12px;cursor:pointer;
+      backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);transition:all .2s;
+      display:flex;align-items:center;justify-content:center;gap:7px}
+    .btn-dup:hover{border-color:var(--gold);color:var(--gold);background:var(--gold-dim)}
+
+    /* ── GĐ2: toast · validation · preset CK% · submit sticky · mobile card ── */
+    .toasts{position:fixed;top:14px;right:14px;z-index:3000;display:flex;flex-direction:column;gap:8px;max-width:min(340px,90vw);pointer-events:none}
+    .toast{display:flex;align-items:center;gap:9px;padding:11px 14px;border-radius:12px;font-size:12.5px;font-weight:600;
+      background:linear-gradient(160deg,rgba(38,30,19,.96),rgba(21,17,10,.97));border:1px solid var(--glass-b);color:#f3ecdc;
+      box-shadow:0 10px 30px rgba(0,0,0,.45),0 1px 0 var(--glass-hi) inset;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+      animation:toastIn .28s cubic-bezier(.34,1.56,.64,1)}
+    .toast i{font-size:15px;flex-shrink:0}
+    .toast.err{color:#fecaca} .toast.err i{color:var(--red)}
+    .toast.ok{color:#bbf7d0} .toast.ok i{color:var(--green)}
+    .toast.info i{color:var(--gold)}
+    @keyframes toastIn{from{opacity:0;transform:translateX(22px)}to{opacity:1;transform:translateX(0)}}
+    .toast{pointer-events:auto}
+    .toast-x{margin-left:auto;background:none;border:none;color:inherit;opacity:.55;font-size:18px;line-height:1;cursor:pointer;padding:0 2px;flex-shrink:0}
+    .toast-x:hover{opacity:1}
+
+    .inp-err,.inp-err:focus{border-color:var(--red)!important;box-shadow:0 0 0 3px rgba(239,68,68,.16)!important}
+
+    .ck-presets{display:flex;gap:5px;margin-top:6px}
+    .ck-presets button{flex:1;padding:5px 4px;border-radius:8px;border:1px solid var(--glass-b);background:var(--glass);
+      color:var(--dim);font-family:'Inter',sans-serif;font-weight:700;font-size:11px;cursor:pointer;transition:all .18s}
+    .ck-presets button:hover{border-color:var(--gold);color:var(--gold);background:var(--gold-dim)}
+
+    .submit-bar{position:sticky;bottom:0;z-index:6;margin:8px -14px -24px;padding:10px 14px 16px;
+      background:linear-gradient(to top,var(--panel) 68%,transparent);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+    .submit-bar .btn-sub{width:100%;margin:0}
+    .submit-bar .btn-dup{width:100%;margin:8px 0 0}
+
+    @media(max-width:899px){
+      .tw table,.tw thead,.tw tbody,.tw tr,.tw td{display:block;width:100%}
+      .tw thead{display:none}
+      .tw tbody tr{border:1px solid var(--glass-b);border-radius:12px;margin:0 0 8px;padding:5px 10px;background:var(--glass)}
+      .tw td{display:flex;justify-content:space-between;align-items:center;gap:10px;text-align:right!important;
+        border:none!important;border-bottom:1px solid var(--border)!important;padding:7px 2px!important}
+      .tw tbody tr td:last-child{border-bottom:none!important}
+      .tw td::before{content:attr(data-label);color:var(--dim);font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;flex-shrink:0}
+      .tw td input,.tw td select{width:auto;flex:1;text-align:right}
+      .tw td .cdc,.tw td .ac{flex:1}
+    }
+
+    /* ── GĐ2 đợt 2: accordion · progress · picker ── */
+    .sec-h{cursor:pointer;user-select:none}
+    .sec-chev{order:1;font-size:9px;color:var(--dim);flex-shrink:0;transition:transform .25s}
+    .sec-chev.rot{transform:rotate(-90deg)}
+    .sbox.collapsed{padding-bottom:14px}
+    .sbox.collapsed .stitle{margin-bottom:0}
+    .sbox.collapsed > :not(.stitle){display:none}
+    /* B5: hiệu ứng mở mục accordion */
+    .sbox:not(.collapsed) > :not(.stitle){animation:secReveal .28s ease both}
+    @keyframes secReveal{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+
+    .prog{position:sticky;top:0;z-index:6;display:flex;align-items:center;gap:9px;margin:0 -14px 12px;padding:10px 14px;
+      background:linear-gradient(to bottom,var(--panel) 72%,transparent);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+    .prog-track{flex:1;height:6px;border-radius:4px;background:var(--glass);border:1px solid var(--glass-b);overflow:hidden}
+    .prog-fill{height:100%;background:linear-gradient(90deg,var(--gold),#e8a800);border-radius:4px;transition:width .35s}
+    .prog-lbl{font-size:10px;font-weight:700;color:var(--dim);white-space:nowrap;font-variant-numeric:tabular-nums}
+
+    .picker-list{max-height:46vh;overflow-y:auto;margin-bottom:12px;display:flex;flex-direction:column;gap:2px}
+    .picker-grp{font-size:9px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin:8px 0 3px;padding-left:2px}
+    .picker-item{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:9px;cursor:pointer;border:1px solid transparent}
+    .picker-item:hover{background:var(--glass);border-color:var(--glass-b)}
+    .picker-item input{width:16px;height:16px;accent-color:var(--gold);flex-shrink:0;cursor:pointer}
+    .pi-name{flex:1;font-size:13px;color:var(--text)}
+    .pi-price{font-size:12px;color:var(--gold);font-weight:700;font-family:'Inter',sans-serif}
+
+    /* === MOBILE TAB BAR === */
+    .mob-tabs{
+      display:none;flex-shrink:0;padding:8px 12px;gap:8px;
+      background:var(--panel);backdrop-filter:blur(20px) saturate(140%);-webkit-backdrop-filter:blur(20px) saturate(140%);
+      border-bottom:1px solid var(--border)
+    }
+    .mob-tab{
+      flex:1;padding:9px;background:var(--glass);border:1px solid var(--glass-b);border-radius:9px;
+      color:var(--dim);font-family:'Inter',sans-serif;font-weight:700;font-size:12px;
+      cursor:pointer;text-align:center;transition:all .2s
+    }
+    .mob-tab.active{background:var(--gold-dim);border-color:rgba(var(--brand),.4);color:var(--gold)}
+
+    /* === WORKBENCH === */
+    .wb{flex:1;display:grid;grid-template-columns:460px 1fr;overflow:hidden}
+    /* Chế độ FORM gọn (ẩn liveview) — form căn giữa cho dễ đọc */
+    .wb.vm-form{grid-template-columns:1fr}
+    .wb.vm-form .wb-right{display:none}
+    .wb.vm-form .wb-left{max-width:980px;margin:0 auto;width:100%}
+
+    /* === LEFT PANEL === */
+    .wb-left{
+      overflow-y:auto;border-right:1px solid var(--border);background:var(--panel);
+      backdrop-filter:blur(34px) saturate(150%);-webkit-backdrop-filter:blur(34px) saturate(150%);
+      scrollbar-width:thin;scrollbar-color:rgba(var(--brand),.15) transparent
+    }
+    .wb-left::-webkit-scrollbar{width:3px}
+    .wb-left::-webkit-scrollbar-thumb{background:rgba(var(--brand),.15);border-radius:2px}
+    .l-pad{padding:12px 14px 24px}
+
+    /* === MODE TABS === */
+    .mode-tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+    .mode-btn{
+      flex:0 1 calc(33.333% - 4px);min-width:84px;min-height:46px;
+      display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+      padding:8px 5px;background:var(--glass);border:1px solid var(--glass-b);
+      border-radius:11px;color:var(--dim);font-family:'Inter',sans-serif;
+      font-weight:700;font-size:10.5px;line-height:1.15;white-space:normal;cursor:pointer;text-align:center;transition:all .2s
+    }
+    .mode-btn i{font-size:14px}
+    .mode-btn:hover{background:var(--glass-h);color:var(--text)}
+    .mode-btn.active{background:linear-gradient(135deg,rgba(var(--brand),.22),rgba(var(--brand),.07));border-color:rgba(var(--brand),.55);color:var(--gold);box-shadow:inset 0 1px 0 rgba(var(--brand),.22),0 6px 20px rgba(var(--brand),.12)}
+
+    /* === SECTION BOX === */
+    .sbox{
+      position:relative;padding:14px 16px;margin-bottom:12px;
+      background:linear-gradient(160deg,rgba(255,255,255,.06),rgba(255,255,255,.022));
+      backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);
+      border:1px solid var(--glass-b);border-radius:var(--r-lg);
+      box-shadow:0 1px 0 var(--hair) inset,var(--elev-1)
+    }
+    /* Vạch sáng trên đỉnh thẻ — chữ ký glass Báo Giá */
+    .sbox::before,.tw::before,.sumbox::before{content:'';position:absolute;top:0;left:8%;right:8%;height:1px;
+      background:linear-gradient(to right,transparent,rgba(255,255,255,.28),transparent);pointer-events:none;z-index:2}
+    .stitle{
+      font-family:var(--font-head);font-size:11px;font-weight:800;letter-spacing:1.4px;text-transform:uppercase;
+      color:var(--gold);margin-bottom:10px;display:flex;align-items:center;gap:6px
+    }
+    .stitle::after{content:'';flex:1;height:1px;background:var(--gold-dim)}
+
+    /* === FILE SELECT === */
+    .file-pick{
+      padding:10px 12px;margin-bottom:10px;border:1px dashed rgba(var(--brand),.3);
+      border-radius:var(--r);background:var(--gold-dim)
+    }
+
+    /* === FORM === */
+    .row{display:flex;flex-direction:row;gap:8px;margin-bottom:10px}
+    .fg{flex:1}
+    label{display:block;font-size:11px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--dim);margin-bottom:5px}
+    input,select,textarea{
+      width:100%;padding:11px 13px;background:var(--inp);border:1px solid rgba(var(--brand),.18);
+      border-radius:10px;color:var(--text);font-family:'Inter',sans-serif;font-size:14.5px;
+      transition:border-color .2s,box-shadow .2s,background .2s
+    }
+    input:hover,select:hover,textarea:hover{border-color:rgba(var(--brand),.4)}
+    input:focus,select:focus,textarea:focus{outline:none;border-color:var(--gold);box-shadow:var(--ring)}
+    textarea{resize:vertical;min-height:60px}
+    .divider{border:none;border-top:1px solid var(--border);margin:12px 0}
+
+    /* DATE PICKER WRAP */
+    .dw{display:flex;align-items:stretch;background:var(--inp);border:1px solid var(--border);border-radius:7px;overflow:hidden;cursor:pointer;transition:border-color .2s,box-shadow .2s}
+    .dw:focus-within{border-color:var(--gold);box-shadow:0 0 0 3px rgba(var(--brand),.1)}
+    .dd-inp{flex:1;padding:10px 12px;background:transparent!important;border:none!important;border-radius:0!important;outline:none!important;color:var(--text);font-size:14.5px;cursor:pointer;box-shadow:none!important;font-family:'Inter',sans-serif}
+    .dd-btn{flex-shrink:0;padding:0 10px;background:transparent;border:none;border-left:1px solid var(--border);color:var(--gold);font-size:12px;cursor:pointer;display:flex;align-items:center;transition:background .2s}
+    .dd-btn:hover{background:var(--gold-dim)}
+
+    /* CATEGORY TABS */
+    .ctabs{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px}
+    .ctab{
+      flex:1 1 calc(50% - 5px);padding:8px 6px;background:var(--glass);border:1px solid var(--glass-b);
+      border-radius:9px;color:var(--dim);font-family:'Inter',sans-serif;font-weight:700;font-size:10px;
+      cursor:pointer;text-align:center;transition:all .2s;display:flex;flex-direction:column;align-items:center;gap:2px
+    }
+    .ctab:hover{background:var(--glass-h);color:var(--text)}
+    .ctab.active{background:linear-gradient(135deg,rgba(var(--brand),.22),rgba(var(--brand),.07));border-color:rgba(var(--brand),.55);color:var(--gold);box-shadow:inset 0 1px 0 rgba(var(--brand),.22),0 6px 20px rgba(var(--brand),.12)}
+    .ctab-sub{font-size:9px;font-weight:800;opacity:.7}
+    .ctab.active .ctab-sub{color:var(--gold);opacity:.65}
+    .tc{display:none}
+    .tc.active{display:block;animation:fu .2s ease-out}
+    @keyframes fu{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+
+    /* TABLE */
+    .tw{position:relative;background:linear-gradient(160deg,rgba(255,255,255,.05),rgba(255,255,255,.02));
+      backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);
+      border:1px solid var(--glass-b);border-radius:var(--r);overflow:hidden;
+      box-shadow:0 1px 0 var(--hair) inset,var(--elev-1)}
+    table{width:100%;border-collapse:collapse}
+    th{padding:7px 5px;font-size:10px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--dim);border-bottom:1px solid rgba(255,255,255,.1);text-align:center}
+    /* B4: header cột dính khi cuộn bảng dài (desktop) */
+    .tw thead th{position:sticky;top:0;z-index:2;background:var(--bg)}
+    @media(min-width:900px){.tw{max-height:62vh;overflow:auto}}
+    td{padding:4px 3px;border-bottom:1px solid rgba(255,255,255,.06);text-align:center;color:var(--text)}
+    td:not(:last-child){border-right:1px solid rgba(255,255,255,.04)}
+    tbody tr:hover td{background:rgba(255,255,255,.03)}
+    tr:last-child td{border-bottom:none}
+    td input,td select{padding:7px 4px;font-size:13px;background:transparent;border:none;border-radius:0;box-shadow:none!important}
+    td input:focus,td select:focus{background:rgba(var(--brand),.07);border-bottom:2px solid var(--gold);outline:none}
+    .ac{display:flex;align-items:center;justify-content:flex-end}
+    .ac span{flex:1;text-align:right;color:var(--gold);font-weight:700;font-size:13px;padding-right:5px}
+    .btn-rm{flex-shrink:0;width:28px;height:28px;background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.3);color:var(--red);border-radius:6px;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;font-size:11px}
+    .btn-rm:hover{background:var(--red);color:#fff;border-color:var(--red)}
+    .arow{display:flex;margin-top:8px}
+    .btn-add{padding:8px 15px;background:transparent;border:1px solid rgba(var(--brand),.35);color:var(--gold);border-radius:20px;cursor:pointer;font-size:11px;font-weight:700;font-family:'Inter',sans-serif;transition:all .2s;white-space:nowrap}
+    .btn-add:hover{background:var(--gold-dim)}
+
+    /* B4: phản hồi chạm + focus bàn phím (touch không có hover) */
+    button:active,.mode-btn:active,.ctab:active,.mob-tab:active,.fcard:active,.dv-btn:active,.pre-btn:active,.ck-presets button:active{transform:scale(.97)}
+    button:focus-visible,.bp:focus-visible,.mode-btn:focus-visible,.tbtn:focus-visible,.zbtn:focus-visible,.icon-btn:focus-visible,.btn-add:focus-visible{outline:2px solid var(--gold-brand);outline-offset:2px}
+
+    /* CUSTOM DROPDOWN */
+    .cdc{position:relative;flex:1;width:100%}
+    .cdl{position:absolute;top:calc(100% + 4px);left:0;width:100%;min-width:200px;background:#17130c;border:1px solid rgba(235,210,150,.28);border-radius:9px;max-height:190px;overflow-y:auto;z-index:999;list-style:none;padding:4px 0;margin:0;box-shadow:0 12px 40px rgba(0,0,0,.65)}
+    [data-theme="light"] .cdl{background:#fff}
+    .cdl li{padding:8px 12px;cursor:pointer;color:var(--text);font-size:12px;border-bottom:1px solid var(--border)}
+    .cdl li:last-child{border-bottom:none}
+    .cdl li:hover{background:var(--gold-dim);color:var(--gold)}
+    .cds{display:flex;align-items:center;justify-content:space-between;width:100%;padding:9px 11px;background:var(--inp);border:1px solid var(--border);border-radius:7px;color:var(--text);cursor:pointer;font-family:'Inter',sans-serif;font-size:13px;transition:border-color .2s}
+    .cds.open,.cds:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(var(--brand),.1)}
+    .cds-arr{color:var(--gold);font-size:10px;transition:transform .2s}
+    .cds.open .cds-arr{transform:rotate(180deg)}
+
+    /* VAT */
+    .vrow{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+    .vtog{display:flex;align-items:center;gap:6px}
+    .vtog label{text-transform:none;font-size:13px;font-weight:600;color:var(--text);letter-spacing:0;margin:0;cursor:pointer}
+    .vtog input[type="checkbox"]{width:15px;height:15px;accent-color:var(--gold);cursor:pointer}
+    .vpct{width:65px!important;text-align:center}
+
+    /* SUMMARY */
+    .sumbox{position:relative;display:flex;gap:10px;flex-direction:column;margin-top:14px;padding:18px;
+      background:linear-gradient(160deg,rgba(255,255,255,.06),rgba(255,255,255,.022));
+      backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);
+      border:1px solid var(--glass-b);border-radius:var(--r-lg);
+      box-shadow:0 1px 0 var(--hair) inset,var(--elev-2)}
+    .sub-l{font-size:12px;color:var(--dim)}
+    .sub-l b{color:var(--text)}
+    .vat-l{font-size:10px;color:var(--amber);font-weight:700}
+    .tot-chip{display:flex;align-items:center;gap:12px;border:1px solid transparent;border-radius:50px;padding:11px 22px;
+      background:linear-gradient(135deg,rgba(var(--brand),.16),rgba(var(--brand),.04)) padding-box,linear-gradient(135deg,rgba(var(--brand),.60),rgba(var(--brand),.12)) border-box;
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 0 26px rgba(var(--brand),.14)}
+    .tot-lbl{font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:rgba(var(--brand),.7);white-space:nowrap}
+    .tot-val{font-size:18px;font-weight:800;color:var(--gold);background:transparent;border:none;padding:0;min-width:110px;box-shadow:none!important;font-family:var(--font-head);width:auto}
+    .chu-l{font-size:10px;font-style:italic;color:var(--dim);line-height:1.4}
+
+    /* PAYMENT PRESETS */
+    .pay-pre{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px}
+    .pre-btn{padding:8px 5px;background:var(--glass);border:1px solid var(--glass-b);border-radius:8px;color:var(--dim);font-size:10px;font-weight:700;cursor:pointer;text-align:center;transition:all .2s;font-family:'Inter',sans-serif}
+    .pre-btn:hover{background:var(--glass-h);color:var(--text)}
+    .pre-btn.sel{background:var(--gold-dim);border-color:rgba(var(--brand),.5);color:var(--gold)}
+    .drow{display:flex;align-items:center;gap:7px;margin-bottom:8px}
+    .dinp{width:62px!important;text-align:center}
+
+    /* DV PRESETS */
+    .dv-pre{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px}
+    .dv-btn{padding:5px 9px;background:var(--glass);border:1px solid var(--glass-b);border-radius:20px;color:var(--dim);font-size:10px;font-weight:700;cursor:pointer;transition:all .2s;font-family:'Inter',sans-serif;white-space:nowrap}
+    .dv-btn:hover{background:var(--glass-h);color:var(--text)}
+    .dv-btn.sel{background:var(--gold-dim);border-color:rgba(var(--brand),.4);color:var(--gold)}
+
+    /* SUBMIT */
+    .btn-sub{
+      width:calc(100% - 28px);margin:14px 14px 0;padding:14px;position:relative;overflow:hidden;
+      background:linear-gradient(160deg,#fde047,var(--gold-brand) 42%,#e5a800);
+      color:#0a0910;border:none;border-radius:40px;font-family:var(--font-head);
+      cursor:pointer;transition:transform .25s,box-shadow .25s;
+      box-shadow:0 6px 22px rgba(var(--brand),.32),0 1px 0 rgba(255,255,255,.45) inset;
+      display:flex;flex-direction:column;align-items:center;gap:2px
+    }
+    .btn-sub::after{content:'';position:absolute;inset:0;
+      background:linear-gradient(120deg,transparent 32%,rgba(255,255,255,.4) 50%,transparent 68%);
+      transform:translateX(-130%);transition:transform .6s}
+    .btn-sub:hover{transform:translateY(-2px);box-shadow:0 10px 34px rgba(var(--brand),.5),0 1px 0 rgba(255,255,255,.5) inset}
+    .btn-sub:hover::after{transform:translateX(130%)}
+    .sub-lbl{font-size:13px;font-weight:900;letter-spacing:.3px;line-height:1.2;text-align:center;white-space:normal}
+    .sub-tot{font-size:11px;font-weight:800;opacity:.6}
+
+    /* FILE GRID */
+    .fsrow{display:flex;align-items:center;justify-content:space-between;gap:6px;margin-bottom:7px}
+    .fsinp{width:130px!important;padding:6px 9px!important;font-size:11px!important;border-radius:6px!important}
+    .fgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(105px,1fr));gap:6px;max-height:180px;overflow-y:auto;margin-bottom:8px}
+    .fcard{background:linear-gradient(160deg,rgba(255,255,255,.07),rgba(255,255,255,.03));
+      backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+      border:1px solid var(--glass-b);border-radius:12px;padding:9px 10px;cursor:pointer;
+      box-shadow:0 1px 0 var(--glass-hi) inset;transition:transform .2s,border-color .2s,box-shadow .2s}
+    .fcard:hover{border-color:rgba(var(--brand),.45);transform:translateY(-2px);box-shadow:0 1px 0 var(--glass-hi) inset,0 8px 20px rgba(0,0,0,.3)}
+    .fcard.sel{background:var(--gold-dim);border-color:rgba(var(--brand),.6)}
+    .fc-c{font-size:9px;font-weight:800;color:var(--gold);margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .fc-n{font-size:11px;color:var(--text);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .fc-d{font-size:9px;color:var(--dim);margin-top:2px}
+    .fg-empty{grid-column:1/-1;text-align:center;color:var(--dim);padding:12px 0;font-size:11px}
+
+    /* === RIGHT PANEL (A4 PREVIEW) === */
+    .wb-right{display:flex;flex-direction:column;overflow:hidden;background:#0a0912}
+    [data-theme="light"] .wb-right{background:#dcd7cb}
+
+    .a4-bar{
+      flex-shrink:0;display:flex;align-items:center;gap:6px;padding:7px 12px;
+      background:rgba(20,15,9,0.6);border-bottom:1px solid var(--glass-b);
+      backdrop-filter:blur(12px)
+    }
+    [data-theme="light"] .a4-bar{background:rgba(200,196,187,0.92)}
+    .a4-bar-lbl{font-size:9px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--dim)}
+    .zbtn{
+      width:26px;height:26px;background:var(--glass);border:1px solid var(--glass-b);
+      border-radius:5px;color:var(--text);font-size:14px;cursor:pointer;
+      display:flex;align-items:center;justify-content:center;font-family:'Inter',sans-serif;
+      font-weight:700;transition:all .2s
+    }
+    .zbtn:hover{background:var(--gold-dim);border-color:var(--gold);color:var(--gold)}
+    .zpct{font-size:10px;font-weight:800;color:var(--dim);min-width:34px;text-align:center}
+    .bsep{width:1px;height:18px;background:var(--border);margin:0 2px}
+    .tbtn{
+      height:26px;padding:0 10px;background:var(--glass);border:1px solid var(--glass-b);
+      border-radius:5px;color:var(--dim);font-size:10px;font-weight:700;cursor:pointer;
+      display:flex;align-items:center;gap:4px;transition:all .2s;font-family:'Inter',sans-serif
+    }
+    .tbtn:hover{background:var(--gold-dim);border-color:var(--gold);color:var(--gold)}
+    .bar-r{margin-left:auto;display:flex;gap:6px}
+
+    .a4-stage{
+      flex:1;overflow:auto;display:flex;justify-content:center;align-items:flex-start;padding:20px 16px;
+      scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.1) transparent
+    }
+    .a4-stage::-webkit-scrollbar{width:4px;height:4px}
+    .a4-stage::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:2px}
+
+    .a4-page{
+      width:794px;min-height:1123px;
+      background:#fff;color:#000;
+      font-family:'Times New Roman',Times,serif;
+      font-size:15px;line-height:1.62;
+      padding:50px 56px 50px 82px;
+      box-shadow:0 8px 48px rgba(0,0,0,.55);
+      flex-shrink:0;
+    }
+    /* Preview A4: chặn CSS form (td/th{color:var(--text)}) rò vào v-html làm chữ xám ở dark theme */
+    .a4-page td{color:#000;text-align:left}
+    .a4-page th{color:#fff}
+    .a4-empty{
+      display:flex;flex-direction:column;align-items:center;justify-content:center;
+      height:100%;color:rgba(255,255,255,.2);font-size:13px;font-weight:600;
+      letter-spacing:.5px;gap:10px;
+    }
+    .a4-empty i{font-size:40px;opacity:.15}
+
+    /* === OVERLAY / MODAL === */
+    .overlay{position:fixed;inset:0;background:rgba(0,0,0,.82);backdrop-filter:blur(8px);z-index:1000;display:flex;align-items:center;justify-content:center;padding:16px}
+    .popup{background:linear-gradient(160deg,rgba(38,30,19,.93),rgba(21,17,10,.95));backdrop-filter:blur(30px) saturate(140%);-webkit-backdrop-filter:blur(30px) saturate(140%);border:1px solid var(--glass-b);border-radius:22px;padding:24px 20px;text-align:center;max-width:440px;width:100%;box-shadow:0 1px 0 var(--glass-hi) inset,0 30px 70px rgba(0,0,0,.6);animation:popIn .25s cubic-bezier(.34,1.56,.64,1) forwards;max-height:90vh;overflow-y:auto}
+    [data-theme="light"] .popup{background:linear-gradient(160deg,rgba(255,255,255,.92),rgba(245,242,236,.94));border-color:rgba(0,0,0,.1)}
+    .popup-title{font-family:var(--font-head)}
+    @keyframes popIn{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:scale(1)}}
+    .popup-title{font-size:12px;font-weight:900;letter-spacing:2px;text-transform:uppercase;margin-bottom:12px}
+    .popup-title.gold{color:var(--gold)}.popup-title.green{color:var(--green)}
+    .si{display:flex;align-items:flex-start;gap:8px;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:8px;padding:8px 10px;margin-bottom:6px;font-size:12px;text-align:left}
+    [data-theme="light"] .si{background:rgba(0,0,0,.03)}
+    .si strong{flex:0 0 88px;color:var(--dim);font-weight:700;font-size:11px}
+    .si .dv{color:var(--text);font-weight:600;flex:1;word-break:break-word}
+    .sh{color:var(--gold)!important;font-weight:900;font-size:13px}
+    .par{display:flex;gap:7px;margin-top:14px}
+    .bp{flex:1;padding:10px;border-radius:8px;font-size:12px;font-weight:700;font-family:'Inter',sans-serif;cursor:pointer;transition:all .25s;border:1px solid transparent}
+    .bp-cl{background:transparent;color:var(--dim);border-color:var(--border)}
+    .bp-cl:hover{background:rgba(239,68,68,.15);color:var(--red);border-color:var(--red)}
+    .bp-ok{background:linear-gradient(135deg,var(--gold),#f0a800);color:#050505;font-weight:900}
+    .bp-ok:hover{box-shadow:0 4px 18px rgba(var(--brand),.4)}
+
+    /* LOADING */
+    .ll-wrap{width:84px;height:84px;margin:0 auto 14px;position:relative}
+    .ll-ring{position:absolute;inset:0;border-radius:50%;background:conic-gradient(from 0deg,var(--gold) 0deg,transparent 100deg,var(--gold) 200deg,transparent 300deg);animation:spin 2s linear infinite}
+    .ll-inner{position:absolute;inset:3px;border-radius:50%;background:#0a0a0a;display:flex;align-items:center;justify-content:center;overflow:hidden}
+    .ll-inner img{width:100%;height:100%;object-fit:contain;padding:6px}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .prog-w{width:100%;height:4px;background:rgba(255,255,255,.08);border-radius:2px;margin-top:12px;overflow:hidden}
+    .prog-f{height:100%;background:linear-gradient(to right,var(--gold),#f0a800);border-radius:2px;transition:width .1s linear}
+    .prog-p{font-size:13px;font-weight:900;color:var(--gold);margin-top:8px}
+    .ok-ic{font-size:52px;color:var(--green);margin-bottom:10px;display:block;animation:pb .6s cubic-bezier(.34,1.56,.64,1) forwards}
+    @keyframes pb{from{opacity:0;transform:scale(.3)}to{opacity:1;transform:scale(1)}}
+    .rlinks{background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:9px;padding:9px 12px;margin:8px 0 12px;text-align:left}
+    [data-theme="light"] .rlinks{background:rgba(0,0,0,.03)}
+    .rl{display:flex;align-items:center;gap:8px;padding:7px 0;font-weight:700;text-decoration:none;transition:all .2s;border-bottom:1px solid var(--border);font-size:13px}
+    .rl:last-child{border-bottom:none}
+    .rl:hover{opacity:.7;transform:translateX(3px)}
+    .rl.pdf{color:#f87171}.rl.doc{color:#60a5fa}
+    .rl.cp{color:var(--gold);cursor:pointer;background:none;border:none;width:100%;font-family:inherit;font-size:13px;font-weight:700}
+    .rl.cp.ok{color:var(--green)}
+
+    /* DATE PICKER POPUP */
+    .dp-popup{position:fixed;z-index:9999;width:268px;background:#17130c;border:1px solid rgba(235,210,150,.28);border-radius:13px;padding:13px;box-shadow:0 20px 60px rgba(0,0,0,.75)}
+    [data-theme="light"] .dp-popup{background:#fff}
+    .dp-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:7px}
+    .dp-ml{font-size:12px;font-weight:800;color:var(--gold)}
+    .dp-nb{background:none;border:none;color:var(--dim);cursor:pointer;padding:4px 7px;font-size:10px;border-radius:5px;transition:all .15s;font-family:inherit}
+    .dp-nb:hover{background:var(--gold-dim);color:var(--gold)}
+    .dp-wd{display:grid;grid-template-columns:repeat(7,1fr);margin-bottom:2px}
+    .dp-wd span{text-align:center;font-size:9px;font-weight:800;color:var(--dim);padding:2px 0}
+    .dp-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:7px}
+    .dp-d{aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:11px;border-radius:5px;cursor:pointer;transition:all .12s;color:var(--text);user-select:none}
+    .dp-d:hover:not(.dp-sel){background:var(--gold-dim);color:var(--gold)}
+    .dp-d.dp-oth{color:var(--dim);opacity:.3}
+    .dp-d.dp-tod{border:1px solid rgba(var(--brand),.45)}
+    .dp-d.dp-sel{background:var(--gold);color:#050505;font-weight:900}
+    .dp-ft{display:flex;gap:6px;margin-top:7px}
+    .dp-btn{flex:1;padding:7px;border-radius:7px;font-size:11px;font-weight:700;font-family:'Inter',sans-serif;cursor:pointer;border:none;transition:all .2s}
+    .dp-cn{background:var(--glass);color:var(--dim);border:1px solid var(--border)!important}
+    .dp-cn:hover{color:var(--red);border-color:var(--red)!important}
+    .dp-ok{background:linear-gradient(135deg,var(--gold-brand),#f0a800);color:#050505}
+
+    /* === MOBILE === */
+    @media(max-width:899px){
+      html,body{overflow:auto}
+      #app{height:auto;overflow:auto}
+      .mob-tabs{display:flex}
+      /* Mobile luôn dùng tab, bỏ qua viewMode desktop */
+      .btn-viewmode{display:none}
+      .wb,.wb.vm-form{grid-template-columns:1fr;height:auto;overflow:visible}
+      .wb-left,.wb.vm-form .wb-left{display:none!important;border-right:none;height:auto;overflow:visible;max-width:none;margin:0;width:auto}
+      .wb-left.mob-on,.wb.vm-form .wb-left.mob-on{display:block!important}
+      .wb-right,.wb.vm-form .wb-right{display:none!important;height:calc(100vh - var(--hdr) - 44px)}
+      .wb-right.mob-on,.wb.vm-form .wb-right.mob-on{display:flex!important}
+      .btn-sub{width:100%;margin:14px 0 0;border-radius:40px}
+      .l-pad{padding:10px 12px 20px}
+      /* B4: vùng chạm ≥44px · B5: số trong bảng card-mode luôn căn phải */
+      .mode-btn,.mob-tab,.ck-presets button,.dv-btn,.pre-btn,.btn-add{min-height:44px}
+      .btn-rm{width:36px;height:36px;font-size:13px}
+      .icon-btn,.zbtn{width:36px;height:36px}
+      .tw td input{text-align:right!important}
+      .fgrid{max-height:44vh}
+    }
+    /* B6: tablet — thu cột trái cho preview thở; header không vỡ ở màn rất hẹp */
+    @media(min-width:900px) and (max-width:1100px){ .wb{grid-template-columns:400px 1fr} }
+    @media(max-width:420px){ .hdr-sub{display:none} .hdr-badge{max-width:120px} }
+    /* Fallback khi không hỗ trợ backdrop-filter → nền đặc cho dễ đọc (không còn glass) */
+    @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
+      :root{--panel:rgba(20,15,9,.95)}
+      .sbox,.tw,.sumbox,.hdr,.popup,.mob-tabs,.wb-left,.a4-bar{background:rgba(16,14,24,.95)}
+      [data-theme="light"] .sbox,[data-theme="light"] .tw,[data-theme="light"] .sumbox,[data-theme="light"] .hdr,[data-theme="light"] .popup,[data-theme="light"] .wb-left{background:rgba(250,247,240,.97)}
+    }
+    /* Fallback 'zoom' (Firefox cũ bỏ qua) → dùng transform scale (biến --z set song song trong JS) */
+    @supports not (zoom:1){ .a4-page{transform:scale(var(--z,1));transform-origin:top center} }
+
+    /* === PRINT === (in được nhiều trang, không cắt) */
+    @media print{
+      html,body{overflow:visible!important;height:auto!important;background:#fff!important}
+      .hdr,.mob-tabs,.a4-bar,.wb-left,.overlay,.dp-popup{display:none!important}
+      #app{display:block!important;height:auto!important;overflow:visible!important}
+      .wb,.wb.vm-form{display:block!important;height:auto!important;overflow:visible!important;grid-template-columns:none!important}
+      .wb-right,.wb.vm-form .wb-right{display:block!important;height:auto!important;overflow:visible!important;background:#fff!important}
+      .a4-stage{display:block!important;overflow:visible!important;padding:0!important;height:auto!important}
+      .a4-page{
+        zoom:1!important;
+        width:auto!important;min-height:0!important;
+        box-shadow:none!important;margin:0!important;padding:0!important;color:#000!important;
+      }
+      @page{size:A4 portrait;margin:18mm 14mm 18mm 24mm}
+    }
+  </style>
+</head>
+
+<body id="body-tag">
+<div id="app" v-cloak>
+
+  <!-- ═══ HEADER ═══ -->
+  <div class="hdr">
+    <div class="hdr-logo">
+      <span class="hdr-ring"></span>
+      <img src="https://drive.google.com/thumbnail?id=1A08TfiPaQ99gcDu7THMh9O98gpVwUbJS&sz=w200-h200"
+           onerror="this.src='https://i.imgur.com/NymLXBn.png'" alt="Bee Z">
+    </div>
+    <div class="hdr-info">
+      <div class="hdr-title">HỢP ĐỒNG</div>
+      <div class="hdr-sub">Bee Z Production</div>
+    </div>
+    <div class="hdr-badge">{{ sohdDisplay }}</div>
+    <button v-if="hasDraft" type="button" class="draft-chip draft-restore" @click="restoreDraftNow" title="Bấm để khôi phục nội dung nháp đã lưu">
+      <i class="fas fa-clock-rotate-left"></i>
+      <span class="dc-txt">Khôi phục nháp {{ draftSavedAt }}</span>
+    </button>
+    <div v-else-if="draftSavedAt" class="draft-chip" :class="{ restored: draftRestored }">
+      <i class="fas" :class="draftRestored ? 'fa-clock-rotate-left' : 'fa-cloud'"></i>
+      <span class="dc-txt">{{ draftRestored ? 'Đã khôi phục nháp' : 'Nháp ' + draftSavedAt }}</span>
+    </div>
+    <div class="hdr-tools">
+      <button class="icon-btn" @click="reloadApp" title="Trang chủ — tải lại"><i class="fas fa-house"></i></button>
+      <button class="btn-viewmode" :class="{ on: viewMode==='split' }" @click="toggleViewMode"
+              :title="viewMode==='split' ? 'Tắt khung xem trước — về chế độ nhập gọn' : 'Bật khung xem trước A4 cạnh bên'">
+        <i class="fas fa-eye"></i>
+        <span>Xem trước</span>
+      </button>
+      <button class="icon-btn" @click="printPreview" title="In / Xuất PDF"><i class="fas fa-print"></i></button>
+      <div class="theme-seg" role="group" aria-label="Chế độ Sáng / Tối">
+        <button class="ts" :class="{ on: !isDarkMode }" @click="setTheme(false)" title="Sáng">☀</button>
+        <button class="ts" :class="{ on: isDarkMode }" @click="setTheme(true)" title="Tối">☾</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ MOBILE TAB BAR ═══ -->
+  <div class="mob-tabs">
+    <button class="mob-tab" :class="{ active: mobileTab==='form' }" @click="setMobileTab('form')">
+      <i class="fas fa-edit"></i> Nhập liệu
+    </button>
+    <button class="mob-tab" :class="{ active: mobileTab==='preview' }" @click="setMobileTab('preview')">
+      <i class="fas fa-eye"></i> Xem trước
+    </button>
+  </div>
+
+  <!-- ═══ WORKBENCH ═══ -->
+  <div class="wb" :class="{ 'vm-form': viewMode==='form' }">
+
+    <!-- ─── LEFT: FORM ─── -->
+    <div class="wb-left" :class="{ 'mob-on': mobileTab==='form' }">
+      <div class="l-pad">
+
+        <!-- MODE TABS -->
+        <div class="mode-tabs">
+          <div class="mode-btn" :class="{ active: appMode==='NEW' }" @click="setMode('NEW')">
+            <i class="fas fa-file-contract"></i>TẠO MỚI
+          </div>
+          <div class="mode-btn" :class="{ active: appMode==='EDIT' }" @click="setMode('EDIT')">
+            <i class="fas fa-folder-open"></i>CHỈNH SỬA
+          </div>
+          <div class="mode-btn" :class="{ active: appMode==='IMPORT' }" @click="setMode('IMPORT')">
+            <i class="fas fa-file-import"></i>TỪ BÁO GIÁ
+          </div>
+          <div class="mode-btn" :class="{ active: appMode==='BBNT' }" @click="setMode('BBNT')">
+            <i class="fas fa-clipboard-check"></i>NGHIỆM THU
+          </div>
+          <div class="mode-btn" :class="{ active: appMode==='DNTT' }" @click="setMode('DNTT')">
+            <i class="fas fa-file-invoice-dollar"></i>THANH TOÁN
+          </div>
+        </div>
+
+        <!-- ══════════ FORM HỢP ĐỒNG (NEW / EDIT / IMPORT) ══════════ -->
+        <template v-if="['NEW','EDIT','IMPORT'].includes(appMode)">
+
+        <!-- PROGRESS -->
+        <div class="prog" :title="progDone+'/4 mục đã điền'">
+          <div class="prog-track"><div class="prog-fill" :style="{ width: progPct+'%' }"></div></div>
+          <span class="prog-lbl">{{ progDone }}/4 · {{ progPct }}%</span>
+        </div>
+
+        <!-- EDIT: chọn hợp đồng cũ -->
+        <div v-if="appMode==='EDIT'" class="file-pick">
+          <div class="fsrow">
+            <label style="color:var(--gold);margin:0;font-size:9px;">Chọn hợp đồng để sửa</label>
+            <div style="display:flex;align-items:center;gap:6px">
+              <input type="text" class="fsinp" v-model="fileSearchQuery" placeholder="Tìm kiếm...">
+              <button class="bp-ok bp" style="flex-shrink:0;padding:6px 10px;border-radius:7px;font-size:12px" @click="refreshContractList">
+                <i class="fas fa-sync-alt"></i>
+              </button>
+            </div>
+          </div>
+          <div class="fgrid">
+            <div v-if="contractList.length===0" class="fg-empty">
+              <i class="fas fa-folder-open" style="font-size:20px;display:block;margin-bottom:5px;opacity:.4"></i>Nhấn 🔄 để tải
+            </div>
+            <div v-for="f in filteredContracts" :key="f.id" class="fcard" :class="{ sel: selectedContractId===f.id }" @click="selectContract(f)">
+              <div class="fc-c">{{ parseHDName(f.name).code }}</div>
+              <div class="fc-n">{{ parseHDName(f.name).name || f.name }}</div>
+              <div v-if="parseHDName(f.name).date" class="fc-d">{{ parseHDName(f.name).date }}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- IMPORT: chọn báo giá -->
+        <div v-if="appMode==='IMPORT'" class="file-pick">
+          <div class="fsrow">
+            <label style="color:var(--gold);margin:0;font-size:9px;">1. Chọn Báo Giá</label>
+            <div style="display:flex;align-items:center;gap:6px">
+              <input type="text" class="fsinp" v-model="bzSearchQuery" placeholder="Tìm kiếm...">
+              <button class="bp-ok bp" style="flex-shrink:0;padding:6px 10px;border-radius:7px;font-size:12px" @click="refreshBZList">
+                <i class="fas fa-sync-alt"></i>
+              </button>
+            </div>
+          </div>
+          <div class="fgrid">
+            <div v-if="bzFileList.length===0" class="fg-empty">
+              <i class="fas fa-folder-open" style="font-size:20px;display:block;margin-bottom:5px;opacity:.4"></i>Nhấn 🔄 để tải
+            </div>
+            <div v-for="f in filteredBZFiles" :key="f.id" class="fcard" :class="{ sel: selectedBZId===f.id }" @click="selectBZFile(f)">
+              <div class="fc-c">{{ parseBZName(f.name).code }}</div>
+              <div class="fc-n">{{ parseBZName(f.name).project || f.name }}</div>
+              <div v-if="parseBZName(f.name).date" class="fc-d">{{ parseBZName(f.name).date }}</div>
+            </div>
+          </div>
+          <div class="fg" v-if="selectedBZId && bzOptionList.length>0" style="margin:0">
+            <label style="color:var(--gold)">2. Chọn Option:</label>
+            <div class="cdc" tabindex="-1" @blur="bzOptDropdownOpen=false">
+              <div class="cds" :class="{ open: bzOptDropdownOpen }" @click="bzOptDropdownOpen=!bzOptDropdownOpen">
+                <span :style="{ color: selectedBZOption ? 'var(--text)' : 'var(--dim)' }">{{ selectedBZOption || '-- Chọn Option --' }}</span>
+                <i class="fas fa-chevron-down cds-arr"></i>
+              </div>
+              <ul v-if="bzOptDropdownOpen" class="cdl">
+                <li v-for="opt in bzOptionList" :key="opt" @mousedown.prevent="selectBZOption(opt)">{{ opt }}</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── SỐ HỢP ĐỒNG ── -->
+        <div class="sbox" :class="{ collapsed: sec.sohd }">
+          <div class="stitle sec-h" @click="sec.sohd=!sec.sohd"><i class="fas fa-hashtag" style="color:var(--gold)"></i>Số hợp đồng<i class="fas fa-chevron-down sec-chev" :class="{ rot: sec.sohd }"></i></div>
+          <!-- Row 1: Ngày ký (full width) -->
+          <div class="fg" style="margin-bottom:10px">
+            <label>Ngày ký</label>
+            <div class="dw" @click="openDatePicker('ngayky', $event)">
+              <input type="text" readonly :value="formatDateOnly(form.ngayky)" placeholder="Chọn ngày..." class="dd-inp">
+              <button type="button" class="dd-btn"><i class="fas fa-calendar-alt"></i></button>
+            </div>
+          </div>
+          <!-- Row 2: Mã ngày + Brand (2 items) -->
+          <div class="row">
+            <div class="fg" style="flex:0 0 110px">
+              <label>Mã ngày</label>
+              <input type="text" :value="form.sohdDate" readonly style="color:var(--gold);font-weight:800;text-align:center">
+            </div>
+            <div class="fg">
+              <label>Brand / Viết tắt KH</label>
+              <input v-model="form.brand" type="text" placeholder="VD: FastMotion...">
+            </div>
+          </div>
+          <!-- Row 3: Số HĐ (full width) -->
+          <div class="fg">
+            <label>Số hợp đồng (có thể sửa)</label>
+            <input v-model="form.sohd" type="text">
+          </div>
+        </div>
+
+        <!-- ── BÊN A ── -->
+        <div class="sbox" :class="{ collapsed: sec.bena }">
+          <div class="stitle sec-h" @click="sec.bena=!sec.bena"><i class="fas fa-building" style="color:var(--gold)"></i>Bên A — Khách hàng (*)<i class="fas fa-chevron-down sec-chev" :class="{ rot: sec.bena }"></i></div>
+          <div class="row">
+            <div class="fg" style="flex:2">
+              <label>Tên công ty (*)</label>
+              <input v-model="form.tencty" ref="tenctyInput" list="cust-list" @input="errTencty=false" @change="_applyCustomer($event.target.value)" :class="{'inp-err':errTencty}" type="text" placeholder="CÔNG TY TNHH...">
+              <datalist id="cust-list"><option v-for="c in savedCustomers" :key="c.tencty" :value="c.tencty"></option></datalist>
+            </div>
+            <div class="fg">
+              <label>Mã số thuế</label>
+              <input v-model="form.mst" type="text" inputmode="numeric" placeholder="0123456789">
+            </div>
+          </div>
+          <div class="fg" style="margin-bottom:10px">
+            <label>Địa chỉ</label>
+            <input v-model="form.diachi" type="text" placeholder="Địa chỉ đăng ký kinh doanh">
+          </div>
+          <div class="row">
+            <div class="fg">
+              <label>Người đại diện</label>
+              <input v-model="form.nguoidaidien" ref="daidienInput" :class="{'inp-err':errDaidien}" @input="errDaidien=false" type="text" placeholder="Họ và tên...">
+            </div>
+            <div class="fg">
+              <label>Chức vụ</label>
+              <input v-model="form.chucvu" type="text" placeholder="Giám đốc">
+            </div>
+          </div>
+          <div class="row">
+            <div class="fg">
+              <label>Email</label>
+              <input v-model="form.email" type="email" placeholder="contact@company.com">
+            </div>
+            <div class="fg">
+              <label>Điện thoại</label>
+              <input v-model="form.sdt" type="tel" placeholder="09xxxxxxxx">
+            </div>
+          </div>
+        </div>
+
+        <!-- ── NỘI DUNG HĐ ── -->
+        <div class="sbox" :class="{ collapsed: sec.noidung }">
+          <div class="stitle sec-h" @click="sec.noidung=!sec.noidung"><i class="fas fa-align-left" style="color:var(--gold)"></i>Nội dung hợp đồng<i class="fas fa-chevron-down sec-chev" :class="{ rot: sec.noidung }"></i></div>
+          <div class="fg" style="margin-bottom:10px">
+            <label>Dự án / Tên dịch vụ</label>
+            <input v-model="form.duann" type="text" placeholder="VD: Sự kiện VinWonders Vũ Yên 2026">
+          </div>
+          <div class="fg" style="margin-bottom:10px">
+            <label>Mô tả dịch vụ (Điều 1)</label>
+            <div class="dv-pre">
+              <button v-for="(p,i) in dvPresets" :key="i" type="button"
+                      class="dv-btn" :class="{ sel: selectedDvPreset===i }"
+                      @click="selectDvPreset(i)">{{ p }}</button>
+            </div>
+            <textarea v-model="form.motadv" placeholder="Chọn loại dịch vụ hoặc nhập tự do..."></textarea>
+          </div>
+          <div class="row">
+            <div class="fg">
+              <label>Thời gian (từ)</label>
+              <div class="dw" @click="openDatePicker('tu', $event)">
+                <input type="text" readonly :value="formatDateOnly(form.tu)" placeholder="Ngày bắt đầu..." class="dd-inp">
+                <button type="button" class="dd-btn"><i class="fas fa-calendar-alt"></i></button>
+              </div>
+            </div>
+            <div class="fg">
+              <label>Thời gian (đến)</label>
+              <div class="dw" @click="openDatePicker('den', $event)">
+                <input type="text" readonly :value="formatDateOnly(form.den)" placeholder="Ngày kết thúc..." class="dd-inp">
+                <button type="button" class="dd-btn"><i class="fas fa-calendar-alt"></i></button>
+              </div>
+            </div>
+          </div>
+          <div class="fg">
+            <label>Địa điểm thực hiện</label>
+            <input v-model="form.diadiem" type="text" placeholder="VD: Hà Nội / theo kế hoạch thỏa thuận">
+          </div>
+        </div>
+
+        <hr class="divider">
+
+        <!-- ── BẢNG DỊCH VỤ ── -->
+        <div class="ctabs">
+          <button v-for="tab in tabs" :key="tab.id" type="button" :class="['ctab', activeTab===tab.id ? 'active' : '']" @click="activeTab=tab.id">
+            <span>{{ tab.name }}</span>
+            <span v-if="tabSubTotals[tab.id]>0" class="ctab-sub">{{ formatTabTotal(tabSubTotals[tab.id]) }}</span>
+          </button>
+        </div>
+
+        <div v-for="tab in tabs" :key="tab.id" class="tc" :class="{ active: activeTab===tab.id }">
+          <div class="tw">
+            <table>
+              <thead>
+                <tr>
+                  <th style="width:40%;text-align:left;padding-left:10px">Hạng mục</th>
+                  <th style="width:8%">SL</th>
+                  <th style="width:8%">Ngày</th>
+                  <th style="width:9%">ĐVT</th>
+                  <th style="width:18%">Đơn giá</th>
+                  <th style="width:17%">Thành tiền</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="(item, index) in form.items[tab.id]" :key="index">
+                  <td data-label="Hạng mục:" style="text-align:left">
+                    <div class="cdc">
+                      <input type="text" v-model="item.ten" @focus="openItemDropdown(tab.id, index, $event)" @blur="closeItemDropdown" placeholder="Gõ tìm hạng mục..." style="text-align:left;width:100%;padding-left:8px">
+                      <Teleport to="body">
+                        <ul v-if="activeItemDropdown===tab.id+'_'+index" class="cdl"
+                            :style="{ position:'fixed', top:dropdownPos.top+'px', left:dropdownPos.left+'px', width:dropdownPos.width+'px', zIndex:9999 }">
+                          <li v-for="opt in filteredServices(tab.id, item.ten)" :key="opt.ten" @mousedown.prevent="selectService(item, opt)">{{ opt.ten }}</li>
+                          <li v-if="filteredServices(tab.id, item.ten).length===0" style="color:var(--dim);font-style:italic">Không tìm thấy...</li>
+                        </ul>
+                      </Teleport>
+                    </div>
+                  </td>
+                  <td data-label="SL:"><input type="number" v-model.number="item.sl" min="1" style="text-align:center"></td>
+                  <td data-label="Ngày:"><input type="number" v-model.number="item.sn" min="1" style="text-align:center;font-weight:800;color:var(--gold)"></td>
+                  <td data-label="ĐVT:"><input type="text" v-model="item.dvt" style="text-align:center"></td>
+                  <td data-label="Đơn giá:">
+                    <input type="text" :value="item.dongia ? Number(item.dongia).toLocaleString('vi-VN') : ''"
+                           @change="item.dongia=Math.max(0,parseInt($event.target.value.replace(/[^\d]/g,''))||0)"
+                           style="text-align:right;color:var(--gold);font-weight:700;font-size:11px">
+                  </td>
+                  <td data-label="Thành tiền:">
+                    <div class="ac">
+                      <span>{{ formatShortMoney((item.dongia||0)*(item.sl||1)*(item.sn||1)) }}</span>
+                      <button type="button" @click="removeItem(tab.id, index)" class="btn-rm"><i class="fas fa-trash-alt"></i></button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="arow" style="gap:8px">
+            <button type="button" class="btn-add" @click="addItem(tab.id)">+ Thêm {{ tab.short }}</button>
+            <button type="button" class="btn-add" @click="openPicker()"><i class="fas fa-list-check" style="margin-right:5px"></i>Chọn nhiều dịch vụ</button>
+          </div>
+        </div>
+
+        <!-- VAT + CHIẾT KHẤU + TỔNG -->
+        <div class="sumbox">
+          <div>
+            <label><i class="fas fa-tags" style="margin-right:5px;color:var(--gold)"></i>Chiết khấu (số tiền)</label>
+            <input type="text"
+                   :value="form.ck ? Number(form.ck).toLocaleString('vi-VN') : ''"
+                   @change="form.ck=Math.max(0,parseInt($event.target.value.replace(/[^\d]/g,''))||0)"
+                   placeholder="VD: 5.000.000 (để trống nếu không có)"
+                   style="margin-top:5px">
+            <div class="ck-presets">
+              <button type="button" @click="setCkPct(0)">Xoá</button>
+              <button type="button" @click="setCkPct(5)">5%</button>
+              <button type="button" @click="setCkPct(10)">10%</button>
+              <button type="button" @click="setCkPct(15)">15%</button>
+            </div>
+            <div v-if="form.ck>0" style="font-size:11px;color:var(--red);font-weight:700;margin-top:4px">
+              − {{ formatMoney(form.ck) }}
+            </div>
+          </div>
+          <div>
+            <label><i class="fas fa-receipt" style="margin-right:5px;color:var(--gold)"></i>Thuế VAT</label>
+            <div class="vrow" style="margin-top:7px">
+              <div class="vtog">
+                <input type="checkbox" id="vatCk" v-model="form.applyVat">
+                <label for="vatCk">Áp dụng VAT</label>
+              </div>
+              <div v-if="form.applyVat" style="display:flex;align-items:center;gap:7px">
+                <input type="number" v-model.number="form.vatPct" class="vpct" min="0" max="20" step="1">
+                <span style="font-size:12px;color:var(--dim)">%</span>
+              </div>
+            </div>
+            <div v-if="form.applyVat && vatAmount>0" class="vat-l" style="margin-top:6px">VAT {{ form.vatPct }}%: + {{ formatMoney(vatAmount) }}</div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:5px">
+            <div v-if="form.ck>0" class="sub-l">Tạm tính: <b>{{ formatMoney(subTotal) }}</b></div>
+            <div class="sub-l">Chưa VAT: <b>{{ formatMoney(afterCk) }}</b></div>
+            <div class="chu-l">Bằng chữ: <b>{{ tongTienChu }}</b></div>
+            <div class="tot-chip">
+              <span class="tot-lbl">Tổng giá trị HĐ</span>
+              <input type="text" class="tot-val" readonly :value="formatMoney(tonggiatri)">
+            </div>
+          </div>
+        </div>
+
+        <!-- PHƯƠNG THỨC THANH TOÁN -->
+        <div class="sbox sec-h-wrap" style="margin-top:12px" :class="{ collapsed: sec.thanhtoan }">
+          <div class="stitle sec-h" @click="sec.thanhtoan=!sec.thanhtoan"><i class="fas fa-money-bill-wave" style="color:var(--gold)"></i>Phương thức thanh toán<i class="fas fa-chevron-down sec-chev" :class="{ rot: sec.thanhtoan }"></i></div>
+          <div class="pay-pre">
+            <button v-for="(p,i) in paymentPresets" :key="i" type="button" class="pre-btn" :class="{ sel: selectedPreset===i }" @click="selectPreset(i)">{{ p.label }}</button>
+          </div>
+          <div v-if="selectedPreset!==null" class="drow">
+            <label style="margin:0;text-transform:none;font-size:12px">Số ngày làm việc:</label>
+            <input type="number" v-model.number="form.payDays" class="dinp" min="1" max="90">
+            <span style="font-size:12px;color:var(--dim)">ngày</span>
+          </div>
+          <div class="fg">
+            <label>Điều khoản thanh toán (có thể chỉnh)</label>
+            <textarea v-model="form.thanhtoantxt" rows="4" placeholder="Nhập điều khoản thanh toán..."></textarea>
+          </div>
+        </div>
+
+        <!-- GHI CHÚ -->
+        <div class="fg" style="margin-top:10px">
+          <label>Ghi chú bổ sung</label>
+          <textarea v-model="form.ghichu" placeholder="Ghi chú, điều khoản đặc biệt..."></textarea>
+        </div>
+
+        <!-- SUBMIT (sticky đáy form) -->
+        <div class="submit-bar">
+          <button type="button" class="btn-sub" @click="confirmCreate">
+            <div class="sub-lbl"><i class="fas fa-file-contract" style="margin-right:7px"></i>{{ appMode==='EDIT' ? 'CẬP NHẬT HỢP ĐỒNG' : 'TẠO HỢP ĐỒNG' }}</div>
+            <div v-if="tonggiatri>0" class="sub-tot">{{ formatMoney(tonggiatri) }}</div>
+          </button>
+          <button v-if="appMode==='EDIT'" type="button" class="btn-dup" @click="duplicateContract">
+            <i class="fas fa-copy"></i> Nhân bản thành hợp đồng mới
+          </button>
+          <div style="text-align:center;font-size:10px;color:var(--dim);margin-top:8px;font-style:italic">Ctrl + Enter — tạo hợp đồng</div>
+        </div>
+
+        </template><!-- /form hợp đồng -->
+
+        <!-- ══════════ BBNT — BIÊN BẢN NGHIỆM THU ══════════ -->
+        <div v-if="appMode==='BBNT'">
+
+          <!-- Picker chọn hợp đồng để nghiệm thu -->
+          <div class="file-pick">
+            <div class="fsrow">
+              <label style="color:var(--gold);margin:0;font-size:9px;">Chọn hợp đồng để nghiệm thu</label>
+              <div style="display:flex;align-items:center;gap:6px">
+                <input type="text" class="fsinp" v-model="bbntSearchQuery" placeholder="Tìm kiếm...">
+                <button class="bp-ok bp" style="flex-shrink:0;padding:6px 10px;border-radius:7px;font-size:12px" @click="refreshContractList">
+                  <i class="fas fa-sync-alt"></i>
+                </button>
+              </div>
+            </div>
+            <div class="fgrid">
+              <div v-if="contractList.length===0" class="fg-empty">
+                <i class="fas fa-folder-open" style="font-size:20px;display:block;margin-bottom:5px;opacity:.4"></i>Nhấn 🔄 để tải
+              </div>
+              <div v-for="f in filteredBBNTContracts" :key="f.id" class="fcard" :class="{ sel: bbnt.contractId===f.id }" @click="selectBBNTContract(f)">
+                <div class="fc-c">{{ parseHDName(f.name).code }}</div>
+                <div class="fc-n">{{ parseHDName(f.name).name || f.name }}</div>
+                <div v-if="parseHDName(f.name).date" class="fc-d">{{ parseHDName(f.name).date }}</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Loading khi kéo data live -->
+          <div v-if="bbnt.loading" style="text-align:center;padding:22px;color:var(--gold)">
+            <i class="fas fa-spinner fa-spin" style="font-size:22px"></i>
+            <div style="font-size:12px;margin-top:8px;color:var(--dim)">Đang đọc dữ liệu hợp đồng...</div>
+          </div>
+
+          <!-- Chưa chọn -->
+          <div v-if="!bbnt.contractId && !bbnt.loading" style="padding:24px 16px;text-align:center;color:var(--dim);font-size:12px">
+            Chọn 1 hợp đồng ở trên để lập biên bản nghiệm thu.
+          </div>
+
+          <!-- Form nghiệm thu -->
+          <template v-if="bbnt.contractId && !bbnt.loading">
+
+            <div v-if="bbnt.fromSnapshot" style="margin:10px 0;padding:8px 10px;border-radius:8px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.35);font-size:11px;color:var(--red)">
+              <i class="fas fa-triangle-exclamation"></i> Không đọc được bảng giá sống trong Doc — đang dùng snapshot lúc tạo HĐ. Kiểm tra kỹ hạng mục.
+            </div>
+
+            <!-- Thông tin hợp đồng -->
+            <div class="sbox">
+              <div class="stitle"><i class="fas fa-file-contract" style="color:var(--gold)"></i>Hợp đồng nghiệm thu</div>
+              <div class="fg" style="margin-bottom:10px">
+                <label>Số hợp đồng</label>
+                <input type="text" v-model="bbnt.sohd">
+              </div>
+              <div class="fg" style="margin-bottom:10px">
+                <label>Khách hàng (Bên A)</label>
+                <input type="text" v-model="bbnt.tencty">
+              </div>
+              <div class="fg" style="margin-bottom:10px">
+                <label>Ngày nghiệm thu</label>
+                <div class="dw" @click="openDatePicker('ngayNthu', $event, 'bbnt')">
+                  <input type="text" readonly :value="formatDateOnly(bbnt.ngayNthu)" placeholder="Chọn ngày..." class="dd-inp">
+                  <button type="button" class="dd-btn"><i class="fas fa-calendar-alt"></i></button>
+                </div>
+              </div>
+              <div class="fg">
+                <label>Sản phẩm bàn giao / link nghiệm thu (mỗi dòng 1 mục)</label>
+                <textarea v-model="bbnt.deliverables" rows="3" placeholder="VD:&#10;01 video recap: https://drive.google.com/...&#10;01 bộ ảnh sự kiện đã hậu kỳ: https://..."></textarea>
+              </div>
+            </div>
+
+            <!-- Bảng hạng mục nghiệm thu -->
+            <div class="tw" style="margin-top:12px">
+              <table>
+                <thead>
+                  <tr>
+                    <th style="width:26%;text-align:left;padding-left:10px">Hạng mục</th>
+                    <th style="width:7%">ĐVT</th>
+                    <th style="width:7%">SL</th>
+                    <th style="width:15%">Đơn giá</th>
+                    <th style="width:16%">Thành tiền</th>
+                    <th style="width:10%">Tỉ lệ %</th>
+                    <th style="width:19%">TT nghiệm thu</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="(it,idx) in bbnt.items" :key="idx">
+                    <td data-label="Hạng mục:" style="text-align:left"><input type="text" v-model="it.ten" placeholder="Tên hạng mục..." style="text-align:left;width:100%;padding-left:8px"></td>
+                    <td data-label="ĐVT:"><input type="text" v-model="it.dvt" style="text-align:center"></td>
+                    <td data-label="SL:"><input type="number" v-model.number="it.sl" min="1" @change="recalcBBNTTt(it)" style="text-align:center"></td>
+                    <td data-label="Đơn giá:">
+                      <input type="text" :value="it.dongia ? Number(it.dongia).toLocaleString('vi-VN') : ''"
+                             @change="it.dongia=Math.max(0,parseInt($event.target.value.replace(/[^\d]/g,''))||0); recalcBBNTTt(it)"
+                             style="text-align:right;color:var(--gold);font-weight:700;font-size:11px">
+                    </td>
+                    <td data-label="Thành tiền:">
+                      <input type="text" :value="it.tt ? Number(it.tt).toLocaleString('vi-VN') : ''"
+                             @change="it.tt=Math.max(0,parseInt($event.target.value.replace(/[^\d]/g,''))||0)"
+                             style="text-align:right;color:var(--gold);font-weight:700;font-size:11px">
+                    </td>
+                    <td data-label="Tỉ lệ %:"><input type="number" v-model.number="it.tyle" min="0" max="100" style="text-align:center;color:var(--gold);font-weight:800"></td>
+                    <td data-label="TT nghiệm thu:">
+                      <div class="ac">
+                        <span>{{ formatShortMoney(bbntItemNthu(it)) }}</span>
+                        <button type="button" @click="removeBBNTItem(idx)" class="btn-rm"><i class="fas fa-trash-alt"></i></button>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="arow" style="gap:8px">
+              <button type="button" class="btn-add" @click="addBBNTItem">+ Thêm hạng mục</button>
+            </div>
+
+            <!-- Tỉ lệ nhanh + VAT + đã TT + tổng -->
+            <div class="sumbox">
+              <div>
+                <label><i class="fas fa-percent" style="margin-right:5px;color:var(--gold)"></i>Tỉ lệ nghiệm thu chung</label>
+                <div class="ck-presets" style="margin-top:7px">
+                  <button type="button" @click="setBBNTTyleAll(50)">50%</button>
+                  <button type="button" @click="setBBNTTyleAll(70)">70%</button>
+                  <button type="button" @click="setBBNTTyleAll(100)">100%</button>
+                </div>
+                <label style="margin-top:12px"><i class="fas fa-hand-holding-usd" style="margin-right:5px;color:var(--gold)"></i>Đã thanh toán</label>
+                <input type="text"
+                       :value="bbnt.daTT ? Number(bbnt.daTT).toLocaleString('vi-VN') : ''"
+                       @change="bbnt.daTT=Math.max(0,parseInt($event.target.value.replace(/[^\d]/g,''))||0)"
+                       placeholder="VD: 10.000.000 (0 nếu chưa)" style="margin-top:5px">
+              </div>
+              <div>
+                <label><i class="fas fa-receipt" style="margin-right:5px;color:var(--gold)"></i>Thuế VAT</label>
+                <div class="vrow" style="margin-top:7px">
+                  <div class="vtog">
+                    <input type="checkbox" id="bbntVatCk" v-model="bbnt.applyVat">
+                    <label for="bbntVatCk">Áp dụng VAT</label>
+                  </div>
+                  <div v-if="bbnt.applyVat" style="display:flex;align-items:center;gap:7px">
+                    <input type="number" v-model.number="bbnt.vatPct" class="vpct" min="0" max="20" step="1">
+                    <span style="font-size:12px;color:var(--dim)">%</span>
+                  </div>
+                </div>
+                <div v-if="bbnt.applyVat && bbntVat>0" class="vat-l" style="margin-top:6px">VAT {{ bbnt.vatPct }}%: + {{ formatMoney(bbntVat) }}</div>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:5px">
+                <div class="sub-l">Giá trị nghiệm thu (chưa VAT): <b>{{ formatMoney(bbntSumNthu) }}</b></div>
+                <div class="sub-l">Đã thanh toán: <b>{{ formatMoney(bbnt.daTT) }}</b></div>
+                <div class="chu-l">Còn phải TT (bằng chữ): <b>{{ bbntConPhaiChu }}</b></div>
+                <div class="tot-chip">
+                  <span class="tot-lbl">Còn phải thanh toán</span>
+                  <input type="text" class="tot-val" readonly :value="formatMoney(bbntConPhai)">
+                </div>
+              </div>
+            </div>
+
+            <!-- Xuất BBNT -->
+            <div class="submit-bar">
+              <button type="button" class="btn-sub" @click="exportBBNT">
+                <div class="sub-lbl"><i class="fas fa-clipboard-check" style="margin-right:7px"></i>XUẤT BIÊN BẢN NGHIỆM THU</div>
+                <div v-if="bbntTong>0" class="sub-tot">{{ formatMoney(bbntTong) }}</div>
+              </button>
+            </div>
+
+          </template>
+
+        </div>
+
+        <!-- ══════════ DNTT — ĐỀ NGHỊ THANH TOÁN ══════════ -->
+        <div v-if="appMode==='DNTT'">
+
+          <!-- Picker chọn hợp đồng -->
+          <div class="file-pick">
+            <div class="fsrow">
+              <label style="color:var(--gold);margin:0;font-size:9px;">Chọn hợp đồng để lập đề nghị thanh toán</label>
+              <div style="display:flex;align-items:center;gap:6px">
+                <input type="text" class="fsinp" v-model="dnttSearchQuery" placeholder="Tìm kiếm...">
+                <button class="bp-ok bp" style="flex-shrink:0;padding:6px 10px;border-radius:7px;font-size:12px" @click="refreshContractList">
+                  <i class="fas fa-sync-alt"></i>
+                </button>
+              </div>
+            </div>
+            <div class="fgrid">
+              <div v-if="contractList.length===0" class="fg-empty">
+                <i class="fas fa-folder-open" style="font-size:20px;display:block;margin-bottom:5px;opacity:.4"></i>Nhấn 🔄 để tải
+              </div>
+              <div v-for="f in filteredDNTTContracts" :key="f.id" class="fcard" :class="{ sel: dntt.contractId===f.id }" @click="selectDNTTContract(f)">
+                <div class="fc-c">{{ parseHDName(f.name).code }}</div>
+                <div class="fc-n">{{ parseHDName(f.name).name || f.name }}</div>
+                <div v-if="parseHDName(f.name).date" class="fc-d">{{ parseHDName(f.name).date }}</div>
+              </div>
+            </div>
+          </div>
+
+          <div v-if="dntt.loading" style="text-align:center;padding:22px;color:var(--gold)">
+            <i class="fas fa-spinner fa-spin" style="font-size:22px"></i>
+            <div style="font-size:12px;margin-top:8px;color:var(--dim)">Đang đọc dữ liệu hợp đồng...</div>
+          </div>
+
+          <div v-if="!dntt.contractId && !dntt.loading" style="padding:24px 16px;text-align:center;color:var(--dim);font-size:12px">
+            Chọn 1 hợp đồng ở trên để lập đề nghị thanh toán.
+          </div>
+
+          <template v-if="dntt.contractId && !dntt.loading">
+            <!-- Thông tin đề nghị -->
+            <div class="sbox">
+              <div class="stitle"><i class="fas fa-file-invoice-dollar" style="color:var(--gold)"></i>Đề nghị thanh toán</div>
+              <div class="fg" style="margin-bottom:10px">
+                <label>Số ĐNTT</label>
+                <input type="text" :value="dnttSoDntt" readonly style="color:var(--gold);font-weight:700">
+              </div>
+              <div class="fg" style="margin-bottom:10px">
+                <label>Kính gửi (Bên A)</label>
+                <input type="text" v-model="dntt.tencty">
+              </div>
+              <div class="row">
+                <div class="fg">
+                  <label>Số hợp đồng</label>
+                  <input type="text" v-model="dntt.sohd">
+                </div>
+                <div class="fg">
+                  <label>Số biên bản nghiệm thu</label>
+                  <input type="text" v-model="dntt.soBBNT">
+                </div>
+              </div>
+              <div class="fg" style="margin-top:10px">
+                <label>Dự án / Dịch vụ</label>
+                <input type="text" v-model="dntt.duann">
+              </div>
+            </div>
+
+            <!-- Nội dung thanh toán -->
+            <div class="sbox" style="margin-top:12px">
+              <div class="stitle"><i class="fas fa-money-bill-wave" style="color:var(--gold)"></i>Nội dung thanh toán</div>
+              <div class="fg" style="margin-bottom:8px">
+                <label>Số tiền thanh toán (mặc định = tổng HĐ)</label>
+                <input type="text"
+                       :value="dntt.soTien ? Number(dntt.soTien).toLocaleString('vi-VN') : ''"
+                       @change="dntt.soTien=Math.max(0,parseInt($event.target.value.replace(/[^\d]/g,''))||0)"
+                       style="text-align:right;color:var(--gold);font-weight:800">
+              </div>
+              <div class="chu-l" style="margin-bottom:10px">Bằng chữ: <b>{{ dnttSoTienChu }}</b></div>
+              <div class="fg" style="margin-bottom:10px">
+                <label>Ghi chú số tiền</label>
+                <input type="text" v-model="dntt.soTienNote" placeholder="VD: 100% giá trị hợp đồng đã bao gồm VAT">
+              </div>
+              <div class="row">
+                <div class="fg">
+                  <label>Số ngày giải ngân</label>
+                  <input type="text" v-model="dntt.soNgayText" placeholder="VD: 15 (mười lăm)">
+                </div>
+                <div class="fg">
+                  <label>Ngày đề nghị</label>
+                  <div class="dw" @click="openDatePicker('ngay', $event, 'dntt')">
+                    <input type="text" readonly :value="formatDateOnly(dntt.ngay)" placeholder="Chọn ngày..." class="dd-inp">
+                    <button type="button" class="dd-btn"><i class="fas fa-calendar-alt"></i></button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Xuất DNTT -->
+            <div class="submit-bar">
+              <button type="button" class="btn-sub" @click="exportDNTT">
+                <div class="sub-lbl"><i class="fas fa-file-invoice-dollar" style="margin-right:7px"></i>XUẤT ĐỀ NGHỊ THANH TOÁN</div>
+                <div v-if="dntt.soTien>0" class="sub-tot">{{ formatMoney(dntt.soTien) }}</div>
+              </button>
+            </div>
+          </template>
+
+        </div>
+
+      </div><!-- /l-pad -->
+    </div><!-- /wb-left -->
+
+    <!-- ─── RIGHT: A4 PREVIEW ─── -->
+    <div class="wb-right" :class="{ 'mob-on': mobileTab==='preview' }">
+
+      <!-- Toolbar -->
+      <div class="a4-bar">
+        <span class="a4-bar-lbl">Preview</span>
+        <button class="zbtn" @click="zoomOut" title="Thu nhỏ">−</button>
+        <span class="zpct">{{ Math.round(pgZoom*100) }}%</span>
+        <button class="zbtn" @click="zoomIn" title="Phóng to">+</button>
+        <button class="tbtn" @click="zoomFit" title="Fit width">⤢ Fit</button>
+        <div class="bsep"></div>
+        <div class="bar-r">
+          <button class="tbtn" @click="printPreview" title="In / Xuất PDF">
+            <i class="fas fa-print"></i> In
+          </button>
+          <button class="icon-btn" @click="toggleTheme" title="Sáng / Tối" style="width:26px;height:26px;font-size:12px">{{ isDarkMode ? '☾' : '☀' }}</button>
+        </div>
+      </div>
+
+      <!-- A4 Stage -->
+      <div class="a4-stage" ref="a4Stage">
+        <div class="a4-page"
+             ref="a4Page"
+             :style="{ zoom: pgZoom, '--z': pgZoom }"
+             v-html="previewHTML">
+        </div>
+      </div>
+
+    </div><!-- /wb-right -->
+
+  </div><!-- /wb -->
+
+  <!-- ═══ MODAL: XÁC NHẬN ═══ -->
+  <div class="overlay" v-if="modals.confirm">
+    <div class="popup">
+      <div class="popup-title gold">Xác Nhận Hợp Đồng</div>
+      <div class="si"><strong>Số HĐ:</strong><span class="dv">{{ form.sohd }}</span></div>
+      <div class="si"><strong>Khách hàng:</strong><span class="dv">{{ form.tencty || '(Chưa nhập)' }}</span></div>
+      <div class="si"><strong>Tổng giá trị:</strong><span class="dv sh">{{ formatMoney(tonggiatri) }}</span></div>
+      <div v-if="dupWarn" class="si" style="border-color:rgba(239,68,68,.4);background:rgba(239,68,68,.08)"><strong style="color:var(--red)">⚠ Trùng</strong><span class="dv" style="color:var(--red)">Đã có: {{ dupWarn }}</span></div>
+      <div class="par">
+        <button type="button" class="bp bp-cl" @click="modals.confirm=false">Quay lại</button>
+        <button type="button" class="bp bp-ok" @click="executeProcess">Xác nhận</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ MODAL: CHỌN NHIỀU DỊCH VỤ ═══ -->
+  <div class="overlay" v-if="modals.picker" @click.self="modals.picker=false">
+    <div class="popup" style="max-width:540px;text-align:left">
+      <div class="popup-title gold" style="text-align:center">Chọn nhiều dịch vụ</div>
+      <input v-model="pickerSearch" type="text" placeholder="Tìm dịch vụ..." style="margin-bottom:10px">
+      <div class="picker-list">
+        <template v-for="tab in tabs" :key="tab.id">
+          <div v-if="pickerServices(tab.id).length" class="picker-grp">{{ tab.name }}</div>
+          <label v-for="s in pickerServices(tab.id)" :key="tab.id+s.ten" class="picker-item">
+            <input type="checkbox" :checked="!!pickerSel[tab.id+'::'+s.ten]" @change="pickerSel[tab.id+'::'+s.ten]=$event.target.checked">
+            <span class="pi-name">{{ s.ten }}</span>
+            <span class="pi-price">{{ formatShortMoney(s.dongia) }}</span>
+          </label>
+        </template>
+      </div>
+      <div class="par">
+        <button type="button" class="bp bp-cl" @click="modals.picker=false">Đóng</button>
+        <button type="button" class="bp bp-ok" @click="addPicked">Thêm {{ pickerSelCount }} mục</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ MODAL: LOADING ═══ -->
+  <div class="overlay" v-if="modals.loading">
+    <div class="popup" style="max-width:320px">
+      <div v-if="!isProcessingDone">
+        <div class="ll-wrap">
+          <div class="ll-ring"></div>
+          <div class="ll-inner">
+            <img src="https://drive.google.com/thumbnail?id=1A08TfiPaQ99gcDu7THMh9O98gpVwUbJS&sz=w200-h200" onerror="this.src='https://i.imgur.com/NymLXBn.png'" alt="Bee Z">
+          </div>
+        </div>
+      </div>
+      <div v-if="isProcessingDone" style="margin-bottom:12px"><i class="fas fa-check-circle ok-ic"></i></div>
+      <div style="font-weight:800;font-size:15px;margin-bottom:7px" :style="{color: isProcessingDone?'var(--green)':'var(--gold)'}">
+        {{ isProcessingDone ? (appMode==='BBNT' ? 'Tạo biên bản thành công!' : (appMode==='DNTT' ? 'Tạo đề nghị thành công!' : 'Tạo hợp đồng thành công!')) : 'Đang xử lý...' }}
+      </div>
+      <div v-if="!isProcessingDone">
+        <div class="prog-w"><div class="prog-f" :style="{width: progressValue+'%'}"></div></div>
+        <div class="prog-p">{{ Math.floor(progressValue) }}%</div>
+        <button type="button" class="bp bp-cl" style="width:100%;margin-top:16px" @click="cancelCreate">Dừng</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ MODAL: SUCCESS ═══ -->
+  <div class="overlay" v-if="modals.success">
+    <div class="popup">
+      <div class="popup-title green">{{ appMode==='BBNT' ? 'Biên Bản Đã Tạo!' : (appMode==='DNTT' ? 'Đề Nghị Đã Tạo!' : 'Hợp Đồng Đã Tạo!') }}</div>
+      <div style="color:var(--gold);font-weight:700;font-size:12px;margin-bottom:12px">{{ resultData.sohd }}</div>
+      <div class="rlinks">
+        <a :href="resultData.pdfUrl" target="_blank" class="rl pdf">
+          <i class="fas fa-file-pdf"></i> Mở File PDF
+        </a>
+        <a :href="resultData.docUrl" target="_blank" class="rl doc">
+          <i class="fas fa-file-word"></i> Mở Google Docs
+        </a>
+        <button type="button" class="rl cp" :class="{ ok: copyDocSuccess }" @click="copyDocLink">
+          <i class="fas" :class="copyDocSuccess?'fa-check':'fa-link'"></i>
+          {{ copyDocSuccess ? 'Đã copy!' : 'Copy Link Docs' }}
+        </button>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:7px">
+        <button type="button" class="bp bp-ok" style="width:100%" @click="resetForm">Tạo hợp đồng mới</button>
+        <button type="button" class="bp bp-cl" style="width:100%" @click="modals.success=false">Đóng</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ TOAST ═══ -->
+  <Teleport to="body">
+    <div class="toasts">
+      <div v-for="t in toasts" :key="t.id" class="toast" :class="t.type">
+        <i class="fas" :class="t.type==='err'?'fa-circle-exclamation':(t.type==='ok'?'fa-circle-check':'fa-circle-info')"></i>
+        <span>{{ t.msg }}</span>
+        <button type="button" class="toast-x" @click="removeToast(t.id)" aria-label="Đóng">&times;</button>
+      </div>
+    </div>
+  </Teleport>
+
+  <!-- ═══ DATE PICKER ═══ -->
+  <Teleport to="body">
+    <div v-if="datePicker.open" style="position:fixed;inset:0;z-index:9998" @click.self="closeDatePicker">
+      <div class="dp-popup" :style="{ top: datePicker.pos.top+'px', left: datePicker.pos.left+'px' }">
+        <div class="dp-hdr">
+          <button type="button" class="dp-nb" @click="dpPrevMonth"><i class="fas fa-chevron-left"></i></button>
+          <span class="dp-ml">{{ dpMonthLabel }}</span>
+          <button type="button" class="dp-nb" @click="dpNextMonth"><i class="fas fa-chevron-right"></i></button>
+        </div>
+        <div class="dp-wd"><span v-for="(d,i) in ['H','B','T','N','S','B','C']" :key="i">{{ d }}</span></div>
+        <div class="dp-grid">
+          <div v-for="(day,i) in calendarDays" :key="i" class="dp-d"
+               :class="{ 'dp-oth': !day.cur, 'dp-sel': dpIsSelected(day), 'dp-tod': dpIsToday(day) }"
+               @click="dpSelectDay(day)">{{ day.d }}</div>
+        </div>
+        <div class="dp-ft">
+          <button type="button" class="dp-btn dp-cn" @click="closeDatePicker">Hủy</button>
+          <button type="button" class="dp-btn dp-ok" @click="dpConfirm">Xác nhận</button>
+        </div>
+      </div>
+    </div>
+  </Teleport>
+
+</div><!-- /#app -->
+
+<script>
+const { createApp } = Vue;
+
+// Đọc tiền bằng chữ
+const mangso=['không','một','hai','ba','bốn','năm','sáu','bảy','tám','chín'];
+function dochangchuc(so,daydu){let s='';let chuc=Math.floor(so/10);let donvi=so%10;if(chuc>1){s=' '+mangso[chuc]+' mươi';if(donvi==1)s+=' mốt';}else if(chuc==1){s=' mười';if(donvi==1)s+=' một';}else if(daydu&&donvi>0)s=' lẻ';if(donvi==5&&chuc>=1)s+=' lăm';else if(donvi>1||(donvi==1&&chuc==0))s+=' '+mangso[donvi];return s;}
+function docblock(so,daydu){let s='';let tram=Math.floor(so/100);so=so%100;if(daydu||tram>0){s=' '+mangso[tram]+' trăm';s+=dochangchuc(so,true);}else s=dochangchuc(so,false);return s;}
+function docHangTrieu(so,daydu){let s='';let trieu=Math.floor(so/1000000);so=so%1000000;if(trieu>0){s=docblock(trieu,daydu)+' triệu';daydu=true;}let ngan=Math.floor(so/1000);so=so%1000;if(ngan>0){s+=docblock(ngan,daydu)+' nghìn';daydu=true;}if(so>0){s+=docblock(so,daydu);}return s;}
+function docTienChu(so){if(!so||so<0||isNaN(so))return'Không đồng';let s='',hauto='';do{let ty=so%1000000000;so=Math.floor(so/1000000000);s=(so>0?docHangTrieu(ty,true):docHangTrieu(ty,false))+hauto+s;hauto=' tỷ';}while(so>0);s=s.trim().replace(/không trăm lẻ không/g,'').replace(/lẻ không/g,'').trim();if(s.substring(0,10)==='không trăm'){s=s.substring(10).trim();if(s.substring(0,2)==='lẻ')s=s.substring(2).trim();}s=s.charAt(0).toUpperCase()+s.slice(1);return s+' đồng chẵn.';}
+
+const PAYMENT_PRESETS = [
+  { label:'100% sau nghiệm thu', tmpl:(d)=>`Bên A sẽ thanh toán 100% giá trị hợp đồng trong vòng ${d} ngày làm việc kể từ ngày nhận đủ hồ sơ nghiệm thu và hóa đơn hợp lệ.` },
+  { label:'50% + 50% sau HT', tmpl:(d)=>`Tiền thanh toán được chia làm 02 đợt:\n1. Đợt 1 (Tạm ứng): Bên A tạm ứng 50% trong vòng 05 ngày làm việc kể từ ngày ký kết.\n2. Đợt 2: Bên A thanh toán 50% còn lại trong vòng ${d} ngày làm việc kể từ ngày nghiệm thu.` },
+  { label:'30% + 70% sau HT', tmpl:(d)=>`Tiền thanh toán được chia làm 02 đợt:\n1. Đợt 1 (Tạm ứng): Bên A tạm ứng 30% trong vòng 05 ngày làm việc kể từ ngày ký kết.\n2. Đợt 2: Bên A thanh toán 70% còn lại trong vòng ${d} ngày làm việc kể từ ngày nghiệm thu.` },
+  { label:'Tùy chỉnh', tmpl:null }
+];
+function _numViNom(n){const m={5:'năm',7:'bảy',10:'mười',14:'mười bốn',15:'mười lăm',30:'ba mươi'};return m[n]||n.toString();}
+
+// Điều khoản pháp lý đầy đủ (Điều 4–11) — khớp nội dung template Google Doc, để preview = bản in đầy đủ
+const _H = t => `<div style="font-weight:700;font-size:15px;text-transform:uppercase;margin:16px 0 8px">${t}</div>`;
+const _P = t => `<p style="margin:0 0 6px;text-align:justify">${t}</p>`;
+const _UL = arr => `<ul style="margin:0 0 6px;padding-left:22px">${arr.map(x=>`<li style="margin-bottom:3px;text-align:justify">${x}</li>`).join('')}</ul>`;
+const CONTRACT_CLAUSES =
+  _H('Điều 4. Quyền sở hữu trí tuệ') +
+  _P('<b>4.1 Quyền sở hữu:</b> Bên A là chủ sở hữu duy nhất và toàn bộ quyền sở hữu trí tuệ (bao gồm quyền tác giả, quyền liên quan và các quyền phái sinh) đối với tất cả sản phẩm hình ảnh, video và các tư liệu liên quan do Bên B thực hiện trong phạm vi Hợp đồng này.') +
+  _P('<b>4.2 Chuyển giao quyền:</b> Bằng việc nhận thanh toán đầy đủ theo quy định tại Điều 3, Bên B xác nhận đã chuyển giao vô điều kiện toàn bộ quyền sở hữu trí tuệ nêu trên cho Bên A. Bên B cam kết không khiếu nại về quyền tác giả hoặc yêu cầu thêm bất kỳ khoản chi phí tác quyền nào khác sau khi đã tất toán hợp đồng.') +
+  _P('<b>4.3 Quy định về bản quyền âm nhạc:</b>') +
+  _UL([
+    'Trong phạm vi chi phí dịch vụ tại Điều 3, Bên B chịu trách nhiệm lựa chọn và sử dụng các bản nhạc thuộc diện miễn phí bản quyền hoặc nhạc nằm trong thư viện thương mại công khai của nền tảng để sản xuất video.',
+    'Trường hợp Bên A yêu cầu sử dụng các bản nhạc có bản quyền thương mại nằm ngoài danh mục miễn phí nêu trên (nhạc thị trường, nhạc của ca sĩ, nhạc độc quyền), Bên A có trách nhiệm tự chi trả mọi chi phí mua quyền sử dụng (licensing) và cung cấp tài liệu chứng minh quyền cấp phép hợp pháp cho Bên B trước khi tiến hành xử lý hậu kỳ.',
+    'Bên B được miễn trừ mọi trách nhiệm pháp lý và nghĩa vụ bồi thường trong trường hợp video bị gỡ hoặc phát sinh tranh chấp bản quyền do sự thay đổi thuật toán, chính sách quét nhạc đột ngột của nền tảng, hoặc do Bên A tự ý thay đổi âm nhạc khác sau khi Bên B bàn giao sản phẩm.'
+  ]) +
+  _P('<b>4.4 Giải quyết tranh chấp đối với bên thứ ba:</b> Trường hợp phát sinh tranh chấp hoặc khiếu nại của bên thứ ba liên quan đến quyền sở hữu trí tuệ đối với Sản phẩm do lỗi của Bên B (ngoại trừ các vấn đề về âm nhạc đã được quy định riêng tại khoản 4.3 Điều này), Bên B có trách nhiệm tự giải quyết bằng chi phí của mình và bồi thường toàn bộ thiệt hại phát sinh cho Bên A.') +
+  _H('Điều 5. Quyền và nghĩa vụ của Bên B') +
+  _P('<b>5.1. Quyền lợi của Bên B:</b>') +
+  _UL([
+    'Được cung cấp đầy đủ thông tin, kịch bản, thiết bị phối hợp và nhân sự (người mẫu, talent,...) từ Bên A để phục vụ công việc.',
+    'Có quyền từ chối thực hiện các yêu cầu ghi hình/chụp ảnh liên quan đến các nội dung vi phạm pháp luật, chính trị, tôn giáo hoặc các bối cảnh nguy hiểm chưa được thỏa thuận trước về bảo hộ an toàn.',
+    'Được thanh toán đầy đủ và đúng hạn theo thỏa thuận tại Điều 3.',
+    'Trường hợp Bên A hủy lịch quay trong vòng 12 giờ trước giờ dự kiến, Bên A chịu 100% chi phí bối cảnh, mẫu đã đặt và 30% phí nhân sự của buổi đó.',
+    'Có quyền đề nghị Bên A cung cấp để sử dụng cho mục đích phi thương mại thông tin, dữ liệu, hình ảnh liên quan đến sản phẩm của hợp đồng này.'
+  ]) +
+  _P('<b>5.2. Nghĩa vụ của Bên B:</b>') +
+  _UL([
+    'Đảm bảo nhân sự và phương tiện thực hiện công việc đúng tiến độ, chất lượng và tinh thần trách nhiệm cao nhất.',
+    'Chấp hành nghiêm túc sự điều phối và phân công của nhân sự phụ trách phía Bên A trong quá trình thực hiện dự án.',
+    'Thực hiện các biện pháp cần thiết để đảm bảo an toàn cho nhân sự, thiết bị và hoạt động quay chụp trong phạm vi công việc do Bên B thực hiện; chịu trách nhiệm đối với các thiệt hại, sự cố phát sinh do lỗi của Bên B.',
+    'Bàn giao đầy đủ và đúng thời hạn các sản phẩm, dữ liệu, tài liệu và kết quả công việc theo Hợp đồng; bảo đảm sản phẩm đáp ứng yêu cầu về chất lượng, nội dung và định dạng theo thỏa thuận.',
+    '<b>Bảo mật sản phẩm:</b> Tuyệt đối không được rò rỉ, phát tán sản phẩm gốc (raw) hay đang chỉnh sửa lên phương tiện thông tin đại chúng/mạng xã hội khi chưa có phê duyệt từ Bên A. Vi phạm nghĩa vụ bảo mật, Bên A có quyền yêu cầu bồi thường toàn bộ thiệt hại phát sinh.'
+  ]) +
+  _H('Điều 6. Quyền và nghĩa vụ của Bên A') +
+  _P('<b>6.1. Quyền lợi của Bên A:</b>') +
+  _UL([
+    'Giám sát, kiểm tra tiến độ và chất lượng công việc của Bên B theo các tiêu chuẩn đã thỏa thuận tại Hợp đồng này.',
+    'Toàn quyền sử dụng, khai thác, sao chép hoặc chỉnh sửa sản phẩm cho mục đích truyền thông, thương mại mà không cần xin phép thêm Bên B sau khi đã thanh toán đầy đủ. Trường hợp Bên A tự chỉnh sửa dẫn đến vi phạm bản quyền (âm thanh, hình ảnh chèn thêm) hoặc tranh chấp với bên thứ ba, Bên A tự chịu hoàn toàn trách nhiệm.'
+  ]) +
+  _P('<b>6.2. Nghĩa vụ của Bên A:</b>') +
+  _UL([
+    'Cung cấp kịp thời, đầy đủ các nguồn lực, thông tin, dữ liệu, tài liệu và điều kiện làm việc cần thiết theo yêu cầu của Bên B.',
+    '<b>Phê duyệt và phản hồi:</b> Trong vòng 02 ngày làm việc kể từ khi nhận sản phẩm demo/kết quả từng giai đoạn, Bên A phản hồi hoặc phê duyệt bằng văn bản (email/zalo chỉ định). Mọi chậm trễ phản hồi được cộng nối tương ứng vào tổng thời gian thực hiện của Bên B.',
+    '<b>Giới hạn chỉnh sửa:</b> Bên A có quyền yêu cầu sửa đổi dựa trên kịch bản đã duyệt nhưng không quá 03 lần mỗi hạng mục video. Vượt số lần hoặc thay đổi hoàn toàn định hướng đã duyệt sẽ tính là chi phí phát sinh theo phụ lục.',
+    'Thanh toán đúng số tiền, đúng phương thức và thời gian tại Điều 3 sau khi nhận đủ hồ sơ nghiệm thu hợp lệ.',
+    'Cung cấp lịch trình cụ thể, đảm bảo thời gian làm việc đúng thỏa thuận để không ảnh hưởng kế hoạch sản xuất của Bên B.'
+  ]) +
+  _H('Điều 7. Bảo mật thông tin') +
+  _P('Mỗi Bên cam kết bảo mật tuyệt đối mọi thông tin liên quan đến nội dung Hợp đồng, thông tin kinh doanh, báo giá và dữ liệu khách hàng của Bên còn lại. Nghĩa vụ bảo mật có hiệu lực ngay cả sau khi Hợp đồng chấm dứt. Việc tiết lộ cho Bên thứ ba chỉ thực hiện khi có yêu cầu của cơ quan Nhà nước có thẩm quyền hoặc có sự đồng ý bằng văn bản của Bên còn lại.') +
+  _H('Điều 8. Chấm dứt hợp đồng') +
+  _P('Hợp đồng chấm dứt khi: hai Bên hoàn thành mọi nghĩa vụ và thanh lý; hoặc hai Bên thỏa thuận chấm dứt trước thời hạn bằng văn bản; hoặc một Bên đơn phương chấm dứt nếu Bên kia vi phạm nghiêm trọng nghĩa vụ mà không khắc phục trong vòng 07 ngày kể từ khi nhận thông báo (Bên vi phạm phải bồi thường thiệt hại thực tế và chịu phạt vi phạm theo Điều 9).') +
+  _H('Điều 9. Phạt vi phạm và bất khả kháng') +
+  _P('<b>9.1. Phạt vi phạm:</b> Bên vi phạm nghĩa vụ hợp đồng chịu mức phạt 8% giá trị phần nghĩa vụ bị vi phạm (theo Luật Thương mại), đồng thời bồi thường toàn bộ thiệt hại thực tế phát sinh cho Bên bị vi phạm.') +
+  _P('<b>9.2. Sự kiện bất khả kháng:</b> Các Bên được miễn trừ trách nhiệm nếu không thể thực hiện nghĩa vụ do sự kiện bất khả kháng (thiên tai, dịch bệnh, hỏa hoạn, lệnh cấm của cơ quan nhà nước...). Bên gặp sự kiện phải thông báo bằng văn bản trong vòng 24 giờ. Sự kiện bất khả kháng không miễn trừ nghĩa vụ thanh toán cho các hạng mục đã hoàn thành và nghiệm thu trước đó.') +
+  _H('Điều 10. Giải quyết tranh chấp') +
+  _P('Mọi tranh chấp phát sinh được ưu tiên giải quyết thông qua thương lượng trên tinh thần hợp tác. Trong vòng 30 ngày không thỏa thuận được, tranh chấp sẽ được đưa ra Tòa án có thẩm quyền nơi Bên A đặt trụ sở theo quy định pháp luật Việt Nam.') +
+  _H('Điều 11. Điều khoản thi hành') +
+  _P('Hợp đồng có hiệu lực kể từ ngày ký. Mọi thay đổi phải được lập thành Phụ lục hợp đồng bằng văn bản. Hợp đồng được lập thành 02 (hai) bản có giá trị pháp lý như nhau, mỗi Bên giữ 01 (một) bản để thực hiện.');
+
+const app = createApp({
+  data() {
+    return {
+      isDarkMode: true, appMode: 'NEW',
+      mobileTab: 'form',
+      viewMode: 'form',    // mặc định 'form' = nhập gọn (như bản cũ) | 'split' = có liveview A4 cạnh bên
+      pgZoom: 0.85, userZoomed: false, draftSavedAt:'', draftRestored:false, hasDraft:false,
+      toasts:[], errTencty:false, errDaidien:false, savedCustomers:[],
+      sec:{sohd:false,bena:false,noidung:false,thanhtoan:false}, pickerSearch:'', pickerSel:{}, dupWarn:'',
+      // Contract list
+      contractList:[], fileSearchQuery:'', selectedContractId:'',
+      // BZ import
+      bzFileList:[], bzSearchQuery:'', selectedBZId:'', bzOptionList:[], selectedBZOption:'', bzHiddenData:{}, bzOptDropdownOpen:false,
+      // BBNT — biên bản nghiệm thu (v4.0)
+      bbntSearchQuery:'',
+      bbnt:{
+        contractId:'', loading:false, fromSnapshot:false,
+        sohd:'', sohdDate:'', ngayky:'', brand:'', duann:'',
+        tencty:'', diachi:'', mst:'', nguoidaidien:'', chucvu:'Giám đốc',
+        items:[],            // [{ten,dvt,sl,dongia,tyle}]
+        vatPct:8, applyVat:true, daTT:0, ngayNthu:'', deliverables:''
+      },
+      // DNTT — đề nghị thanh toán (v4.1)
+      dnttSearchQuery:'',
+      dntt:{
+        contractId:'', loading:false,
+        sohd:'', sohdDate:'', brand:'', duann:'',
+        tencty:'', soBBNT:'', soTien:0,
+        soTienNote:'100% giá trị hợp đồng đã bao gồm VAT',
+        soNgayText:'15 (mười lăm)', ngay:''
+      },
+      // Service dropdown
+      activeItemDropdown:null, dropdownPos:{top:0,left:0,width:240},
+      // Tabs
+      activeTab:'SX',
+      tabs:[
+        {id:'SX',name:'I. NHÂN SỰ',short:'Nhân sự'},
+        {id:'TB',name:'II. THIẾT BỊ',short:'Thiết bị'},
+        {id:'HK',name:'III. HẬU KỲ',short:'Hậu kỳ'},
+        {id:'HC',name:'IV. HẬU CẦN',short:'Hậu cần'}
+      ],
+      db:{SX:[],TB:[],HK:[],HC:[]},
+      // Payment
+      paymentPresets:PAYMENT_PRESETS, selectedPreset:null,
+      // DV presets
+      dvPresets:['Dịch vụ quay phim','Dịch vụ chụp ảnh','Dịch vụ Livestream','Dịch vụ ghi hình sự kiện','Dịch vụ quay phim và chụp ảnh'],
+      selectedDvPreset:null,
+      // Form
+      form:{
+        sohdDate:'', sohd:'', brand:'', ngayky:'',
+        tencty:'', diachi:'', mst:'', nguoidaidien:'', chucvu:'Giám đốc', email:'', sdt:'',
+        duann:'', motadv:'', tu:'', den:'', thoigianText:'', diadiem:'',
+        applyVat:true, vatPct:8, ck:0, payDays:15, thanhtoantxt:'', ghichu:'',
+        items:{SX:[],TB:[],HK:[],HC:[]}
+      },
+      // Modals
+      modals:{confirm:false,loading:false,success:false,picker:false},
+      resultData:{}, copyDocSuccess:false,
+      isCancelled:false, progressValue:0, isProcessingDone:false, progressInterval:null,
+      pendingAction:'CREATE_NEW',
+      // Date picker
+      datePicker:{open:false,field:null,target:'form',viewYear:2026,viewMonth:5,sy:2026,sm:5,sd:27,pos:{top:0,left:0}}
+    };
+  },
+
+  computed: {
+    sohdDisplay() { return this.form.sohd || (this.form.sohdDate+'/HĐDV/BeeZ-...'); },
+    filteredContracts() {
+      if(!this.fileSearchQuery) return this.contractList;
+      return this.contractList.filter(f=>f.name.toLowerCase().includes(this.fileSearchQuery.toLowerCase()));
+    },
+    filteredBZFiles() {
+      if(!this.bzSearchQuery) return this.bzFileList;
+      return this.bzFileList.filter(f=>f.name.toLowerCase().includes(this.bzSearchQuery.toLowerCase()));
+    },
+    tabSubTotals() {
+      const t={};
+      for(const k in this.form.items) t[k]=this.form.items[k].reduce((s,i)=>s+(i.dongia||0)*(i.sl||1)*(i.sn||1),0);
+      return t;
+    },
+    subTotal() {
+      let s=0; for(const k in this.form.items) this.form.items[k].forEach(i=>s+=(i.dongia||0)*(i.sl||1)*(i.sn||1));
+      return s;
+    },
+    afterCk() { const v=this.subTotal-(this.form.ck||0); return v>0?v:0; },
+    vatAmount() { return this.form.applyVat ? Math.round(this.afterCk*(this.form.vatPct||0)/100) : 0; },
+    tonggiatri() { return this.afterCk+this.vatAmount; },
+    tongTienChu() { return docTienChu(this.tonggiatri); },
+    progDone() {
+      let n=0;
+      if(this.form.tencty)n++;
+      if(['SX','TB','HK','HC'].some(k=>(this.form.items[k]||[]).some(i=>i.ten||i.dongia>0)))n++;
+      if(this.form.tu||this.form.den)n++;
+      if(this.form.thanhtoantxt)n++;
+      return n;
+    },
+    progPct() { return Math.round(this.progDone/4*100); },
+    pickerSelCount() { return Object.values(this.pickerSel).filter(Boolean).length; },
+    calendarDays() {
+      const {viewYear:vy,viewMonth:vm}=this.datePicker;
+      const firstDay=new Date(vy,vm,1), lastDay=new Date(vy,vm+1,0);
+      const startDow=(firstDay.getDay()+6)%7, days=[];
+      for(let i=startDow-1;i>=0;i--){const dt=new Date(vy,vm,-i);days.push({d:dt.getDate(),cur:false,y:dt.getFullYear(),mo:dt.getMonth(),da:dt.getDate()});}
+      for(let i=1;i<=lastDay.getDate();i++)days.push({d:i,cur:true,y:vy,mo:vm,da:i});
+      let next=1;while(days.length<42){const dt=new Date(vy,vm+1,next++);days.push({d:dt.getDate(),cur:false,y:dt.getFullYear(),mo:dt.getMonth(),da:dt.getDate()});}
+      return days;
+    },
+    dpMonthLabel() {
+      const m=['Tháng 1','Tháng 2','Tháng 3','Tháng 4','Tháng 5','Tháng 6','Tháng 7','Tháng 8','Tháng 9','Tháng 10','Tháng 11','Tháng 12'];
+      return m[this.datePicker.viewMonth]+' '+this.datePicker.viewYear;
+    },
+
+    // ── A4 PREVIEW HTML ──────────────────────────────────────────────────
+    contractPreviewHTML() {
+      const f = this.form;
+      const esc = s => String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+      const blank = (v, ph='___') => v ? `<b>${esc(v)}</b>` : `<span style="color:#999;font-style:italic">${ph}</span>`;
+      const blankPlain = (v, ph='___') => v ? esc(v) : `<span style="color:#999;font-style:italic">${ph}</span>`;
+      const fmtDate = v => {
+        if(!v) return '<span style="color:#999;font-style:italic">___</span>';
+        const d=new Date(v); if(isNaN(d)) return esc(v);
+        const p=n=>String(n).padStart(2,'0'); return `${p(d.getDate())}/${p(d.getMonth()+1)}/${d.getFullYear()}`;
+      };
+      const fmtN = n => Number(n||0).toLocaleString('vi-VN');
+
+      // Service table rows
+      const groups = [
+        {id:'SX',label:'NHÂN SỰ'},{id:'TB',label:'THIẾT BỊ'},{id:'HK',label:'HẬU KỲ'},{id:'HC',label:'HẬU CẦN'}
+      ];
+      let stt=1, trows='', hasAny=false;
+      for(const g of groups){
+        const items=(f.items[g.id]||[]).filter(i=>i.ten||i.dongia>0);
+        if(!items.length) continue;
+        hasAny=true;
+        trows+=`<tr style="background:#f0f0f0"><td colspan="7" style="padding:6px 8px;font-weight:700;font-size:12.5px;text-align:left;border:1px solid #ccc">${g.label}</td></tr>`;
+        for(const item of items){
+          const tt=(item.dongia||0)*(item.sl||1)*(item.sn||1);
+          trows+=`<tr>
+            <td style="border:1px solid #ddd;padding:5px 4px;text-align:center;font-size:12.5px">${stt++}</td>
+            <td style="border:1px solid #ddd;padding:5px 7px;text-align:left;font-size:12.5px">${esc(item.ten)||'—'}</td>
+            <td style="border:1px solid #ddd;padding:5px 4px;text-align:center;font-size:12.5px">${esc(item.dvt)||''}</td>
+            <td style="border:1px solid #ddd;padding:5px 4px;text-align:center;font-size:12.5px">${item.sl||1}</td>
+            <td style="border:1px solid #ddd;padding:5px 4px;text-align:center;font-size:12.5px">${item.sn||1}</td>
+            <td style="border:1px solid #ddd;padding:5px 6px;text-align:right;font-size:12.5px">${fmtN(item.dongia||0)}</td>
+            <td style="border:1px solid #ddd;padding:5px 6px;text-align:right;font-size:12.5px;font-weight:600">${fmtN(tt)}</td>
+          </tr>`;
+        }
+      }
+      if(!hasAny) trows=`<tr><td colspan="7" style="border:1px solid #ddd;padding:18px;text-align:center;color:#999;font-style:italic;font-size:12.5px">Chưa có dịch vụ nào được thêm</td></tr>`;
+
+      const thanhtoan = (f.thanhtoantxt||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
+      const ghichu = (f.ghichu||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
+
+      const s = `<div style="font-family:'Times New Roman',Times,serif;font-size:14.5px;line-height:1.62;color:#000">
+
+        <div style="text-align:center;margin-bottom:16px">
+          <div style="font-size:13.5px;font-weight:700;letter-spacing:.3px">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</div>
+          <div style="font-size:13.5px">Độc lập – Tự do – Hạnh phúc</div>
+          <div style="font-size:12px;margin-top:2px">―――――――――――――――――――――</div>
+        </div>
+
+        <div style="text-align:center;margin:20px 0 14px">
+          <div style="font-size:19px;font-weight:700;letter-spacing:1px">HỢP ĐỒNG CUNG CẤP DỊCH VỤ MEDIA</div>
+          <div style="font-size:14px;margin-top:5px">Số: <b>${esc(f.sohd)||'___/HĐDV/BeeZ'}</b></div>
+        </div>
+
+        <div style="text-align:right;font-size:13.5px;font-style:italic;margin-bottom:14px">Hà Nội, ngày ${fmtDate(f.ngayky)}</div>
+
+        <div style="font-size:13.5px;margin-bottom:14px;text-align:justify">
+          – Căn cứ Bộ luật Dân sự 2015;<br>
+          – Căn cứ Luật Doanh nghiệp 2020;<br>
+          – Căn cứ Luật Thương mại 2005;<br>
+          – Căn cứ Luật Sở hữu trí tuệ 2005;<br>
+          – Căn cứ các quy định liên quan khác;<br>
+          – Căn cứ khả năng và nhu cầu của hai bên.<br>
+          Hôm nay, tại Hà Nội, hai bên cùng thỏa thuận ký kết hợp đồng với các điều khoản sau:
+        </div>
+
+        <div style="margin-bottom:14px;font-size:13.5px">
+          <div style="font-weight:700;text-transform:uppercase;margin-bottom:6px">Bên A (Bên thuê dịch vụ):</div>
+          <table style="width:100%;border-collapse:collapse;font-size:13.5px">
+            <tr><td style="padding:3px 0;width:150px;vertical-align:top">Tên tổ chức:</td><td style="padding:3px 0">${blank(f.tencty,'Chưa nhập tên công ty')}</td></tr>
+            <tr><td style="padding:3px 0;vertical-align:top">Địa chỉ:</td><td style="padding:3px 0">${blankPlain(f.diachi)}</td></tr>
+            <tr><td style="padding:3px 0">Mã số thuế:</td><td style="padding:3px 0">${blankPlain(f.mst)}</td></tr>
+            <tr><td style="padding:3px 0">Người đại diện:</td><td style="padding:3px 0">${blankPlain(f.nguoidaidien)} &nbsp;–&nbsp; Chức vụ: ${blankPlain(f.chucvu,'Giám đốc')}</td></tr>
+            <tr><td style="padding:3px 0">Email:</td><td style="padding:3px 0">${blankPlain(f.email)}</td></tr>
+            <tr><td style="padding:3px 0">Điện thoại:</td><td style="padding:3px 0">${blankPlain(f.sdt)}</td></tr>
+          </table>
+        </div>
+
+        <div style="margin-bottom:18px;font-size:13.5px">
+          <div style="font-weight:700;text-transform:uppercase;margin-bottom:6px">Bên B (Bên cung cấp dịch vụ):</div>
+          <table style="width:100%;border-collapse:collapse;font-size:13.5px">
+            <tr><td style="padding:3px 0;width:150px">Tên tổ chức:</td><td style="padding:3px 0"><b>CÔNG TY TNHH BEE Z PRODUCTION</b></td></tr>
+            <tr><td style="padding:3px 0">Địa chỉ:</td><td style="padding:3px 0">Số 54, ngõ 250, đường Khương Trung, Thanh Xuân, Hà Nội</td></tr>
+            <tr><td style="padding:3px 0">Mã số thuế:</td><td style="padding:3px 0">0110989139</td></tr>
+            <tr><td style="padding:3px 0">Người đại diện:</td><td style="padding:3px 0">NGUYỄN THỌ TRẦN HOÀN &nbsp;–&nbsp; Chức vụ: Giám đốc</td></tr>
+            <tr><td style="padding:3px 0">Điện thoại:</td><td style="padding:3px 0">0967335577</td></tr>
+          </table>
+        </div>
+
+        <div style="border-top:2px solid #1a1a1a;margin:16px 0"></div>
+
+        <div style="margin-bottom:14px;font-size:13.5px">
+          <div style="font-weight:700;font-size:15px;text-transform:uppercase;margin-bottom:8px">Điều 1. Phạm vi cung cấp dịch vụ</div>
+          <p style="margin:0 0 7px;text-align:justify">1.1. Bên B thực hiện cung cấp dịch vụ: ${blankPlain(f.motadv,'Chưa nhập mô tả dịch vụ')}</p>
+          <p style="margin:0 0 5px">1.2. Thời gian thực hiện: ${blankPlain(f.thoigianText,'Chưa chọn thời gian')}</p>
+          <p style="margin:0">1.3. Địa điểm thực hiện: ${blankPlain(f.diadiem,'Theo kế hoạch hai bên thỏa thuận')}</p>
+        </div>
+
+        <div style="margin-bottom:14px;font-size:13.5px">
+          <div style="font-weight:700;font-size:15px;text-transform:uppercase;margin-bottom:8px">Điều 2. Bảng dịch vụ &amp; giá trị hợp đồng</div>
+          <table style="width:100%;border-collapse:collapse;font-size:12.5px">
+            <thead>
+              <tr style="background:#1a1a1a;color:#fff">
+                <th style="padding:7px 4px;text-align:center;width:5%;border:1px solid #444">STT</th>
+                <th style="padding:7px 8px;text-align:left;width:30%;border:1px solid #444">Hạng mục</th>
+                <th style="padding:7px 4px;text-align:center;width:7%;border:1px solid #444">ĐVT</th>
+                <th style="padding:7px 4px;text-align:center;width:6%;border:1px solid #444">SL</th>
+                <th style="padding:7px 4px;text-align:center;width:7%;border:1px solid #444">Ngày</th>
+                <th style="padding:7px 6px;text-align:right;width:19%;border:1px solid #444">Đơn giá (đ)</th>
+                <th style="padding:7px 6px;text-align:right;width:19%;border:1px solid #444">Thành tiền (đ)</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${trows}
+              <tr style="background:#f5f5f5;font-weight:700">
+                <td colspan="6" style="border:1px solid #ccc;padding:6px 8px;text-align:right;font-size:12.5px">Tạm tính:</td>
+                <td style="border:1px solid #ccc;padding:6px 8px;text-align:right;font-size:12.5px">${fmtN(this.subTotal)}</td>
+              </tr>
+              ${this.form.ck>0?`<tr><td colspan="6" style="border:1px solid #ccc;padding:5px 8px;text-align:right;font-size:12.5px;color:#dc2626">Chiết khấu:</td><td style="border:1px solid #ccc;padding:5px 8px;text-align:right;font-size:12.5px;color:#dc2626">− ${fmtN(this.form.ck)}</td></tr><tr style="background:#f5f5f5;font-weight:700"><td colspan="6" style="border:1px solid #ccc;padding:6px 8px;text-align:right;font-size:12.5px">Chi phí sau chiết khấu (chưa VAT):</td><td style="border:1px solid #ccc;padding:6px 8px;text-align:right;font-size:12.5px">${fmtN(this.afterCk)}</td></tr>`:''}
+              ${this.form.applyVat?`<tr><td colspan="6" style="border:1px solid #ccc;padding:5px 8px;text-align:right;font-size:12.5px">VAT (${f.vatPct}%):</td><td style="border:1px solid #ccc;padding:5px 8px;text-align:right;font-size:12.5px">${fmtN(this.vatAmount)}</td></tr>`:''}
+              <tr style="background:#1a1a1a;color:#fff;font-weight:700">
+                <td colspan="6" style="border:1px solid #444;padding:7px 8px;text-align:right;font-size:14px;color:#fff">TỔNG GIÁ TRỊ HỢP ĐỒNG:</td>
+                <td style="border:1px solid #444;padding:7px 8px;text-align:right;font-size:14px;color:#fff">${fmtN(this.tonggiatri)}</td>
+              </tr>
+            </tbody>
+          </table>
+          <div style="margin-top:7px;font-style:italic;font-size:12.5px">(Bằng chữ: ${esc(this.tongTienChu)})</div>
+        </div>
+
+        <div style="margin-bottom:14px;font-size:13.5px">
+          <div style="font-weight:700;font-size:15px;text-transform:uppercase;margin-bottom:8px">Điều 3. Phương thức thanh toán</div>
+          <div style="text-align:justify;white-space:pre-line">${thanhtoan||'<span style="color:#999;font-style:italic">Chưa chọn phương thức thanh toán</span>'}</div>
+          <div style="margin-top:8px">Thanh toán bằng chuyển khoản vào tài khoản của Bên B:</div>
+          <div style="margin-left:14px">Chủ tài khoản: <b>CÔNG TY TNHH TRUYỀN THÔNG BEE Z PRODUCTION</b><br>Số tài khoản: <b>68335577</b> — Ngân hàng Techcombank</div>
+        </div>
+
+        <div style="font-size:13.5px">
+          ${CONTRACT_CLAUSES}
+          ${ghichu?`<div style="margin-top:12px;border-top:1px dashed #ccc;padding-top:10px"><b>Ghi chú bổ sung:</b><br>${ghichu}</div>`:''}
+        </div>
+
+        <div style="display:flex;justify-content:space-between;margin-top:32px;font-size:13.5px;text-align:center">
+          <div style="width:44%">
+            <div style="font-weight:700;text-transform:uppercase;margin-bottom:4px">Bên A (Bên thuê)</div>
+            <div style="color:#666;font-size:12px;margin-bottom:56px">(Ký, họ tên, đóng dấu)</div>
+            <div style="font-weight:700">${blankPlain(f.nguoidaidien,'...')}</div>
+            <div style="font-size:12px;color:#444">${esc(f.chucvu)||'Giám đốc'}</div>
+            <div style="font-size:12px;color:#666">${esc(f.tencty)||''}</div>
+          </div>
+          <div style="width:44%">
+            <div style="font-weight:700;text-transform:uppercase;margin-bottom:4px">Bên B (Bên cung cấp)</div>
+            <div style="color:#666;font-size:12px;margin-bottom:56px">(Ký, họ tên, đóng dấu)</div>
+            <div style="font-weight:700">NGUYỄN THỌ TRẦN HOÀN</div>
+            <div style="font-size:12px;color:#444">Giám đốc</div>
+            <div style="font-size:12px;color:#666">CÔNG TY TNHH BEE Z PRODUCTION</div>
+          </div>
+        </div>
+
+      </div>`;
+      return s;
+    },
+
+    // ── BBNT (v4.0) ──────────────────────────────────────────────────────
+    filteredBBNTContracts() {
+      if(!this.bbntSearchQuery) return this.contractList;
+      return this.contractList.filter(f=>f.name.toLowerCase().includes(this.bbntSearchQuery.toLowerCase()));
+    },
+    bbntSumNthu() { return this.bbnt.items.reduce((s,it)=>s+this.bbntItemNthu(it),0); },
+    bbntVat() { return this.bbnt.applyVat ? Math.round(this.bbntSumNthu*(Number(this.bbnt.vatPct)||0)/100) : 0; },
+    bbntTong() { return this.bbntSumNthu + this.bbntVat; },
+    bbntConPhai() { return Math.max(0, this.bbntTong - (Number(this.bbnt.daTT)||0)); },
+    bbntConPhaiChu() { return docTienChu(this.bbntConPhai); },
+
+    // ── DNTT (v4.1) ──
+    filteredDNTTContracts() {
+      if(!this.dnttSearchQuery) return this.contractList;
+      return this.contractList.filter(f=>f.name.toLowerCase().includes(this.dnttSearchQuery.toLowerCase()));
+    },
+    dnttSoDntt() { return (this.dntt.sohd||'').replace('HĐDV','ĐNTT'); },
+    dnttSoTienChu() { return docTienChu(Number(this.dntt.soTien)||0); },
+
+    // Preview đang mở theo appMode (dùng cho panel A4 + in)
+    previewHTML() {
+      if(this.appMode==='BBNT') return this.bbntPreviewHTML;
+      if(this.appMode==='DNTT') return this.dnttPreviewHTML;
+      return this.contractPreviewHTML;
+    },
+
+    bbntPreviewHTML() {
+      const b = this.bbnt;
+      const esc = s => String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+      const fmtN = n => Number(n||0).toLocaleString('vi-VN');
+      const fmtNgay = v => { if(!v) return '___'; const d=new Date(v); if(isNaN(d)) return esc(v); const p=n=>String(n).padStart(2,'0'); return `ngày ${p(d.getDate())} tháng ${p(d.getMonth()+1)} năm ${d.getFullYear()}`; };
+      let rows='';
+      b.items.forEach((it,i)=>{
+        const dg=Number(it.dongia)||0, sl=Number(it.sl)||1, tt=Number(it.tt)||(dg*sl);
+        const tyle=(it.tyle===''||it.tyle==null)?100:(Number(it.tyle)||0), ttN=Math.round(tt*tyle/100);
+        rows+=`<tr>
+          <td style="border:1px solid #ddd;padding:5px 4px;text-align:center;font-size:12px">${i+1}</td>
+          <td style="border:1px solid #ddd;padding:5px 7px;text-align:left;font-size:12px">${esc(it.ten)||'—'}</td>
+          <td style="border:1px solid #ddd;padding:5px 4px;text-align:center;font-size:12px">${esc(it.dvt)||''}</td>
+          <td style="border:1px solid #ddd;padding:5px 4px;text-align:center;font-size:12px">${sl}</td>
+          <td style="border:1px solid #ddd;padding:5px 6px;text-align:right;font-size:12px">${fmtN(dg)}</td>
+          <td style="border:1px solid #ddd;padding:5px 6px;text-align:right;font-size:12px">${fmtN(tt)}</td>
+          <td style="border:1px solid #ddd;padding:5px 4px;text-align:center;font-size:12px">${tyle}%</td>
+          <td style="border:1px solid #ddd;padding:5px 6px;text-align:right;font-size:12px;font-weight:600">${fmtN(ttN)}</td>
+        </tr>`;
+      });
+      if(!b.items.length) rows=`<tr><td colspan="8" style="border:1px solid #ddd;padding:16px;text-align:center;color:#999;font-style:italic;font-size:12px">Chưa có hạng mục nghiệm thu</td></tr>`;
+      const sumN=this.bbntSumNthu, vat=this.bbntVat, tong=this.bbntTong, conPhai=this.bbntConPhai;
+      const totalRow=(label,val,strong)=>`<tr style="${strong?'background:#1a1a1a;color:#fff;':'background:#f5f5f5;'}font-weight:700"><td colspan="7" style="border:1px solid ${strong?'#444':'#ccc'};padding:6px 8px;text-align:right;font-size:${strong?'13.5px':'12px'}">${label}</td><td style="border:1px solid ${strong?'#444':'#ccc'};padding:6px 8px;text-align:right;font-size:${strong?'13.5px':'12px'}">${val}</td></tr>`;
+      const dlvLines = String(b.deliverables||'').split('\n').map(s=>s.trim()).filter(Boolean);
+      const dlvHTML = (dlvLines.length ? dlvLines : ['Toàn bộ sản phẩm/dịch vụ theo Hợp đồng đã ký.'])
+        .map(l=>`<div style="margin:2px 0 2px 10px">- ${esc(l)}</div>`).join('');
+      return `<div style="font-family:'Times New Roman',Times,serif;font-size:13.5px;line-height:1.6;color:#000">
+        <div style="text-align:center;margin-bottom:14px">
+          <div style="font-size:13px;font-weight:700">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</div>
+          <div style="font-size:13px">Độc lập – Tự do – Hạnh phúc</div>
+          <div style="font-size:12px;margin-top:2px">――――――――――――</div>
+        </div>
+        <div style="text-align:center;margin:18px 0 12px">
+          <div style="font-size:18px;font-weight:700;letter-spacing:.5px">BIÊN BẢN NGHIỆM THU</div>
+          <div style="font-size:13px;margin-top:4px">Số HĐ: <b>${esc(b.sohd)||'___'}</b></div>
+        </div>
+        <div style="margin-bottom:12px;text-align:justify">
+          – Căn cứ Hợp đồng số <b>${esc(b.sohd)||'___'}</b> ký ${fmtNgay(b.ngayky)} giữa Công ty TNHH Truyền thông Bee Z Production với ${esc(b.tencty)||'___'};<br>
+          – Căn cứ các công việc hai bên đã hoàn thành.<br>
+          Hôm nay, ${fmtNgay(b.ngayNthu)}, tại TP. Hà Nội, chúng tôi gồm:
+        </div>
+        <div style="margin-bottom:10px">
+          <div style="font-weight:700">BÊN A: ${esc(b.tencty)||'___'}</div>
+          <div style="margin-left:12px">Đại diện: ${esc(b.nguoidaidien)||'___'} &nbsp;–&nbsp; Chức vụ: ${esc(b.chucvu)||'Giám đốc'}</div>
+          <div style="margin-left:12px">Trụ sở: ${esc(b.diachi)||'___'} &nbsp;–&nbsp; MST: ${esc(b.mst)||'___'}</div>
+        </div>
+        <div style="margin-bottom:12px">
+          <div style="font-weight:700">BÊN B: CÔNG TY TNHH TRUYỀN THÔNG BEE Z PRODUCTION</div>
+          <div style="margin-left:12px">Đại diện: NGUYỄN THỌ TRẦN HOÀN &nbsp;–&nbsp; Chức vụ: Giám đốc</div>
+          <div style="margin-left:12px">Trụ sở: Số 54 ngõ 250 Khương Trung, Khương Đình, Hà Nội &nbsp;–&nbsp; MST: 0110989139</div>
+        </div>
+        <div style="font-weight:700;margin-bottom:6px">ĐIỀU 1: NỘI DUNG NGHIỆM THU</div>
+        <div style="margin-bottom:2px">Bên B đã hoàn thành và bàn giao cho Bên A các sản phẩm/hạng mục sau:</div>
+        ${dlvHTML}
+        <div style="margin:4px 0 12px;text-align:justify">Chi tiết giá trị nghiệm thu được liệt kê tại bảng dưới đây.</div>
+        <div style="font-weight:700;margin-bottom:6px">ĐIỀU 2: GIÁ TRỊ NGHIỆM THU</div>
+        <table style="width:100%;border-collapse:collapse;font-size:12px;margin-bottom:10px">
+          <thead>
+            <tr style="background:#1a1a1a;color:#fff">
+              <th style="padding:6px 4px;border:1px solid #444;width:5%">STT</th>
+              <th style="padding:6px 6px;border:1px solid #444;width:26%;text-align:left">Hạng mục</th>
+              <th style="padding:6px 4px;border:1px solid #444;width:7%">ĐVT</th>
+              <th style="padding:6px 4px;border:1px solid #444;width:6%">SL</th>
+              <th style="padding:6px 4px;border:1px solid #444;width:15%">Đơn giá</th>
+              <th style="padding:6px 4px;border:1px solid #444;width:15%">Thành tiền</th>
+              <th style="padding:6px 4px;border:1px solid #444;width:9%">Tỉ lệ NT</th>
+              <th style="padding:6px 4px;border:1px solid #444;width:17%">TT nghiệm thu</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${rows}
+            ${totalRow('Tổng tiền chưa bao gồm thuế GTGT', fmtN(sumN), false)}
+            ${b.applyVat?totalRow('Thuế GTGT ('+b.vatPct+'%)', fmtN(vat), false):''}
+            ${totalRow('Tổng tiền đã bao gồm thuế GTGT', fmtN(tong), true)}
+          </tbody>
+        </table>
+        <div style="margin-bottom:12px">
+          <div>– Bên A đã thanh toán cho Bên B số tiền: <b>${fmtN(b.daTT)}</b> VNĐ</div>
+          <div>– Bên A còn phải thanh toán cho Bên B số tiền: <b>${fmtN(conPhai)}</b> VNĐ <i>(Bằng chữ: ${esc(this.bbntConPhaiChu)})</i></div>
+        </div>
+        <div style="font-weight:700;margin-bottom:6px">ĐIỀU 3: ĐIỀU KHOẢN CHUNG</div>
+        <div style="margin-bottom:20px;text-align:justify">Sau khi Bên A thanh toán đủ, hợp đồng tự động được thanh lý. Biên bản lập thành 02 (hai) bản có giá trị pháp lý như nhau, mỗi bên giữ 01 (một) bản, có hiệu lực từ ngày ký.</div>
+        <div style="display:flex;justify-content:space-between;margin-top:26px;text-align:center">
+          <div style="width:44%">
+            <div style="font-weight:700">ĐẠI DIỆN BÊN A</div>
+            <div style="color:#666;font-size:12px;margin-bottom:52px">(Ký, họ tên, đóng dấu)</div>
+            <div style="font-weight:700">${esc(b.nguoidaidien)||'...'}</div>
+          </div>
+          <div style="width:44%">
+            <div style="font-weight:700">ĐẠI DIỆN BÊN B</div>
+            <div style="color:#666;font-size:12px;margin-bottom:52px">(Ký, họ tên, đóng dấu)</div>
+            <div style="font-weight:700">NGUYỄN THỌ TRẦN HOÀN</div>
+          </div>
+        </div>
+      </div>`;
+    },
+
+    dnttPreviewHTML() {
+      const d = this.dntt;
+      const esc = s => String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+      const fmtN = n => Number(n||0).toLocaleString('vi-VN');
+      const fmtNgay = v => { if(!v) return '___'; const dt=new Date(v); if(isNaN(dt)) return esc(v); const p=n=>String(n).padStart(2,'0'); return `ngày ${p(dt.getDate())} tháng ${p(dt.getMonth()+1)} năm ${dt.getFullYear()}`; };
+      const soBBNT = esc(d.soBBNT) || '(theo biên bản nghiệm thu)';
+      return `<div style="font-family:'Times New Roman',Times,serif;font-size:13.5px;line-height:1.6;color:#000">
+        <div style="font-weight:700">CÔNG TY TNHH TRUYỀN THÔNG BEE Z PRODUCTION</div>
+        <div>Địa chỉ: Số 54 ngõ 250 Khương Trung, Phường Khương Đình, Hà Nội</div>
+        <div style="margin-bottom:14px">Số: ${esc(this.dnttSoDntt)||'___'}</div>
+        <div style="text-align:center;font-size:18px;font-weight:700;letter-spacing:.5px;margin:16px 0 14px">ĐỀ NGHỊ THANH TOÁN</div>
+        <div style="font-weight:700;margin-bottom:8px">Kính gửi: ${esc(d.tencty)||'___'}</div>
+        <div style="font-style:italic">- Căn cứ Hợp đồng dịch vụ số: ${esc(d.sohd)||'___'};</div>
+        <div style="font-style:italic;margin-bottom:8px">- Căn cứ Biên bản nghiệm thu và bàn giao dịch vụ số: ${soBBNT}.</div>
+        <div style="text-align:justify;margin-bottom:12px">Công ty TNHH Truyền thông Bee Z Production trân trọng đề nghị Quý công ty thanh toán chi phí thực hiện dịch vụ "<b>${esc(d.duann)||'___'}</b>" với thông tin chi tiết:</div>
+        <div style="font-weight:700;margin-bottom:5px">1. NỘI DUNG THANH TOÁN:</div>
+        <div style="margin-bottom:12px">- Số tiền thanh toán (${esc(d.soTienNote)}): <b>${fmtN(d.soTien)} VNĐ</b> <i>(Bằng chữ: ${esc(this.dnttSoTienChu)})</i>.</div>
+        <div style="font-weight:700;margin-bottom:5px">2. THÔNG TIN TÀI KHOẢN NHẬN THANH TOÁN:</div>
+        <div>Quý công ty vui lòng chuyển khoản vào tài khoản ngân hàng chính thức dưới đây:</div>
+        <div>- Chủ tài khoản: CÔNG TY TNHH TRUYỀN THÔNG BEE Z PRODUCTION</div>
+        <div style="margin-bottom:12px">- Số tài khoản: 68335577 – Techcombank – CN Hà Thành</div>
+        <div style="font-weight:700;margin-bottom:5px">3. CHỨNG TỪ ĐÍNH KÈM:</div>
+        <div>- Biên bản nghiệm thu và bàn giao dịch vụ số ${soBBNT}.</div>
+        <div style="margin-bottom:12px">- Hóa đơn giá trị gia tăng (GTGT) hợp lệ theo quy định của pháp luật.</div>
+        <div style="text-align:justify;margin-bottom:8px">Kính đề nghị Quý công ty xem xét và duyệt giải ngân trong vòng ${esc(d.soNgayText)||'15 (mười lăm)'} ngày làm việc kể từ ngày nhận được Đề nghị thanh toán này theo đúng quy định tại Hợp đồng.</div>
+        <div style="margin-bottom:26px">Xin trân trọng cảm ơn sự hợp tác của Quý công ty!</div>
+        <div style="text-align:right">
+          <div style="font-style:italic">Hà Nội, ${fmtNgay(d.ngay)}</div>
+          <div style="font-weight:700">NGƯỜI ĐẠI DIỆN</div>
+          <div style="font-style:italic;font-size:12px;margin-bottom:50px">(Ký, ghi rõ họ tên và đóng dấu)</div>
+          <div style="font-weight:700">NGUYỄN THỌ TRẦN HOÀN</div>
+        </div>
+      </div>`;
+    }
+  },
+
+  watch: {
+    form: { handler() { this._scheduleDraftSave(); }, deep: true },
+    'form.brand'() { this._updateSohd(); },
+    'form.ngayky'() { this._updateSohd(); },
+    selectedPreset(i) {
+      if(i===null||!PAYMENT_PRESETS[i].tmpl) return;
+      this.form.thanhtoantxt=PAYMENT_PRESETS[i].tmpl(this.form.payDays);
+    },
+    'form.payDays'(d) {
+      if(this.selectedPreset!==null&&PAYMENT_PRESETS[this.selectedPreset].tmpl)
+        this.form.thanhtoantxt=PAYMENT_PRESETS[this.selectedPreset].tmpl(d);
+    },
+    'form.tu'() { this._updateThoigianText(); },
+    'form.den'() { this._updateThoigianText(); },
+    'form.motadv'(v) { if(this.dvPresets[this.selectedDvPreset]!==v) this.selectedDvPreset=null; }
+  },
+
+  methods: {
+    // ── Mobile tab ────────────────────────────────────────────────────────
+    setMobileTab(tab) {
+      this.mobileTab = tab;
+      if(tab==='preview') this.$nextTick(()=>this.calcZoom());
+    },
+
+    // ── View mode desktop: split (liveview) ⇄ form (nhập gọn) ─────────────
+    toggleViewMode() {
+      this.viewMode = this.viewMode==='split' ? 'form' : 'split';
+      if(this.viewMode==='split'){ this.userZoomed=false; this.$nextTick(()=>this.calcZoom()); }
+    },
+
+    // ── Zoom ──────────────────────────────────────────────────────────────
+    calcZoom() {
+      const stage = this.$refs.a4Stage;
+      if(!stage) return;
+      const avail = stage.clientWidth - 40;
+      if(avail <= 0) return;   // khung preview đang ẩn (chế độ Gọn) → giữ nguyên zoom
+      // Mobile: đặt sàn zoom cao hơn để chữ preview đọc được (cho cuộn ngang thay vì thu bé tí)
+      const floor = window.innerWidth < 900 ? 0.72 : 0.35;
+      this.pgZoom = Math.min(1.2, Math.max(floor, avail/794));
+    },
+    zoomIn()  { this.userZoomed=true; this.pgZoom = Math.min(1.5, parseFloat((this.pgZoom+0.1).toFixed(2))); },
+    zoomOut() { this.userZoomed=true; this.pgZoom = Math.max(0.3, parseFloat((this.pgZoom-0.1).toFixed(2))); },
+    zoomFit() { this.userZoomed=false; this.calcZoom(); },
+
+    // ── In / Xuất PDF ─────────────────────────────────────────────────────
+    // GAS chạy trong iframe sandbox: window.print() in ra trang trắng; window.open('_blank') hay bị Chrome
+    // chặn popup (cross-origin iframe). → Dùng iframe ẩn CÙNG ORIGIN + contentWindow.print():
+    // không popup, in đúng nội dung hợp đồng A4 sạch, tự xuống nhiều trang.
+    printPreview() {
+      const old = document.getElementById('hd-print-frame');
+      if(old) old.remove();
+      const iframe = document.createElement('iframe');
+      iframe.id = 'hd-print-frame';
+      iframe.style.cssText = 'position:fixed;left:-9999px;top:0;width:794px;height:0;border:0';
+      document.body.appendChild(iframe);
+      const titleSrc = this.appMode==='BBNT' ? (this.bbnt.sohd ? 'BBNT-'+this.bbnt.sohd : 'Bien-ban-nghiem-thu')
+        : this.appMode==='DNTT' ? (this.dnttSoDntt || 'De-nghi-thanh-toan')
+        : (this.form.sohd || 'Hop-dong');
+      const title = titleSrc.replace(/[\/\\:*?"<>|&]/g,'-');
+      const html =
+        '<!DOCTYPE html><html lang="vi"><head><meta charset="UTF-8"><title>'+title+'</title>'+
+        '<style>'+
+          '@page{size:A4;margin:0}'+
+          '*{box-sizing:border-box}'+
+          'html,body{margin:0;padding:0;background:#fff}'+
+          'body{font-family:\'Times New Roman\',Times,serif;color:#000}'+
+          '.doc-pad{padding:16mm 15mm 18mm 22mm}'+
+        '</style></head><body><div class="doc-pad">'+ this.previewHTML +'</div></body></html>';
+      const doc = iframe.contentWindow.document;
+      doc.open(); doc.write(html); doc.close();
+      // Đợi layout/font ổn định rồi mới bật hộp thoại in
+      const fire = () => {
+        try { iframe.contentWindow.focus(); iframe.contentWindow.print(); }
+        catch(e){ this.toast('Không mở được hộp thoại in','err'); }
+      };
+      if(doc.readyState === 'complete') setTimeout(fire, 400);
+      else iframe.onload = () => setTimeout(fire, 400);
+    },
+
+    reloadApp(){ try{this._saveDraft();}catch(e){} location.reload(); },
+
+    // ── Toast (thay alert) ──────────────────────────────────────────────────
+    toast(msg,type='info'){
+      const id=(this._tid=(this._tid||0)+1);
+      this.toasts.push({id,msg,type});
+      setTimeout(()=>{ this.toasts=this.toasts.filter(t=>t.id!==id); },3600);
+    },
+    removeToast(id){ this.toasts=this.toasts.filter(t=>t.id!==id); },
+    // ── Preset chiết khấu theo % (tính từ tạm tính) ─────────────────────────
+    setCkPct(p){ this.form.ck = p ? Math.round(this.subTotal*p/100) : 0; },
+    // ── Khách hàng hay dùng (localStorage) — gợi ý + tự điền ────────────────
+    _loadCustomers(){ try{ this.savedCustomers=JSON.parse(localStorage.getItem('hd_customers')||'[]'); }catch(e){ this.savedCustomers=[]; } },
+    _saveCustomer(){
+      const f=this.form; if(!f.tencty) return;
+      try{
+        let list=(this.savedCustomers||[]).filter(c=>c.tencty!==f.tencty);
+        list.unshift({tencty:f.tencty,mst:f.mst,diachi:f.diachi,nguoidaidien:f.nguoidaidien,chucvu:f.chucvu,email:f.email,sdt:f.sdt});
+        this.savedCustomers=list.slice(0,50);
+        localStorage.setItem('hd_customers',JSON.stringify(this.savedCustomers));
+      }catch(e){}
+    },
+    _applyCustomer(v){
+      const c=(this.savedCustomers||[]).find(x=>x.tencty===v);
+      if(c){ this.form.mst=c.mst||''; this.form.diachi=c.diachi||''; this.form.nguoidaidien=c.nguoidaidien||'';
+        this.form.chucvu=c.chucvu||'Giám đốc'; this.form.email=c.email||''; this.form.sdt=c.sdt||'';
+        this.toast('Đã điền thông tin khách hàng đã lưu','ok'); }
+    },
+    // ── Chọn nhiều dịch vụ (modal) ──────────────────────────────────────────
+    openPicker(){ this.pickerSel={}; this.pickerSearch=''; this.modals.picker=true; },
+    pickerServices(tabId){
+      const arr=this.db[tabId]||[]; const q=(this.pickerSearch||'').toLowerCase();
+      return q ? arr.filter(s=>s.ten.toLowerCase().includes(q)) : arr;
+    },
+    addPicked(){
+      let n=0;
+      for(const key in this.pickerSel){
+        if(!this.pickerSel[key]) continue;
+        const i=key.indexOf('::'), tabId=key.slice(0,i), ten=key.slice(i+2);
+        const s=(this.db[tabId]||[]).find(x=>x.ten===ten);
+        if(s){ this.form.items[tabId].push({ten:s.ten,chitiet:s.chitiet||'',dongia:s.dongia||0,dvt:s.dvt||'',sl:1,sn:1}); n++; }
+      }
+      this.modals.picker=false;
+      if(n) this.toast('Đã thêm '+n+' hạng mục','ok'); else this.toast('Chưa chọn hạng mục nào','info');
+    },
+
+    // ── Mode ──────────────────────────────────────────────────────────────
+    setMode(mode) {
+      this.appMode=mode;
+      if(mode==='EDIT') this.refreshContractList();
+      if(mode==='IMPORT') this.refreshBZList();
+      if(mode==='BBNT') this.refreshContractList();   // dùng lại danh sách file hợp đồng
+      if(mode==='DNTT') this.refreshContractList();
+      if(mode==='NEW') { this.selectedContractId=''; this.selectedBZId=''; }
+    },
+
+    // ── DNTT — đề nghị thanh toán (v4.1) ──────────────────────────────────
+    selectDNTTContract(f) {
+      this.dntt.contractId=f.id; this.dntt.loading=true;
+      if(typeof google==='undefined'){ this.dntt.loading=false; return; }
+      google.script.run
+        .withSuccessHandler(res=>{ if(this.dntt.contractId!==f.id) return; this.dntt.loading=false; this._applyDNTTLive(res); })
+        .withFailureHandler(e=>{ if(this.dntt.contractId!==f.id) return; this.dntt.loading=false; this.dntt.contractId=''; this.toast('Lỗi tải hợp đồng: '+e,'err'); })
+        .getContractDataLive(f.id);
+    },
+    _applyDNTTLive(res) {
+      res = res || {};
+      const s = res.snapshot || {}, live = res.live || {};
+      this.dntt.sohd = s.sohd || ''; this.dntt.sohdDate = s.sohdDate || '';
+      this.dntt.brand = s.brand || ''; this.dntt.duann = s.duann || '';
+      this.dntt.tencty = s.tencty || '';
+      this.dntt.soTien = Number(live.total) || Number(s.tonggiatri) || 0;
+      this.dntt.soBBNT = (s.sohd || '').replace('HĐDV','BBNT');
+      this.dntt.soTienNote = '100% giá trị hợp đồng đã bao gồm VAT';
+      this.dntt.soNgayText = '15 (mười lăm)';
+      const dt=new Date(), p=n=>String(n).padStart(2,'0');
+      this.dntt.ngay = dt.getFullYear()+'-'+p(dt.getMonth()+1)+'-'+p(dt.getDate());
+      this.toast('Đã nạp dữ liệu hợp đồng','ok');
+    },
+    exportDNTT() {
+      if(!this.dntt.contractId){ this.toast('Chưa chọn hợp đồng','err'); return; }
+      if(!(Number(this.dntt.soTien)>0)){ this.toast('Số tiền thanh toán chưa hợp lệ','err'); return; }
+      if(typeof google==='undefined'){ this.toast('Chỉ chạy được trong Google Apps Script','err'); return; }
+      const payload={
+        soDntt:this.dnttSoDntt, tencty:this.dntt.tencty, sohd:this.dntt.sohd, soBBNT:this.dntt.soBBNT,
+        duann:this.dntt.duann, soTienNote:this.dntt.soTienNote, soTien:Number(this.dntt.soTien)||0,
+        soTienChu:this.dnttSoTienChu, soNgayText:this.dntt.soNgayText, ngay:this.dntt.ngay,
+        brand:this.dntt.brand, sohdDate:this.dntt.sohdDate
+      };
+      this._runProcess(onDone => google.script.run
+        .withSuccessHandler(r=>onDone(r))
+        .withFailureHandler(e=>onDone({success:false, message:String(e)}))
+        .processDNTT(payload));
+    },
+
+    // Chạy backend + animation loading/success dùng chung cho BBNT + DNTT.
+    // invoke(onDone): gọi google.script.run...(payload), truyền response (thành công hoặc {success:false,message}) vào onDone.
+    _runProcess(invoke) {
+      this.modals.loading=true; this.isCancelled=false; this.progressValue=0; this.isProcessingDone=false;
+      let done=false, resp=null;
+      invoke(res=>{ if(!this.isCancelled){ done=true; resp=res; } });
+      const totalDuration=Math.floor(Math.random()*4000)+14000, startTime=Date.now();
+      this.progressInterval=setInterval(()=>{
+        if(this.isCancelled){clearInterval(this.progressInterval);return;}
+        if(done && resp && !resp.success){   // backend lỗi → thoát sớm, không kẹt tới 100%
+          clearInterval(this.progressInterval); this.modals.loading=false;
+          this.toast('Lỗi tạo file: '+(resp.message||'Unknown'),'err'); return;
+        }
+        let pc=((Date.now()-startTime)/totalDuration)*100;
+        if(pc>=100){
+          pc=100;this.progressValue=pc;clearInterval(this.progressInterval);
+          const check=setInterval(()=>{
+            if(this.isCancelled){clearInterval(check);return;}
+            if(done){
+              clearInterval(check);
+              if(resp&&resp.success){
+                this.resultData={...resp, sohd:resp.ma||resp.sohd};
+                this.isProcessingDone=true;
+                setTimeout(()=>{this.modals.loading=false;this.modals.success=true;},900);
+              } else { this.modals.loading=false; this.toast('Lỗi tạo file: '+(resp?resp.message:'Unknown'),'err'); }
+            }
+          },200);
+        } else { this.progressValue=pc; }
+      },50);
+    },
+
+    // ── BBNT — biên bản nghiệm thu (v4.0) ─────────────────────────────────
+    selectBBNTContract(f) {
+      this.bbnt.contractId=f.id; this.bbnt.loading=true;
+      if(typeof google==='undefined'){ this.bbnt.loading=false; return; }
+      google.script.run
+        .withSuccessHandler(res=>{ if(this.bbnt.contractId!==f.id) return; this.bbnt.loading=false; this._applyContractLive(res); })
+        .withFailureHandler(e=>{ if(this.bbnt.contractId!==f.id) return; this.bbnt.loading=false; this.bbnt.contractId=''; this.toast('Lỗi tải hợp đồng: '+e,'err'); })
+        .getContractDataLive(f.id);
+    },
+    _applyContractLive(res) {
+      res = res || {};
+      const s = res.snapshot || {}, live = res.live || { items:[] };
+      this.bbnt.fromSnapshot = !!res.fromSnapshot;
+      this.bbnt.sohd = s.sohd || ''; this.bbnt.sohdDate = s.sohdDate || '';
+      this.bbnt.ngayky = s.ngayky || ''; this.bbnt.brand = s.brand || ''; this.bbnt.duann = s.duann || '';
+      this.bbnt.tencty = s.tencty || ''; this.bbnt.diachi = s.diachi || ''; this.bbnt.mst = s.mst || '';
+      this.bbnt.nguoidaidien = s.nguoidaidien || ''; this.bbnt.chucvu = s.chucvu || 'Giám đốc';
+      this.bbnt.items = (live.items || []).map(it=>{
+        const dongia = Number(it.dongia)||0, sl = Number(it.sl)||1;
+        return { ten:it.ten||'', dvt:it.dvt||'', sl:sl, dongia:dongia, tt:(Number(it.tt) || dongia*sl), tyle:100 };
+      });
+      this.bbnt.vatPct = (live.vatPct!=null) ? Number(live.vatPct) : 8;
+      this.bbnt.applyVat = live.applyVat !== false;   // tôn trọng HĐ miễn VAT
+      this.bbnt.daTT = 0;
+      this.bbnt.deliverables = '';
+      const d=new Date(), p=n=>String(n).padStart(2,'0');
+      this.bbnt.ngayNthu = d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate());
+      this.toast(res.fromSnapshot ? 'Đã nạp (từ snapshot — không đọc được bảng sống)' : 'Đã nạp dữ liệu hợp đồng','ok');
+    },
+    // Thành tiền GỐC dùng giá trị đã parse từ HĐ (it.tt — đúng cả thuê theo ngày); user sửa được ô này
+    bbntItemTT(it){ return (Number(it.tt) || (Number(it.dongia)||0)*(Number(it.sl)||1)); },
+    bbntItemNthu(it){ const tyle = (it.tyle===''||it.tyle==null)?100:(Number(it.tyle)||0); return Math.round(this.bbntItemTT(it)*tyle/100); },
+    addBBNTItem(){ this.bbnt.items.push({ten:'',dvt:'',sl:1,dongia:0,tt:0,tyle:100}); },
+    removeBBNTItem(i){ this.bbnt.items.splice(i,1); },
+    setBBNTTyleAll(pct){ this.bbnt.items.forEach(it=>{ it.tyle=pct; }); },
+    recalcBBNTTt(it){ it.tt = (Number(it.dongia)||0)*(Number(it.sl)||1); },   // sửa Đơn giá/SL → cập nhật Thành tiền
+    exportBBNT(){
+      if(!this.bbnt.contractId){ this.toast('Chưa chọn hợp đồng','err'); return; }
+      if(!this.bbnt.items.length){ this.toast('Chưa có hạng mục nghiệm thu','err'); return; }
+      if(typeof google==='undefined'){ this.toast('Chỉ chạy được trong Google Apps Script','err'); return; }
+      const payload={
+        items:this.bbnt.items.map(it=>({ten:it.ten,dvt:it.dvt,sl:Number(it.sl)||1,dongia:Number(it.dongia)||0,tt:Number(it.tt)||0,tyle:(it.tyle===''||it.tyle==null)?100:Number(it.tyle)})),
+        sohd:this.bbnt.sohd, sohdDate:this.bbnt.sohdDate, ngayky:this.bbnt.ngayky, ngayNthu:this.bbnt.ngayNthu,
+        tencty:this.bbnt.tencty, nguoidaidien:this.bbnt.nguoidaidien, chucvu:this.bbnt.chucvu,
+        diachi:this.bbnt.diachi, mst:this.bbnt.mst, brand:this.bbnt.brand, duann:this.bbnt.duann,
+        daTT:Number(this.bbnt.daTT)||0, vatPct:Number(this.bbnt.vatPct)||8, applyVat:this.bbnt.applyVat!==false,
+        conPhaiChu:this.bbntConPhaiChu, sanPham:this.bbnt.deliverables
+      };
+      this._runProcess(onDone => google.script.run
+        .withSuccessHandler(r=>onDone(r))
+        .withFailureHandler(e=>onDone({success:false, message:String(e)}))
+        .processBBNT(payload));
+    },
+
+    // ── Init ──────────────────────────────────────────────────────────────
+    _initSohd() {
+      const d=new Date(), p=n=>n.toString().padStart(2,'0');
+      const dc=d.getFullYear().toString()+p(d.getMonth()+1)+p(d.getDate());
+      this.form.sohdDate=dc;
+      this.form.ngayky=d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate());
+      this.datePicker.viewYear=d.getFullYear(); this.datePicker.viewMonth=d.getMonth();
+      this.datePicker.sy=d.getFullYear(); this.datePicker.sm=d.getMonth(); this.datePicker.sd=d.getDate();
+      this._updateSohd();
+    },
+    _updateSohd() {
+      const brand=this.form.brand?'BeeZ-'+this.form.brand:'BeeZ';
+      this.form.sohd=`${this.form.sohdDate}/HĐDV/${brand}`;
+    },
+    _updateThoigianText() {
+      const fmt=v=>{const d=new Date(v);if(isNaN(d))return'';const p=n=>String(n).padStart(2,'0');return`${p(d.getDate())}/${p(d.getMonth()+1)}/${d.getFullYear()}`;};
+      if(this.form.tu&&this.form.den) this.form.thoigianText=`ngày ${fmt(this.form.tu)} đến ngày ${fmt(this.form.den)}`;
+      else this.form.thoigianText=fmt(this.form.tu)||'';
+    },
+
+    // ── Contract files ────────────────────────────────────────────────────
+    refreshContractList() {
+      if(typeof google!=='undefined') google.script.run.withSuccessHandler(r=>{this.contractList=r;}).getContractFiles();
+    },
+    selectContract(f) {
+      this.selectedContractId=f.id; this.selectedBZId='';
+      if(typeof google!=='undefined') {
+        google.script.run.withSuccessHandler(res=>{
+          if(res.success){this.form={...this.form,...res.formData};this.pendingAction='EDIT';}
+          else this.toast('Lỗi tải dữ liệu: '+res.message,'err');
+        }).getContractData(f.id);
+      }
+    },
+    parseHDName(name) {
+      const m=name.match(/^\[HĐ(\d{8})\]\s*(.*?)(?:\s*x\s*Bee Z)?$/i);
+      if(m){const dt=m[1];return{code:'[HĐ'+dt.slice(4,6)+'/'+dt.slice(6,8)+']',name:m[2].trim(),date:dt.slice(6,8)+'/'+dt.slice(4,6)+'/'+dt.slice(0,4)};}
+      return{code:name.substring(0,10),name:name,date:''};
+    },
+
+    // ── BZ import ─────────────────────────────────────────────────────────
+    refreshBZList() {
+      if(typeof google!=='undefined') google.script.run.withSuccessHandler(r=>{this.bzFileList=r;}).getBaoGiaFiles();
+    },
+    selectBZFile(f) {
+      this.selectedBZId=f.id; this.selectedContractId=''; this.bzOptionList=[]; this.selectedBZOption=''; this.bzHiddenData={};
+      if(typeof google!=='undefined') {
+        google.script.run.withSuccessHandler(res=>{
+          if(res.success){this.bzOptionList=res.sheetNames;this.bzHiddenData=res.savedData;}
+        }).getBaoGiaDataFromFile(f.id);
+      }
+    },
+    selectBZOption(opt) {
+      this.selectedBZOption=opt; this.bzOptDropdownOpen=false;
+      const key='OPTION_'+opt;
+      if(this.bzHiddenData[key]){
+        const bz=this.bzHiddenData[key];
+        this.form.tencty=bz.khachhang||this.form.tencty;
+        this.form.mst=bz.mst||this.form.mst;
+        this.form.duann=bz.duann||this.form.duann;
+        this.form.tu=bz.tu||this.form.tu;
+        this.form.den=bz.den||this.form.den;
+        this.form.items=JSON.parse(JSON.stringify(bz.items||{SX:[],TB:[],HK:[],HC:[]}));
+        this.form.ck=bz.ckValue||0;
+        // Không nhảy về mode NEW — giữ nguyên tab "Từ Báo giá" để thấy đã chọn (tạo HĐ vẫn ra CREATE_NEW)
+        this.toast('Đã nạp dữ liệu từ báo giá','ok');
+      } else {this.toast('Không tìm thấy dữ liệu cho option này','err');}
+    },
+    parseBZName(name) {
+      const m=name.match(/^(BZ(\d{2})(\d{2})(\d{2})[\d.]*)\s*-?\s*(.*)$/);
+      if(m)return{code:m[1],project:m[5].trim()||'—',date:`${m[4]}/${m[3]}/20${m[2]}`};
+      return{code:name.substring(0,14),project:name,date:''};
+    },
+
+    // ── Payment presets ───────────────────────────────────────────────────
+    selectPreset(i) {
+      this.selectedPreset=i;
+      if(PAYMENT_PRESETS[i].tmpl) this.form.thanhtoantxt=PAYMENT_PRESETS[i].tmpl(this.form.payDays);
+    },
+
+    // ── DV presets ────────────────────────────────────────────────────────
+    selectDvPreset(i) {
+      this.selectedDvPreset=i;
+      this.form.motadv=this.dvPresets[i];
+    },
+
+    // ── Service table ─────────────────────────────────────────────────────
+    addItem(tab){this.form.items[tab].push({ten:'',chitiet:'',dongia:0,dvt:'',sl:1,sn:1});},
+    removeItem(tab,index){this.form.items[tab].splice(index,1);},
+    filteredServices(tabId,query){
+      if(!query)return this.db[tabId];
+      return this.db[tabId].filter(s=>s.ten.toLowerCase().includes(query.toLowerCase()));
+    },
+    openItemDropdown(tabId,index,event){
+      const rect=event.target.closest('.cdc').getBoundingClientRect();
+      this.dropdownPos={top:rect.bottom+4,left:rect.left,width:Math.max(rect.width,200)};
+      this.activeItemDropdown=tabId+'_'+index;
+    },
+    closeItemDropdown(){setTimeout(()=>{this.activeItemDropdown=null;},200);},
+    selectService(item,opt){
+      item.ten=opt.ten;item.dongia=opt.dongia;item.dvt=opt.dvt;item.chitiet=opt.chitiet;
+      this.activeItemDropdown=null;
+    },
+
+    // ── Format ────────────────────────────────────────────────────────────
+    formatMoney(num){return Number(num||0).toLocaleString('vi-VN')+' đ';},
+    formatShortMoney(num){return(!num||num===0)?'':Number(num).toLocaleString('vi-VN');},
+    formatTabTotal(num){
+      if(!num||num===0)return'';
+      if(num>=1e9)return(num/1e9).toFixed(1).replace(/\.0$/,'')+' tỷ';
+      if(num>=1e6)return(num/1e6).toFixed(1).replace(/\.0$/,'')+' tr';
+      if(num>=1e3)return Math.floor(num/1e3)+'k';
+      return num.toLocaleString('vi-VN');
+    },
+    formatDateOnly(val){
+      if(!val)return'';const d=new Date(val);if(isNaN(d))return'';
+      const p=n=>String(n).padStart(2,'0');
+      return`${p(d.getDate())}/${p(d.getMonth()+1)}/${d.getFullYear()}`;
+    },
+
+    // ── Confirm & Execute ─────────────────────────────────────────────────
+    confirmCreate(){
+      // B2: kiểm mọi trường bắt buộc cùng lúc → tô đỏ hết + cuộn tới lỗi đầu tiên
+      this.errTencty=!this.form.tencty;
+      this.errDaidien=!this.form.nguoidaidien;
+      const hasItem=['SX','TB','HK','HC'].some(k=>(this.form.items[k]||[]).some(i=>i.ten||i.dongia>0));
+      if(this.errTencty||this.errDaidien||!hasItem){
+        const miss=[]; let firstRef=null;
+        if(this.errTencty){ miss.push('Tên công ty'); firstRef=firstRef||'tenctyInput'; }
+        if(this.errDaidien){ miss.push('Người đại diện'); firstRef=firstRef||'daidienInput'; }
+        if(!hasItem) miss.push('ít nhất 1 dịch vụ');
+        if(this.errTencty||this.errDaidien) this.sec.bena=false; // mở lại mục Bên A nếu đang gập
+        this.toast('Còn thiếu: '+miss.join(' · '),'err');
+        this.$nextTick(()=>{ const el=firstRef&&this.$refs[firstRef]; if(el){ el.focus(); el.scrollIntoView({block:'center',behavior:'smooth'}); } });
+        return;
+      }
+      this.pendingAction=this.appMode==='EDIT'?'EDIT':'CREATE_NEW';
+      this.dupWarn='';
+      this.modals.confirm=true;
+      if(this.pendingAction==='CREATE_NEW' && typeof google!=='undefined'){
+        google.script.run.withSuccessHandler(r=>{ if(r&&r.exists) this.dupWarn=r.name; }).checkSohdExists(this.form.sohdDate, this.form.brand);
+      }
+    },
+    executeProcess(){
+      this.modals.confirm=false; this.modals.loading=true;
+      this.isCancelled=false; this.progressValue=0; this.isProcessingDone=false;
+      const payload={
+        actionType:this.pendingAction,
+        fileId:this.selectedContractId||'',
+        formData:{
+          ...this.form,
+          subTotal:this.subTotal,
+          afterCk:this.afterCk,
+          vatAmount:this.vatAmount,
+          tonggiatri:this.tonggiatri,
+          tonggiatriChu:this.tongTienChu
+        }
+      };
+      let backendDone=false, backendResponse=null;
+      if(typeof google!=='undefined'){
+        google.script.run.withSuccessHandler(res=>{
+          if(this.isCancelled){google.script.run.rollbackContract({actionType:this.pendingAction,resultData:res});}
+          else{backendDone=true;backendResponse=res;}
+        }).withFailureHandler(e=>{
+          if(!this.isCancelled){backendDone=true;backendResponse={success:false,message:String(e)};}
+        }).processContract(payload);
+      } else{this.toast('Chỉ chạy được trong Google Apps Script','err');this.modals.loading=false;return;}
+      const totalDuration=Math.floor(Math.random()*5000)+18000, startTime=Date.now();
+      this.progressInterval=setInterval(()=>{
+        if(this.isCancelled){clearInterval(this.progressInterval);return;}
+        if(backendDone && backendResponse && !backendResponse.success){   // backend lỗi → thoát sớm
+          clearInterval(this.progressInterval);this.modals.loading=false;
+          this.toast('Lỗi tạo hợp đồng: '+(backendResponse.message||'Unknown'),'err');return;
+        }
+        let p=((Date.now()-startTime)/totalDuration)*100;
+        if(p>=100){
+          p=100;this.progressValue=p;clearInterval(this.progressInterval);
+          const check=setInterval(()=>{
+            if(this.isCancelled){clearInterval(check);return;}
+            if(backendDone){
+              clearInterval(check);
+              if(backendResponse&&backendResponse.success){
+                this.resultData=backendResponse;this.isProcessingDone=true;
+                this.selectedContractId=backendResponse.fileId;
+                this._saveCustomer();
+                setTimeout(()=>{this.modals.loading=false;this.modals.success=true;},1000);
+              } else{this.modals.loading=false;this.toast('Lỗi tạo hợp đồng: '+(backendResponse?backendResponse.message:'Unknown'),'err');}
+            }
+          },200);
+        } else{this.progressValue=p;}
+      },50);
+    },
+    cancelCreate(){this.isCancelled=true;this.modals.loading=false;},
+    resetForm(){
+      this.form={
+        sohdDate:'',sohd:'',brand:'',ngayky:'',
+        tencty:'',diachi:'',mst:'',nguoidaidien:'',chucvu:'Giám đốc',email:'',sdt:'',
+        duann:'',motadv:'',tu:'',den:'',thoigianText:'',diadiem:'',
+        applyVat:true,vatPct:8,ck:0,payDays:15,thanhtoantxt:'',ghichu:'',
+        items:{SX:[],TB:[],HK:[],HC:[]}
+      };
+      this._initSohd();this.selectedPreset=null;
+      this.modals.success=false;this.appMode='NEW';
+      this.selectedContractId='';this.selectedBZId='';
+      // dọn state BBNT/DNTT để không sót dữ liệu cũ khi quay lại tab
+      this.bbnt.contractId='';this.bbnt.items=[];this.bbnt.deliverables='';this.bbnt.daTT=0;this.bbnt.fromSnapshot=false;
+      this.dntt.contractId='';this.dntt.soTien=0;
+      this.bbntSearchQuery='';this.dnttSearchQuery='';
+      this._clearDraft();
+    },
+
+    // ── Auto-save nháp (localStorage) — chống mất dữ liệu khi iframe GAS reload ──
+    _scheduleDraftSave(){ clearTimeout(this._draftTimer); this._draftTimer=setTimeout(()=>this._saveDraft(),800); },
+    _saveDraft(){
+      // Không lưu khi form còn trống → tránh ghi đè nháp cũ ngay sau khi F5 (form mới chỉ có ngày/số HĐ)
+      const f=this.form;
+      const meaningful = f.tencty || f.duann || f.ghichu || ['SX','TB','HK','HC'].some(k=>(f.items[k]||[]).length);
+      if(!meaningful) return;
+      try{
+        localStorage.setItem('hd_draft', JSON.stringify({ form:this.form, ts:Date.now() }));
+        const d=new Date(),p=n=>String(n).padStart(2,'0');
+        this.draftSavedAt=p(d.getHours())+':'+p(d.getMinutes());
+        this.hasDraft=false;   // đã bắt đầu nhập mới → bỏ lời mời khôi phục nháp cũ
+      }catch(e){}
+    },
+    _clearDraft(){ try{ localStorage.removeItem('hd_draft'); }catch(e){} this.draftSavedAt=''; this.draftRestored=false; this.hasDraft=false; this._pendingDraft=null; },
+    _detectDraft(){
+      // Phát hiện nháp từ phiên trước để HIỆN nút Khôi phục — KHÔNG tự điền (F5 = form trắng)
+      try{
+        const raw=localStorage.getItem('hd_draft'); if(!raw) return;
+        const d=JSON.parse(raw);
+        const hasData = d && d.form && (d.form.tencty || ['SX','TB','HK','HC'].some(k=>(d.form.items&&d.form.items[k]||[]).length));
+        if(hasData){
+          this._pendingDraft=d;
+          const t=new Date(d.ts||Date.now()),p=n=>String(n).padStart(2,'0');
+          this.draftSavedAt=p(t.getHours())+':'+p(t.getMinutes());
+          this.hasDraft=true;
+        }
+      }catch(e){}
+    },
+    restoreDraftNow(){
+      const d=this._pendingDraft; if(!d||!d.form){ this.hasDraft=false; return; }
+      this.form=Object.assign(this.form, d.form);
+      this.hasDraft=false;
+      this.draftRestored=true; setTimeout(()=>{this.draftRestored=false;},4500);
+      this.toast('Đã khôi phục nội dung nháp','ok');
+    },
+
+    // ── Nhân bản: dùng data hiện tại tạo hợp đồng MỚI (số HĐ mới theo hôm nay) ──
+    duplicateContract(){
+      this.appMode='NEW'; this.selectedContractId=''; this.selectedBZId='';
+      this.pendingAction='CREATE_NEW';
+      this._initSohd(); // cấp số HĐ mới cho hôm nay, giữ nguyên brand + toàn bộ nội dung
+    },
+
+    // ── Copy link ─────────────────────────────────────────────────────────
+    copyDocLink(){
+      const url=this.resultData.docUrl;
+      const done=()=>{this.copyDocSuccess=true;setTimeout(()=>{this.copyDocSuccess=false;},2000);};
+      if(navigator.clipboard&&navigator.clipboard.writeText) navigator.clipboard.writeText(url).then(done).catch(()=>this._fbCopy(url,done));
+      else this._fbCopy(url,done);
+    },
+    _fbCopy(text,done){
+      const ta=document.createElement('textarea');ta.value=text;ta.style.cssText='position:fixed;opacity:0;top:0;left:0';
+      document.body.appendChild(ta);ta.focus();ta.select();
+      try{document.execCommand('copy');done();}catch(e){}
+      document.body.removeChild(ta);
+    },
+
+    // ── Theme ─────────────────────────────────────────────────────────────
+    setTheme(dark){
+      this.isDarkMode=dark;
+      const b=document.getElementById('body-tag');
+      if(dark) b.removeAttribute('data-theme'); else b.setAttribute('data-theme','light');
+      try{ localStorage.setItem('hd_theme', dark?'dark':'light'); }catch(e){}
+    },
+    toggleTheme(){ this.setTheme(!this.isDarkMode); },
+
+    // ── Date Picker ───────────────────────────────────────────────────────
+    openDatePicker(field,event,target){
+      target=target||'form';
+      const el=event.currentTarget, rect=el.getBoundingClientRect(), dp=this.datePicker;
+      const val=this[target][field], d=val?new Date(val):new Date();
+      dp.field=field;dp.target=target;dp.viewYear=d.getFullYear();dp.viewMonth=d.getMonth();
+      dp.sy=d.getFullYear();dp.sm=d.getMonth();dp.sd=d.getDate();
+      const PW=278, PH=340;                                    // A4: kích thước popup ~
+      let top=rect.bottom+6, left=rect.left;
+      if(top+PH>window.innerHeight) top=rect.top-PH-6;          // tràn đáy → lật lên trên field
+      top=Math.min(Math.max(8,top), Math.max(8,window.innerHeight-PH-8));
+      left=Math.min(Math.max(8,left), Math.max(8,window.innerWidth-PW-8));
+      dp.pos={top,left};
+      dp.open=true;
+    },
+    closeDatePicker(){this.datePicker.open=false;},
+    dpPrevMonth(){const dp=this.datePicker;dp.viewMonth--;if(dp.viewMonth<0){dp.viewMonth=11;dp.viewYear--;}},
+    dpNextMonth(){const dp=this.datePicker;dp.viewMonth++;if(dp.viewMonth>11){dp.viewMonth=0;dp.viewYear++;}},
+    dpSelectDay(day){const dp=this.datePicker;if(!day.cur){dp.viewYear=day.y;dp.viewMonth=day.mo;}dp.sy=day.y;dp.sm=day.mo;dp.sd=day.da;},
+    dpIsSelected(day){const dp=this.datePicker;return day.y===dp.sy&&day.mo===dp.sm&&day.da===dp.sd;},
+    dpIsToday(day){const t=new Date();return day.y===t.getFullYear()&&day.mo===t.getMonth()&&day.da===t.getDate();},
+    dpConfirm(){
+      const dp=this.datePicker, p=n=>String(n).padStart(2,'0');
+      const val=`${dp.sy}-${p(dp.sm+1)}-${p(dp.sd)}`;
+      this[dp.target||'form'][dp.field]=val;
+      if(dp.target==='form' && dp.field==='ngayky'){this.form.sohdDate=String(dp.sy)+p(dp.sm+1)+p(dp.sd);this._updateSohd();}
+      dp.open=false;
+    }
+  },
+
+  mounted() {
+    this._initSohd();
+    this._detectDraft();
+    try{ if(localStorage.getItem('hd_theme')==='light') this.setTheme(false); }catch(e){}
+    this._loadCustomers();
+    if(typeof google!=='undefined') {
+      google.script.run.withSuccessHandler(res=>{this.db=res.db;}).getInitialData();
+    }
+    this.$nextTick(()=>this.calcZoom());
+    window.addEventListener('resize',()=>{ if(!this.userZoomed) this.calcZoom(); });
+    document.addEventListener('keydown',e=>{
+      if(e.key==='Enter'&&(e.ctrlKey||e.metaKey)){
+        if(((e.target&&e.target.tagName)||'').toUpperCase()==='TEXTAREA') return; // A2: không cắt ngang khi đang gõ ghi chú
+        e.preventDefault();
+        if(!this.modals.loading&&!this.modals.success) this.confirmCreate();
+      }
+    });
+  }
+});
+
+app.mount('#app');
+</script>
+</body>
+</html>
