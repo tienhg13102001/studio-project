@@ -1,36 +1,40 @@
-// Stacked toasts (bottom), one per c.toasts entry.
+// Stacked toasts (bottom), one per c.toasts entry, teleported to document.body.
+// Ported verbatim from back-end/scripts/google/hop-dong/index.html (lines 1347-1356).
 
-import { CheckCircleIcon, InfoIcon, WarningIcon, XIcon } from "@phosphor-icons/react";
-import type { ContractBuilder, ToastType } from "./useContractBuilder";
+import { createPortal } from "react-dom";
+import type { ContractBuilder } from "./useContractBuilder";
 
 type Props = {
   c: ContractBuilder;
 };
 
-function toastIcon(type: ToastType) {
-  if (type === "err") return <WarningIcon size={16} weight="fill" />;
-  if (type === "ok") return <CheckCircleIcon size={16} weight="fill" />;
-  return <InfoIcon size={16} weight="fill" />;
-}
-
 const ContractToast = ({ c }: Props) => {
-  if (c.toasts.length === 0) return null;
-  return (
-    <div className="toast-stack">
+  return createPortal(
+    <div className="toasts">
       {c.toasts.map((t) => (
-        <div key={t.id} className={`toast toast-${t.type}`}>
-          {toastIcon(t.type)}
+        <div key={t.id} className={`toast ${t.type}`}>
+          <i
+            className={`fas ${
+              t.type === "err"
+                ? "fa-circle-exclamation"
+                : t.type === "ok"
+                  ? "fa-circle-check"
+                  : "fa-circle-info"
+            }`}
+          />
           <span>{t.msg}</span>
           <button
-            className="toast-close"
+            type="button"
+            className="toast-x"
             onClick={() => c.removeToast(t.id)}
             aria-label="Đóng"
           >
-            <XIcon size={13} />
+            &times;
           </button>
         </div>
       ))}
-    </div>
+    </div>,
+    document.body,
   );
 };
 

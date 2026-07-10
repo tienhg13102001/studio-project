@@ -837,6 +837,7 @@ export function useContractBuilder() {
   }, [validateContract, appMode, form.sohdDate, form.brand]);
 
   const closeConfirm = useCallback(() => setModals((m) => ({ ...m, confirm: false })), []);
+  const closeSuccess = useCallback(() => setModals((m) => ({ ...m, success: false })), []);
 
   const executeProcess = useCallback(() => {
     const action = pendingAction;
@@ -1330,6 +1331,8 @@ export function useContractBuilder() {
     bbntItemNthu,
     // setters/actions
     setField,
+    setErrTencty,
+    setErrDaidien,
     setBBNTField,
     setDNTTField,
     setActiveTab,
@@ -1366,6 +1369,7 @@ export function useContractBuilder() {
     selectBZOption,
     confirmCreate,
     closeConfirm,
+    closeSuccess,
     executeProcess,
     cancelCreate,
     resetForm,

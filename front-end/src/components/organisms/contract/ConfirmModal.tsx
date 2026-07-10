@@ -1,6 +1,6 @@
 // Confirmation modal shown before submitting to the backend.
+// Ported verbatim from back-end/scripts/google/hop-dong/index.html (lines 1263-1276).
 
-import { WarningIcon } from "@phosphor-icons/react";
 import { formatMoney } from "#lib/contract/format";
 import type { ContractBuilder } from "./useContractBuilder";
 
@@ -13,33 +13,34 @@ const ConfirmModal = ({ c }: Props) => {
     <div className="overlay">
       <div className="popup">
         <div className="popup-title gold">Xác Nhận Hợp Đồng</div>
-        <div className="summary-box" style={{ marginBottom: 16 }}>
-          <div className="summary-item">
-            <strong>Số HĐ:</strong>
-            <span className="data-val">{c.form.sohd}</span>
-          </div>
-          <div className="summary-item">
-            <strong>Khách hàng:</strong>
-            <span className="data-val">{c.form.tencty || "(Chưa nhập)"}</span>
-          </div>
-          <div className="summary-item">
-            <strong>Tổng giá trị:</strong>
-            <span className="data-val summary-highlight">{formatMoney(c.tonggiatri)}</span>
-          </div>
+        <div className="si">
+          <strong>Số HĐ:</strong>
+          <span className="dv">{c.form.sohd}</span>
+        </div>
+        <div className="si">
+          <strong>Khách hàng:</strong>
+          <span className="dv">{c.form.tencty || "(Chưa nhập)"}</span>
+        </div>
+        <div className="si">
+          <strong>Tổng giá trị:</strong>
+          <span className="dv sh">{formatMoney(c.tonggiatri)}</span>
         </div>
         {c.dupWarn && (
-          <div className="warn-box">
-            <WarningIcon size={14} weight="fill" />
-            <span>
-              ⚠ Đã tồn tại hợp đồng trùng mã: {c.dupWarn}
+          <div
+            className="si"
+            style={{ borderColor: "rgba(239,68,68,.4)", background: "rgba(239,68,68,.08)" }}
+          >
+            <strong style={{ color: "var(--red)" }}>⚠ Trùng</strong>
+            <span className="dv" style={{ color: "var(--red)" }}>
+              Đã có: {c.dupWarn}
             </span>
           </div>
         )}
-        <div className="popup-action-row">
-          <button type="button" className="btn-pop btn-pop-close" onClick={c.closeConfirm}>
+        <div className="par">
+          <button type="button" className="bp bp-cl" onClick={() => c.closeConfirm()}>
             Quay lại
           </button>
-          <button type="button" className="btn-pop btn-pop-new" onClick={c.executeProcess}>
+          <button type="button" className="bp bp-ok" onClick={() => c.executeProcess()}>
             Xác nhận
           </button>
         </div>

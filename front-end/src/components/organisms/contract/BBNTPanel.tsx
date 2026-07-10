@@ -1,257 +1,293 @@
 // Left-panel form for BBNT (Biên bản nghiệm thu) mode: pick a contract, edit
 // acceptance items + amounts, and export the acceptance record.
+// Markup ported verbatim from back-end/scripts/google/hop-dong/index.html
+// (lines 961-1122) to keep the same DOM/class names as the original Vue app.
 
+import { formatDateOnly, formatMoney } from "#lib/contract/format";
+import type { ContractBuilder } from "./useContractBuilder";
 import {
   ArrowsClockwiseIcon,
-  CalendarBlankIcon,
   FolderOpenIcon,
   SpinnerIcon,
-  TrashIcon,
   WarningIcon,
+  FileTextIcon,
+  CalendarBlankIcon,
+  TrashIcon,
+  PercentIcon,
+  HandCoinsIcon,
+  ReceiptIcon,
+  ClipboardTextIcon,
 } from "@phosphor-icons/react";
-import { formatDateOnly, formatMoney, formatThousands } from "#lib/contract/format";
-import type { ContractBuilder } from "./useContractBuilder";
 
 type Props = {
   c: ContractBuilder;
-  openDatePicker?: (
-    target: "bbnt" | "dntt",
+  openDatePicker: (
+    target: "form" | "bbnt" | "dntt",
     field: string,
     e: React.MouseEvent<HTMLDivElement>,
   ) => void;
 };
 
+const formatShortMoney = (n: number) => (n ? Number(n).toLocaleString("vi-VN") : "");
+
+function parseHDName(name: string): { code: string; name: string; date: string } {
+  const m = name.match(/^\[HĐ(\d{8})\]\s*(.*)$/);
+  if (m) {
+    const d = m[1];
+    return {
+      code: `HĐ${d.slice(6, 8)}${d.slice(4, 6)}`,
+      name: (m[2] || "").trim(),
+      date: `${d.slice(6, 8)}/${d.slice(4, 6)}/${d.slice(0, 4)}`,
+    };
+  }
+  return { code: name.slice(0, 12), name, date: "" };
+}
+
 const BBNTPanel = ({ c, openDatePicker }: Props) => {
   const { bbnt } = c;
 
-  const onDongia = (i: number, raw: string) => {
-    const digits = raw.replace(/[^\d]/g, "");
-    c.updateBBNTItem(i, { dongia: Number(digits) || 0 });
-  };
-  const onTt = (i: number, raw: string) => {
-    const digits = raw.replace(/[^\d]/g, "");
-    c.updateBBNTItem(i, { tt: Number(digits) || 0 });
-  };
-  const onTyle = (i: number, raw: string) => {
-    if (raw === "") {
-      c.updateBBNTItem(i, { tyle: "" });
-      return;
-    }
-    const n = Math.max(0, Math.min(100, Number(raw) || 0));
-    c.updateBBNTItem(i, { tyle: n });
-  };
-  const onDaTT = (raw: string) => {
-    const digits = raw.replace(/[^\d]/g, "");
-    c.setBBNTField("daTT", Number(digits) || 0);
-  };
-
   return (
     <div>
-      <div className="file-select-box">
-        <div className="file-search-row">
-          <label style={{ color: "var(--gold)", margin: 0, fontSize: 11 }}>Chọn Hợp Đồng</label>
-          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+      {/* Picker chọn hợp đồng để nghiệm thu */}
+      <div className="file-pick">
+        <div className="fsrow">
+          <label style={{ color: "var(--gold)", margin: 0, fontSize: 9 }}>
+            Chọn hợp đồng để nghiệm thu
+          </label>
+          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
             <input
               type="text"
-              className="file-search-input"
+              className="fsinp"
               value={c.bbntSearchQuery}
               onChange={(e) => c.setBbntSearchQuery(e.target.value)}
               placeholder="Tìm kiếm..."
             />
             <button
-              className="btn-pop btn-pop-new"
-              style={{ flexShrink: 0, padding: "8px 12px", borderRadius: 8, fontSize: 13 }}
+              className="bp-ok bp"
+              style={{ flexShrink: 0, padding: "6px 10px", borderRadius: 7, fontSize: 12 }}
               onClick={c.refreshContractList}
-              title="Tải lại"
             >
               <ArrowsClockwiseIcon size={14} />
             </button>
           </div>
         </div>
-        <div className="file-grid">
-          {c.filteredBBNTContracts.length === 0 ? (
-            <div className="file-grid-empty">
+        <div className="fgrid">
+          {c.contractList.length === 0 && (
+            <div className="fg-empty">
               <FolderOpenIcon
-                size={22}
-                style={{ display: "block", margin: "0 auto 6px", opacity: 0.4 }}
+                size={20}
+                style={{ display: "block", marginBottom: 5, opacity: 0.4 }}
               />
-              Nhấn tải lại để lấy danh sách
+              Nhấn 🔄 để tải
             </div>
-          ) : (
-            c.filteredBBNTContracts.map((f) => (
-              <div
-                key={f.id}
-                className={`file-card${bbnt.contractId === f.id ? " fc-selected" : ""}`}
-                onClick={() => c.selectBBNTContract(f)}
-              >
-                <div className="fc-name">{f.name}</div>
-              </div>
-            ))
           )}
+          {c.filteredBBNTContracts.map((f) => (
+            <div
+              key={f.id}
+              className={`fcard${bbnt.contractId === f.id ? " sel" : ""}`}
+              onClick={() => c.selectBBNTContract(f)}
+            >
+              <div className="fc-c">{parseHDName(f.name).code}</div>
+              <div className="fc-n">{parseHDName(f.name).name || f.name}</div>
+              {parseHDName(f.name).date && <div className="fc-d">{parseHDName(f.name).date}</div>}
+            </div>
+          ))}
         </div>
       </div>
 
+      {/* Loading khi kéo data live */}
       {bbnt.loading && (
-        <div className="info-banner" style={{ alignItems: "center", color: "var(--gold)" }}>
-          <SpinnerIcon size={15} className="animate-spin" />
-          <span>Đang tải hợp đồng…</span>
+        <div style={{ textAlign: "center", padding: 22, color: "var(--gold)" }}>
+          <SpinnerIcon size={22} className="animate-spin" />
+          <div style={{ fontSize: 12, marginTop: 8, color: "var(--dim)" }}>
+            Đang đọc dữ liệu hợp đồng...
+          </div>
         </div>
       )}
 
-      {bbnt.fromSnapshot && (
-        <div className="info-banner" style={{ alignItems: "center", color: "var(--gold)" }}>
-          <WarningIcon size={15} />
-          <span>Đã nạp từ snapshot — kiểm tra lại số liệu</span>
+      {/* Chưa chọn */}
+      {!bbnt.contractId && !bbnt.loading && (
+        <div style={{ padding: "24px 16px", textAlign: "center", color: "var(--dim)", fontSize: 12 }}>
+          Chọn 1 hợp đồng ở trên để lập biên bản nghiệm thu.
         </div>
       )}
 
-      {bbnt.contractId && (
+      {/* Form nghiệm thu */}
+      {bbnt.contractId && !bbnt.loading && (
         <>
-          <div className="flex-row">
-            <div className="form-group" style={{ flex: 1 }}>
-              <label>Số HĐ</label>
-              <input type="text" readOnly value={bbnt.sohd} />
+          {bbnt.fromSnapshot && (
+            <div
+              style={{
+                margin: "10px 0",
+                padding: "8px 10px",
+                borderRadius: 8,
+                background: "rgba(239,68,68,.08)",
+                border: "1px solid rgba(239,68,68,.35)",
+                fontSize: 11,
+                color: "var(--red)",
+              }}
+            >
+              <WarningIcon size={14} /> Không đọc được bảng giá sống trong Doc —
+              đang dùng snapshot lúc tạo HĐ. Kiểm tra kỹ hạng mục.
             </div>
-            <div className="form-group" style={{ flex: 1 }}>
-              <label>Khách hàng</label>
+          )}
+
+          {/* Thông tin hợp đồng */}
+          <div className="sbox">
+            <div className="stitle">
+              <FileTextIcon size={14} style={{ color: "var(--gold)" }} />
+              Hợp đồng nghiệm thu
+            </div>
+            <div className="fg" style={{ marginBottom: 10 }}>
+              <label>Số hợp đồng</label>
+              <input
+                type="text"
+                value={bbnt.sohd}
+                onChange={(e) => c.setBBNTField("sohd", e.target.value)}
+              />
+            </div>
+            <div className="fg" style={{ marginBottom: 10 }}>
+              <label>Khách hàng (Bên A)</label>
               <input
                 type="text"
                 value={bbnt.tencty}
                 onChange={(e) => c.setBBNTField("tencty", e.target.value)}
               />
             </div>
-          </div>
-
-          <div className="flex-row">
-            <div className="form-group" style={{ flex: 1 }}>
+            <div className="fg" style={{ marginBottom: 10 }}>
               <label>Ngày nghiệm thu</label>
-              <div
-                className="date-input-wrap"
-                onClick={(e) => openDatePicker?.("bbnt", "ngayNthu", e)}
-              >
+              <div className="dw" onClick={(e) => openDatePicker("bbnt", "ngayNthu", e)}>
                 <input
                   type="text"
                   readOnly
                   value={formatDateOnly(bbnt.ngayNthu)}
                   placeholder="Chọn ngày..."
-                  className="date-display-input"
+                  className="dd-inp"
                 />
-                <button type="button" className="date-icon-btn">
-                  <CalendarBlankIcon size={15} />
+                <button type="button" className="dd-btn">
+                  <CalendarBlankIcon size={14} />
                 </button>
               </div>
             </div>
+            <div className="fg">
+              <label>Sản phẩm bàn giao / link nghiệm thu (mỗi dòng 1 mục)</label>
+              <textarea
+                value={bbnt.deliverables}
+                onChange={(e) => c.setBBNTField("deliverables", e.target.value)}
+                rows={3}
+                placeholder={
+                  "VD:\n01 video recap: https://drive.google.com/...\n01 bộ ảnh sự kiện đã hậu kỳ: https://..."
+                }
+              />
+            </div>
           </div>
 
-          <div className="form-group">
-            <label>Sản phẩm bàn giao</label>
-            <textarea
-              rows={3}
-              value={bbnt.deliverables}
-              onChange={(e) => c.setBBNTField("deliverables", e.target.value)}
-              placeholder="Mỗi dòng một sản phẩm..."
-            />
-          </div>
-
-          <div className="table-wrap">
+          {/* Bảng hạng mục nghiệm thu */}
+          <div className="tw" style={{ marginTop: 12 }}>
             <table>
               <thead>
                 <tr>
-                  <th style={{ width: "24%", textAlign: "left", paddingLeft: 12 }}>Hạng mục</th>
-                  <th style={{ width: "8%" }}>ĐVT</th>
+                  <th style={{ width: "26%", textAlign: "left", paddingLeft: 10 }}>Hạng mục</th>
+                  <th style={{ width: "7%" }}>ĐVT</th>
                   <th style={{ width: "7%" }}>SL</th>
-                  <th style={{ width: "14%" }}>Đơn giá</th>
-                  <th style={{ width: "14%" }}>Thành tiền</th>
-                  <th style={{ width: "9%" }}>Tỉ lệ %</th>
-                  <th style={{ width: "16%" }}>TT nghiệm thu</th>
-                  <th style={{ width: "8%" }} />
+                  <th style={{ width: "15%" }}>Đơn giá</th>
+                  <th style={{ width: "16%" }}>Thành tiền</th>
+                  <th style={{ width: "10%" }}>Tỉ lệ %</th>
+                  <th style={{ width: "19%" }}>TT nghiệm thu</th>
                 </tr>
               </thead>
               <tbody>
-                {bbnt.items.map((item, i) => (
-                  <tr key={i}>
+                {bbnt.items.map((it, idx) => (
+                  <tr key={idx}>
                     <td data-label="Hạng mục:" style={{ textAlign: "left" }}>
                       <input
                         type="text"
-                        value={item.ten}
-                        onChange={(e) => c.updateBBNTItem(i, { ten: e.target.value })}
-                        style={{ textAlign: "left", width: "100%", paddingLeft: 10 }}
+                        value={it.ten}
+                        onChange={(e) => c.updateBBNTItem(idx, { ten: e.target.value })}
+                        placeholder="Tên hạng mục..."
+                        style={{ textAlign: "left", width: "100%", paddingLeft: 8 }}
                       />
                     </td>
                     <td data-label="ĐVT:">
                       <input
                         type="text"
-                        value={item.dvt}
-                        onChange={(e) => c.updateBBNTItem(i, { dvt: e.target.value })}
+                        value={it.dvt}
+                        onChange={(e) => c.updateBBNTItem(idx, { dvt: e.target.value })}
                         style={{ textAlign: "center" }}
                       />
                     </td>
                     <td data-label="SL:">
                       <input
                         type="number"
+                        value={it.sl}
                         min={1}
-                        value={item.sl}
-                        onChange={(e) => c.updateBBNTItem(i, { sl: Number(e.target.value) || 0 })}
+                        onChange={(e) => c.updateBBNTItem(idx, { sl: Number(e.target.value) })}
                         style={{ textAlign: "center" }}
                       />
                     </td>
                     <td data-label="Đơn giá:">
                       <input
                         type="text"
-                        inputMode="numeric"
-                        className="price-input"
-                        value={item.dongia ? formatThousands(String(item.dongia)) : ""}
-                        onChange={(e) => onDongia(i, e.target.value)}
-                        style={{ textAlign: "right", fontWeight: 700, fontSize: 12 }}
+                        value={it.dongia ? Number(it.dongia).toLocaleString("vi-VN") : ""}
+                        onChange={(e) =>
+                          c.updateBBNTItem(idx, {
+                            dongia: Math.max(0, parseInt(e.target.value.replace(/[^\d]/g, "")) || 0),
+                          })
+                        }
+                        style={{ textAlign: "right", color: "var(--gold)", fontWeight: 700, fontSize: 11 }}
                       />
                     </td>
                     <td data-label="Thành tiền:">
                       <input
                         type="text"
-                        inputMode="numeric"
-                        className="price-input"
-                        value={item.tt ? formatThousands(String(item.tt)) : ""}
-                        onChange={(e) => onTt(i, e.target.value)}
-                        style={{ textAlign: "right", fontWeight: 700, fontSize: 12 }}
+                        value={it.tt ? Number(it.tt).toLocaleString("vi-VN") : ""}
+                        onChange={(e) =>
+                          c.updateBBNTItem(idx, {
+                            tt: Math.max(0, parseInt(e.target.value.replace(/[^\d]/g, "")) || 0),
+                          })
+                        }
+                        style={{ textAlign: "right", color: "var(--gold)", fontWeight: 700, fontSize: 11 }}
                       />
                     </td>
                     <td data-label="Tỉ lệ %:">
                       <input
                         type="number"
+                        value={it.tyle}
                         min={0}
                         max={100}
-                        value={item.tyle}
-                        onChange={(e) => onTyle(i, e.target.value)}
-                        style={{ textAlign: "center" }}
+                        onChange={(e) =>
+                          c.updateBBNTItem(idx, { tyle: Number(e.target.value) })
+                        }
+                        style={{ textAlign: "center", color: "var(--gold)", fontWeight: 800 }}
                       />
                     </td>
                     <td data-label="TT nghiệm thu:">
-                      <span style={{ fontWeight: 700 }}>{formatMoney(c.bbntItemNthu(item))}</span>
-                    </td>
-                    <td>
-                      <button
-                        type="button"
-                        className="btn-remove"
-                        onClick={() => c.removeBBNTItem(i)}
-                      >
-                        <TrashIcon size={11} />
-                      </button>
+                      <div className="ac">
+                        <span>{formatShortMoney(c.bbntItemNthu(it))}</span>
+                        <button type="button" onClick={() => c.removeBBNTItem(idx)} className="btn-rm">
+                          <TrashIcon size={12} />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
-          <div className="action-row">
-            <button type="button" className="btn-add-row" onClick={c.addBBNTItem}>
+          <div className="arow" style={{ gap: 8 }}>
+            <button type="button" className="btn-add" onClick={c.addBBNTItem}>
               + Thêm hạng mục
             </button>
           </div>
 
-          <div className="summary-section">
-            <div className="discount-box">
-              <label>Tỉ lệ nghiệm thu nhanh</label>
-              <div className="ck-presets">
+          {/* Tỉ lệ nhanh + VAT + đã TT + tổng */}
+          <div className="sumbox">
+            <div>
+              <label>
+                <PercentIcon size={14} style={{ marginRight: 5, color: "var(--gold)" }} />
+                Tỉ lệ nghiệm thu chung
+              </label>
+              <div className="ck-presets" style={{ marginTop: 7 }}>
                 <button type="button" onClick={() => c.setBBNTTyleAll(50)}>
                   50%
                 </button>
@@ -262,61 +298,86 @@ const BBNTPanel = ({ c, openDatePicker }: Props) => {
                   100%
                 </button>
               </div>
-              <div className="form-group" style={{ marginTop: 10 }}>
-                <label>Đã thanh toán</label>
-                <input
-                  type="text"
-                  inputMode="numeric"
-                  value={bbnt.daTT ? formatThousands(String(bbnt.daTT)) : ""}
-                  onChange={(e) => onDaTT(e.target.value)}
-                />
-              </div>
-              <div className="form-group" style={{ marginTop: 10 }}>
-                <label>
+              <label style={{ marginTop: 12 }}>
+                <HandCoinsIcon size={14} style={{ marginRight: 5, color: "var(--gold)" }} />
+                Đã thanh toán
+              </label>
+              <input
+                type="text"
+                value={bbnt.daTT ? Number(bbnt.daTT).toLocaleString("vi-VN") : ""}
+                onChange={(e) =>
+                  c.setBBNTField(
+                    "daTT",
+                    Math.max(0, parseInt(e.target.value.replace(/[^\d]/g, "")) || 0),
+                  )
+                }
+                placeholder="VD: 10.000.000 (0 nếu chưa)"
+                style={{ marginTop: 5 }}
+              />
+            </div>
+            <div>
+              <label>
+                <ReceiptIcon size={14} style={{ marginRight: 5, color: "var(--gold)" }} />
+                Thuế VAT
+              </label>
+              <div className="vrow" style={{ marginTop: 7 }}>
+                <div className="vtog">
                   <input
                     type="checkbox"
+                    id="bbntVatCk"
                     checked={bbnt.applyVat}
                     onChange={(e) => c.setBBNTField("applyVat", e.target.checked)}
-                    style={{ marginRight: 6 }}
                   />
-                  Áp dụng VAT
-                </label>
+                  <label htmlFor="bbntVatCk">Áp dụng VAT</label>
+                </div>
                 {bbnt.applyVat && (
-                  <input
-                    type="number"
-                    min={0}
-                    max={100}
-                    value={bbnt.vatPct}
-                    onChange={(e) => c.setBBNTField("vatPct", Number(e.target.value) || 0)}
-                    style={{ marginTop: 6, width: 80 }}
-                  />
+                  <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
+                    <input
+                      type="number"
+                      value={bbnt.vatPct}
+                      onChange={(e) => c.setBBNTField("vatPct", Number(e.target.value))}
+                      className="vpct"
+                      min={0}
+                      max={20}
+                      step={1}
+                    />
+                    <span style={{ fontSize: 12, color: "var(--dim)" }}>%</span>
+                  </div>
                 )}
               </div>
-            </div>
-            <div className="total-summary-box">
-              <div className="subtotal-line">
-                Tổng nghiệm thu (chưa VAT): <b>{formatMoney(c.bbntSumNthu)}</b>
-              </div>
-              {bbnt.applyVat && (
-                <div className="subtotal-line">
-                  VAT ({bbnt.vatPct}%): <b>{formatMoney(c.bbntVat)}</b>
+              {bbnt.applyVat && c.bbntVat > 0 && (
+                <div className="vat-l" style={{ marginTop: 6 }}>
+                  VAT {bbnt.vatPct}%: + {formatMoney(c.bbntVat)}
                 </div>
               )}
-              <div className="subtotal-line">
-                Tổng đã VAT: <b>{formatMoney(c.bbntTong)}</b>
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
+              <div className="sub-l">
+                Giá trị nghiệm thu (chưa VAT): <b>{formatMoney(c.bbntSumNthu)}</b>
               </div>
-              <div className="chu-line">
-                Còn phải thanh toán: <b>{formatMoney(c.bbntConPhai)}</b>
+              <div className="sub-l">
+                Đã thanh toán: <b>{formatMoney(bbnt.daTT)}</b>
               </div>
-              <div className="chu-line">
-                Bằng chữ: <b>{c.bbntConPhaiChu}</b>
+              <div className="chu-l">
+                Còn phải TT (bằng chữ): <b>{c.bbntConPhaiChu}</b>
+              </div>
+              <div className="tot-chip">
+                <span className="tot-lbl">Còn phải thanh toán</span>
+                <input type="text" className="tot-val" readOnly value={formatMoney(c.bbntConPhai)} />
               </div>
             </div>
           </div>
 
-          <button type="button" className="btn-submit" onClick={c.exportBBNT}>
-            TẠO BIÊN BẢN NGHIỆM THU
-          </button>
+          {/* Xuất BBNT */}
+          <div className="submit-bar">
+            <button type="button" className="btn-sub" onClick={c.exportBBNT}>
+              <div className="sub-lbl">
+                <ClipboardTextIcon size={14} style={{ marginRight: 7 }} />
+                XUẤT BIÊN BẢN NGHIỆM THU
+              </div>
+              {c.bbntTong > 0 && <div className="sub-tot">{formatMoney(c.bbntTong)}</div>}
+            </button>
+          </div>
         </>
       )}
     </div>

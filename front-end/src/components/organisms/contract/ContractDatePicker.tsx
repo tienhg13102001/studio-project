@@ -1,14 +1,15 @@
-// Custom Monday-first date(+time) picker, ported from the Vue app's datePicker.
-// Renders into a portal on document.body, so it uses `.bz-`-prefixed classes
-// (styled globally in bao-gia.css) rather than relying on a `.bz` ancestor.
+// Custom Monday-first date picker, ported to match the original hop-dong Vue
+// app's `.dp-*` markup (back-end/scripts/google/hop-dong/index.html). Date-only.
+// Renders into a portal on document.body.
 
 import { useMemo, useState } from "react";
 import { createPortal } from "react-dom";
-import { CaretLeftIcon, CaretRightIcon, CaretUpIcon, CaretDownIcon } from "@phosphor-icons/react";
+import { CaretLeftIcon, CaretRightIcon } from "@phosphor-icons/react";
+import type { DateTarget } from "./useContractBuilder";
 
 export type DatePickerConfig = {
-  target: "form" | "bbnt" | "dntt";
   field: string;
+  target: DateTarget;
   dateOnly: boolean;
   value: string;
   pos: { top: number; left: number };
@@ -16,40 +17,26 @@ export type DatePickerConfig = {
 
 type Props = {
   config: DatePickerConfig;
-  onConfirm: (target: DatePickerConfig["target"], field: string, value: string) => void;
+  onConfirm: (target: DateTarget, field: string, value: string) => void;
   onClose: () => void;
 };
 
-const WEEKDAYS = ["T2", "T3", "T4", "T5", "T6", "T7", "CN"];
-const MONTHS = [
-  "Tháng 1",
-  "Tháng 2",
-  "Tháng 3",
-  "Tháng 4",
-  "Tháng 5",
-  "Tháng 6",
-  "Tháng 7",
-  "Tháng 8",
-  "Tháng 9",
-  "Tháng 10",
-  "Tháng 11",
-  "Tháng 12",
-];
-
+const WEEKDAYS = ["H", "B", "T", "N", "S", "B", "C"];
 const pad2 = (n: number) => String(n).padStart(2, "0");
 
 type DayCell = { d: number; cur: boolean; y: number; mo: number; da: number };
 
 const ContractDatePicker = ({ config, onConfirm, onClose }: Props) => {
-  const initial = useMemo(() => (config.value ? new Date(config.value) : new Date()), [config.value]);
+  const initial = useMemo(
+    () => (config.value ? new Date(config.value) : new Date()),
+    [config.value],
+  );
 
   const [viewYear, setViewYear] = useState(initial.getFullYear());
   const [viewMonth, setViewMonth] = useState(initial.getMonth());
   const [sy, setSy] = useState(initial.getFullYear());
   const [sm, setSm] = useState(initial.getMonth());
   const [sd, setSd] = useState(initial.getDate());
-  const [h, setH] = useState(initial.getHours());
-  const [m, setM] = useState(initial.getMinutes());
 
   const calendarDays = useMemo<DayCell[]>(() => {
     const firstDay = new Date(viewYear, viewMonth, 1);
@@ -70,6 +57,8 @@ const ContractDatePicker = ({ config, onConfirm, onClose }: Props) => {
     }
     return days;
   }, [viewYear, viewMonth]);
+
+  const monthLabel = `Tháng ${viewMonth + 1} ${viewYear}`;
 
   const prevMonth = () => {
     let mo = viewMonth - 1;
@@ -108,49 +97,37 @@ const ContractDatePicker = ({ config, onConfirm, onClose }: Props) => {
     return day.y === t.getFullYear() && day.mo === t.getMonth() && day.da === t.getDate();
   };
 
-  const clampH = () => setH((v) => Math.min(23, Math.max(0, v || 0)));
-  const clampM = () => setM((v) => Math.min(59, Math.max(0, v || 0)));
-
   const confirm = () => {
-    const hh = Math.min(23, Math.max(0, h || 0));
-    const mm = Math.min(59, Math.max(0, m || 0));
-    const dateStr = `${sy}-${pad2(sm + 1)}-${pad2(sd)}`;
-    onConfirm(
-      config.target,
-      config.field,
-      config.dateOnly ? dateStr : `${dateStr}T${pad2(hh)}:${pad2(mm)}`,
-    );
+    onConfirm(config.target, config.field, `${sy}-${pad2(sm + 1)}-${pad2(sd)}`);
   };
 
   return createPortal(
-    <div className="bz-dp-overlay" onClick={(e) => e.target === e.currentTarget && onClose()}>
-      <div
-        className="bz-dp-popup"
-        style={{ top: config.pos.top, left: config.pos.left }}
-      >
-        <div className="bz-dp-header">
-          <button type="button" className="bz-dp-nav-btn" onClick={prevMonth}>
+    <div
+      style={{ position: "fixed", inset: 0, zIndex: 9998 }}
+      onClick={(e) => e.target === e.currentTarget && onClose()}
+    >
+      <div className="dp-popup" style={{ top: config.pos.top, left: config.pos.left }}>
+        <div className="dp-hdr">
+          <button type="button" className="dp-nb" onClick={prevMonth}>
             <CaretLeftIcon size={12} weight="bold" />
           </button>
-          <span className="bz-dp-month-label">
-            {MONTHS[viewMonth]} {viewYear}
-          </span>
-          <button type="button" className="bz-dp-nav-btn" onClick={nextMonth}>
+          <span className="dp-ml">{monthLabel}</span>
+          <button type="button" className="dp-nb" onClick={nextMonth}>
             <CaretRightIcon size={12} weight="bold" />
           </button>
         </div>
-        <div className="bz-dp-weekdays">
-          {WEEKDAYS.map((d) => (
-            <span key={d}>{d}</span>
+        <div className="dp-wd">
+          {WEEKDAYS.map((d, i) => (
+            <span key={i}>{d}</span>
           ))}
         </div>
-        <div className="bz-dp-grid">
+        <div className="dp-grid">
           {calendarDays.map((day, i) => {
             const cls = [
-              "bz-dp-day",
-              !day.cur ? "dp-other" : "",
-              isSelected(day) ? "dp-selected" : "",
-              isToday(day) ? "dp-today" : "",
+              "dp-d",
+              !day.cur ? "dp-oth" : "",
+              isSelected(day) ? "dp-sel" : "",
+              isToday(day) ? "dp-tod" : "",
             ]
               .filter(Boolean)
               .join(" ");
@@ -161,68 +138,11 @@ const ContractDatePicker = ({ config, onConfirm, onClose }: Props) => {
             );
           })}
         </div>
-        {!config.dateOnly && (
-          <div className="bz-dp-time">
-            <div className="bz-dp-time-col">
-              <button
-                type="button"
-                className="bz-dp-arrow"
-                onClick={() => setH((v) => (v + 1 + 24) % 24)}
-              >
-                <CaretUpIcon size={11} weight="bold" />
-              </button>
-              <input
-                type="number"
-                className="bz-dp-time-val"
-                value={h}
-                min={0}
-                max={23}
-                onChange={(e) => setH(parseInt(e.target.value) || 0)}
-                onBlur={clampH}
-              />
-              <button
-                type="button"
-                className="bz-dp-arrow"
-                onClick={() => setH((v) => (v - 1 + 24) % 24)}
-              >
-                <CaretDownIcon size={11} weight="bold" />
-              </button>
-              <span className="bz-dp-time-lbl">Giờ</span>
-            </div>
-            <span className="bz-dp-time-sep">:</span>
-            <div className="bz-dp-time-col">
-              <button
-                type="button"
-                className="bz-dp-arrow"
-                onClick={() => setM((v) => (v + 1 + 60) % 60)}
-              >
-                <CaretUpIcon size={11} weight="bold" />
-              </button>
-              <input
-                type="number"
-                className="bz-dp-time-val"
-                value={m}
-                min={0}
-                max={59}
-                onChange={(e) => setM(parseInt(e.target.value) || 0)}
-                onBlur={clampM}
-              />
-              <button
-                type="button"
-                className="bz-dp-arrow"
-                onClick={() => setM((v) => (v - 1 + 60) % 60)}
-              >
-                <CaretDownIcon size={11} weight="bold" />
-              </button>
-              <span className="bz-dp-time-lbl">Phút</span>
-            </div>
-          </div>
-        )}
-        <div className="bz-dp-footer">
-          <button type="button" className="bz-dp-btn bz-dp-btn-cancel" onClick={onClose}>
+        <div className="dp-ft">
+          <button type="button" className="dp-btn dp-cn" onClick={onClose}>
             Hủy
           </button>
-          <button type="button" className="bz-dp-btn bz-dp-btn-ok" onClick={confirm}>
+          <button type="button" className="dp-btn dp-ok" onClick={confirm}>
             Xác nhận
           </button>
         </div>

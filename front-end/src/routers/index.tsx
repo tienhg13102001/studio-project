@@ -36,6 +36,18 @@ const withSuspense = (Component: LazyExoticComponent<ComponentType>) => (
 );
 
 export const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <MainLayout />,
+    children: [
+      { index: true, element: withSuspense(LandingPage) },
+      { path: "service", element: withSuspense(ServicesPage) },
+      { path: "service/:id", element: withSuspense(ServicePage) },
+      { path: "contact", element: withSuspense(ContactPage) },
+      { path: "team", element: withSuspense(TeamPage) },
+      { path: "portfolio", element: withSuspense(PortfolioPage) },
+    ],
+  },
   // Public portal login
   {
     path: "/portal",
@@ -56,18 +68,7 @@ export const router = createBrowserRouter([
       { path: "/portal/*", element: <Navigate to="/portal/dashboard" replace /> },
     ],
   },
-  {
-    path: "/",
-    element: <MainLayout />,
-    children: [
-      { index: true, element: withSuspense(LandingPage) },
-      { path: "service", element: withSuspense(ServicesPage) },
-      { path: "service/:id", element: withSuspense(ServicePage) },
-      { path: "contact", element: withSuspense(ContactPage) },
-      { path: "team", element: withSuspense(TeamPage) },
-      { path: "portfolio", element: withSuspense(PortfolioPage) },
-    ],
-  },
+
   // Full-screen builder tools — require a portal login (no portal shell).
   {
     element: <RequirePortalAuth />,
