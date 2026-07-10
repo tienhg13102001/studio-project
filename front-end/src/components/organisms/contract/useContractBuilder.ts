@@ -169,7 +169,8 @@ export function useContractBuilder() {
 
   const [appMode, setAppMode] = useState<AppMode>("NEW");
   const [activeTab, setActiveTab] = useState<CatKey>("SX");
-  const [viewMode, setViewMode] = useState<"form" | "split">("split");
+  // Mặc định 'form' (nhập gọn) — trang mở ở chế độ bình thường, không tự bật liveview A4.
+  const [viewMode, setViewMode] = useState<"form" | "split">("form");
   const [mobileTab, setMobileTab] = useState<"form" | "preview">("form");
   const [isDarkMode, setIsDarkMode] = useState(true);
   const [sec, setSec] = useState<SecState>({
