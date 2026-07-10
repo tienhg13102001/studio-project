@@ -5,9 +5,11 @@ import {
   ArrowLeftIcon,
   ArrowRightIcon,
   BriefcaseIcon,
+  ClipboardTextIcon,
   EnvelopeIcon,
   EyeIcon,
   EyeSlashIcon,
+  FileTextIcon,
   HouseIcon,
   LockIcon,
   SpinnerIcon,
@@ -148,6 +150,26 @@ const PortalPage = () => {
                   className="group-hover:text-primary text-foreground/30 shrink-0 transition-colors"
                 />
               </button>
+
+              {/* Quick access — builder tools (require login) */}
+              <div className="grid grid-cols-2 gap-3">
+                <button
+                  onClick={() => navigate("/bao-gia")}
+                  className="group hover:border-primary/50 hover:bg-primary/10 border-foreground/10 bg-foreground/5 flex flex-col gap-1.5 rounded-xl border px-4 py-3 text-left transition-all"
+                >
+                  <FileTextIcon size={20} weight="duotone" className="text-primary" />
+                  <span className="text-foreground text-sm font-semibold">Báo giá</span>
+                  <span className="text-foreground/40 text-xs">Tạo báo giá dịch vụ</span>
+                </button>
+                <button
+                  onClick={() => navigate("/hop-dong")}
+                  className="group hover:border-primary/50 hover:bg-primary/10 border-foreground/10 bg-foreground/5 flex flex-col gap-1.5 rounded-xl border px-4 py-3 text-left transition-all"
+                >
+                  <ClipboardTextIcon size={20} weight="duotone" className="text-primary" />
+                  <span className="text-foreground text-sm font-semibold">Hợp đồng</span>
+                  <span className="text-foreground/40 text-xs">Tạo hợp đồng &amp; BBNT</span>
+                </button>
+              </div>
 
               <button
                 onClick={handleSwitchAccount}

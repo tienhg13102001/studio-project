@@ -2,6 +2,7 @@ import { lazy, Suspense, type ComponentType, type LazyExoticComponent } from "re
 import { createBrowserRouter, Navigate } from "react-router-dom";
 import MainLayout from "../components/templates/MainLayout";
 import PortalLayout from "../components/templates/portal/PortalLayout";
+import RequirePortalAuth from "../components/templates/portal/RequirePortalAuth";
 
 const LandingPage = lazy(() => import("../pages/LandingPage"));
 const ServicesPage = lazy(() => import("../pages/ServicesPage"));
@@ -67,13 +68,13 @@ export const router = createBrowserRouter([
       { path: "portfolio", element: withSuspense(PortfolioPage) },
     ],
   },
+  // Full-screen builder tools — require a portal login (no portal shell).
   {
-    path: "/bao-gia",
-    element: withSuspense(BaoGiaPage),
-  },
-  {
-    path: "/hop-dong",
-    element: withSuspense(HopDongPage),
+    element: <RequirePortalAuth />,
+    children: [
+      { path: "/bao-gia", element: withSuspense(BaoGiaPage) },
+      { path: "/hop-dong", element: withSuspense(HopDongPage) },
+    ],
   },
   {
     path: "*",
