@@ -1,7 +1,7 @@
 // Item rows table for one category. Includes per-row name autocomplete
 // (portaled to body), price live-formatting, note toggle, add/remove.
 
-import { Fragment, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { NoteIcon, TrashIcon } from "@phosphor-icons/react";
 import { formatThousands } from "#lib/quote/format";
@@ -26,6 +26,14 @@ const shortMoney = (n: number) => (!n || n === 0 ? "" : Number(n).toLocaleString
 const ItemTable = ({ tab, short, q }: Props) => {
   const items = q.form.items[tab];
   const [dropdown, setDropdown] = useState<DropdownState>(null);
+
+  // Đóng dropdown gợi ý dịch vụ khi cuộn — dropdown portal position:fixed, tọa độ chốt lúc mở nên cuộn sẽ trôi lệch khỏi ô (khớp hành vi bản Vue)
+  useEffect(() => {
+    if (!dropdown) return;
+    const onScroll = () => setDropdown(null);
+    window.addEventListener("scroll", onScroll, true);
+    return () => window.removeEventListener("scroll", onScroll, true);
+  }, [dropdown]);
 
   const openDropdown = (index: number, e: React.FocusEvent<HTMLInputElement>) => {
     const container = e.target.closest(".custom-dropdown-container");
