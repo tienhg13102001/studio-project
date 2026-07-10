@@ -1,6 +1,6 @@
 // EDIT mode: pick an existing quote file, then pick an Option (sheet) to load.
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   ArrowsClockwiseIcon,
   CaretDownIcon,
@@ -23,6 +23,19 @@ type Props = {
 
 const FilePickerBar = ({ q }: Props) => {
   const [optionDropdownOpen, setOptionDropdownOpen] = useState(false);
+  const dropRef = useRef<HTMLDivElement>(null);
+
+  // Đóng dropdown chọn Option khi bấm ra ngoài (khớp hành vi @blur bản Vue)
+  useEffect(() => {
+    if (!optionDropdownOpen) return;
+    const onDoc = (e: MouseEvent) => {
+      if (dropRef.current && !dropRef.current.contains(e.target as Node)) {
+        setOptionDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", onDoc);
+    return () => document.removeEventListener("mousedown", onDoc);
+  }, [optionDropdownOpen]);
 
   return (
     <div className="file-select-box">
@@ -86,7 +99,7 @@ const FilePickerBar = ({ q }: Props) => {
       {q.selectedFileId && !q.loadingFile && q.optionList.length > 0 && (
         <div className="form-group" style={{ margin: 0 }}>
           <label style={{ color: "var(--gold)" }}>2. Chọn Option muốn nạp:</label>
-          <div className="custom-dropdown-container">
+          <div className="custom-dropdown-container" ref={dropRef}>
             <div
               className={`custom-select-display${optionDropdownOpen ? " open" : ""}`}
               onClick={() => setOptionDropdownOpen((v) => !v)}
