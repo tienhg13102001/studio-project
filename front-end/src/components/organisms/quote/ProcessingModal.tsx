@@ -1,7 +1,7 @@
 // Loading modal with fake progress bar → success checkmark.
 
 import { CheckCircleIcon } from "@phosphor-icons/react";
-import { LOGO_SRC } from "./constants";
+import { LOGO_FALLBACK, LOGO_SRC } from "./constants";
 import type { QuoteBuilder } from "./useQuoteBuilder";
 
 type Props = {
@@ -16,7 +16,13 @@ const ProcessingModal = ({ q }: Props) => {
           <div className="loading-logo-wrap">
             <div className="loading-ring" />
             <div className="loading-logo-inner">
-              <img src={LOGO_SRC} alt="Bee Z" />
+              <img
+                src={LOGO_SRC}
+                onError={(e) => {
+                  (e.target as HTMLImageElement).src = LOGO_FALLBACK;
+                }}
+                alt="Bee Z"
+              />
             </div>
           </div>
         )}
