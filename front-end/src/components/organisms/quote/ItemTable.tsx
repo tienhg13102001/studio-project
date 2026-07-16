@@ -30,10 +30,16 @@ const ItemTable = ({ tab, short, q }: Props) => {
   // xóa 1 chữ số không làm mất cả số; bỏ khi blur → hiện lại từ item.dongia đã chuẩn hóa.
   const [rawPrice, setRawPrice] = useState<{ id: QuoteItem["id"]; text: string } | null>(null);
 
-  // Đóng dropdown gợi ý dịch vụ khi cuộn — dropdown portal position:fixed, tọa độ chốt lúc mở nên cuộn sẽ trôi lệch khỏi ô (khớp hành vi bản Vue)
+  // Dropdown là portal position:fixed, tọa độ chốt lúc mở → cuộn sẽ trôi lệch khỏi ô nên phải đóng.
+  // NHƯNG bỏ qua cú cuộn trong 500ms đầu: trên mobile, chạm vào ô làm bàn phím ảo bật lên gây scroll
+  // ngay lập tức → không có chốt này thì dropdown đóng tức khắc, không chọn được dịch vụ.
   useEffect(() => {
     if (!dropdown) return;
-    const onScroll = () => setDropdown(null);
+    const openedAt = Date.now();
+    const onScroll = () => {
+      if (Date.now() - openedAt < 500) return;
+      setDropdown(null);
+    };
     window.addEventListener("scroll", onScroll, true);
     return () => window.removeEventListener("scroll", onScroll, true);
   }, [dropdown]);
