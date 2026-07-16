@@ -148,7 +148,10 @@ const ContractDatePicker = ({ config, onConfirm, onClose }: Props) => {
         </div>
       </div>
     </div>,
-    document.body,
+    // Phải portal VÀO .hd: CSS (`.hd .dp-popup`) và biến màu (--gold, --text…) đều scope dưới .hd.
+    // Ra document.body là rule không khớp → mất position:fixed (top/left inline vô tác dụng) → lịch
+    // nhảy lên đầu màn hình và mất màu. .hd không có transform/filter nên fixed vẫn neo theo viewport.
+    document.querySelector(".hd") ?? document.body,
   );
 };
 

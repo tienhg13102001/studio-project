@@ -34,7 +34,8 @@ const ContractToast = ({ c }: Props) => {
         </div>
       ))}
     </div>,
-    document.body,
+    // `.hd .toasts` / `.hd .toast` scope dưới .hd — portal ra document.body là toast mất style.
+    document.querySelector(".hd") ?? document.body,
   );
 };
 

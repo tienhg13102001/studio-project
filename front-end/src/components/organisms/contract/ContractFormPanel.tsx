@@ -354,7 +354,9 @@ const ContractFormPanel = ({ c, openDatePicker }: Props) => {
                                 <li style={{ color: "var(--dim)", fontStyle: "italic" }}>Không tìm thấy...</li>
                               )}
                             </ul>,
-                            document.body,
+                            // `.hd .cdl` scope dưới .hd — portal ra document.body là mất nền/viền/màu chữ
+                            // → dropdown gợi ý hạng mục trong suốt, vô hình trên nền tối.
+                            document.querySelector(".hd") ?? document.body,
                           )}
                       </div>
                     </td>
