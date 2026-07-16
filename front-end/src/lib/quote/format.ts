@@ -45,10 +45,10 @@ export function formatDateDisplay(v: string): string {
   return `${dd}/${mm}/${yyyy} ${hh}:${min}`;
 }
 
-/** "YYYY-MM-DD" -> "DD/MM/YYYY" via manual split (avoids UTC shift). */
+/** "YYYY-MM-DD" -> "DD/MM/YYYY" via manual split (avoids UTC shift). Cắt phần "T…" phòng data cũ lưu kèm giờ. */
 export function formatDateOnly(v: string): string {
   if (!v) return "";
-  const parts = v.split("-");
+  const parts = v.split("T")[0].split("-");
   if (parts.length !== 3) return "";
   const [yyyy, mm, dd] = parts;
   return `${dd}/${mm}/${yyyy}`;

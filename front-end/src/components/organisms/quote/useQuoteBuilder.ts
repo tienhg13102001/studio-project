@@ -498,7 +498,9 @@ export function useQuoteBuilder() {
         return;
       }
       const newData = clone(data[key]);
-      newData.ckValue = 0;
+      // Chỉ đặt 0 khi data cũ THIẾU key — để chiết khấu không "dính" từ option trước khi spread vào
+      // form. Data đã lưu CÓ ckValue thì phải giữ nguyên, đặt 0 ở đây là xóa mất chiết khấu đã lưu.
+      if (newData.ckValue === undefined) newData.ckValue = 0;
       for (const tab of CAT_KEYS) {
         if (!newData.items[tab]) newData.items[tab] = [];
         newData.items[tab].forEach((item) => {
