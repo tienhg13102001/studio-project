@@ -42,6 +42,9 @@ type DayCell = { d: number; cur: boolean; y: number; mo: number; da: number };
 const QuoteDatePicker = ({ config, onConfirm, onClose }: Props) => {
   const initial = useMemo(() => (config.value ? new Date(config.value) : new Date()), [config.value]);
 
+  // Từ (Call time) / Đến (Wrap) được phép bỏ trống — backend đã thay '' cho {{tu}}/{{den}} khi rỗng
+  const canClear = config.field === "tu" || config.field === "den";
+
   const [viewYear, setViewYear] = useState(initial.getFullYear());
   const [viewMonth, setViewMonth] = useState(initial.getMonth());
   const [sy, setSy] = useState(initial.getFullYear());
@@ -217,6 +220,15 @@ const QuoteDatePicker = ({ config, onConfirm, onClose }: Props) => {
           <button type="button" className="bz-dp-btn bz-dp-btn-cancel" onClick={onClose}>
             Hủy
           </button>
+          {canClear && (
+            <button
+              type="button"
+              className="bz-dp-btn bz-dp-btn-clear"
+              onClick={() => onConfirm(config.field, "")}
+            >
+              Xóa
+            </button>
+          )}
           <button type="button" className="bz-dp-btn bz-dp-btn-ok" onClick={confirm}>
             Xác nhận
           </button>
