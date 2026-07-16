@@ -514,7 +514,7 @@
     }
     .dp-popup {
       position: fixed; z-index: 9999; width: 280px;
-      background: linear-gradient(rgba(18,16,12,0.80), rgba(18,16,12,0.80)) padding-box, linear-gradient(150deg, rgba(252,209,37,0.30), rgba(255,242,210,0.08)) border-box;
+      background: linear-gradient(rgba(18,16,12,0.96), rgba(18,16,12,0.96)) padding-box, linear-gradient(150deg, rgba(252,209,37,0.30), rgba(255,242,210,0.08)) border-box;
       border: 1px solid transparent;
       backdrop-filter: blur(28px) saturate(160%); -webkit-backdrop-filter: blur(28px) saturate(160%);
       border-radius: 16px; padding: 16px;
@@ -573,6 +573,8 @@
     }
     .dp-btn-cancel { background: var(--glass); color: var(--text-dim); border: 1px solid var(--border) !important; }
     .dp-btn-cancel:hover { color: var(--red); border-color: var(--red) !important; }
+    .dp-btn-clear { background: var(--glass); color: var(--text-dim); border: 1px solid var(--border) !important; }
+    .dp-btn-clear:hover { color: var(--gold); border-color: rgba(252,209,37,0.5) !important; }
     .dp-btn-ok { background: linear-gradient(135deg, #fcd125, #f0a800); color: #050505; }
     .dp-btn-ok:hover { box-shadow: 0 4px 16px rgba(252,209,37,0.4); }
 
@@ -818,6 +820,18 @@
         scroll-behavior: auto !important;
       }
     }
+
+    /* ── Header COMPACT (gọn ngang kiểu Hợp Đồng) — 2026-07-10 ── */
+    .header { flex-direction: row; justify-content: center; align-items: center; gap: 12px; margin-bottom: 20px; padding: 10px 54px;
+      background: rgba(13,12,21,0.55); border: 1px solid var(--glass-b); border-radius: 16px;
+      backdrop-filter: blur(20px) saturate(160%); -webkit-backdrop-filter: blur(20px) saturate(160%);
+      box-shadow: inset 0 1px 0 var(--glass-hi); }
+    .header-tools { top: 50%; right: 12px; transform: translateY(-50%); }
+    .logo-wrap { width: 48px !important; height: 48px !important; }
+    .header-title { font-size: 20px !important; text-align: left; letter-spacing: 0.6px; }
+    .header-sub { font-size: 9.5px; text-align: left; letter-spacing: 2.4px; }
+    .sobg-badge { max-width: 230px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    @media (max-width: 620px) { .header { padding: 8px 44px; } .sobg-badge { display: none; } }
   </style>
 </head>
 
@@ -1045,7 +1059,7 @@
               </td>
               <td data-label="Số lượng:"><input type="number" v-model.number="item.sl" min="1" style="text-align:center;"></td>
               <td data-label="Đơn vị:"><input type="text" v-model="item.dvt" style="text-align:center;"></td>
-              <td data-label="Đơn giá:"><input type="text" inputmode="numeric" class="price-input" :value="item.dongia ? Number(item.dongia).toLocaleString('vi-VN') : ''" @input="onPriceInput(item, $event)" style="text-align:right;font-weight:700;font-size:12px;"></td>
+              <td data-label="Đơn giá:"><input type="text" inputmode="numeric" class="price-input" :value="priceRaw[item.id] !== undefined ? priceRaw[item.id] : (item.dongia ? formatThousandsStr(item.dongia) : '')" @input="onPriceInput(item, $event)" @blur="onPriceBlur(item)" style="text-align:right;font-weight:700;font-size:12px;"></td>
               <td data-label="Số ngày:"><input type="number" v-model.number="item.sn" min="1" @input="item.snTouched = true" style="text-align:center;font-weight:800;" :style="{ color: item.snTouched ? 'var(--gold)' : 'var(--text)' }"></td>
               <td data-label="Thành tiền:">
                 <div class="action-cell">
@@ -1290,6 +1304,7 @@
         </div>
         <div class="dp-footer">
           <button type="button" class="dp-btn dp-btn-cancel" @click="closeDatePicker">Hủy</button>
+          <button v-if="datePicker.field === 'tu' || datePicker.field === 'den'" type="button" class="dp-btn dp-btn-clear" @click="dpClear">Xóa</button>
           <button type="button" class="dp-btn dp-btn-ok" @click="dpConfirm">Xác nhận</button>
         </div>
       </div>
@@ -1341,6 +1356,9 @@
         dropdownPos: { top: 0, left: 0, width: 240 },
         toast: { show: false, msg: '', actionLabel: '', action: null, timer: null },
         lastRemoved: null, draftTimer: null, dropdownOpenedAt: 0, draftSavedAt: '', draftRestored: false,
+        // Text đang gõ ở ô Đơn giá, key = item.id. Giữ nguyên chuỗi số user gõ (kể cả '0' đứng đầu)
+        // để xóa 1 chữ số không làm mất cả số. Xóa key khi blur → quay về hiển thị từ item.dongia.
+        priceRaw: {},
         datePicker: {
           open: false, field: null, dateOnly: false,
           viewYear: 2026, viewMonth: 5,
@@ -1662,15 +1680,29 @@
         const n = Number(String(v == null ? '' : v).replace(/[^\d]/g, '')) || 0;
         return Math.min(1e12, n);
       },
+      // Ngăn nghìn TRÊN CHUỖI SỐ (không qua Number) → giữ được '0' đứng đầu lúc đang gõ
+      formatThousandsStr(s) { return String(s).replace(/\B(?=(\d{3})+(?!\d))/g, '.'); },
       onPriceInput(item, e) {
-        const digits = String(e.target.value).replace(/[^\d]/g, '');
-        item.dongia = this.parseMoney(digits);
-        // Ô rỗng thật → để trống; đã gõ (kể cả '0' cho hạng mục 0đ) → hiện số đã định dạng. Caret về cuối (giá gõ trái→phải).
-        const formatted = digits === '' ? '' : Number(item.dongia).toLocaleString('vi-VN');
-        e.target.value = formatted;
         const el = e.target;
-        requestAnimationFrame(() => { try { el.setSelectionRange(formatted.length, formatted.length); } catch (_) {} });
+        const raw = String(el.value);
+        // Đếm số CHỮ SỐ đứng trước con trỏ để khôi phục đúng chỗ sau khi format lại
+        const caret = el.selectionStart == null ? raw.length : el.selectionStart;
+        const digitsBefore = raw.slice(0, caret).replace(/[^\d]/g, '').length;
+        const digits = raw.replace(/[^\d]/g, '').slice(0, 13);   // 1e12 là trần của parseMoney
+        item.dongia = this.parseMoney(digits);
+        const formatted = digits === '' ? '' : this.formatThousandsStr(digits);
+        this.priceRaw[item.id] = formatted;
+        el.value = formatted;
+        // Con trỏ ở lại sau đúng số chữ số cũ (trước đây bị ép về cuối nên sửa giữa số rất khó)
+        let pos = 0, seen = 0;
+        while (pos < formatted.length && seen < digitsBefore) {
+          const c = formatted.charCodeAt(pos);
+          if (c >= 48 && c <= 57) seen++;
+          pos++;
+        }
+        requestAnimationFrame(() => { try { el.setSelectionRange(pos, pos); } catch (_) {} });
       },
+      onPriceBlur(item) { delete this.priceRaw[item.id]; },
       parseCk() {
         let str = this.rawCk.toString();
         if (str.includes('%')) {
@@ -1902,6 +1934,8 @@
         dp.open = true;
       },
       closeDatePicker() { this.datePicker.open = false; },
+      // Từ/Đến được phép bỏ trống — backend đã thay '' cho {{tu}}/{{den}} khi rỗng
+      dpClear() { this.form[this.datePicker.field] = ''; this.closeDatePicker(); },
       dpPrevMonth() {
         const dp = this.datePicker;
         dp.viewMonth--; if (dp.viewMonth < 0) { dp.viewMonth = 11; dp.viewYear--; }
@@ -1975,7 +2009,4 @@
 </script>
 </body>
 </html>
-
-
-
-
+ 

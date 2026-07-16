@@ -26,6 +26,9 @@ const shortMoney = (n: number) => (!n || n === 0 ? "" : Number(n).toLocaleString
 const ItemTable = ({ tab, short, q }: Props) => {
   const items = q.form.items[tab];
   const [dropdown, setDropdown] = useState<DropdownState>(null);
+  // Text đang gõ ở ô Đơn giá của 1 dòng. Giữ nguyên chuỗi số user gõ (kể cả '0' đứng đầu) nên
+  // xóa 1 chữ số không làm mất cả số; bỏ khi blur → hiện lại từ item.dongia đã chuẩn hóa.
+  const [rawPrice, setRawPrice] = useState<{ id: QuoteItem["id"]; text: string } | null>(null);
 
   // Đóng dropdown gợi ý dịch vụ khi cuộn — dropdown portal position:fixed, tọa độ chốt lúc mở nên cuộn sẽ trôi lệch khỏi ô (khớp hành vi bản Vue)
   useEffect(() => {
@@ -48,9 +51,31 @@ const ItemTable = ({ tab, short, q }: Props) => {
   };
   const closeDropdown = () => setTimeout(() => setDropdown(null), 200);
 
-  const onPrice = (index: number, e: React.ChangeEvent<HTMLInputElement>) => {
-    const digits = e.target.value.replace(/[^\d]/g, "");
+  const onPrice = (item: QuoteItem, index: number, e: React.ChangeEvent<HTMLInputElement>) => {
+    const el = e.target;
+    const raw = el.value;
+    // Đếm số CHỮ SỐ đứng trước con trỏ để khôi phục đúng chỗ sau khi format lại
+    const caret = el.selectionStart ?? raw.length;
+    const digitsBefore = raw.slice(0, caret).replace(/[^\d]/g, "").length;
+    const digits = raw.replace(/[^\d]/g, "").slice(0, 13); // 1e12 là trần của parseMoney
+    const text = digits ? formatThousands(digits) : "";
+    setRawPrice({ id: item.id, text });
     q.onPriceInput(tab, index, digits);
+    // Con trỏ ở lại sau đúng số chữ số cũ, thay vì nhảy về cuối khi chuỗi được format lại
+    let pos = 0;
+    let seen = 0;
+    while (pos < text.length && seen < digitsBefore) {
+      const c = text.charCodeAt(pos);
+      if (c >= 48 && c <= 57) seen++;
+      pos++;
+    }
+    requestAnimationFrame(() => {
+      try {
+        el.setSelectionRange(pos, pos);
+      } catch {
+        /* ô đã unmount */
+      }
+    });
   };
 
   const chooseService = (index: number, opt: Service) => {
@@ -144,8 +169,15 @@ const ItemTable = ({ tab, short, q }: Props) => {
                         type="text"
                         inputMode="numeric"
                         className="price-input"
-                        value={item.dongia ? formatThousands(String(item.dongia)) : ""}
-                        onChange={(e) => onPrice(index, e)}
+                        value={
+                          rawPrice?.id === item.id
+                            ? rawPrice.text
+                            : item.dongia
+                              ? formatThousands(String(item.dongia))
+                              : ""
+                        }
+                        onChange={(e) => onPrice(item, index, e)}
+                        onBlur={() => setRawPrice((r) => (r?.id === item.id ? null : r))}
                         style={{ textAlign: "right", fontWeight: 700, fontSize: 12 }}
                       />
                     </td>
