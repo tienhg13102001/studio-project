@@ -68,6 +68,7 @@ const en = {
     hours: "Working Hours",
     followUs: "Follow Us",
     rights: "© {year} BeeZ Production. All rights reserved.",
+    visitors: "Visitors",
   },
   contact: {
     title: "Contact",

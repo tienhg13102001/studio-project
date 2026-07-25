@@ -1,6 +1,7 @@
 import SocialLinks from "#components/molecules/SocialLinks";
 import { useContact } from "#hooks/useContact";
 import { useLanding } from "#hooks/useLanding";
+import { useVisitorCount } from "#hooks/useVisitorCount";
 import { useLanguage, useTranslation } from "#i18n";
 import { localized } from "#lib/localized";
 import {
@@ -24,6 +25,7 @@ const Footer: React.FC = () => {
   const { lang } = useLanguage();
   const { data: contact } = useContact();
   const { data: landing } = useLanding(lang);
+  const visitorCount = useVisitorCount();
   const year = new Date().getFullYear();
   const hasSocials = !!(
     landing?.socials.facebook ||
@@ -133,10 +135,18 @@ const Footer: React.FC = () => {
 
       {/* Bottom bar */}
       <div className="border-border border-t">
-        <div className="mx-auto w-full max-w-7xl px-6 py-4">
+        <div className="mx-auto flex w-full max-w-7xl flex-col items-center gap-2 px-6 py-4 sm:flex-row sm:justify-between">
           <p className="text-muted-foreground text-center text-xs">
             {t.footer.rights.replace("{year}", String(year))}
           </p>
+          {visitorCount !== null && (
+            <p className="text-muted-foreground text-center text-xs">
+              {t.footer.visitors}:{" "}
+              <span className="text-foreground font-semibold">
+                {visitorCount.toLocaleString()}
+              </span>
+            </p>
+          )}
         </div>
       </div>
     </footer>

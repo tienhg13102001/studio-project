@@ -15,10 +15,14 @@ import authRouter from "./routes/auth.ts";
 import uploadRouter from "./routes/upload.ts";
 import teamContentRouter from "./routes/team-content.ts";
 import settingsRouter from "./routes/settings.ts";
+import visitorsRouter from "./routes/visitors.ts";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const app = express();
+
+// Sau nginx/Cloudflare → tin proxy để req.ip là IP thật của client.
+app.set("trust proxy", true);
 
 // ─── Middleware ───────────────────────────────────────────────────────────────
 app.use(express.json());
@@ -63,6 +67,7 @@ app.use("/api/auth", authRouter);
 app.use("/api/upload", uploadRouter);
 app.use("/api/team-content", teamContentRouter);
 app.use("/api/settings", settingsRouter);
+app.use("/api/visitors", visitorsRouter);
 
 // ─── 404 ─────────────────────────────────────────────────────────────────────
 app.use((_req, res) => {

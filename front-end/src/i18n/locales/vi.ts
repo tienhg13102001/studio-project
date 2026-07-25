@@ -68,6 +68,7 @@ const vi = {
     hours: "Giờ Làm Việc",
     followUs: "Theo Dõi",
     rights: "Bản quyền © {year} BeeZ Production. Mọi quyền được bảo lưu.",
+    visitors: "Lượt truy cập",
   },
   contact: {
     title: "Liên Hệ",
