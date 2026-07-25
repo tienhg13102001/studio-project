@@ -1,4 +1,5 @@
 import HeroCTA from "#components/molecules/HeroCTA";
+import ShinyText from "#components/molecules/ShinyText";
 import { useLanguage } from "#i18n";
 import { useLanding } from "#hooks/useLanding";
 import { ArrowDownIcon } from "@phosphor-icons/react";
@@ -30,7 +31,7 @@ const HeroSection = () => {
       </div>
       <h1 className="mb-4 text-4xl leading-tight font-bold tracking-tight md:text-6xl lg:text-7xl">
         <span className="block text-white">{content.heroLine1}</span>
-        <span className="text-primary block">{content.heroLine2}</span>
+        <ShinyText className="block">{content.heroLine2}</ShinyText>
       </h1>
       <p className="mx-auto mb-5 max-w-2xl text-sm leading-relaxed font-light text-gray-300 md:mb-10 md:text-base">
         {content.subheading}
