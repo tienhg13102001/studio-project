@@ -1,4 +1,5 @@
 import Reveal from "#components/Reveal";
+import CountUp from "#components/molecules/CountUp";
 import MarqueeRow from "#components/molecules/MarqueeRow";
 import { useBrands } from "#hooks/useBrands";
 import { useTranslation } from "#i18n";
@@ -31,7 +32,7 @@ const StatsAndBrands: React.FC = () => {
                     {ICON_MAP[stat.icon]}
                   </div>
                   <div>
-                    <span className="text-primary text-3xl font-bold">{stat.value}</span>
+                    <CountUp value={stat.value} className="text-primary text-3xl font-bold" />
                     <p className="text-muted-foreground text-xs font-medium tracking-widest uppercase">
                       {stat.label}
                     </p>
