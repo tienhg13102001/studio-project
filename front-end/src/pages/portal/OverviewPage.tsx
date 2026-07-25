@@ -3,6 +3,7 @@ import { useBrands } from "#hooks/useBrands";
 import { useProjects } from "#hooks/useProjects";
 import { useServices } from "#hooks/useServices";
 import { useTeam } from "#hooks/useTeam";
+import { useVisitorTotal } from "#hooks/useVisitorTotal";
 import { useNavigate } from "react-router-dom";
 
 const TAB_TO_PATH: Record<string, string> = {
@@ -21,6 +22,7 @@ const OverviewPage = () => {
   const { data: servicesData } = useServices("en");
   const { verticalCards, horizontalCards } = useProjects();
   const allProjects = [...(verticalCards ?? []), ...(horizontalCards ?? [])];
+  const { total: visitorTotal } = useVisitorTotal();
 
   return (
     <OverviewTab
@@ -30,6 +32,7 @@ const OverviewPage = () => {
       brandsLoading={brandsLoading}
       servicesData={servicesData}
       allProjects={allProjects}
+      visitorTotal={visitorTotal}
       onTabChange={(id) => navigate(TAB_TO_PATH[id] ?? "/portal/dashboard")}
     />
   );

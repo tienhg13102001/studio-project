@@ -1,4 +1,4 @@
-import { UsersThreeIcon, StarIcon, BriefcaseIcon, ImageSquareIcon } from "@phosphor-icons/react";
+import { UsersThreeIcon, StarIcon, BriefcaseIcon, ImageSquareIcon, EyeIcon } from "@phosphor-icons/react";
 import type { ApiUser, ApiBrand } from "#lib/apiTypes";
 import type { ServiceDisplay } from "#hooks/useServices";
 import type { ProjectDisplay } from "#hooks/useProjects";
@@ -13,6 +13,7 @@ type Props = {
   brandsLoading:  boolean;
   servicesData:   ServiceDisplay[] | null;
   allProjects:    ProjectDisplay[];
+  visitorTotal:   number | null;
   onTabChange:    (id: string) => void;
 };
 
@@ -20,19 +21,21 @@ export default function OverviewTab({
   teamData, teamLoading,
   brandsData, brandsLoading,
   servicesData, allProjects,
+  visitorTotal,
   onTabChange,
 }: Props) {
   const stats = [
-    { label: "Team Members", value: teamData?.length    ?? "—", icon: <UsersThreeIcon  size={20} weight="duotone" />, color: "text-blue-400"    },
-    { label: "Brands",       value: brandsData?.length  ?? "—", icon: <StarIcon         size={20} weight="duotone" />, color: "text-amber-400"  },
-    { label: "Services",     value: servicesData?.length ?? "—",icon: <BriefcaseIcon    size={20} weight="duotone" />, color: "text-violet-400" },
-    { label: "Projects",     value: allProjects.length  || "—", icon: <ImageSquareIcon  size={20} weight="duotone" />, color: "text-emerald-400"},
+    { label: "Team Members",   value: teamData?.length    ?? "—", icon: <UsersThreeIcon  size={20} weight="duotone" />, color: "text-blue-400"    },
+    { label: "Brands",         value: brandsData?.length  ?? "—", icon: <StarIcon         size={20} weight="duotone" />, color: "text-amber-400"  },
+    { label: "Services",       value: servicesData?.length ?? "—",icon: <BriefcaseIcon    size={20} weight="duotone" />, color: "text-violet-400" },
+    { label: "Projects",       value: allProjects.length  || "—", icon: <ImageSquareIcon  size={20} weight="duotone" />, color: "text-emerald-400"},
+    { label: "Lượt truy cập",  value: visitorTotal != null ? visitorTotal.toLocaleString() : "—", icon: <EyeIcon size={20} weight="duotone" />, color: "text-cyan-400" },
   ];
 
   return (
     <>
       {/* Stat cards */}
-      <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-5">
         {stats.map((card) => (
           <div key={card.label} className="rounded-xl border border-foreground/8 bg-foreground/3 p-4 sm:p-5 flex flex-col gap-3">
             <div className={card.color}>{card.icon}</div>
