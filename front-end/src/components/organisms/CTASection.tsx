@@ -1,4 +1,5 @@
 import Reveal from "#components/Reveal";
+import SplitText from "#components/molecules/SplitText";
 import { Button } from "#components/ui/button";
 import { useTranslation } from "#i18n";
 import { ArrowRightIcon, ChartLineUpIcon } from "@phosphor-icons/react";
@@ -12,7 +13,9 @@ const CTASection = () => {
       <div className="from-primary/10 via-background pointer-events-none absolute inset-0 bg-linear-to-t to-transparent" />
       <div className="relative mx-auto max-w-2xl">
         <Reveal>
-          <h2 className="text-foreground text-3xl font-bold md:text-4xl">{t.service.ctaTitle}</h2>
+          <h2 className="text-foreground text-3xl font-bold md:text-4xl">
+            <SplitText>{t.service.ctaTitle}</SplitText>
+          </h2>
           <p className="text-muted-foreground mt-3 text-base">{t.service.ctaSubtitle}</p>
           <Button
             onClick={() => navigate("/contact")}

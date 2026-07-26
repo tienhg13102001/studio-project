@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import LogoYellow from "../../assets/icons/LogoYellow";
+import TextType from "#components/molecules/TextType";
 
 type Props = {
   /** 0-100, target progress driven by API loading state. */
@@ -66,7 +67,12 @@ const Preloader = ({ target, onComplete }: Props) => {
         isExiting ? "-translate-y-full" : "translate-y-0"
       }`}
     >
-      <LogoYellow className="mb-12 h-14 w-14 opacity-80" />
+      <LogoYellow className="mb-6 h-14 w-14 opacity-80" />
+
+      <TextType
+        text="BEEZ PRODUCTION"
+        className="text-foreground mb-10 text-sm font-semibold tracking-[0.25em] select-none"
+      />
 
       <div className="flex w-64 flex-col gap-3 md:w-96">
         <div className="bg-muted h-0.5 w-full overflow-hidden rounded-full">

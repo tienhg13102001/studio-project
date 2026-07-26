@@ -1,4 +1,5 @@
 import MarqueeRow from "#components/molecules/MarqueeRow";
+import SplitText from "#components/molecules/SplitText";
 import { useLanguage, useTranslation } from "#i18n";
 import Reveal from "#components/Reveal";
 import { useTeamContent } from "#hooks/useTeamContent";
@@ -49,7 +50,7 @@ const WhoWeAre: React.FC = () => {
               {aboutBadge}
             </span>
             <h2 className="text-foreground text-4xl font-bold leading-tight md:text-5xl">
-              {aboutHeading}
+              <SplitText>{aboutHeading}</SplitText>
             </h2>
             <p className="text-muted-foreground text-base leading-relaxed max-w-lg whitespace-pre-line">
               {aboutDescription}
