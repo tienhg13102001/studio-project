@@ -3,6 +3,7 @@ import { useTeam } from "#hooks/useTeam";
 import { resolveAssetUrl } from "#lib/api";
 import { localized } from "#lib/localized";
 import Reveal from "#components/Reveal";
+import SpotlightCard from "#components/molecules/SpotlightCard";
 
 /** Returns the initials of a name, e.g. "Tyler Nguyen" → "TN" */
 function initials(name: string): string {
@@ -105,7 +106,8 @@ const MeetOurTeam: React.FC = () => {
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {others.map((user, i) => (
             <Reveal key={user.id} delay={i * 80} className="h-full">
-              <div className="flex flex-col gap-4 rounded-2xl border border-border bg-card p-6 shadow-sm h-full">
+              <SpotlightCard className="h-full rounded-2xl border border-border bg-card shadow-sm">
+                <div className="flex h-full flex-col gap-4 p-6">
                 {/* Avatar */}
                 <div className="flex items-center gap-4">
                   {user.photo ? (
@@ -146,7 +148,8 @@ const MeetOurTeam: React.FC = () => {
                     ))}
                   </div>
                 )}
-              </div>
+                </div>
+              </SpotlightCard>
             </Reveal>
           ))}
         </div>
