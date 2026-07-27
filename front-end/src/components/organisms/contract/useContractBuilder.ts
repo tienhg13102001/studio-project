@@ -753,7 +753,9 @@ export function useContractBuilder() {
         });
 
       const start = Date.now();
-      const duration = 2400;
+      // Thời lượng animation phải xấp xỉ thời gian backend GAS tạo Doc+PDF (~14-18s), khớp bản Vue.
+      // Để 2400ms → thanh vọt tới cap 92% trong ~2s rồi ĐỨNG chờ backend ~15s, nhìn như treo.
+      const duration = Math.floor(Math.random() * 4000) + 14000;
       progressInterval.current = setInterval(() => {
         if (isCancelledRef.current) {
           clearTimers();
