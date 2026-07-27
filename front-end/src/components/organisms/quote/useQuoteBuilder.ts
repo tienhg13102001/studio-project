@@ -673,57 +673,59 @@ export function useQuoteBuilder() {
         showToast("Lỗi khi tạo báo giá: " + errMsg(err));
       });
 
-    const totalDuration = Math.floor(Math.random() * 5000) + 15000;
+    // Thanh tiến trình mượt: chưa xong thì bò chậm dần tiệm cận ~90% (LUÔN nhúc nhích, không đứng);
+    // backend xong thì bò nhanh mượt nốt lên 100% (không nhảy vọt từ số lẻ). Không đo tiến độ thật.
     const startTime = Date.now();
+    const TAU = 5500; // hằng thời gian: càng nhỏ càng nhanh tiệm cận 90
+    let prog = 0;
     progressInterval.current = setInterval(() => {
       if (isCancelledRef.current) {
         if (progressInterval.current) clearInterval(progressInterval.current);
         return;
       }
-      let currentProg = ((Date.now() - startTime) / totalDuration) * 100;
-      if (backendDone && currentProg < 100) currentProg = 100;
-      if (currentProg >= 100) {
-        setProgressValue(100);
-        if (progressInterval.current) clearInterval(progressInterval.current);
-        let waited = 0;
-        checkBackendInterval.current = setInterval(() => {
-          if (isCancelledRef.current) {
-            if (checkBackendInterval.current) clearInterval(checkBackendInterval.current);
-            return;
-          }
-          if (backendDone) {
-            if (checkBackendInterval.current) clearInterval(checkBackendInterval.current);
-            const res = backendResponse;
-            if (res && res.success) {
-              setResultData(res);
-              const opt = res.currentOption || "";
-              setHiddenData((hd) => ({
-                ...hd,
-                ["OPTION_" + opt]: clone(formRef.current),
-              }));
-              if (action === "CREATE_NEW") clearDraft();
-              setSelectedFileId(res.fileId || "");
-              setSelectedOption(opt);
-              setAppMode("EDIT");
-              setIsProcessingDone(true);
-              setTimeout(
-                () => setModals((m) => ({ ...m, loading: false, success: true })),
-                1200,
-              );
-            } else {
-              setModals((m) => ({ ...m, loading: false }));
-              showToast("Lỗi: " + (res ? res.message : "Unknown error"));
-            }
-          } else if (++waited > 450) {
-            if (checkBackendInterval.current) clearInterval(checkBackendInterval.current);
-            setModals((m) => ({ ...m, loading: false }));
-            showToast(
-              "Máy chủ chậm/không phản hồi — kiểm tra Drive xem file đã tạo chưa rồi thử lại",
+      const elapsed = Date.now() - startTime;
+      if (backendDone) {
+        // Pha 2: mượt nốt lên 100 (mỗi tick rút ~28% khoảng cách còn lại)
+        prog += (100 - prog) * 0.28;
+        if (prog >= 99.5) {
+          setProgressValue(100);
+          if (progressInterval.current) clearInterval(progressInterval.current);
+          const res = backendResponse;
+          if (res && res.success) {
+            setResultData(res);
+            const opt = res.currentOption || "";
+            setHiddenData((hd) => ({
+              ...hd,
+              ["OPTION_" + opt]: clone(formRef.current),
+            }));
+            if (action === "CREATE_NEW") clearDraft();
+            setSelectedFileId(res.fileId || "");
+            setSelectedOption(opt);
+            setAppMode("EDIT");
+            setIsProcessingDone(true);
+            setTimeout(
+              () => setModals((m) => ({ ...m, loading: false, success: true })),
+              1200,
             );
+          } else {
+            setModals((m) => ({ ...m, loading: false }));
+            showToast("Lỗi: " + (res ? res.message : "Unknown error"));
           }
-        }, 200);
+        } else {
+          setProgressValue(prog);
+        }
       } else {
-        setProgressValue(currentProg);
+        // Pha 1: bò chậm dần tiệm cận 90 theo thời gian thực (throttle cũng tự bắt kịp, không tụt)
+        prog = 90 * (1 - Math.exp(-elapsed / TAU));
+        setProgressValue(prog);
+        if (elapsed > 90000) {
+          // chống kẹt: ~90s backend không phản hồi thì thoát modal
+          if (progressInterval.current) clearInterval(progressInterval.current);
+          setModals((m) => ({ ...m, loading: false }));
+          showToast(
+            "Máy chủ chậm/không phản hồi — kiểm tra Drive xem file đã tạo chưa rồi thử lại",
+          );
+        }
       }
     }, 50);
   }, [
