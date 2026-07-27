@@ -16,6 +16,7 @@ const NotFoundPage = lazy(() => import("../pages/NotFoundPage"));
 const PortalPage = lazy(() => import("../pages/portal/PortalPage"));
 
 const PortalOverviewPage = lazy(() => import("../pages/portal/OverviewPage"));
+const PortalAnalyticsPage = lazy(() => import("../pages/portal/AnalyticsPage"));
 const PortalTeamPage = lazy(() => import("../pages/portal/TeamPage"));
 const PortalBrandsPage = lazy(() => import("../pages/portal/BrandsPage"));
 const PortalServicesPage = lazy(() => import("../pages/portal/ServicesPage"));
@@ -58,6 +59,7 @@ export const router = createBrowserRouter([
     element: <PortalLayout />,
     children: [
       { path: "/portal/dashboard", element: withSuspense(PortalOverviewPage) },
+      { path: "/portal/analytics", element: withSuspense(PortalAnalyticsPage) },
       { path: "/portal/team", element: withSuspense(PortalTeamPage) },
       { path: "/portal/brands", element: withSuspense(PortalBrandsPage) },
       { path: "/portal/services", element: withSuspense(PortalServicesPage) },

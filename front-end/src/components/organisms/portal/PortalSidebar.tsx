@@ -1,6 +1,7 @@
 import type { PortalUser } from "#lib/portal.types";
 import {
   BriefcaseIcon,
+  ChartLineUpIcon,
   EnvelopeIcon,
   GearIcon,
   HouseIcon,
@@ -23,6 +24,7 @@ type NavItem = {
 
 const NAV: NavItem[] = [
   { icon: <SquaresFourIcon size={18} weight="duotone" />, label: "Overview",     to: "/portal/dashboard" },
+  { icon: <ChartLineUpIcon size={18} weight="duotone" />, label: "Analytics",    to: "/portal/analytics" },
   { icon: <UsersThreeIcon  size={18} weight="duotone" />, label: "Team Members", to: "/portal/team" },
   { icon: <StarIcon        size={18} weight="duotone" />, label: "Brands",       to: "/portal/brands" },
   { icon: <BriefcaseIcon   size={18} weight="duotone" />, label: "Services",     to: "/portal/services" },

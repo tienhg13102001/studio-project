@@ -13,7 +13,13 @@ export function useVisitorCount() {
     if (recorded.current) return;
     recorded.current = true;
 
-    apiPost<{ total: number }>("/api/visitors", {})
+    // Gửi kèm nguồn để backend phân rã traffic. `utm_source` (khi gắn tag link
+    // marketing) chuẩn xác nhất; referrer là phương án suy luận dự phòng.
+    const utm = new URLSearchParams(window.location.search).get("utm_source");
+    apiPost<{ total: number }>("/api/visitors", {
+      referrer: document.referrer || undefined,
+      utm: utm || undefined,
+    })
       .then((res) => setTotal(res.total))
       .catch(() => {
         // Lỗi mạng: bỏ qua, không hiển thị bộ đếm.
