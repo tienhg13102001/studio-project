@@ -1986,9 +1986,12 @@
       }
       window.addEventListener('resize', () => { this.windowWidth = window.innerWidth; });
       // Dropdown dùng position:fixed theo tọa độ lúc mở → đóng khi cuộn để khỏi "trôi" lệch (nhất là mobile/bàn phím)
-      window.addEventListener('scroll', () => {
+      window.addEventListener('scroll', (e) => {
         // Bỏ qua cú cuộn ngay sau khi mở dropdown (bàn phím ảo mobile bật gây scroll → đừng đóng vội)
         if (Date.now() - this.dropdownOpenedAt < 500) return;
+        // Bỏ qua cú cuộn XẢY RA BÊN TRONG chính list gợi ý (list có thanh cuộn riêng) — chỉ đóng khi
+        // trang NGOÀI cuộn làm dropdown position:fixed trôi lệch khỏi ô.
+        if (e.target && e.target.closest && e.target.closest('.custom-dropdown-list')) return;
         if (this.activeItemDropdown) this.activeItemDropdown = null;
         if (this.optionDropdownOpen) this.optionDropdownOpen = false;
       }, true);
