@@ -1858,36 +1858,40 @@
             this.showToast('Lỗi khi tạo báo giá: ' + (err && err.message ? err.message : err));
           }).processQuoteDocument(payload);
         } else { this.showToast('Chạy trong Google Apps Script!'); this.modals.loading = false; return; }
-        const totalDuration = Math.floor(Math.random()*5000)+15000;
+        // Thanh tiến trình mượt: chưa xong thì bò chậm dần tiệm cận ~90% (LUÔN nhúc nhích, không đứng);
+        // backend xong thì bò nhanh mượt nốt lên 100% (không nhảy vọt từ số lẻ). Không đo tiến độ thật.
         const startTime = Date.now();
+        const TAU = 5500;        // hằng thời gian: càng nhỏ càng nhanh tiệm cận 90
+        let prog = 0;
         this.progressInterval = setInterval(() => {
           if (this.isCancelled) { clearInterval(this.progressInterval); return; }
-          let currentProg = ((Date.now()-startTime)/totalDuration)*100;
-          if (backendDone && currentProg < 100) currentProg = 100;   // backend xong sớm → nhảy tới 100%, khỏi đợi animation giả
-          if (currentProg >= 100) {
-            currentProg = 100; this.progressValue = currentProg; clearInterval(this.progressInterval);
-            let waited = 0;   // chống kẹt: ~90s (450 × 200ms) backend không phản hồi thì thoát modal
-            this.checkBackendInterval = setInterval(() => {
-              if (this.isCancelled) { clearInterval(this.checkBackendInterval); return; }
-              if (backendDone) {
-                clearInterval(this.checkBackendInterval);
-                if (backendResponse && backendResponse.success) {
-                  this.resultData = backendResponse;
-                  // Ghi nhớ bản vừa lưu để lần sau hoàn tác đúng bản trước đó
-                  this.hiddenData['OPTION_' + backendResponse.currentOption] = JSON.parse(JSON.stringify(this.form));
-                  if (this.pendingAction === 'CREATE_NEW') this.clearDraft();
-                  this.selectedFileId = backendResponse.fileId;
-                  this.selectedOption = backendResponse.currentOption;
-                  this.appMode = 'EDIT'; this.isProcessingDone = true;
-                  setTimeout(() => { this.modals.loading = false; this.modals.success = true; }, 1200);
-                } else { this.modals.loading = false; this.showToast('Lỗi: '+(backendResponse?backendResponse.message:'Unknown error')); }
-              } else if (++waited > 450) {
-                clearInterval(this.checkBackendInterval);
-                this.modals.loading = false;
-                this.showToast('Máy chủ chậm/không phản hồi — kiểm tra Drive xem file đã tạo chưa rồi thử lại');
-              }
-            }, 200);
-          } else { this.progressValue = currentProg; }
+          const elapsed = Date.now() - startTime;
+          if (backendDone) {
+            // Pha 2: mượt nốt lên 100 (mỗi tick rút ~28% khoảng cách còn lại)
+            prog += (100 - prog) * 0.28;
+            if (prog >= 99.5) {
+              this.progressValue = 100; clearInterval(this.progressInterval);
+              if (backendResponse && backendResponse.success) {
+                this.resultData = backendResponse;
+                // Ghi nhớ bản vừa lưu để lần sau hoàn tác đúng bản trước đó
+                this.hiddenData['OPTION_' + backendResponse.currentOption] = JSON.parse(JSON.stringify(this.form));
+                if (this.pendingAction === 'CREATE_NEW') this.clearDraft();
+                this.selectedFileId = backendResponse.fileId;
+                this.selectedOption = backendResponse.currentOption;
+                this.appMode = 'EDIT'; this.isProcessingDone = true;
+                setTimeout(() => { this.modals.loading = false; this.modals.success = true; }, 1200);
+              } else { this.modals.loading = false; this.showToast('Lỗi: '+(backendResponse?backendResponse.message:'Unknown error')); }
+            } else { this.progressValue = prog; }
+          } else {
+            // Pha 1: bò chậm dần tiệm cận 90 theo thời gian thực (throttle cũng tự bắt kịp, không tụt)
+            prog = 90 * (1 - Math.exp(-elapsed / TAU));
+            this.progressValue = prog;
+            if (elapsed > 90000) {   // chống kẹt: ~90s backend không phản hồi thì thoát modal
+              clearInterval(this.progressInterval);
+              this.modals.loading = false;
+              this.showToast('Máy chủ chậm/không phản hồi — kiểm tra Drive xem file đã tạo chưa rồi thử lại');
+            }
+          }
         }, 50);
       },
       cancelCreate() {
