@@ -49,3 +49,41 @@ const visitLogSchema = new Schema<IVisitLog>(
 );
 
 export const VisitLog = mongoose.model<IVisitLog>("VisitLog", visitLogSchema);
+
+/**
+ * Lượt truy cập duy nhất theo NGÀY — giữ vĩnh viễn (KHÔNG TTL) để dựng biểu đồ
+ * xu hướng. Tăng cùng lúc với `VisitorStat.total` (mỗi khách unique/ngày = +1).
+ */
+export interface IVisitorDaily extends Document {
+  day: string; // YYYY-MM-DD (UTC)
+  count: number;
+}
+
+const visitorDailySchema = new Schema<IVisitorDaily>({
+  day: { type: String, required: true, unique: true },
+  count: { type: Number, default: 0 },
+});
+
+export const VisitorDaily = mongoose.model<IVisitorDaily>("VisitorDaily", visitorDailySchema);
+
+/**
+ * Phân rã lượt truy cập theo chiều (nguồn / thiết bị) theo ngày — giữ vĩnh viễn.
+ * Mỗi (ngày + dim + key) là một document (unique index), cộng dồn bằng $inc.
+ * Ví dụ: { day: "2026-07-27", dim: "source", key: "facebook", count: 12 }.
+ */
+export interface IVisitorAgg extends Document {
+  day: string; // YYYY-MM-DD
+  dim: string; // "source" | "device"
+  key: string; // "facebook" | "google" | "mobile" | ...
+  count: number;
+}
+
+const visitorAggSchema = new Schema<IVisitorAgg>({
+  day: { type: String, required: true },
+  dim: { type: String, required: true },
+  key: { type: String, required: true },
+  count: { type: Number, default: 0 },
+});
+visitorAggSchema.index({ day: 1, dim: 1, key: 1 }, { unique: true });
+
+export const VisitorAgg = mongoose.model<IVisitorAgg>("VisitorAgg", visitorAggSchema);
