@@ -30,14 +30,16 @@ const ItemTable = ({ tab, short, q }: Props) => {
   // xóa 1 chữ số không làm mất cả số; bỏ khi blur → hiện lại từ item.dongia đã chuẩn hóa.
   const [rawPrice, setRawPrice] = useState<{ id: QuoteItem["id"]; text: string } | null>(null);
 
-  // Dropdown là portal position:fixed, tọa độ chốt lúc mở → cuộn sẽ trôi lệch khỏi ô nên phải đóng.
-  // NHƯNG bỏ qua cú cuộn trong 500ms đầu: trên mobile, chạm vào ô làm bàn phím ảo bật lên gây scroll
-  // ngay lập tức → không có chốt này thì dropdown đóng tức khắc, không chọn được dịch vụ.
+  // Dropdown là portal position:fixed, tọa độ chốt lúc mở → trang cuộn sẽ làm nó trôi lệch khỏi ô nên phải đóng.
+  // NHƯNG 2 ngoại lệ: (1) bỏ qua 500ms đầu — trên mobile chạm ô làm bàn phím ảo bật gây scroll ngay, đóng vội
+  // thì không chọn được dịch vụ; (2) bỏ qua cú cuộn XẢY RA BÊN TRONG chính list (list có thanh cuộn riêng).
   useEffect(() => {
     if (!dropdown) return;
     const openedAt = Date.now();
-    const onScroll = () => {
+    const onScroll = (e: Event) => {
       if (Date.now() - openedAt < 500) return;
+      const t = e.target as Node | null;
+      if (t instanceof Element && t.closest(".bz-dropdown-list")) return;
       setDropdown(null);
     };
     window.addEventListener("scroll", onScroll, true);
