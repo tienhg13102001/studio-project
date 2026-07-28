@@ -135,20 +135,22 @@ export default function AnalyticsTab() {
                 </span>
               </div>
             ))}
-            {/* Bars */}
-            <div className="absolute inset-0 left-8 flex items-end gap-[2px] pb-5">
+            {/* Bars — mỗi cột là 1 flex-col cao hết khung (items-stretch) để chiều
+                cao % của thanh có mốc xác định; justify-end đẩy thanh xuống đáy. */}
+            <div className="absolute inset-0 left-8 flex items-stretch gap-[2px] pb-5">
               {series.map((pt) => (
-                <div key={pt.day} className="group/bar relative flex-1">
+                <div key={pt.day} className="group/bar flex flex-1 flex-col justify-end">
                   <div
-                    className="bg-primary/85 hover:bg-primary min-h-[2px] w-full rounded-t transition-colors"
+                    className="bg-primary/85 hover:bg-primary relative min-h-[2px] w-full rounded-t transition-colors"
                     style={{ height: `${(pt.count / niceMax) * 100}%` }}
-                  />
-                  {/* Tooltip on hover */}
-                  <div className="bg-card border-foreground/15 pointer-events-none absolute bottom-full left-1/2 z-10 mb-1 hidden -translate-x-1/2 rounded-md border px-2 py-1 text-center whitespace-nowrap shadow-lg group-hover/bar:block">
-                    <span className="text-foreground/50 block text-[10px]">{dayLabel(pt.day)}</span>
-                    <span className="text-primary text-xs font-semibold tabular-nums">
-                      {fmt(pt.count)} lượt
-                    </span>
+                  >
+                    {/* Tooltip on hover — neo ngay trên đỉnh thanh */}
+                    <div className="bg-card border-foreground/15 pointer-events-none absolute bottom-full left-1/2 z-10 mb-1 hidden -translate-x-1/2 rounded-md border px-2 py-1 text-center whitespace-nowrap shadow-lg group-hover/bar:block">
+                      <span className="text-foreground/50 block text-[10px]">{dayLabel(pt.day)}</span>
+                      <span className="text-primary text-xs font-semibold tabular-nums">
+                        {fmt(pt.count)} lượt
+                      </span>
+                    </div>
                   </div>
                 </div>
               ))}
