@@ -1,7 +1,7 @@
 // Discount input + presets, subtotal, amount-in-words, THANH TOÁN chip.
 
 import { useState } from "react";
-import { TagIcon } from "@phosphor-icons/react";
+import { CaretDownIcon, TagIcon } from "@phosphor-icons/react";
 import { formatMoney } from "#lib/quote/format";
 import type { QuoteBuilder } from "./useQuoteBuilder";
 
@@ -10,29 +10,33 @@ type Props = {
 };
 
 const SummarySection = ({ q }: Props) => {
-  // Ẩn ô chiết khấu, bấm "+ Chiết khấu" mới xổ ra. Tự mở nếu báo giá đã có ck (nạp option cũ).
+  // Toggle ẩn/hiện khu nhập chiết khấu (bấm mở, bấm lại đóng). Thu gọn vẫn hiện số ck ở nút.
   const [ckOpen, setCkOpen] = useState(false);
-  const showCk = ckOpen || q.form.ckValue > 0;
   return (
     <div className="summary-section">
       <div className="discount-box">
-        {!showCk ? (
-          <button type="button" className="ck-toggle" onClick={() => setCkOpen(true)}>
-            <TagIcon size={12} weight="fill" style={{ marginRight: 7, color: "var(--gold)" }} />
-            + Chiết khấu
-          </button>
-        ) : (
+        <button
+          type="button"
+          className={`ck-toggle${ckOpen ? " ck-open" : ""}`}
+          onClick={() => setCkOpen((v) => !v)}
+        >
+          <TagIcon size={12} weight="fill" />
+          <span>
+            Chiết khấu
+            {q.form.ckValue > 0 && (
+              <span className="ck-badge"> · -{formatMoney(q.form.ckValue)}</span>
+            )}
+          </span>
+          <CaretDownIcon size={11} className="ck-caret" />
+        </button>
+        {ckOpen && (
           <>
-            <label>
-              <TagIcon size={12} weight="fill" style={{ marginRight: 6, color: "var(--gold)" }} />
-              Chiết khấu (% hoặc số tiền)
-            </label>
             <input
               type="text"
               value={q.rawCk}
               onChange={(e) => q.setRawCk(e.target.value)}
               placeholder="VD: 10% hoặc 500.000"
-              style={{ marginTop: 6 }}
+              style={{ marginTop: 8 }}
             />
             <div className="ck-presets">
               <button type="button" onClick={() => q.setCkPct(0)} title="Bỏ chiết khấu">
@@ -48,7 +52,6 @@ const SummarySection = ({ q }: Props) => {
                 15%
               </button>
             </div>
-            {q.form.ckValue > 0 && <div className="ck-line">- {formatMoney(q.form.ckValue)}</div>}
           </>
         )}
       </div>
