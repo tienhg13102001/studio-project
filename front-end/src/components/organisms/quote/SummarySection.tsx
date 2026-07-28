@@ -1,5 +1,6 @@
 // Discount input + presets, subtotal, amount-in-words, THANH TOÁN chip.
 
+import { useState } from "react";
 import { TagIcon } from "@phosphor-icons/react";
 import { formatMoney } from "#lib/quote/format";
 import type { QuoteBuilder } from "./useQuoteBuilder";
@@ -9,35 +10,47 @@ type Props = {
 };
 
 const SummarySection = ({ q }: Props) => {
+  // Ẩn ô chiết khấu, bấm "+ Chiết khấu" mới xổ ra. Tự mở nếu báo giá đã có ck (nạp option cũ).
+  const [ckOpen, setCkOpen] = useState(false);
+  const showCk = ckOpen || q.form.ckValue > 0;
   return (
     <div className="summary-section">
       <div className="discount-box">
-        <label>
-          <TagIcon size={12} weight="fill" style={{ marginRight: 6, color: "var(--gold)" }} />
-          Chiết khấu (% hoặc số tiền)
-        </label>
-        <input
-          type="text"
-          value={q.rawCk}
-          onChange={(e) => q.setRawCk(e.target.value)}
-          placeholder="VD: 10% hoặc 500.000"
-          style={{ marginTop: 6 }}
-        />
-        <div className="ck-presets">
-          <button type="button" onClick={() => q.setCkPct(0)} title="Bỏ chiết khấu">
-            Xóa
+        {!showCk ? (
+          <button type="button" className="ck-toggle" onClick={() => setCkOpen(true)}>
+            <TagIcon size={12} weight="fill" style={{ marginRight: 7, color: "var(--gold)" }} />
+            + Chiết khấu
           </button>
-          <button type="button" onClick={() => q.setCkPct(5)}>
-            5%
-          </button>
-          <button type="button" onClick={() => q.setCkPct(10)}>
-            10%
-          </button>
-          <button type="button" onClick={() => q.setCkPct(15)}>
-            15%
-          </button>
-        </div>
-        {q.form.ckValue > 0 && <div className="ck-line">- {formatMoney(q.form.ckValue)}</div>}
+        ) : (
+          <>
+            <label>
+              <TagIcon size={12} weight="fill" style={{ marginRight: 6, color: "var(--gold)" }} />
+              Chiết khấu (% hoặc số tiền)
+            </label>
+            <input
+              type="text"
+              value={q.rawCk}
+              onChange={(e) => q.setRawCk(e.target.value)}
+              placeholder="VD: 10% hoặc 500.000"
+              style={{ marginTop: 6 }}
+            />
+            <div className="ck-presets">
+              <button type="button" onClick={() => q.setCkPct(0)} title="Bỏ chiết khấu">
+                Xóa
+              </button>
+              <button type="button" onClick={() => q.setCkPct(5)}>
+                5%
+              </button>
+              <button type="button" onClick={() => q.setCkPct(10)}>
+                10%
+              </button>
+              <button type="button" onClick={() => q.setCkPct(15)}>
+                15%
+              </button>
+            </div>
+            {q.form.ckValue > 0 && <div className="ck-line">- {formatMoney(q.form.ckValue)}</div>}
+          </>
+        )}
       </div>
       <div className="total-summary-box">
         <div className="subtotal-line">
