@@ -2256,11 +2256,13 @@
   color: var(--gold);
   border-color: rgba(252, 209, 37, 0.5);
 }
-/* Nút mở khu chiết khấu (mặc định ẩn ô, bấm mới xổ ra) */
+/* Nút toggle khu chiết khấu — bấm mở/bấm đóng (accordion); thu gọn vẫn hiện số ck */
 .bz .ck-toggle {
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  padding: 9px 14px;
+  gap: 8px;
+  width: 100%;
+  padding: 10px 14px;
   font-size: 12px;
   font-weight: 700;
   border-radius: 10px;
@@ -2275,6 +2277,17 @@
   background: var(--gold-dim);
   color: var(--gold);
   border-color: rgba(252, 209, 37, 0.5);
+}
+.bz .ck-badge {
+  color: var(--gold);
+  font-weight: 800;
+}
+.bz .ck-caret {
+  margin-left: auto;
+  transition: transform 0.2s;
+}
+.bz .ck-toggle.ck-open .ck-caret {
+  transform: rotate(180deg);
 }
 .bz .draft-chip {
   display: flex;
