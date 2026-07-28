@@ -2256,6 +2256,26 @@
   color: var(--gold);
   border-color: rgba(252, 209, 37, 0.5);
 }
+/* Nút mở khu chiết khấu (mặc định ẩn ô, bấm mới xổ ra) */
+.bz .ck-toggle {
+  display: inline-flex;
+  align-items: center;
+  padding: 9px 14px;
+  font-size: 12px;
+  font-weight: 700;
+  border-radius: 10px;
+  background: var(--glass);
+  border: 1px solid var(--glass-b);
+  color: var(--text-dim);
+  cursor: pointer;
+  font-family: "Inter", sans-serif;
+  transition: all 0.2s;
+}
+.bz .ck-toggle:hover {
+  background: var(--gold-dim);
+  color: var(--gold);
+  border-color: rgba(252, 209, 37, 0.5);
+}
 .bz .draft-chip {
   display: flex;
   align-items: center;

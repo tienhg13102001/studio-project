@@ -785,6 +785,10 @@
     .ck-presets { display: flex; gap: 6px; margin-top: 8px; }
     .ck-presets button { flex: 1; padding: 6px 4px; font-size: 11px; font-weight: 700; border-radius: 8px; background: var(--glass); border: 1px solid var(--glass-b); color: var(--text-dim); cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.2s; }
     .ck-presets button:hover { background: var(--gold-dim); color: var(--gold); border-color: rgba(252,209,37,0.5); }
+    /* Nút mở khu chiết khấu (mặc định ẩn ô, bấm mới xổ ra) */
+    .ck-toggle { display: inline-flex; align-items: center; gap: 7px; padding: 9px 14px; font-size: 12px; font-weight: 700; border-radius: 10px; background: var(--glass); border: 1px solid var(--glass-b); color: var(--text-dim); cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.2s; }
+    .ck-toggle:hover { background: var(--gold-dim); color: var(--gold); border-color: rgba(252,209,37,0.5); }
+    .ck-toggle i { color: var(--gold); }
     /* Chip lưu nháp */
     .draft-chip { display: flex; align-items: center; gap: 6px; width: fit-content; margin: 10px auto 0; font-size: 10px; font-weight: 700; color: var(--text-dim); padding: 4px 10px; border: 1px solid var(--glass-b); border-radius: 20px; background: var(--glass); }
     .draft-chip i { color: var(--green); }
@@ -1089,15 +1093,20 @@
   <!-- SUMMARY -->
   <div class="summary-section">
     <div class="discount-box">
-      <label><i class="fas fa-tags" style="margin-right:6px;color:var(--gold);"></i>Chiết khấu (% hoặc số tiền)</label>
-      <input type="text" v-model="rawCk" placeholder="VD: 10% hoặc 500.000" style="margin-top:6px;">
-      <div class="ck-presets">
-        <button type="button" @click="setCkPct(0)" title="Bỏ chiết khấu">Xóa</button>
-        <button type="button" @click="setCkPct(5)">5%</button>
-        <button type="button" @click="setCkPct(10)">10%</button>
-        <button type="button" @click="setCkPct(15)">15%</button>
-      </div>
-      <div v-if="form.ckValue > 0" class="ck-line">- {{ formatMoney(form.ckValue) }}</div>
+      <button v-if="!showDiscount && !(form.ckValue > 0)" type="button" class="ck-toggle" @click="showDiscount = true">
+        <i class="fas fa-tags"></i> + Chiết khấu
+      </button>
+      <template v-if="showDiscount || form.ckValue > 0">
+        <label><i class="fas fa-tags" style="margin-right:6px;color:var(--gold);"></i>Chiết khấu (% hoặc số tiền)</label>
+        <input type="text" v-model="rawCk" placeholder="VD: 10% hoặc 500.000" style="margin-top:6px;">
+        <div class="ck-presets">
+          <button type="button" @click="setCkPct(0)" title="Bỏ chiết khấu">Xóa</button>
+          <button type="button" @click="setCkPct(5)">5%</button>
+          <button type="button" @click="setCkPct(10)">10%</button>
+          <button type="button" @click="setCkPct(15)">15%</button>
+        </div>
+        <div v-if="form.ckValue > 0" class="ck-line">- {{ formatMoney(form.ckValue) }}</div>
+      </template>
     </div>
     <div class="total-summary-box">
       <div class="subtotal-line">Tạm tính: <b>{{ formatMoney(subTotal) }}</b></div>
@@ -1343,6 +1352,7 @@
         ],
         db: { SX: [], TB: [], HK: [], HC: [] },
         rawCk: '',
+        showDiscount: false,   // ẩn ô chiết khấu, bấm nút "+ Chiết khấu" mới xổ ra (tự mở nếu đã có ck)
         form: {
           sobg: '', duann: '', phutrach: 'Hoàn Nguyễn', yeucau: '',
           khachhang: '', mst: '', tu: '', den: '', ckValue: 0, hanHieuLuc: '',
