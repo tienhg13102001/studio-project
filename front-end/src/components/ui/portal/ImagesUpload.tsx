@@ -1,4 +1,5 @@
 import { resolveAssetUrl, uploadImageChunked, IMAGE_MAX_MB } from "#lib/api";
+import UploadProgressBar from "#components/ui/portal/UploadProgressBar";
 import { ImageIcon, TrashIcon } from "@phosphor-icons/react";
 import { useRef, useState } from "react";
 
@@ -67,7 +68,9 @@ export default function ImagesUpload({ value, onChange }: ImagesUploadProps) {
       >
         <ImageIcon size={20} />
         {uploading ? (
-          <span>Đang tải lên… {progress}%</span>
+          <span>
+            {progress >= 100 ? "Đang xử lý ảnh trên server…" : `Đang tải lên… ${progress}%`}
+          </span>
         ) : (
           <span>Click or drop image (jpg/png/webp · tối đa 500 MB)</span>
         )}
@@ -85,6 +88,13 @@ export default function ImagesUpload({ value, onChange }: ImagesUploadProps) {
           }}
         />
       </div>
+      {/* Đặt ngoài khung kéo-thả vì khung đó xếp ngang, nhét thanh vào sẽ chen cột. */}
+      {uploading && (
+        <UploadProgressBar
+          percent={progress}
+          phase={progress >= 100 ? "processing" : "uploading"}
+        />
+      )}
       {uploadError && <div className="text-xs text-red-400">{uploadError}</div>}
     </div>
   );

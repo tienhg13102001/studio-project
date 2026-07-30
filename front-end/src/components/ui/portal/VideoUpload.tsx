@@ -1,5 +1,6 @@
 import { Input } from "#components/ui/input";
 import { VIDEO_MAX_MB, resolveAssetUrl, uploadVideo, waitForVideoReady } from "#lib/api";
+import UploadProgressBar from "#components/ui/portal/UploadProgressBar";
 import { FilmReelIcon, UploadSimpleIcon } from "@phosphor-icons/react";
 import { useRef, useState } from "react";
 
@@ -98,6 +99,13 @@ export default function VideoUpload({ value, onChange }: VideoUploadProps) {
               ? "Có thể tiếp tục thao tác — video sẽ tự hiển thị khi xử lý xong."
               : "MP4, WebM, MOV, M4V · tối đa 5 GB"}
           </p>
+          {/* Tải xong 100% thì server còn ghép mảnh + transcode → thanh chạy vô định. */}
+          {(uploading || processing) && (
+            <UploadProgressBar
+              percent={progress}
+              phase={processing || progress >= 100 ? "processing" : "uploading"}
+            />
+          )}
         </div>
 
         {(uploading || processing) && (

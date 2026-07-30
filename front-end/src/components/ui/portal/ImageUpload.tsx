@@ -2,6 +2,7 @@ import { useRef, useState } from "react";
 import { UploadSimpleIcon, ImageIcon } from "@phosphor-icons/react";
 import { resolveAssetUrl, uploadImageChunked, IMAGE_MAX_MB } from "#lib/api";
 import { Input } from "#components/ui/input";
+import UploadProgressBar from "#components/ui/portal/UploadProgressBar";
 
 type Props = {
   value:    string;
@@ -75,9 +76,21 @@ export default function ImageUpload({ value, onChange }: Props) {
         <div className="min-w-0 flex-1">
           <p className="flex items-center gap-1.5 text-xs text-foreground/50">
             <UploadSimpleIcon size={13} />
-            {uploading ? `Đang tải lên… ${progress}%` : "Click or drag to upload"}
+            {uploading
+              ? progress >= 100
+                ? "Đang xử lý ảnh trên server…"
+                : `Đang tải lên… ${progress}%`
+              : "Click or drag to upload"}
           </p>
           <p className="mt-0.5 text-[10px] text-foreground/25">JPG, PNG, WebP · tối đa 500 MB</p>
+          {/* Đã nhận đủ file (100%) nhưng server còn resize + chuyển WebP, có thể
+              mất tới vài phút với ảnh lớn → chuyển sang thanh chạy vô định. */}
+          {uploading && (
+            <UploadProgressBar
+              percent={progress}
+              phase={progress >= 100 ? "processing" : "uploading"}
+            />
+          )}
         </div>
 
         {uploading && (
