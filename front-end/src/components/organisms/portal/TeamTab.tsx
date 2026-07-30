@@ -8,7 +8,7 @@ import {
 } from "@phosphor-icons/react";
 import { apiPut, apiPost, apiDelete, resolveAssetUrl } from "#lib/api";
 import type { ApiUser } from "#lib/apiTypes";
-import { ROLE_COLOR, type PortalUser } from "#lib/portal.types";
+import { ROLE_COLOR, ROLE_LABEL, type PortalUser } from "#lib/portal.types";
 import { normalizeVi } from "#lib/utils";
 import { TableSkeleton } from "#components/ui/portal/TableSkeleton";
 import EditModal from "#components/ui/portal/EditModal";
@@ -49,7 +49,7 @@ export function TeamTable({ data, loading, preview, onEdit, onDelete, onChangePa
       <Table containerClassName={preview ? undefined : "max-h-[70vh]"}>
         <TableHeader>
           <TableRow className="hover:bg-transparent">
-            {["Member", "Role", "Skills", "Account Role", "Status", ...(onEdit ? [""] : [])].map((h) => (
+            {["Thành viên", "Vai trò", "Kỹ năng", "Quyền", "Trạng thái", ...(onEdit ? [""] : [])].map((h) => (
               <TableHead key={h}>{h}</TableHead>
             ))}
           </TableRow>
@@ -68,7 +68,7 @@ export function TeamTable({ data, loading, preview, onEdit, onDelete, onChangePa
                   )}
                   <div>
                     <p className="text-xs font-medium text-foreground">{u.name}</p>
-                    {u.featured && <p className="text-[10px] text-primary">Featured</p>}
+                    {u.featured && <p className="text-[10px] text-primary">Nổi bật</p>}
                   </div>
                 </div>
               </TableCell>
@@ -85,13 +85,13 @@ export function TeamTable({ data, loading, preview, onEdit, onDelete, onChangePa
               </TableCell>
               <TableCell>
                 <span className={`rounded-full border px-2 py-0.5 text-[10px] font-medium ${ROLE_COLOR[u.accountRole] ?? ""}`}>
-                  {u.accountRole}
+                  {ROLE_LABEL[u.accountRole] ?? u.accountRole}
                 </span>
               </TableCell>
               <TableCell>
                 <span className="inline-flex items-center gap-1 text-[10px] text-emerald-400">
                   <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
-                  Active
+                  Đang hoạt động
                 </span>
               </TableCell>
               {onEdit && (
@@ -104,7 +104,7 @@ export function TeamTable({ data, loading, preview, onEdit, onDelete, onChangePa
                       className="border-foreground/10 text-foreground/50 hover:border-primary/40 hover:text-primary"
                     >
                       <PencilSimpleIcon size={11} />
-                      Edit
+                      Sửa
                     </Button>
                     {onChangePassword && (!canChangePassword || canChangePassword(u)) && (
                       <Button
@@ -112,7 +112,7 @@ export function TeamTable({ data, loading, preview, onEdit, onDelete, onChangePa
                         size="icon-xs"
                         onClick={() => onChangePassword(u)}
                         className="border border-foreground/10 text-foreground/50 hover:border-primary/40 hover:text-primary"
-                        title="Change password"
+                        title="Đổi mật khẩu"
                       >
                         <KeyIcon size={11} />
                       </Button>
@@ -123,7 +123,7 @@ export function TeamTable({ data, loading, preview, onEdit, onDelete, onChangePa
                         size="icon-xs"
                         onClick={() => onDelete(u)}
                         className="border border-foreground/10 text-foreground/50 hover:border-red-500/50 hover:text-red-400"
-                        title="Delete user"
+                        title="Xoá thành viên"
                       >
                         <TrashIcon size={11} />
                       </Button>
@@ -343,7 +343,7 @@ export default function TeamTab({ data, loading, onRefetch }: TabProps) {
     <>
       {/* ── Header ── */}
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2 className="text-lg font-semibold text-foreground">Team Members</h2>
+        <h2 className="text-lg font-semibold text-foreground">Đội ngũ</h2>
         <div className="flex items-center gap-2">
           <div className="relative w-full sm:w-56">
             <MagnifyingGlassIcon
@@ -360,7 +360,7 @@ export default function TeamTab({ data, loading, onRefetch }: TabProps) {
           </div>
           <Button size="sm" onClick={openCreate} className="bg-primary text-black hover:opacity-80">
             <PlusIcon size={12} weight="bold" />
-            Add member
+            Thêm thành viên
           </Button>
         </div>
       </div>
@@ -383,7 +383,7 @@ export default function TeamTab({ data, loading, onRefetch }: TabProps) {
 
       {/* ── Edit Modal ── */}
       <EditModal
-        title={creating ? "Add member" : `Edit — ${editing?.name ?? ""}`}
+        title={creating ? "Thêm thành viên" : `Sửa — ${editing?.name ?? ""}`}
         isOpen={!!editing || creating}
         onClose={closeEdit}
         onSubmit={handleSave}
@@ -463,9 +463,9 @@ export default function TeamTab({ data, loading, onRefetch }: TabProps) {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="admin">Admin</SelectItem>
-                      <SelectItem value="editor">Editor</SelectItem>
-                      <SelectItem value="member">Member</SelectItem>
+                      <SelectItem value="admin">Quản trị</SelectItem>
+                      <SelectItem value="editor">Biên tập</SelectItem>
+                      <SelectItem value="member">Thành viên</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -519,7 +519,7 @@ export default function TeamTab({ data, loading, onRefetch }: TabProps) {
               <Input
                 type="password"
                 autoComplete="new-password"
-                placeholder="At least 6 characters"
+                placeholder="Tối thiểu 6 ký tự"
                 value={pwForm.newPassword}
                 onChange={(e) => setPw("newPassword", e.target.value)}
               />
@@ -552,7 +552,7 @@ export default function TeamTab({ data, loading, onRefetch }: TabProps) {
           <AlertDialogFooter>
             <AlertDialogCancel disabled={deleting}>Cancel</AlertDialogCancel>
             <AlertDialogAction onClick={handleDelete} disabled={deleting}>
-              {deleting ? "Deleting…" : "Delete"}
+              {deleting ? "Đang xoá…" : "Xoá"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
