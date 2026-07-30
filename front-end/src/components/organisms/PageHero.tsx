@@ -60,7 +60,7 @@ const PageHero: React.FC<PageHeroProps> = (props) => {
         {renderTitle(title)}
       </h1>
       <div
-        className={`bg-primary mt-2 h-px w-36 origin-left transition-transform duration-1500 ease-out sm:w-50 ${
+        className={`bg-primary mt-2 h-px w-36 origin-left transition-transform duration-[1500ms] ease-out sm:w-50 ${
           lineReady ? "scale-x-100" : "scale-x-0"
         }`}
       />

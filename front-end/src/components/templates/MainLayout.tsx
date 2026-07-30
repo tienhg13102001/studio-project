@@ -3,6 +3,7 @@ import { Outlet } from "react-router-dom";
 import Footer from "../organisms/Footer";
 import Navbar from "../organisms/Navbar";
 import ScrollToTop from "../atoms/ScrollToTop";
+import FloatingZalo from "#components/molecules/FloatingZalo";
 import { useSettings } from "#hooks/useSettings";
 
 type Props = {};
@@ -19,6 +20,7 @@ const MainLayout: React.FC<Props> = () => {
       <Navbar />
       <Outlet />
       <Footer />
+      <FloatingZalo />
 
       {/* Global background image */}
       <div

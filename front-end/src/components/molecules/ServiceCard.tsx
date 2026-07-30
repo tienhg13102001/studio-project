@@ -1,5 +1,6 @@
 import type { ServiceDisplay } from "#hooks/useServices";
 import { useRef, useState, type PointerEvent } from "react";
+import { useNavigate } from "react-router-dom";
 
 type Props = {
   service: ServiceDisplay;
@@ -18,6 +19,7 @@ const ServiceCard: React.FC<Props> = ({ service }) => {
   const [imgOk, setImgOk] = useState(true);
   const rootRef = useRef<HTMLDivElement>(null);
   const spotRef = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
 
   const handleMove = (e: PointerEvent<HTMLDivElement>) => {
     const el = rootRef.current;
@@ -40,8 +42,16 @@ const ServiceCard: React.FC<Props> = ({ service }) => {
       ref={rootRef}
       onPointerMove={handleMove}
       onPointerLeave={handleLeave}
-      className="group border-border/30 from-primary/15 via-card to-background relative h-60 cursor-pointer overflow-hidden rounded-2xl border bg-linear-to-br transition-[transform,box-shadow] duration-200 ease-out [transform-style:preserve-3d] hover:shadow-lg"
-      onClick={() => (window.location.href = `/service/${service.id}`)}
+      className="group border-border/30 from-primary/15 via-card to-background focus-visible:ring-primary relative h-60 cursor-pointer overflow-hidden rounded-2xl border bg-linear-to-br transition-[transform,box-shadow] duration-200 ease-out transform-3d hover:shadow-lg focus-visible:ring-2 focus-visible:outline-none"
+      role="link"
+      tabIndex={0}
+      onClick={() => navigate(`/service/${service.id}`)}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          navigate(`/service/${service.id}`);
+        }
+      }}
     >
       {/* Hình nền với hiệu ứng zoom khi hover */}
       {imgOk && (
