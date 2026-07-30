@@ -71,9 +71,16 @@ Dọn luôn `console.log(data)` sót trong tab Dự án (đang in dữ liệu ra
 - Đang **Đang lưu…/Đang xoá…** thì không cho đóng.
 - Form có thay đổi chưa lưu → hỏi **"Bỏ các thay đổi chưa lưu?"**.
 
-**Giới hạn cần biết:** mặc định modal **tự đoán** là "đã sửa" bằng cách nghe thay đổi của các ô bên trong. Nghĩa là sửa rồi sửa lại đúng như cũ thì **vẫn bị hỏi**. Muốn chính xác tuyệt đối thì truyền prop `dirty` từ tab (đã hỗ trợ, tùy chọn) — hiện chưa nối để giữ phạm vi thay đổi nhỏ.
-
 Lưu thành công hoặc xoá thì tab tự đóng modal, **không** bị hỏi lại.
+
+**Cách nhận biết "đã sửa" — hai mức:**
+
+| Tab | Cách nhận biết | Ghi chú |
+|---|---|---|
+| **Dự án**, **Dịch vụ** | **Chính xác** — chụp lại form lúc mới mở rồi so sánh | Sửa rồi sửa lại đúng như cũ thì **không** bị hỏi |
+| Đội ngũ, Thương hiệu, Portfolio | Tự đoán — nghe thay đổi của các ô bên trong | Sửa rồi sửa lại như cũ **vẫn** bị hỏi (chấp nhận được, vì hỏi thừa an toàn hơn mất dữ liệu) |
+
+Lý do hai mức: kiểm tra kỹ phát hiện **3 thao tác sửa thật mà cách tự đoán không thấy** — đổi **ngày quay**, đổi **icon**, và thêm/xoá **người thực hiện** (chúng gọi hàm nội bộ chứ không phát sự kiện DOM). Nếu để nguyên thì đóng modal sẽ mất dữ liệu mà không hỏi gì — đúng cái tính năng này định ngăn. Hai tab chứa các control đó đã được nối cách chính xác; ba tab còn lại chỉ có ô nhập/checkbox thường nên không bị lọt.
 
 ## 6. Thanh tiến trình upload
 
@@ -126,6 +133,8 @@ Sidebar, header (kèm định dạng ngày `vi-VN`), nút của modal, tiêu đ�
 18. Mở dropdown **Dịch vụ** hoặc **chọn ngày** rồi bấm Escape → chỉ đóng dropdown, **modal vẫn mở**.
 19. Bấm **Lưu thay đổi** → modal đóng, **không** bị hỏi "chưa lưu".
 20. Bấm giữ chuột trong form rồi nhả ra ngoài nền → modal **không** đóng.
+20b. Tab **Dự án** → Sửa → chỉ **đổi ngày quay** (không sửa gì khác) → Escape → **phải hỏi** "chưa lưu". Làm tương tự với **thêm/xoá người thực hiện**, và với **đổi icon** ở tab Dịch vụ.
+20c. Tab **Dự án** → sửa một ô rồi **sửa lại đúng như cũ** → Escape → đóng luôn, **không** hỏi (vì đúng ra là chưa đổi gì).
 
 **Upload**
 21. Tab **Dự án** → Sửa → tải một ảnh lớn (>20MB) → thấy thanh chạy theo %, khi đạt 100% chuyển thành "Đang xử lý ảnh trên server…".

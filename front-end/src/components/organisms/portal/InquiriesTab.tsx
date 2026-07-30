@@ -35,7 +35,7 @@ import {
 type TabProps = {
   data: ApiInquiry[] | null;
   loading: boolean;
-  onRefetch: () => void;
+  /** Không cần onRefetch: xoá xong bắn INQUIRIES_CHANGED_EVENT, hook tự tải lại. */
 };
 
 /** Formats an ISO date as a compact, locale-aware "12 Jun 2026, 14:30". */
@@ -51,7 +51,7 @@ function formatDate(iso: string): string {
   });
 }
 
-export default function InquiriesTab({ data, loading, onRefetch }: TabProps) {
+export default function InquiriesTab({ data, loading }: TabProps) {
   const [viewing, setViewing] = useState<ApiInquiry | null>(null);
   const [confirmDelete, setConfirmDelete] = useState<ApiInquiry | null>(null);
   const [deleting, setDeleting] = useState(false);
@@ -65,8 +65,8 @@ export default function InquiriesTab({ data, loading, onRefetch }: TabProps) {
     try {
       await apiDelete(`/api/contact/inquiries/${confirmDelete.id}`);
       invalidateApiCache("/api/contact/inquiries");
-      onRefetch();
-      // Cho badge ở sidebar (bản useInquiries khác) biết mà cập nhật số.
+      // Một tín hiệu là đủ: MỌI bản useInquiries (bảng này + badge ở sidebar) đều
+      // nghe và tự tải lại. Gọi thêm onRefetch() sẽ tạo request trùng.
       window.dispatchEvent(new Event(INQUIRIES_CHANGED_EVENT));
       toast("Đã xoá liên hệ", "ok");
       setConfirmDelete(null);
