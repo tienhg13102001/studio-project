@@ -1,9 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Các trang công khai của beezvn.com. KHÔNG liệt kê công cụ nội bộ cần đăng nhập
+  (/portal, /bao-gia, /hop-dong) — chúng cũng bị chặn trong robots.txt.
+  Từng dịch vụ (/service/:id) và dự án hiện chưa có ở đây vì sitemap này là tĩnh;
+  sinh động theo dữ liệu là bước SEO tiếp theo.
+-->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://www.beezvn.com/</loc>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://www.beezvn.com/service</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://www.beezvn.com/portfolio</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
   </url>
   <url>
     <loc>https://www.beezvn.com/team</loc>
@@ -14,10 +30,5 @@
     <loc>https://www.beezvn.com/contact</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://www.beezvn.com/bao-gia</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
   </url>
 </urlset>

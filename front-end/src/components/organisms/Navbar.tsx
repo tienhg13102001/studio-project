@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { UserIcon, ListIcon, ArrowLeftIcon } from "@phosphor-icons/react";
+import { UserIcon, ListIcon, ArrowLeftIcon, PhoneIcon } from "@phosphor-icons/react";
+import { useLanding } from "#hooks/useLanding";
 import LogoYellow from "../../assets/icons/LogoYellow";
 import { Button } from "#components/ui/button";
 import NavLinks from "#components/molecules/NavLinks";
@@ -17,6 +18,7 @@ const Navbar: React.FC<Props> = () => {
   const { pathname } = useLocation();
   const navigate = useNavigate();
   const t = useTranslation();
+  const { data: landing } = useLanding(lang);
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -29,7 +31,7 @@ const Navbar: React.FC<Props> = () => {
   return (
     <>
       <nav
-        className={`fixed top-0 left-0 z-20 flex w-full items-center justify-between px-6 py-4 transition-all duration-800 md:px-12 ${scrolled && pathname === "/" ? "bg-background/50 shadow-sm backdrop-blur-sm" : pathname !== "/" ? "bg-background/50 shadow-sm backdrop-blur-sm" : "bg-transparent"}`}
+        className={`fixed top-0 left-0 z-20 flex w-full items-center justify-between px-6 py-4 transition-all duration-700 md:px-12 ${scrolled && pathname === "/" ? "bg-background/50 shadow-sm backdrop-blur-sm" : pathname !== "/" ? "bg-background/50 shadow-sm backdrop-blur-sm" : "bg-transparent"}`}
       >
         {/* LogoYellow */}
         <div className="flex cursor-pointer items-center" onClick={() => navigate("/")}>
@@ -41,6 +43,18 @@ const Navbar: React.FC<Props> = () => {
 
         {/* Right Actions */}
         <div className="flex items-center gap-2">
+          {/* Hotline — khách gọi trực tiếp, 1 chạm. Chỗ hẹp trên mobile nên chỉ
+              hiện từ desktop; bản mobile nằm trong menu trượt. */}
+          {landing?.phone && (
+            <a
+              href={`tel:${landing.phone}`}
+              className="text-foreground hover:text-primary focus-visible:ring-primary mr-1 hidden items-center gap-1.5 rounded-md px-1 text-sm font-semibold transition-colors focus-visible:ring-2 focus-visible:outline-none lg:inline-flex"
+            >
+              <PhoneIcon size={16} weight="fill" className="text-primary" />
+              {landing.phone}
+            </a>
+          )}
+
           {/* Language */}
           <Button variant="outline" onClick={() => setLang(lang === "en" ? "vi" : "en")}>
             {lang === "en" ? (

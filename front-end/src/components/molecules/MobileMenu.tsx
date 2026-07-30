@@ -1,12 +1,15 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
-import { XIcon, CaretDownIcon } from "@phosphor-icons/react";
-import { Link, useLocation } from "react-router-dom";
+import { XIcon, CaretDownIcon, PhoneIcon } from "@phosphor-icons/react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "#components/ui/button";
 import ThemeToggle from "#components/molecules/ThemeToggle";
 import { useTranslation, useLanguage } from "#i18n";
 import type { Translations } from "#i18n";
 import { useServices } from "#hooks/useServices";
+import { useLanding } from "#hooks/useLanding";
+import UKFlag from "../../assets/icons/UKFlag";
+import VietNamFlag from "../../assets/icons/VietNamFlag";
 
 type NavKey = keyof Translations["nav"];
 
@@ -29,8 +32,26 @@ const MobileMenu: React.FC<Props> = ({ open, onClose }) => {
   const t = useTranslation();
   const { lang, setLang } = useLanguage();
   const { pathname } = useLocation();
+  const navigate = useNavigate();
   const [servicesOpen, setServicesOpen] = useState(false);
   const { data: services } = useServices(lang);
+  const { data: landing } = useLanding(lang);
+
+  // Khoá cuộn trang phía sau khi drawer mở (nếu không, nền vẫn cuộn được sau
+  // lớp backdrop) và cho phép đóng bằng Escape — giống lightbox của gallery.
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", onKey);
+    const original = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      document.body.style.overflow = original;
+    };
+  }, [open, onClose]);
 
   const isActive = (item: (typeof NAV_ITEMS)[number]) => {
     if (item.key === "home") return pathname === "/";
@@ -125,12 +146,36 @@ const MobileMenu: React.FC<Props> = ({ open, onClose }) => {
 
         {/* Footer Actions */}
         <div className="border-border flex flex-col gap-3 border-t px-6 py-4">
-          <Button className="w-full" onClick={onClose}>
+          {/* Hotline: trên mobile navbar không đủ chỗ nên đặt ở đây, ngay cạnh CTA. */}
+          {landing?.phone && (
+            <a
+              href={`tel:${landing.phone}`}
+              className="border-border hover:bg-muted focus-visible:ring-primary flex items-center justify-center gap-2 rounded-lg border py-2.5 text-sm font-semibold transition-colors focus-visible:ring-2 focus-visible:outline-none"
+            >
+              <PhoneIcon size={16} weight="fill" className="text-primary" />
+              {landing.phone}
+            </a>
+          )}
+          <Button
+            className="w-full"
+            onClick={() => {
+              onClose();
+              navigate("/contact");
+            }}
+          >
             {t.nav.letsTalk}
           </Button>
           <div className="flex items-center justify-between">
             <Button variant="outline" onClick={() => setLang(lang === "en" ? "vi" : "en")}>
-              {lang === "en" ? "🇺🇸 EN" : "🇻🇳 VI"}
+              {lang === "en" ? (
+                <>
+                  <UKFlag /> EN
+                </>
+              ) : (
+                <>
+                  <VietNamFlag /> VI
+                </>
+              )}
             </Button>
             <ThemeToggle />
           </div>
