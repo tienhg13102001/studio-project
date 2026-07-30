@@ -77,10 +77,12 @@ Lưu thành công hoặc xoá thì tab tự đóng modal, **không** bị hỏi 
 
 | Tab | Cách nhận biết | Ghi chú |
 |---|---|---|
-| **Dự án**, **Dịch vụ** | **Chính xác** — chụp lại form lúc mới mở rồi so sánh | Sửa rồi sửa lại đúng như cũ thì **không** bị hỏi |
-| Đội ngũ, Thương hiệu, Portfolio | Tự đoán — nghe thay đổi của các ô bên trong | Sửa rồi sửa lại như cũ **vẫn** bị hỏi (chấp nhận được, vì hỏi thừa an toàn hơn mất dữ liệu) |
+| **Dự án**, **Dịch vụ**, **Đội ngũ** | **Chính xác** — chụp lại form lúc mới mở rồi so sánh | Sửa rồi sửa lại đúng như cũ thì **không** bị hỏi |
+| Thương hiệu, Portfolio | Tự đoán — nghe thay đổi của các ô bên trong | Form chỉ có ô nhập chữ + ảnh nên không bị lọt; đổi lại là sửa rồi sửa về như cũ **vẫn** bị hỏi |
 
-Lý do hai mức: kiểm tra kỹ phát hiện **3 thao tác sửa thật mà cách tự đoán không thấy** — đổi **ngày quay**, đổi **icon**, và thêm/xoá **người thực hiện** (chúng gọi hàm nội bộ chứ không phát sự kiện DOM). Nếu để nguyên thì đóng modal sẽ mất dữ liệu mà không hỏi gì — đúng cái tính năng này định ngăn. Hai tab chứa các control đó đã được nối cách chính xác; ba tab còn lại chỉ có ô nhập/checkbox thường nên không bị lọt.
+Lý do phải có mức "chính xác": kiểm tra kỹ (đọc cả mã nguồn thư viện) phát hiện **4 thao tác sửa thật mà cách tự đoán không thấy** — đổi **ngày quay**, đổi **icon**, thêm/xoá **người thực hiện**, và bật/tắt ô **Nổi bật**. Nguyên nhân: ô kiểu checkbox phát sự kiện `click`, còn cách tự đoán chỉ nghe `change`; chọn ngày và chọn icon thì gọi hàm nội bộ, không phát sự kiện DOM nào. Nếu để nguyên thì đóng modal sẽ **mất dữ liệu mà không hỏi gì** — đúng cái tính năng này định ngăn. Ba tab chứa các control đó đã được nối cách chính xác.
+
+*(Ô kiểu dropdown thì không bị: thư viện có phát `change` nên tự đoán vẫn thấy.)*
 
 ## 6. Thanh tiến trình upload
 
@@ -133,7 +135,12 @@ Sidebar, header (kèm định dạng ngày `vi-VN`), nút của modal, tiêu đ�
 18. Mở dropdown **Dịch vụ** hoặc **chọn ngày** rồi bấm Escape → chỉ đóng dropdown, **modal vẫn mở**.
 19. Bấm **Lưu thay đổi** → modal đóng, **không** bị hỏi "chưa lưu".
 20. Bấm giữ chuột trong form rồi nhả ra ngoài nền → modal **không** đóng.
-20b. Tab **Dự án** → Sửa → chỉ **đổi ngày quay** (không sửa gì khác) → Escape → **phải hỏi** "chưa lưu". Làm tương tự với **thêm/xoá người thực hiện**, và với **đổi icon** ở tab Dịch vụ.
+20b. Bốn thao tác dễ lọt nhất — mỗi cái làm riêng, **không sửa gì khác**, rồi bấm Escape thì **phải hỏi** "chưa lưu":
+   - Tab **Dự án**: chỉ đổi **ngày quay**
+   - Tab **Dự án**: chỉ thêm/bỏ một **người thực hiện**
+   - Tab **Dự án** hoặc **Đội ngũ**: chỉ bật/tắt ô **Nổi bật**
+   - Tab **Dịch vụ**: chỉ đổi **icon** của một highlight
+
 20c. Tab **Dự án** → sửa một ô rồi **sửa lại đúng như cũ** → Escape → đóng luôn, **không** hỏi (vì đúng ra là chưa đổi gì).
 
 **Upload**
