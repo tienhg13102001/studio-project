@@ -7,9 +7,9 @@ type Props = { userName: string; onMenuClick?: () => void };
 export default function PortalHeader({ userName, onMenuClick }: Props) {
   const greeting = () => {
     const h = new Date().getHours();
-    if (h < 12) return "Good morning";
-    if (h < 18) return "Good afternoon";
-    return "Good evening";
+    if (h < 12) return "Chào buổi sáng";
+    if (h < 18) return "Chào buổi chiều";
+    return "Chào buổi tối";
   };
 
   return (
@@ -28,7 +28,7 @@ export default function PortalHeader({ userName, onMenuClick }: Props) {
             {greeting()}, {userName.split(" ")[0]} 👋
           </h1>
           <p className="hidden text-xs text-foreground/30 sm:block">
-            {new Date().toLocaleDateString("en-US", {
+            {new Date().toLocaleDateString("vi-VN", {
               weekday: "long",
               year:    "numeric",
               month:   "long",

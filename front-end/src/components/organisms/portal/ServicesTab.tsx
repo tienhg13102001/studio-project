@@ -295,10 +295,10 @@ export default function ServicesTab({ data, raw, loading, onRefetch }: TabProps)
     <>
       {/* ── Header ── */}
       <div className="flex items-center justify-between">
-        <h2 className="text-foreground text-lg font-semibold">Services</h2>
+        <h2 className="text-foreground text-lg font-semibold">Dịch vụ</h2>
         <Button size="sm" onClick={openCreate} className="bg-primary text-black hover:opacity-80">
           <PlusIcon size={12} weight="bold" />
-          Add service
+          Thêm dịch vụ
         </Button>
       </div>
 
@@ -307,7 +307,7 @@ export default function ServicesTab({ data, raw, loading, onRefetch }: TabProps)
         <Table containerClassName="max-h-[70vh]">
           <TableHeader>
             <TableRow className="hover:bg-transparent">
-              {["Service", "Tag", "Description", "FAQs", ""].map((h) => (
+              {["Dịch vụ", "Tag", "Mô tả", "Câu hỏi", ""].map((h) => (
                 <TableHead key={h}>{h}</TableHead>
               ))}
             </TableRow>
@@ -365,7 +365,7 @@ export default function ServicesTab({ data, raw, loading, onRefetch }: TabProps)
                           }
                         }}
                         className="border-foreground/10 text-foreground/50 border hover:border-red-500/50 hover:text-red-400"
-                        title="Delete service"
+                        title="Xoá dịch vụ"
                       >
                         <TrashIcon size={11} />
                       </Button>
@@ -380,7 +380,7 @@ export default function ServicesTab({ data, raw, loading, onRefetch }: TabProps)
 
       {/* ── Edit Modal ── */}
       <EditModal
-        title={creating ? "Add Service" : `Edit — ${editing?.title.en ?? "…"}`}
+        title={creating ? "Thêm dịch vụ" : `Sửa — ${editing?.title.en ?? "…"}`}
         isOpen={!!editing || loadingEdit || creating}
         onClose={closeEdit}
         onSubmit={handleSave}
@@ -726,7 +726,7 @@ export default function ServicesTab({ data, raw, loading, onRefetch }: TabProps)
       <AlertDialog open={!!confirmDelete} onOpenChange={(open) => !open && setConfirmDelete(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete service?</AlertDialogTitle>
+            <AlertDialogTitle>Xoá dịch vụ?</AlertDialogTitle>
             <AlertDialogDescription>
               "<span className="text-foreground/80">{confirmDelete?.title.en}</span>" will be
               permanently deleted.

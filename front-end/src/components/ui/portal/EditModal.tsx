@@ -117,7 +117,7 @@ export default function EditModal({ title, isOpen, onClose, onSubmit, saving, ch
                     disabled={deleting || saving}
                     className="border border-red-500/30 bg-red-500/10 text-red-400 hover:border-red-500/60 hover:bg-red-500/20"
                   >
-                    {deleting ? "Deleting…" : (deleteLabel ?? "Delete")}
+                    {deleting ? "Đang xoá…" : (deleteLabel ?? "Xoá")}
                   </Button>
                 )}
               </div>
@@ -127,14 +127,14 @@ export default function EditModal({ title, isOpen, onClose, onSubmit, saving, ch
                   onClick={requestClose}
                   className="border-foreground/10 text-foreground/60 hover:border-foreground/30 hover:text-foreground"
                 >
-                  Cancel
+                  Huỷ
                 </Button>
                 <Button
                   onClick={onSubmit}
                   disabled={saving}
                   className="bg-primary text-black hover:opacity-80"
                 >
-                  {saving ? "Saving…" : "Save changes"}
+                  {saving ? "Đang lưu…" : "Lưu thay đổi"}
                 </Button>
               </div>
             </div>

@@ -210,7 +210,7 @@ export default function ProjectsTab({ data, raw, services, users, loading, onRef
     <>
       {/* ── Header ── */}
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2 className="text-foreground text-lg font-semibold">Projects</h2>
+        <h2 className="text-foreground text-lg font-semibold">Dự án</h2>
         <div className="flex items-center gap-2">
           <div className="relative w-full sm:w-56">
             <MagnifyingGlassIcon
@@ -227,7 +227,7 @@ export default function ProjectsTab({ data, raw, services, users, loading, onRef
           </div>
           <Button size="sm" onClick={openCreate} className="bg-primary text-black hover:opacity-80">
             <PlusIcon size={12} weight="bold" />
-            Add project
+            Thêm dự án
           </Button>
         </div>
       </div>
@@ -242,7 +242,7 @@ export default function ProjectsTab({ data, raw, services, users, loading, onRef
         <Table containerClassName="max-h-[70vh]">
           <TableHeader>
             <TableRow className="hover:bg-transparent">
-              {["Project", "Tag", "Layout", "Prominent", ""].map((h) => (
+              {["Dự án", "Tag", "Kiểu", "Nổi bật", ""].map((h) => (
                 <TableHead key={h}>{h}</TableHead>
               ))}
             </TableRow>
@@ -302,7 +302,7 @@ export default function ProjectsTab({ data, raw, services, users, loading, onRef
                           }
                         }}
                         className="border-foreground/10 text-foreground/50 border hover:border-red-500/50 hover:text-red-400"
-                        title="Delete project"
+                        title="Xoá dự án"
                       >
                         <TrashIcon size={11} />
                       </Button>
@@ -318,7 +318,7 @@ export default function ProjectsTab({ data, raw, services, users, loading, onRef
 
       {/* ── Edit / Create Modal ── */}
       <EditModal
-        title={creating ? "Add Project" : `Edit — ${editing?.title ?? "…"}`}
+        title={creating ? "Thêm dự án" : `Sửa — ${editing?.title ?? "…"}`}
         isOpen={!!editing || creating}
         onClose={closeEdit}
         onSubmit={handleSave}
@@ -489,7 +489,7 @@ export default function ProjectsTab({ data, raw, services, users, loading, onRef
                         checked={form.prominent}
                         onCheckedChange={(checked) => set("prominent", !!checked)}
                       />
-                      <span className="text-foreground/50 text-xs">Prominent</span>
+                      <span className="text-foreground/50 text-xs">Nổi bật</span>
                     </label>
                   </div>
                 </div>
@@ -529,7 +529,7 @@ export default function ProjectsTab({ data, raw, services, users, loading, onRef
       <AlertDialog open={!!confirmDelete} onOpenChange={(open) => !open && setConfirmDelete(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete project?</AlertDialogTitle>
+            <AlertDialogTitle>Xoá dự án?</AlertDialogTitle>
             <AlertDialogDescription>
               "<span className="text-foreground/80">{confirmDelete?.title}</span>" will be
               permanently deleted.
