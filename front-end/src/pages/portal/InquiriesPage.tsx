@@ -4,7 +4,7 @@ import { useInquiriesSeenAt } from "#hooks/useUnseenInquiries";
 import { useEffect } from "react";
 
 const InquiriesPage = () => {
-  const { data, loading, refetch } = useInquiries();
+  const { data, loading } = useInquiries();
   const { markSeen } = useInquiriesSeenAt();
 
   // Vào trang này coi như đã xem hết → badge ở sidebar về 0. Đợi tải xong mới
@@ -13,7 +13,7 @@ const InquiriesPage = () => {
     if (!loading) markSeen();
   }, [loading, markSeen]);
 
-  return <InquiriesTab data={data} loading={loading} onRefetch={refetch} />;
+  return <InquiriesTab data={data} loading={loading} />;
 };
 
 export default InquiriesPage;

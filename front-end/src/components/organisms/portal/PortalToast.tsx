@@ -78,7 +78,8 @@ export function PortalToastProvider({ children }: { children: React.ReactNode })
     [dismiss],
   );
 
-  // Đổi route portal sẽ unmount provider — dọn timer để không setState sau unmount.
+  // Provider sống suốt phiên portal (chỉ unmount khi đăng xuất) — dọn timer khi
+  // đó để không gọi setState sau unmount.
   useEffect(() => {
     const map = timers.current;
     return () => {

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import {
   PencilSimpleIcon,
   TrashIcon,
@@ -229,15 +229,21 @@ export default function TeamTab({ data, loading, onRefetch }: TabProps) {
   const [pwError, setPwError] = useState<string | null>(null);
   const [query, setQuery]     = useState("");
   const { toast } = usePortalToast();
+  // Ảnh chụp form lúc mới mở để biết chính xác đã sửa hay chưa: ô "Nổi bật" là
+  // Radix Checkbox, nó phát sự kiện click chứ không phải change nên cách tự đoán
+  // của EditModal không thấy được.
+  const baselineRef = useRef("");
 
   const isAdmin = currentUser?.accountRole === "admin";
   // Admin can change anyone's password; a normal user only their own.
   const allowPasswordChange = (u: ApiUser) => isAdmin || currentUser?.id === u.id;
   const pwIsSelf = !!pwUser && currentUser?.id === pwUser.id;
 
-  const openEdit   = (u: ApiUser) => { setEditing(u); setCreating(false); setForm(toForm(u)); setError(null); };
-  const openCreate = () => { setCreating(true); setEditing(null); setForm(emptyForm()); setError(null); };
-  const closeEdit  = () => { setEditing(null); setCreating(false); setForm(null); };
+  // Chụp lại form ngay khi mở để `dirty` so sánh được (xem baselineRef ở trên).
+  const openWith = (initial: TeamForm) => { setForm(initial); baselineRef.current = JSON.stringify(initial); setError(null); };
+  const openEdit   = (u: ApiUser) => { setEditing(u); setCreating(false); openWith(toForm(u)); };
+  const openCreate = () => { setCreating(true); setEditing(null); openWith(emptyForm()); };
+  const closeEdit  = () => { setEditing(null); setCreating(false); setForm(null); baselineRef.current = ""; };
 
   const openPassword  = (u: ApiUser) => { setPwUser(u); setPwForm(emptyPwForm()); setPwError(null); };
   const closePassword = () => { setPwUser(null); setPwForm(emptyPwForm()); setPwError(null); };
@@ -394,6 +400,7 @@ export default function TeamTab({ data, loading, onRefetch }: TabProps) {
         onClose={closeEdit}
         onSubmit={handleSave}
         saving={saving}
+        dirty={!!form && JSON.stringify(form) !== baselineRef.current}
       >
         {form && (
           <>
@@ -556,7 +563,7 @@ export default function TeamTab({ data, loading, onRefetch }: TabProps) {
           </AlertDialogHeader>
           {deleteError && <p className="text-xs text-red-400">{deleteError}</p>}
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={deleting}>Cancel</AlertDialogCancel>
+            <AlertDialogCancel disabled={deleting}>Huỷ</AlertDialogCancel>
             <AlertDialogAction onClick={handleDelete} disabled={deleting}>
               {deleting ? "Đang xoá…" : "Xoá"}
             </AlertDialogAction>
