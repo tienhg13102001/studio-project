@@ -46,7 +46,7 @@ import {
   TrashIcon,
   XIcon,
 } from "@phosphor-icons/react";
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 // ─── Edit form ───────────────────────────────────────────────────────────────
 
@@ -125,25 +125,34 @@ export default function ProjectsTab({ data, raw, services, users, loading, onRef
   // Khai báo TRƯỚC early-return `if (loading)` bên dưới, nếu không React sẽ báo
   // "rendered fewer hooks than expected" ở lần render đang tải.
   const [query, setQuery] = useState("");
+  // So sánh với ảnh chụp form lúc mới mở để biết CHÍNH XÁC là đã sửa hay chưa.
+  // Cần thiết vì chọn ngày / chọn người thực hiện không phát sự kiện DOM nên
+  // cách tự đoán của EditModal không thấy được.
+  const baselineRef = useRef("");
 
   const openEdit = (displayId: string) => {
     const rawItem = (raw ?? []).find((f) => f.id === displayId);
     if (!rawItem) return;
     setEditing(rawItem);
     setCreating(false);
-    setForm(toForm(rawItem));
+    const initial = toForm(rawItem);
+    setForm(initial);
+    baselineRef.current = JSON.stringify(initial);
     setError(null);
   };
   const openCreate = () => {
     setCreating(true);
     setEditing(null);
-    setForm(emptyProjectForm());
+    const initial = emptyProjectForm();
+    setForm(initial);
+    baselineRef.current = JSON.stringify(initial);
     setError(null);
   };
   const closeEdit = () => {
     setEditing(null);
     setCreating(false);
     setForm(null);
+    baselineRef.current = "";
   };
 
   const handleSave = async () => {
@@ -323,6 +332,7 @@ export default function ProjectsTab({ data, raw, services, users, loading, onRef
         onClose={closeEdit}
         onSubmit={handleSave}
         saving={saving}
+        dirty={!!form && JSON.stringify(form) !== baselineRef.current}
         onDelete={
           editing
             ? () => {
