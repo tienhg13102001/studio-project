@@ -9,6 +9,7 @@ import {
   AlertDialogTitle,
 } from "#components/ui/alert-dialog";
 import { Button } from "#components/ui/button";
+import { usePortalToast } from "#components/organisms/portal/PortalToast";
 import { Input } from "#components/ui/input";
 import { Label } from "#components/ui/label";
 import EditModal from "#components/ui/portal/EditModal";
@@ -94,6 +95,7 @@ export default function BrandsTab({ data, loading, onRefetch }: TabProps) {
   const [confirmDelete, setConfirmDelete] = useState<ApiBrand | null>(null);
   const [deleting, setDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
+  const { toast } = usePortalToast();
 
   const openEdit  = (b: ApiBrand) => { setEditing(b); setCreating(false); setForm(toForm(b)); setError(null); };
   const openCreate = () => {
@@ -118,8 +120,10 @@ export default function BrandsTab({ data, loading, onRefetch }: TabProps) {
       }
       onRefetch();
       closeEdit();
+      toast(creating ? "Đã thêm thương hiệu" : "Đã lưu thay đổi", "ok");
     } catch (e) {
       setError((e as Error).message);
+      toast("Lưu không thành công: " + (e as Error).message, "err");
     } finally {
       setSaving(false);
     }
@@ -134,8 +138,10 @@ export default function BrandsTab({ data, loading, onRefetch }: TabProps) {
       onRefetch();
       setConfirmDelete(null);
       closeEdit();
+      toast("Đã xoá thương hiệu", "ok");
     } catch (e) {
       setDeleteError((e as Error).message);
+      toast("Không xoá được: " + (e as Error).message, "err");
     } finally {
       setDeleting(false);
     }

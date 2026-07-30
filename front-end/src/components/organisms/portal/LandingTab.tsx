@@ -1,3 +1,4 @@
+import { usePortalToast } from "#components/organisms/portal/PortalToast";
 import { Button } from "#components/ui/button";
 import { Input } from "#components/ui/input";
 import { Label } from "#components/ui/label";
@@ -92,6 +93,7 @@ const LandingTab = () => {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [savedAt, setSavedAt] = useState<number | null>(null);
+  const { toast } = usePortalToast();
 
   useEffect(() => {
     if (raw) setForm(toForm(raw));
@@ -104,8 +106,10 @@ const LandingTab = () => {
       await apiPut("/api/landing", form);
       refetch();
       setSavedAt(Date.now());
+      toast("Đã lưu nội dung trang chủ", "ok");
     } catch (e) {
       setError((e as Error).message);
+      toast("Lưu không thành công: " + (e as Error).message, "err");
     } finally {
       setSaving(false);
     }
