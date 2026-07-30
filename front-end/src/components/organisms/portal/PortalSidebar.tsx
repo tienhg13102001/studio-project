@@ -38,9 +38,11 @@ type Props = {
   onLogout: () => void;
   /** Close the mobile drawer (no-op affordance on desktop). */
   onClose?: () => void;
+  /** Số liên hệ chưa xem — hiện thành pill cạnh mục "Liên hệ". 0 = ẩn. */
+  inquiryBadge?: number;
 };
 
-export default function PortalSidebar({ user, onLogout, onClose }: Props) {
+export default function PortalSidebar({ user, onLogout, onClose, inquiryBadge = 0 }: Props) {
   const { pathname } = useLocation();
 
   return (
@@ -94,6 +96,16 @@ export default function PortalSidebar({ user, onLogout, onClose }: Props) {
             >
               <span className={active ? "text-primary" : ""}>{item.icon}</span>
               <span className="flex-1">{item.label}</span>
+              {/* Badge liên hệ chưa xem — cùng hình dạng pill "Soon" ở trên để
+                  không làm lệch chiều cao hàng nav. */}
+              {item.to === "/portal/inquiries" && inquiryBadge > 0 && (
+                <span
+                  aria-label={`${inquiryBadge} liên hệ chưa xem`}
+                  className="border-primary/30 bg-primary/15 text-primary shrink-0 rounded-full border px-1.5 py-0.5 text-[9px] font-medium tabular-nums"
+                >
+                  {inquiryBadge > 9 ? "9+" : inquiryBadge}
+                </span>
+              )}
             </Link>
           );
         })}

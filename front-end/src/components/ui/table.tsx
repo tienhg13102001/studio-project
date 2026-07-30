@@ -1,25 +1,32 @@
 import * as React from "react"
 import { cn } from "#lib/utils"
 
-const Table = React.forwardRef<HTMLTableElement, React.HTMLAttributes<HTMLTableElement>>(
-  ({ className, ...props }, ref) => (
-    <div className="relative w-full overflow-x-auto">
-      {/* min-width keeps columns readable on mobile → swipe instead of squish */}
-      <table ref={ref} className={cn("w-full min-w-150 caption-bottom text-sm", className)} {...props} />
-    </div>
-  ),
-)
+const Table = React.forwardRef<
+  HTMLTableElement,
+  React.HTMLAttributes<HTMLTableElement> & {
+    /**
+     * Class cho div bọc ngoài (nơi thực sự cuộn). Cấp `max-h-*` ở đây thì
+     * `TableHeader` mới dính được — vì div này là vùng cuộn gần nhất của thead;
+     * không giới hạn chiều cao thì `sticky` không có tác dụng.
+     */
+    containerClassName?: string
+  }
+>(({ className, containerClassName, ...props }, ref) => (
+  <div className={cn("relative w-full overflow-x-auto", containerClassName)}>
+    {/* min-width keeps columns readable on mobile → swipe instead of squish */}
+    <table ref={ref} className={cn("w-full min-w-150 caption-bottom text-sm", className)} {...props} />
+  </div>
+))
 Table.displayName = "Table"
 
 const TableHeader = React.forwardRef<
   HTMLTableSectionElement,
   React.HTMLAttributes<HTMLTableSectionElement>
 >(({ className, ...props }, ref) => (
-  <thead
-    ref={ref}
-    className={cn("border-b border-foreground/8 bg-foreground/3", className)}
-    {...props}
-  />
+  // Nền ĐỤC (bg-background) là bắt buộc: nền cũ chỉ 3% trong suốt nên khi cuộn,
+  // các dòng body hiện xuyên qua tên cột. Tint + border chuyển xuống <th> vì
+  // border khai trên thead sticky hay bị bỏ vẽ do border-collapse.
+  <thead ref={ref} className={cn("bg-background sticky top-0 z-10", className)} {...props} />
 ))
 TableHeader.displayName = "TableHeader"
 
@@ -64,7 +71,7 @@ const TableHead = React.forwardRef<
   <th
     ref={ref}
     className={cn(
-      "px-4 py-3 text-left text-xs font-medium text-foreground/40 [&:has([role=checkbox])]:pr-0",
+      "border-b border-foreground/8 bg-foreground/3 px-4 py-3 text-left text-xs font-medium text-foreground/40 [&:has([role=checkbox])]:pr-0",
       className,
     )}
     {...props}

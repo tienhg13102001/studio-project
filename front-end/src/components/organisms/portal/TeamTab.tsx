@@ -38,7 +38,8 @@ export function TeamTable({ data, loading, preview, onEdit, onDelete, onChangePa
 
   return (
     <div className="overflow-hidden rounded-xl border border-foreground/8">
-      <Table>
+      {/* Bản preview trên Tổng quan chỉ 4 dòng nên không cần giới hạn chiều cao. */}
+      <Table containerClassName={preview ? undefined : "max-h-[70vh]"}>
         <TableHeader>
           <TableRow className="hover:bg-transparent">
             {["Member", "Role", "Skills", "Account Role", "Status", ...(onEdit ? [""] : [])].map((h) => (
