@@ -1,8 +1,15 @@
 import { useState } from "react";
-import { PencilSimpleIcon, TrashIcon, PlusIcon, KeyIcon } from "@phosphor-icons/react";
+import {
+  PencilSimpleIcon,
+  TrashIcon,
+  PlusIcon,
+  KeyIcon,
+  MagnifyingGlassIcon,
+} from "@phosphor-icons/react";
 import { apiPut, apiPost, apiDelete, resolveAssetUrl } from "#lib/api";
 import type { ApiUser } from "#lib/apiTypes";
 import { ROLE_COLOR, type PortalUser } from "#lib/portal.types";
+import { normalizeVi } from "#lib/utils";
 import { TableSkeleton } from "#components/ui/portal/TableSkeleton";
 import EditModal from "#components/ui/portal/EditModal";
 import ImageUpload from "#components/ui/portal/ImageUpload";
@@ -219,6 +226,7 @@ export default function TeamTab({ data, loading, onRefetch }: TabProps) {
   const [pwForm, setPwForm]   = useState<PwForm>(emptyPwForm);
   const [pwSaving, setPwSaving] = useState(false);
   const [pwError, setPwError] = useState<string | null>(null);
+  const [query, setQuery]     = useState("");
 
   const isAdmin = currentUser?.accountRole === "admin";
   // Admin can change anyone's password; a normal user only their own.
@@ -320,25 +328,58 @@ export default function TeamTab({ data, loading, onRefetch }: TabProps) {
     }
   };
 
+  // Lọc ngay trên máy (danh sách nhân sự nhỏ) và so sánh không dấu để gõ
+  // "hoan" vẫn ra "Hoàn". Giữ null khi chưa tải để phân biệt với "rỗng".
+  const q = normalizeVi(query.trim());
+  const filtered: ApiUser[] | null = !q
+    ? data
+    : (data ?? []).filter((u) =>
+        [u.name, u.email, u.role?.en, u.role?.vi, u.accountRole, ...(u.skills ?? [])].some((f) =>
+          normalizeVi(f ?? "").includes(q),
+        ),
+      );
+
   return (
     <>
       {/* ── Header ── */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <h2 className="text-lg font-semibold text-foreground">Team Members</h2>
-        <Button size="sm" onClick={openCreate} className="bg-primary text-black hover:opacity-80">
-          <PlusIcon size={12} weight="bold" />
-          Add member
-        </Button>
+        <div className="flex items-center gap-2">
+          <div className="relative w-full sm:w-56">
+            <MagnifyingGlassIcon
+              size={13}
+              className="text-foreground/30 pointer-events-none absolute top-1/2 left-2.5 -translate-y-1/2"
+            />
+            <Input
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Tìm nhanh…"
+              aria-label="Tìm nhanh trong danh sách thành viên"
+              className="h-8 pl-7 text-xs"
+            />
+          </div>
+          <Button size="sm" onClick={openCreate} className="bg-primary text-black hover:opacity-80">
+            <PlusIcon size={12} weight="bold" />
+            Add member
+          </Button>
+        </div>
       </div>
 
+      {/* Không tìm thấy gì: nói rõ là do bộ lọc, không phải chưa có dữ liệu. */}
+      {!loading && q && (filtered?.length ?? 0) === 0 ? (
+        <div className="border-foreground/8 text-foreground/30 rounded-xl border border-dashed py-12 text-center text-sm">
+          Không tìm thấy thành viên nào khớp “{query}”.
+        </div>
+      ) : (
       <TeamTable
-        data={data}
+        data={filtered}
         loading={loading}
         onEdit={openEdit}
         onDelete={(u) => { setConfirmDelete(u); setDeleteError(null); }}
         onChangePassword={openPassword}
         canChangePassword={allowPasswordChange}
       />
+      )}
 
       {/* ── Edit Modal ── */}
       <EditModal
