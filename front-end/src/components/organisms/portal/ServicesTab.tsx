@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { PencilSimpleIcon, PlusIcon, TrashIcon, XIcon } from "@phosphor-icons/react";
 import { apiFetch, apiPost, apiPut, apiDelete, invalidateApiCache } from "#lib/api";
 import { localized } from "#lib/localized";
@@ -139,6 +139,9 @@ export default function ServicesTab({ data, raw, loading, onRefetch }: TabProps)
   const [confirmDelete, setConfirmDelete] = useState<ApiService | null>(null);
   const [deleting, setDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
+  // Ảnh chụp form lúc mới nạp — dùng để biết chính xác form có bị sửa hay chưa
+  // (chọn icon không phát sự kiện DOM nên EditModal tự đoán sẽ không thấy).
+  const baselineRef = useRef("");
 
   const openEdit = async (displayId: string) => {
     setLoadingEdit(true);
@@ -150,7 +153,9 @@ export default function ServicesTab({ data, raw, loading, onRefetch }: TabProps)
       invalidateApiCache(`/api/services/${displayId}`);
       const full = await apiFetch<ApiService>(`/api/services/${displayId}`);
       setEditing(full);
-      setForm(toForm(full));
+      const initial = toForm(full);
+      setForm(initial);
+      baselineRef.current = JSON.stringify(initial);
     } catch (e) {
       setError((e as Error).message);
     } finally {
@@ -160,13 +165,16 @@ export default function ServicesTab({ data, raw, loading, onRefetch }: TabProps)
   const openCreate = () => {
     setCreating(true);
     setEditing(null);
-    setForm(emptyServiceForm());
+    const initial = emptyServiceForm();
+    setForm(initial);
+    baselineRef.current = JSON.stringify(initial);
     setError(null);
   };
   const closeEdit = () => {
     setEditing(null);
     setCreating(false);
     setForm(null);
+    baselineRef.current = "";
   };
 
   const handleSave = async () => {
@@ -385,6 +393,7 @@ export default function ServicesTab({ data, raw, loading, onRefetch }: TabProps)
         onClose={closeEdit}
         onSubmit={handleSave}
         saving={saving}
+        dirty={!!form && JSON.stringify(form) !== baselineRef.current}
         onDelete={
           editing
             ? () => {
