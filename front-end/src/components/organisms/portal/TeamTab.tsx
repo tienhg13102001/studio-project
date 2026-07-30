@@ -10,6 +10,7 @@ import { apiPut, apiPost, apiDelete, resolveAssetUrl } from "#lib/api";
 import type { ApiUser } from "#lib/apiTypes";
 import { ROLE_COLOR, ROLE_LABEL, type PortalUser } from "#lib/portal.types";
 import { normalizeVi } from "#lib/utils";
+import { usePortalToast } from "#components/organisms/portal/PortalToast";
 import { TableSkeleton } from "#components/ui/portal/TableSkeleton";
 import EditModal from "#components/ui/portal/EditModal";
 import ImageUpload from "#components/ui/portal/ImageUpload";
@@ -227,6 +228,7 @@ export default function TeamTab({ data, loading, onRefetch }: TabProps) {
   const [pwSaving, setPwSaving] = useState(false);
   const [pwError, setPwError] = useState<string | null>(null);
   const [query, setQuery]     = useState("");
+  const { toast } = usePortalToast();
 
   const isAdmin = currentUser?.accountRole === "admin";
   // Admin can change anyone's password; a normal user only their own.
@@ -303,8 +305,10 @@ export default function TeamTab({ data, loading, onRefetch }: TabProps) {
       }
       onRefetch();
       closeEdit();
+      toast(creating ? "Đã thêm thành viên" : "Đã lưu thay đổi", "ok");
     } catch (e) {
       setError((e as Error).message);
+      toast("Lưu không thành công: " + (e as Error).message, "err");
     } finally {
       setSaving(false);
     }
@@ -321,8 +325,10 @@ export default function TeamTab({ data, loading, onRefetch }: TabProps) {
       await apiDelete(`/api/users/${confirmDelete.id}`);
       onRefetch();
       setConfirmDelete(null);
+      toast("Đã xoá thành viên", "ok");
     } catch (e) {
       setDeleteError((e as Error).message);
+      toast("Không xoá được: " + (e as Error).message, "err");
     } finally {
       setDeleting(false);
     }
