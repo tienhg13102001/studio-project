@@ -203,7 +203,7 @@ export default function ProjectsTab({ data, raw, services, users, loading, onRef
 
       {/* ── Table ── */}
       <div className="border-foreground/8 overflow-hidden rounded-xl border">
-        <Table>
+        <Table containerClassName="max-h-[70vh]">
           <TableHeader>
             <TableRow className="hover:bg-transparent">
               {["Project", "Tag", "Layout", "Prominent", ""].map((h) => (

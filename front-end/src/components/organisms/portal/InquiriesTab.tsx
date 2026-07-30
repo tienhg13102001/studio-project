@@ -7,6 +7,9 @@ import {
 } from "@phosphor-icons/react";
 import { apiDelete, invalidateApiCache } from "#lib/api";
 import type { ApiInquiry } from "#lib/apiTypes";
+import { INQUIRIES_CHANGED_EVENT } from "#hooks/useInquiries";
+import { isUnseenInquiry } from "#hooks/useUnseenInquiries";
+import { usePortalToast } from "#components/organisms/portal/PortalToast";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -53,6 +56,7 @@ export default function InquiriesTab({ data, loading, onRefetch }: TabProps) {
   const [confirmDelete, setConfirmDelete] = useState<ApiInquiry | null>(null);
   const [deleting, setDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
+  const { toast } = usePortalToast();
 
   const handleDelete = async () => {
     if (!confirmDelete) return;
@@ -62,10 +66,14 @@ export default function InquiriesTab({ data, loading, onRefetch }: TabProps) {
       await apiDelete(`/api/contact/inquiries/${confirmDelete.id}`);
       invalidateApiCache("/api/contact/inquiries");
       onRefetch();
+      // Cho badge ở sidebar (bản useInquiries khác) biết mà cập nhật số.
+      window.dispatchEvent(new Event(INQUIRIES_CHANGED_EVENT));
+      toast("Đã xoá liên hệ", "ok");
       setConfirmDelete(null);
       if (viewing?.id === confirmDelete.id) setViewing(null);
     } catch (e) {
       setDeleteError((e as Error).message);
+      toast("Không xoá được: " + (e as Error).message, "err");
     } finally {
       setDeleting(false);
     }
@@ -94,7 +102,7 @@ export default function InquiriesTab({ data, loading, onRefetch }: TabProps) {
         </div>
       ) : (
         <div className="border-foreground/8 overflow-hidden rounded-xl border">
-          <Table>
+          <Table containerClassName="max-h-[70vh]">
             <TableHeader>
               <TableRow className="hover:bg-transparent">
                 {["Họ và tên", "Liên hệ", "Dịch vụ", "Tin nhắn", "Thời gian", ""].map((h) => (
@@ -242,6 +250,85 @@ export default function InquiriesTab({ data, loading, onRefetch }: TabProps) {
         </AlertDialogContent>
       </AlertDialog>
     </>
+  );
+}
+
+/**
+ * Bản rút gọn cho trang Tổng quan: 5 liên hệ mới nhất, không có cột tin nhắn và
+ * không có nút xoá — bấm một dòng là sang trang Liên hệ để xử lý. Dòng chưa xem
+ * được đánh dấu "Mới".
+ */
+export function InquiriesPreview({
+  data,
+  loading,
+  seenAt,
+  onOpenAll,
+}: {
+  data: ApiInquiry[] | null;
+  loading: boolean;
+  seenAt: number;
+  onOpenAll: () => void;
+}) {
+  if (loading) return <TableSkeleton cols={4} rows={3} />;
+
+  const rows = (data ?? []).slice(0, 5);
+  if (rows.length === 0) {
+    return (
+      <div className="border-foreground/8 text-foreground/30 rounded-xl border border-dashed py-10 text-center text-sm">
+        Chưa có liên hệ nào.
+      </div>
+    );
+  }
+
+  return (
+    <div className="border-foreground/8 overflow-hidden rounded-xl border">
+      <Table>
+        <TableHeader>
+          <TableRow className="hover:bg-transparent">
+            {["Họ và tên", "Liên hệ", "Dịch vụ", "Thời gian"].map((h) => (
+              <TableHead key={h}>{h}</TableHead>
+            ))}
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {rows.map((c) => (
+            <TableRow key={c.id} className="cursor-pointer" onClick={onOpenAll}>
+              <TableCell className="text-foreground text-xs font-medium">
+                <span className="inline-flex items-center gap-2">
+                  {c.name}
+                  {isUnseenInquiry(c, seenAt) && (
+                    <Badge className="border-primary/30 bg-primary/15 text-primary border px-1.5 py-0 text-[9px]">
+                      Mới
+                    </Badge>
+                  )}
+                </span>
+              </TableCell>
+              <TableCell className="text-foreground/60 text-xs">
+                <span className="inline-flex items-center gap-1">
+                  <EnvelopeSimpleIcon size={11} className="shrink-0" />
+                  {c.email}
+                </span>
+              </TableCell>
+              <TableCell>
+                {c.serviceName ? (
+                  <Badge
+                    variant="outline"
+                    className="border-foreground/10 bg-foreground/5 text-foreground/60"
+                  >
+                    {c.serviceName}
+                  </Badge>
+                ) : (
+                  <span className="text-foreground/25 text-xs">—</span>
+                )}
+              </TableCell>
+              <TableCell className="text-foreground/40 text-xs whitespace-nowrap">
+                {formatDate(c.createdAt)}
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </div>
   );
 }
 
