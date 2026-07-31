@@ -55,7 +55,7 @@ router.put("/:id", async (req, res, next) => {
 /** DELETE /api/brands/:id */
 router.delete("/:id", async (req, res, next) => {
   try {
-    const brand = await Brand.findByIdAndDelete(req.params.id);
+    const brand = await Brand.softDeleteById(req.params.id);
     if (!brand) { sendError(res, "Brand not found", 404); return; }
     sendSuccess(res, { deleted: true });
   } catch (e) {

@@ -1,4 +1,5 @@
 import mongoose, { Schema, type Document, type PopulatedDoc } from "mongoose";
+import { softDeletePlugin, type SoftDeleteModel } from "../lib/softDelete.ts";
 import type { IProject } from "./Project.ts";
 
 const localizedString = new Schema({ en: String, vi: String }, { _id: false });
@@ -90,4 +91,8 @@ const serviceSchema = new Schema<IService>(
   },
 );
 
-export const Service = mongoose.model<IService>("Service", serviceSchema);
+// Bật thùng rác: xoá là đánh dấu, tự dọn hẳn sau 30 ngày.
+serviceSchema.plugin(softDeletePlugin);
+
+export const Service = mongoose.model<IService>("Service", serviceSchema) as
+  mongoose.Model<IService> & SoftDeleteModel<IService>;

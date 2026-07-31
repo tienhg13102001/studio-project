@@ -74,7 +74,7 @@ router.put("/:id", async (req, res, next) => {
 /** DELETE /api/services/:id */
 router.delete("/:id", async (req, res, next) => {
   try {
-    const service = await Service.findByIdAndDelete(req.params.id);
+    const service = await Service.softDeleteById(req.params.id);
     if (!service) { sendError(res, "Service not found", 404); return; }
     sendSuccess(res, { deleted: true });
   } catch (e) {

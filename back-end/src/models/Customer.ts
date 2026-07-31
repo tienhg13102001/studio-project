@@ -1,4 +1,5 @@
 import mongoose, { Schema, type Document } from "mongoose";
+import { softDeletePlugin, type SoftDeleteModel } from "../lib/softDelete.ts";
 
 export interface ICustomer extends Document {
   name:      string;
@@ -31,4 +32,8 @@ const customerSchema = new Schema<ICustomer>(
   },
 );
 
-export const Customer = mongoose.model<ICustomer>("Customer", customerSchema);
+// Bật thùng rác: xoá là đánh dấu, tự dọn hẳn sau 30 ngày.
+customerSchema.plugin(softDeletePlugin);
+
+export const Customer = mongoose.model<ICustomer>("Customer", customerSchema) as
+  mongoose.Model<ICustomer> & SoftDeleteModel<ICustomer>;

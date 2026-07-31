@@ -1,4 +1,5 @@
 import mongoose, { Schema, type Document } from "mongoose";
+import { softDeletePlugin, type SoftDeleteModel } from "../lib/softDelete.ts";
 import type { PopulatedDoc } from "mongoose";
 import type { IProject } from "./Project.ts";
 
@@ -30,4 +31,8 @@ const brandSchema = new Schema<IBrand>(
   },
 );
 
-export const Brand = mongoose.model<IBrand>("Brand", brandSchema);
+// Bật thùng rác: xoá là đánh dấu, tự dọn hẳn sau 30 ngày.
+brandSchema.plugin(softDeletePlugin);
+
+export const Brand = mongoose.model<IBrand>("Brand", brandSchema) as
+  mongoose.Model<IBrand> & SoftDeleteModel<IBrand>;
