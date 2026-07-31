@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  BẢN DỰ PHÒNG — bình thường KHÔNG được dùng.
+  FILE NÀY KHÔNG ĐƯỢC PHỤC VỤ — giữ lại để tham khảo.
 
-  nginx trỏ /sitemap.xml thẳng về backend (back-end/src/routes/sitemap.ts) để
-  sitemap luôn khớp dữ liệu thật, gồm cả từng trang dịch vụ. File này chỉ còn
-  giá trị nếu ai đó lùi lại phần cấu hình nginx.
+  nginx khớp /sitemap.xml bằng luật chính xác và chuyển thẳng về backend
+  (back-end/src/routes/sitemap.ts), nên file tĩnh này luôn bị bỏ qua — kể cả khi
+  backend lỗi (lúc đó /sitemap.xml báo lỗi 502 chứ KHÔNG tự quay về file này).
+  Muốn dùng lại nó thì phải bỏ khối `location = /sitemap.xml` trong nginx.conf.
 
   KHÔNG liệt kê công cụ nội bộ cần đăng nhập (/portal, /bao-gia, /hop-dong) —
   robots.txt cũng đã chặn.

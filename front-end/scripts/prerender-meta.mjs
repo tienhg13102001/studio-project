@@ -53,11 +53,28 @@ const ROUTES = [
 const esc = (s) =>
   s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 
-/** Thay giá trị của một thẻ meta theo tên thuộc tính; báo lỗi nếu không tìm thấy. */
+let warnings = 0;
+
+/**
+ * Thay giá trị của một thẻ meta.
+ *
+ * CỐ Ý chỉ cảnh báo chứ không dừng: script này chạy trong bước dựng ảnh Docker,
+ * nên nếu nó dừng vì không khớp mẫu thì cả lần triển khai bị chặn — hỏng nặng
+ * hơn nhiều so với việc một trang thiếu thẻ mô tả. Mẫu cũng viết linh hoạt để
+ * không phụ thuộc thứ tự thuộc tính (công cụ dựng có thể sắp lại khi rút gọn).
+ */
 function replaceMeta(html, attr, name, value, label) {
-  const re = new RegExp(`(<meta\\s+${attr}="${name}"\\s+content=")[^"]*(")`, "i");
-  if (!re.test(html)) throw new Error(`Không tìm thấy thẻ ${label} trong dist/index.html`);
-  return html.replace(re, `$1${esc(value)}$2`);
+  const re = new RegExp(`(<meta\\b[^>]*\\b${attr}="${name}"[^>]*\\bcontent=")[^"]*(")`, "i");
+  if (re.test(html)) return html.replace(re, `$1${esc(value)}$2`);
+
+  // Trường hợp `content` đứng trước `name`/`property`.
+  const reSwapped = new RegExp(`<meta\\b[^>]*\\bcontent="[^"]*"[^>]*\\b${attr}="${name}"[^>]*>`, "i");
+  const m = html.match(reSwapped);
+  if (m) return html.replace(m[0], m[0].replace(/content="[^"]*"/i, `content="${esc(value)}"`));
+
+  console.warn(`  ! Bỏ qua ${label}: không tìm thấy trong dist/index.html`);
+  warnings++;
+  return html;
 }
 
 const indexPath = path.join(DIST, "index.html");
@@ -73,8 +90,12 @@ for (const route of ROUTES) {
   let html = base;
 
   // <title>
-  if (!/<title>[^<]*<\/title>/i.test(html)) throw new Error("Không tìm thấy thẻ <title>");
-  html = html.replace(/<title>[^<]*<\/title>/i, `<title>${esc(fullTitle)}</title>`);
+  if (/<title>[^<]*<\/title>/i.test(html)) {
+    html = html.replace(/<title>[^<]*<\/title>/i, `<title>${esc(fullTitle)}</title>`);
+  } else {
+    console.warn("  ! Bỏ qua <title>: không tìm thấy");
+    warnings++;
+  }
 
   html = replaceMeta(html, "name", "description", route.description, "meta description");
   html = replaceMeta(html, "property", "og:title", fullTitle, "og:title");
@@ -84,9 +105,13 @@ for (const route of ROUTES) {
   html = replaceMeta(html, "name", "twitter:description", route.description, "twitter:description");
 
   // canonical — đây chính là thẻ đang trỏ nhầm về trang chủ ở mọi đường dẫn
-  const canonRe = /(<link\s+rel="canonical"\s+href=")[^"]*(")/i;
-  if (!canonRe.test(html)) throw new Error("Không tìm thấy thẻ canonical");
-  html = html.replace(canonRe, `$1${url}$2`);
+  const canonRe = /(<link\b[^>]*\brel="canonical"[^>]*\bhref=")[^"]*(")/i;
+  if (canonRe.test(html)) {
+    html = html.replace(canonRe, `$1${url}$2`);
+  } else {
+    console.warn("  ! Bỏ qua canonical: không tìm thấy");
+    warnings++;
+  }
 
   const outDir = path.join(DIST, route.path.replace(/^\//, ""));
   fs.mkdirSync(outDir, { recursive: true });
@@ -95,3 +120,9 @@ for (const route of ROUTES) {
 }
 
 console.log(`\nĐã sinh ${ROUTES.length} trang có thẻ mô tả riêng.`);
+if (warnings > 0) {
+  console.warn(
+    `\n! ${warnings} thẻ không thay được — nhiều khả năng mẫu HTML đã đổi.\n` +
+      `  Bản dựng vẫn chạy bình thường, nhưng nên xem lại scripts/prerender-meta.mjs.`,
+  );
+}

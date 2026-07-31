@@ -33,6 +33,10 @@ const projectSchema = new Schema<IProject>(
     members:        [{ type: Schema.Types.ObjectId, ref: "User" }], // team members who worked on the project
   },
   {
+    // Cần cho sitemap: khai báo ngày cập nhật gần nhất của từng trang để
+    // máy tìm kiếm biết nội dung nào vừa đổi. Không có dòng này thì updatedAt
+    // luôn rỗng.
+    timestamps: true,
     toJSON: {
       virtuals: true,
       versionKey: false,
