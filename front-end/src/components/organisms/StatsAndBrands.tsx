@@ -68,18 +68,13 @@ const StatsAndBrands: React.FC = () => {
             </div>
           </Reveal>
 
-          {/*
-            Chỉ một hàng: trước đây có hai hàng chạy ngược chiều nhưng LẶP LẠI
-            cùng một danh sách thương hiệu — nhìn kỹ là thấy trùng, vô tình khoe
-            ra là ít khách. Logo để xám lúc nghỉ và lên màu khi rê chuột, cách
-            các agency lớn vẫn làm để dải logo không lấn át nội dung chính.
-          */}
+          {/* Row 1 — left */}
           <div className="border-border/50 bg-muted/30 overflow-hidden border-y">
             <MarqueeRow direction="left">
               {[...row1, ...row1].map((brand, i) => (
                 <div
                   key={`${brand.id}-${i}`}
-                  className="group flex shrink-0 items-center justify-center px-4 py-6"
+                  className="flex shrink-0 items-center justify-center px-4 py-6"
                 >
                   <img
                     src={resolveAssetUrl(brand.logo)}
@@ -88,7 +83,28 @@ const StatsAndBrands: React.FC = () => {
                     decoding="async"
                     width={120}
                     height={48}
-                    className="h-12 max-w-30 object-contain opacity-60 grayscale transition-all duration-300 group-hover:opacity-100 group-hover:grayscale-0 motion-reduce:transition-none"
+                    className="h-12 max-w-30 object-contain transition-all duration-300"
+                  />
+                </div>
+              ))}
+            </MarqueeRow>
+          </div>
+          {/* Row 2 — right */}
+          <div className="border-border/50 bg-muted/30 overflow-hidden border-y mt-10">
+            <MarqueeRow direction="right">
+              {[...row1, ...row1].map((brand, i) => (
+                <div
+                  key={`${brand.id}-${i}`}
+                  className="flex shrink-0 items-center justify-center px-4 py-6"
+                >
+                  <img
+                    src={resolveAssetUrl(brand.logo)}
+                    alt={`Logo ${brand.name} — khách hàng của BeeZ Production`}
+                    loading="lazy"
+                    decoding="async"
+                    width={120}
+                    height={48}
+                    className="h-12 max-w-30 object-contain transition-all duration-300"
                   />
                 </div>
               ))}

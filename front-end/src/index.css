@@ -138,24 +138,10 @@
     @apply font-sans;
   }
   /*
-    Tiêu đề dùng font serif (Lora) — font này đã được cài và khai báo từ lâu
-    nhưng chưa nơi nào dùng, nên cả web chỉ có đúng một giọng chữ từ tiêu đề lớn
-    tới chữ trên nút. Có tương phản giữa giọng tiêu đề và giọng nội dung là thứ
-    tạo cảm giác "studio" thay vì "mẫu có sẵn".
-
-    CHỈ áp cho trang khách (`.site`, gắn ở MainLayout). Portal admin và hai công
-    cụ báo giá/hợp đồng phải giữ nguyên font sans: tiêu đề ở đó là nhãn 14px
-    trong bảng, để serif vừa khó đọc vừa là thay đổi không ai yêu cầu.
-
-    Chỉ h1–h3 (tiêu đề thật); h4–h6 hay được dùng làm nhãn nhỏ trong thẻ.
+    Đã thử cho tiêu đề dùng font serif (Lora) nhưng Hoàn thấy font sans cũ hợp
+    hơn, nên toàn bộ trang giữ một giọng chữ Montserrat như trước.
+    Token `--font-heading` vẫn khai báo phía trên nếu sau này muốn thử lại.
   */
-  .site h1,
-  .site h2,
-  .site h3 {
-    font-family: var(--font-heading);
-    font-weight: 600;
-    letter-spacing: -0.015em;
-  }
   /* Chữ nội dung: 14px mảnh trên nền tối rất khó đọc và làm trang trông rẻ.
      Cũng chỉ áp cho trang khách, vì portal cố tình dùng chữ nhỏ cho dày dữ liệu. */
   .site {

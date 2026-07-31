@@ -3,9 +3,15 @@ import SplitText from "#components/molecules/SplitText";
 import { useLanguage, useTranslation } from "#i18n";
 import Reveal from "#components/Reveal";
 import { useTeamContent } from "#hooks/useTeamContent";
+import { usePortfolio } from "#hooks/usePortfolio";
 import { resolveAssetUrl } from "#lib/api";
 
-const GALLERY_IMAGES = [
+/**
+ * Ảnh dùng khi phần Portfolio trong portal chưa có gì. Trước đây dải ảnh này
+ * lấy cứng 5 tấm ở đây nên muốn đổi phải sửa mã nguồn — nay ưu tiên ảnh thật
+ * trong Portfolio để chủ studio tự thay được từ portal.
+ */
+const FALLBACK_IMAGES = [
   "/NAQ03133.webp",
   "/feature1.webp",
   "/feature2.webp",
@@ -13,10 +19,19 @@ const GALLERY_IMAGES = [
   "/services2.webp",
 ];
 
+/** Lấy tối đa ngần này ảnh cho dải chạy — đủ dài mà không tải quá nhiều. */
+const MAX_STRIP_IMAGES = 10;
+
 const WhoWeAre: React.FC = () => {
   const t = useTranslation();
   const { lang } = useLanguage();
   const { data } = useTeamContent();
+  const { data: portfolio } = usePortfolio();
+
+  const galleryImages =
+    portfolio && portfolio.length > 0
+      ? portfolio.slice(0, MAX_STRIP_IMAGES).map((p) => resolveAssetUrl(p.image))
+      : FALLBACK_IMAGES;
 
   const aboutBadge = data?.aboutBadge?.[lang] || t.team.aboutBadge;
   const aboutHeading = data?.aboutHeading?.[lang] || t.team.aboutHeading;
@@ -76,11 +91,11 @@ const WhoWeAre: React.FC = () => {
         </MarqueeRow>
       </div>
 
-      {/* Photo gallery strip */}
+      {/* Dải ảnh chạy NGƯỢC chiều với dải số liệu phía trên cho có nhịp. */}
       <Reveal>
         <div className="pt-10 pb-4 overflow-hidden">
-          <MarqueeRow direction="left">
-            {[...GALLERY_IMAGES, ...GALLERY_IMAGES].map((src, i) => (
+          <MarqueeRow direction="right">
+            {[...galleryImages, ...galleryImages].map((src, i) => (
               <div key={i} className="shrink-0 h-48 w-72 overflow-hidden rounded-xl shadow-md">
                 <img
                   src={src}
