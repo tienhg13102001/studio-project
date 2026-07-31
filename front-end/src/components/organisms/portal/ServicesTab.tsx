@@ -737,15 +737,15 @@ export default function ServicesTab({ data, raw, loading, onRefetch }: TabProps)
           <AlertDialogHeader>
             <AlertDialogTitle>Xoá dịch vụ?</AlertDialogTitle>
             <AlertDialogDescription>
-              "<span className="text-foreground/80">{confirmDelete?.title.en}</span>" will be
-              permanently deleted.
+              "<span className="text-foreground/80">{confirmDelete?.title.en}</span>" sẽ được chuyển
+              vào Thùng rác. Bạn vẫn khôi phục lại được ở mục Thùng rác.
             </AlertDialogDescription>
           </AlertDialogHeader>
           {deleteError && <p className="text-xs text-red-400">{deleteError}</p>}
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>Huỷ</AlertDialogCancel>
             <AlertDialogAction onClick={handleDelete} disabled={deleting}>
-              {deleting ? "Deleting…" : "Delete"}
+              {deleting ? "Đang xoá…" : "Xoá"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

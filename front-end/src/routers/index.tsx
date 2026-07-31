@@ -23,6 +23,7 @@ const PortalServicesPage = lazy(() => import("../pages/portal/ServicesPage"));
 const PortalProjectsPage = lazy(() => import("../pages/portal/ProjectsPage"));
 const PortalInquiriesPage = lazy(() => import("../pages/portal/InquiriesPage"));
 const PortalSettingsPage = lazy(() => import("../pages/portal/SettingsPage"));
+const PortalTrashPage = lazy(() => import("../pages/portal/TrashPage"));
 
 const PageFallback = () => (
   <div className="flex min-h-screen items-center justify-center">
@@ -66,6 +67,7 @@ export const router = createBrowserRouter([
       { path: "/portal/projects", element: withSuspense(PortalProjectsPage) },
       { path: "/portal/inquiries", element: withSuspense(PortalInquiriesPage) },
       { path: "/portal/settings", element: withSuspense(PortalSettingsPage) },
+      { path: "/portal/trash", element: withSuspense(PortalTrashPage) },
       // Any unknown /portal/* (other than /portal itself) → dashboard
       { path: "/portal/*", element: <Navigate to="/portal/dashboard" replace /> },
     ],

@@ -173,3 +173,19 @@ export type ApiInquiry = {
   message:      string;
   createdAt:    string;
 };
+
+/** Một mục đang nằm trong thùng rác của portal. */
+export type ApiTrashItem = {
+  /** Khoá loại dữ liệu — cũng là đoạn đường dẫn khi khôi phục/xoá hẳn. */
+  type:      string;
+  typeLabel: string;
+  id:        string;
+  title:     string;
+  subtitle:  string;
+  image:     string;
+  deletedAt: string;
+  /** Mốc cơ sở dữ liệu tự xoá hẳn, dạng ISO. */
+  purgeAt:   string;
+};
+
+export type ApiTrash = { items: ApiTrashItem[]; ttlDays: number };

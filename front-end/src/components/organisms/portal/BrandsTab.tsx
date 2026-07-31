@@ -138,7 +138,7 @@ export default function BrandsTab({ data, loading, onRefetch }: TabProps) {
       onRefetch();
       setConfirmDelete(null);
       closeEdit();
-      toast("Đã xoá thương hiệu", "ok");
+      toast("Đã chuyển thương hiệu vào Thùng rác", "ok");
     } catch (e) {
       setDeleteError((e as Error).message);
       toast("Không xoá được: " + (e as Error).message, "err");
@@ -215,15 +215,15 @@ export default function BrandsTab({ data, loading, onRefetch }: TabProps) {
           <AlertDialogHeader>
             <AlertDialogTitle>Xoá thương hiệu?</AlertDialogTitle>
             <AlertDialogDescription>
-              "<span className="text-foreground/80">{confirmDelete?.name}</span>" will be permanently
-              deleted.
+              "<span className="text-foreground/80">{confirmDelete?.name}</span>" sẽ được chuyển vào
+              Thùng rác. Bạn vẫn khôi phục lại được ở mục Thùng rác.
             </AlertDialogDescription>
           </AlertDialogHeader>
           {deleteError && <p className="text-xs text-red-400">{deleteError}</p>}
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>Huỷ</AlertDialogCancel>
             <AlertDialogAction onClick={handleDelete} disabled={deleting}>
-              {deleting ? "Deleting…" : "Delete"}
+              {deleting ? "Đang xoá…" : "Xoá"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

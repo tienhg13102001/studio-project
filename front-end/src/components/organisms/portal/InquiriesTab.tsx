@@ -68,7 +68,7 @@ export default function InquiriesTab({ data, loading }: TabProps) {
       // Một tín hiệu là đủ: MỌI bản useInquiries (bảng này + badge ở sidebar) đều
       // nghe và tự tải lại. Gọi thêm onRefetch() sẽ tạo request trùng.
       window.dispatchEvent(new Event(INQUIRIES_CHANGED_EVENT));
-      toast("Đã xoá liên hệ", "ok");
+      toast("Đã chuyển liên hệ vào Thùng rác", "ok");
       setConfirmDelete(null);
       if (viewing?.id === confirmDelete.id) setViewing(null);
     } catch (e) {
@@ -236,8 +236,8 @@ export default function InquiriesTab({ data, loading }: TabProps) {
           <AlertDialogHeader>
             <AlertDialogTitle>Xoá tin nhắn?</AlertDialogTitle>
             <AlertDialogDescription>
-              Tin nhắn từ "<span className="text-foreground/80">{confirmDelete?.name}</span>" sẽ bị
-              xoá vĩnh viễn.
+              Tin nhắn từ "<span className="text-foreground/80">{confirmDelete?.name}</span>" sẽ được
+              chuyển vào Thùng rác. Bạn vẫn khôi phục lại được ở mục Thùng rác.
             </AlertDialogDescription>
           </AlertDialogHeader>
           {deleteError && <p className="text-xs text-red-400">{deleteError}</p>}
