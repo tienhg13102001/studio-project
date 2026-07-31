@@ -1,6 +1,6 @@
 import ThemeToggle from "#components/molecules/ThemeToggle";
 import { Input } from "#components/ui/input";
-import { apiPost } from "#lib/api";
+import { apiPost, clearSession, getAuthToken, setAuthToken } from "#lib/api";
 import {
   ArrowLeftIcon,
   ArrowRightIcon,
@@ -23,29 +23,37 @@ import LogoYellow from "../../assets/icons/LogoYellow";
 
 type View = "continue" | "select" | "admin";
 
-type LoginResponse = {
+type PortalAccount = {
   id: string;
   name: string;
   email: string;
   accountRole: "admin" | "member" | "editor";
 };
 
-function readSavedUser(): LoginResponse | null {
+/** POST /api/auth/login trả token kèm profile hiển thị. */
+type LoginResponse = {
+  token: string;
+  user: PortalAccount;
+};
+
+function readSavedUser(): PortalAccount | null {
   try {
     const raw = localStorage.getItem("portal_user");
-    if (!raw) return null;
-    const parsed = JSON.parse(raw) as LoginResponse;
+    // Không có token thì profile cũ vô dụng — mọi request đều sẽ bị 401, nên coi
+    // như chưa đăng nhập và bắt nhập mật khẩu lại.
+    if (!raw || !getAuthToken()) return null;
+    const parsed = JSON.parse(raw) as PortalAccount;
     if (parsed?.id && parsed?.name && parsed?.email) return parsed;
     return null;
   } catch {
-    localStorage.removeItem("portal_user");
+    clearSession();
     return null;
   }
 }
 
 const PortalPage = () => {
   const navigate = useNavigate();
-  const [savedUser, setSavedUser] = useState<LoginResponse | null>(() => readSavedUser());
+  const [savedUser, setSavedUser] = useState<PortalAccount | null>(() => readSavedUser());
   const [view, setView] = useState<View>(() => (readSavedUser() ? "continue" : "select"));
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -58,7 +66,8 @@ const PortalPage = () => {
     setError(null);
     setLoading(true);
     try {
-      const user = await apiPost<LoginResponse>("/api/auth/login", { email, password });
+      const { token, user } = await apiPost<LoginResponse>("/api/auth/login", { email, password });
+      setAuthToken(token);
       localStorage.setItem("portal_user", JSON.stringify(user));
       navigate("/portal/dashboard");
     } catch (err: unknown) {
@@ -69,7 +78,7 @@ const PortalPage = () => {
   };
 
   const handleSwitchAccount = () => {
-    localStorage.removeItem("portal_user");
+    clearSession();
     setSavedUser(null);
     setView("select");
   };

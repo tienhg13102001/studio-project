@@ -3,6 +3,7 @@ import PortalSidebar from "#components/organisms/portal/PortalSidebar";
 import { PortalToastProvider } from "#components/organisms/portal/PortalToast";
 import { useInquiries } from "#hooks/useInquiries";
 import { countUnseenInquiries, useInquiriesSeenAt } from "#hooks/useUnseenInquiries";
+import { clearSession, getAuthToken } from "#lib/api";
 import type { PortalUser } from "#lib/portal.types";
 import { cn } from "#lib/utils";
 import { useEffect, useState } from "react";
@@ -30,20 +31,22 @@ const PortalLayout = () => {
 
   useEffect(() => {
     const raw = localStorage.getItem("portal_user");
-    if (!raw) {
+    // Thiếu token thì mọi request đều bị API trả 401, nên chặn ngay tại đây.
+    if (!raw || !getAuthToken()) {
+      clearSession();
       navigate("/portal", { replace: true });
       return;
     }
     try {
       setUser(JSON.parse(raw) as PortalUser);
     } catch {
-      localStorage.removeItem("portal_user");
+      clearSession();
       navigate("/portal", { replace: true });
     }
   }, [navigate]);
 
   const handleLogout = () => {
-    localStorage.removeItem("portal_user");
+    clearSession();
     navigate("/portal", { replace: true });
   };
 

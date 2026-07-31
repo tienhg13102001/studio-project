@@ -4,9 +4,14 @@ import { PageContent } from "../models/PageContent.ts";
 import { Contact } from "../models/Contact.ts";
 import { sendError, sendSuccess } from "../lib/response.ts";
 import { generateQrDataUrl, SOCIAL_PLATFORMS, type SocialPlatform } from "../lib/qr.ts";
+import requireAuth from "../middleware/requireAuth.ts";
 
 const router = Router();
 
+/**
+ * GET để mở công khai vì trang chủ beezvn.com đọc nội dung landing khi khách
+ * chưa đăng nhập. Mọi thao tác GHI bên dưới đều phải qua requireAuth.
+ */
 router.get("/", async (_req, res, next) => {
   try {
     const landing = await PageContent.findOne({ pageType: "landing" });
@@ -40,8 +45,8 @@ router.get("/", async (_req, res, next) => {
   } catch (e) { next(e); }
 });
 
-/** PUT /api/landing — update the single landing document (upsert) */
-router.put("/", async (req, res, next) => {
+/** PUT /api/landing — update the single landing document (upsert). Cần đăng nhập. */
+router.put("/", requireAuth, async (req, res, next) => {
   try {
     const { heroLine1, heroLine2, subheading, videoBackground, contactId, phone, email, address, socials } =
       req.body as Record<string, unknown>;
@@ -81,8 +86,9 @@ router.put("/", async (req, res, next) => {
  * POST /api/landing/social-qr — generate a QR code for one social URL, persist
  * both the URL and the QR (PNG data-URL) on the Contact, and return the QR.
  * Body: { platform: "zalo" | "facebook" | "instagram" | ..., url: string }
+ * Cần đăng nhập.
  */
-router.post("/social-qr", async (req, res, next) => {
+router.post("/social-qr", requireAuth, async (req, res, next) => {
   try {
     const { platform, url } = req.body as { platform?: string; url?: string };
 

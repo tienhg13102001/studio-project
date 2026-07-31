@@ -3,19 +3,8 @@ import express from "express";
 import { join, dirname } from "path";
 import { fileURLToPath } from "url";
 import errorHandler from "./middleware/errorHandler.ts";
-import { sendError, sendSuccess } from "./lib/response.ts";
-import projectsRouter from "./routes/projects.ts";
-import landingRouter from "./routes/landing.ts";
-import servicesRouter from "./routes/services.ts";
-import contactRouter from "./routes/contact.ts";
-import usersRouter from "./routes/users.ts";
-import brandsRouter from "./routes/brands.ts";
-import portfolioRouter from "./routes/portfolio.ts";
-import authRouter from "./routes/auth.ts";
-import uploadRouter from "./routes/upload.ts";
-import teamContentRouter from "./routes/team-content.ts";
-import settingsRouter from "./routes/settings.ts";
-import visitorsRouter from "./routes/visitors.ts";
+import { sendError } from "./lib/response.ts";
+import apiRouter from "./routes/index.ts";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -52,22 +41,8 @@ app.use(
 );
 
 // ─── Routes ──────────────────────────────────────────────────────────────────
-app.get("/api/health", (_req, res) => {
-  sendSuccess(res, { status: "ok", timestamp: new Date().toISOString() });
-});
-
-app.use("/api/landing", landingRouter);
-app.use("/api/services", servicesRouter);
-app.use("/api/projects", projectsRouter);
-app.use("/api/contact", contactRouter);
-app.use("/api/users", usersRouter);
-app.use("/api/brands", brandsRouter);
-app.use("/api/portfolio", portfolioRouter);
-app.use("/api/auth", authRouter);
-app.use("/api/upload", uploadRouter);
-app.use("/api/team-content", teamContentRouter);
-app.use("/api/settings", settingsRouter);
-app.use("/api/visitors", visitorsRouter);
+// Toàn bộ endpoint khai báo trong routes/index.ts và mount chung dưới /api.
+app.use("/api", apiRouter);
 
 // ─── 404 ─────────────────────────────────────────────────────────────────────
 app.use((_req, res) => {

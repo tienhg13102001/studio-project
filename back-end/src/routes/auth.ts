@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { sendSuccess, sendError } from "../lib/response.ts";
+import { signToken } from "../lib/jwt.ts";
 import { User } from "../models/User.ts";
 
 const router = Router();
@@ -28,12 +29,23 @@ router.post("/login", async (req, res, next) => {
       return;
     }
 
-    // Return safe public profile (password excluded by toJSON transform)
-    sendSuccess(res, {
-      id:          user.id,
-      name:        user.name,
+    // Token là thứ duy nhất chứng minh danh tính với API — profile trả kèm chỉ
+    // để frontend hiển thị tên/quyền, không dùng để phân quyền.
+    const token = signToken({
+      sub:         user.id as string,
       email:       user.email,
       accountRole: user.accountRole,
+    });
+
+    // Return safe public profile (password excluded by toJSON transform)
+    sendSuccess(res, {
+      token,
+      user: {
+        id:          user.id,
+        name:        user.name,
+        email:       user.email,
+        accountRole: user.accountRole,
+      },
     });
   } catch (e) { next(e); }
 });

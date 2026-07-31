@@ -1,3 +1,4 @@
+import { clearSession, getAuthToken } from "#lib/api";
 import type { PortalUser } from "#lib/portal.types";
 import { useEffect, useState } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
@@ -13,7 +14,9 @@ const RequirePortalAuth = () => {
 
   useEffect(() => {
     const raw = localStorage.getItem("portal_user");
-    if (!raw) {
+    // Thiếu token thì mọi request đều bị API trả 401, nên chặn ngay tại đây.
+    if (!raw || !getAuthToken()) {
+      clearSession();
       navigate("/portal", { replace: true });
       return;
     }
@@ -21,7 +24,7 @@ const RequirePortalAuth = () => {
       JSON.parse(raw) as PortalUser;
       setAuthed(true);
     } catch {
-      localStorage.removeItem("portal_user");
+      clearSession();
       navigate("/portal", { replace: true });
     }
   }, [navigate]);

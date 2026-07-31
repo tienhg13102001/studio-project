@@ -6,6 +6,29 @@ const apiClient = axios.create({
   headers: { "Content-Type": "application/json" },
 });
 
+// ─── Phiên đăng nhập ─────────────────────────────────────────────────────────
+// Token là thứ DUY NHẤT chứng minh danh tính với API. `portal_user` chỉ để hiển
+// thị tên/quyền trên giao diện — sửa nó trong localStorage không cho thêm quyền gì.
+const TOKEN_KEY = "portal_token";
+const USER_KEY = "portal_user";
+
+export const getAuthToken = (): string | null => localStorage.getItem(TOKEN_KEY);
+export const setAuthToken = (token: string): void => localStorage.setItem(TOKEN_KEY, token);
+
+/** Xoá sạch phiên: dùng khi đăng xuất và khi server báo token hết hiệu lực. */
+export const clearSession = (): void => {
+  localStorage.removeItem(TOKEN_KEY);
+  localStorage.removeItem(USER_KEY);
+};
+
+// ─── Request interceptor ─────────────────────────────────────────────────────
+// Đính token vào mọi request để các endpoint cần đăng nhập nhận ra người gọi.
+apiClient.interceptors.request.use((config) => {
+  const token = getAuthToken();
+  if (token) config.headers.Authorization = `Bearer ${token}`;
+  return config;
+});
+
 // ─── Response interceptor ────── ───────────────────────────────────────────────
 // When the server returns a non-2xx status, Axios throws before we can read
 // res.data. This interceptor extracts the actual error message from the
@@ -22,6 +45,18 @@ apiClient.interceptors.response.use(
       // Replace the generic Axios message with the server's own message
       err.message = serverMsg;
     }
+
+    // Token hết hạn/không hợp lệ → dọn phiên và đưa về trang đăng nhập.
+    // Trừ chính endpoint login: 401 ở đó nghĩa là sai mật khẩu, phải để màn hình
+    // login hiện thông báo chứ không được đá người dùng đi.
+    const isLoginRequest = err.config?.url?.includes("/api/auth/login") ?? false;
+    if (err.response?.status === 401 && !isLoginRequest) {
+      clearSession();
+      if (window.location.pathname !== "/portal") {
+        window.location.assign("/portal");
+      }
+    }
+
     return Promise.reject(err);
   },
 );

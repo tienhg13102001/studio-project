@@ -5,3 +5,5 @@ dist/
 .turbo/
 .DS_Store
 .omc
+# Local-only compose override (publish cổng MongoDB cho dev) — không lên production.
+docker-compose.override.yml
