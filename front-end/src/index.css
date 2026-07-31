@@ -43,7 +43,14 @@
   --sidebar-ring: oklch(0.708 0 0);
 }
 
-.dark {
+/*
+  `.site` (trang khách) luôn dùng bảng màu tối, kể cả khi người dùng đã bật chế
+  độ sáng trong portal. Lý do: nút chuyển sáng/tối đã gỡ khỏi trang khách vì chế
+  độ sáng ở đây đang vỡ — không khoá lại thì ai lỡ bật sáng trong portal sẽ thấy
+  trang khách hỏng mà không còn nút nào để đổi về.
+*/
+.dark,
+.site {
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.205 0 0);
@@ -136,18 +143,22 @@
     tới chữ trên nút. Có tương phản giữa giọng tiêu đề và giọng nội dung là thứ
     tạo cảm giác "studio" thay vì "mẫu có sẵn".
 
-    Chỉ áp cho h1–h3 (tiêu đề thật). Không áp cho h4–h6 vì chúng hay được dùng
-    làm nhãn nhỏ trong thẻ, để serif sẽ rối.
+    CHỈ áp cho trang khách (`.site`, gắn ở MainLayout). Portal admin và hai công
+    cụ báo giá/hợp đồng phải giữ nguyên font sans: tiêu đề ở đó là nhãn 14px
+    trong bảng, để serif vừa khó đọc vừa là thay đổi không ai yêu cầu.
+
+    Chỉ h1–h3 (tiêu đề thật); h4–h6 hay được dùng làm nhãn nhỏ trong thẻ.
   */
-  h1,
-  h2,
-  h3 {
+  .site h1,
+  .site h2,
+  .site h3 {
     font-family: var(--font-heading);
     font-weight: 600;
     letter-spacing: -0.015em;
   }
-  /* Chữ nội dung: 14px mảnh trên nền tối rất khó đọc và làm trang trông rẻ. */
-  body {
+  /* Chữ nội dung: 14px mảnh trên nền tối rất khó đọc và làm trang trông rẻ.
+     Cũng chỉ áp cho trang khách, vì portal cố tình dùng chữ nhỏ cho dày dữ liệu. */
+  .site {
     font-size: 15.5px;
     line-height: 1.65;
   }

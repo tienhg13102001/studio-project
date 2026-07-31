@@ -15,7 +15,10 @@ const MainLayout: React.FC<Props> = () => {
   const bgUrl = backgroundImage || DEFAULT_BG_URL;
 
   return (
-    <div className="relative min-h-screen">
+    // `site` khoanh vùng phần dành cho khách: font tiêu đề serif, cỡ chữ lớn hơn
+    // và bảng màu tối cố định chỉ áp trong đây — portal và hai công cụ báo giá/
+    // hợp đồng giữ nguyên như cũ.
+    <div className="site relative min-h-screen">
       <ScrollToTop />
       <Navbar />
       <Outlet />
