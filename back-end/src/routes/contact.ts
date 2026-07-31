@@ -4,6 +4,7 @@ import { Customer } from "../models/Customer.ts";
 import { Service } from "../models/Service.ts";
 import { sendError, sendSuccess } from "../lib/response.ts";
 import { sendMail, escapeHtml, isMailConfigured, LEAD_NOTIFY_TO } from "../lib/mailer.ts";
+import { checkSpam } from "../lib/spamGuard.ts";
 
 const router = Router();
 
@@ -101,13 +102,35 @@ router.delete("/inquiries/:id", async (req, res, next) => {
   } catch (e) { next(e); }
 });
 
+/** Lấy địa chỉ mạng thật của khách (đứng sau Cloudflare/nginx). */
+function clientIp(req: { headers: Record<string, unknown>; ip?: string }): string {
+  const cf = req.headers["cf-connecting-ip"];
+  if (typeof cf === "string" && cf) return cf;
+  const xff = req.headers["x-forwarded-for"];
+  if (typeof xff === "string" && xff) return xff.split(",")[0]!.trim();
+  return req.ip ?? "unknown";
+}
+
 router.post("/inquiry", async (req, res, next) => {
   try {
-    const { name, email, phone, service, message } = req.body as Record<string, string>;
+    const { name, email, phone, service, message, website } = req.body as Record<string, string>;
     if (!name?.trim() || !email?.trim() || !message?.trim()) {
       sendError(res, "name, email and message are required", 422);
       return;
     }
+
+    // Chặn máy gửi tự động TRƯỚC khi lưu và trước khi gửi email. Không làm bước
+    // này thì mỗi lượt spam kích hoạt 2 email, lâu dài khiến tên miền bị chấm
+    // điểm xấu và thư gửi khách thật rơi vào hộp thư rác.
+    const verdict = checkSpam(clientIp(req), { name, email, phone, message, website });
+    if (verdict.blocked) {
+      console.warn(`[contact] Bỏ qua một lượt gửi nghi máy tự động: ${verdict.reason}`);
+      // CỐ Ý trả về như thành công: báo lỗi thẳng thì bot biết đường lách, còn
+      // khách thật thì không bao giờ rơi vào nhánh này.
+      sendSuccess(res, { id: null }, 201);
+      return;
+    }
+
     const customer = await Customer.create({ name, email, phone, service, message });
     sendSuccess(res, { id: customer.id }, 201);
 

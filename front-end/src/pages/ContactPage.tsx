@@ -36,9 +36,15 @@ type FormState = {
   phone: string;
   service: string;
   message: string;
+  /**
+   * Ô bẫy chống máy gửi tự động: ẩn hoàn toàn với người dùng thật, nhưng công cụ
+   * spam thì điền vào mọi ô nó nhìn thấy trong mã nguồn. Máy chủ thấy ô này có
+   * nội dung là bỏ qua lượt gửi đó.
+   */
+  website: string;
 };
 
-const EMPTY_FORM: FormState = { name: "", email: "", phone: "", service: "", message: "" };
+const EMPTY_FORM: FormState = { name: "", email: "", phone: "", service: "", message: "", website: "" };
 
 const ContactPage: React.FC = () => {
   const { lang } = useLanguage();
@@ -307,6 +313,26 @@ const ContactPage: React.FC = () => {
                       value={form.message}
                       onChange={set("message")}
                       className="border-border bg-background/60 text-foreground placeholder:text-muted-foreground focus:border-primary min-h-25"
+                    />
+                  </div>
+
+                  {/*
+                    Ô bẫy chống máy gửi tự động — người dùng thật KHÔNG BAO GIỜ
+                    thấy hay chạm tới ô này: ẩn khỏi màn hình, ẩn khỏi trình đọc
+                    màn hình, và bị bỏ qua khi bấm phím Tab. Công cụ spam thì đọc
+                    mã nguồn và điền vào mọi ô, nên có nội dung ở đây là dấu hiệu
+                    gần như chắc chắn của máy.
+                  */}
+                  <div aria-hidden="true" className="pointer-events-none absolute -left-[9999px] h-0 w-0 overflow-hidden">
+                    <label htmlFor="website-hp">Để trống ô này</label>
+                    <input
+                      id="website-hp"
+                      type="text"
+                      name="website"
+                      tabIndex={-1}
+                      autoComplete="off"
+                      value={form.website}
+                      onChange={set("website")}
                     />
                   </div>
 
