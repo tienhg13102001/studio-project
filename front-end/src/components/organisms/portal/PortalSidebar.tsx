@@ -9,6 +9,7 @@ import {
   SignOutIcon,
   SquaresFourIcon,
   StarIcon,
+  TrashIcon,
   UsersThreeIcon,
   XIcon,
 } from "@phosphor-icons/react";
@@ -31,6 +32,7 @@ const NAV: NavItem[] = [
   { icon: <ImageSquareIcon size={18} weight="duotone" />, label: "Dự án",      to: "/portal/projects" },
   { icon: <EnvelopeIcon    size={18} weight="duotone" />, label: "Liên hệ",    to: "/portal/inquiries" },
   { icon: <GearIcon        size={18} weight="duotone" />, label: "Cài đặt",    to: "/portal/settings" },
+  { icon: <TrashIcon       size={18} weight="duotone" />, label: "Thùng rác",  to: "/portal/trash" },
 ];
 
 type Props = {

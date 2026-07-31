@@ -200,16 +200,16 @@ export default function PortfolioTab({ data, loading, onRefetch }: TabProps) {
       <AlertDialog open={!!confirmDelete} onOpenChange={(open) => !open && setConfirmDelete(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete image?</AlertDialogTitle>
+            <AlertDialogTitle>Xoá ảnh?</AlertDialogTitle>
             <AlertDialogDescription>
-              Ảnh này sẽ bị xoá vĩnh viễn khỏi portfolio.
+              Ảnh này sẽ được chuyển vào Thùng rác. Bạn vẫn khôi phục lại được ở mục Thùng rác.
             </AlertDialogDescription>
           </AlertDialogHeader>
           {deleteError && <p className="text-xs text-red-400">{deleteError}</p>}
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>Huỷ</AlertDialogCancel>
             <AlertDialogAction onClick={handleDelete} disabled={deleting}>
-              {deleting ? "Deleting…" : "Delete"}
+              {deleting ? "Đang xoá…" : "Xoá"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

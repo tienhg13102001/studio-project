@@ -541,15 +541,15 @@ export default function ProjectsTab({ data, raw, services, users, loading, onRef
           <AlertDialogHeader>
             <AlertDialogTitle>Xoá dự án?</AlertDialogTitle>
             <AlertDialogDescription>
-              "<span className="text-foreground/80">{confirmDelete?.title}</span>" will be
-              permanently deleted.
+              "<span className="text-foreground/80">{confirmDelete?.title}</span>" sẽ được chuyển
+              vào Thùng rác. Bạn vẫn khôi phục lại được ở mục Thùng rác.
             </AlertDialogDescription>
           </AlertDialogHeader>
           {deleteError && <p className="text-xs text-red-400">{deleteError}</p>}
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>Huỷ</AlertDialogCancel>
             <AlertDialogAction onClick={handleDelete} disabled={deleting}>
-              {deleting ? "Deleting…" : "Delete"}
+              {deleting ? "Đang xoá…" : "Xoá"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

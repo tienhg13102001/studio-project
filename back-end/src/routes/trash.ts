@@ -154,10 +154,21 @@ router.get("/", requireAuth, async (_req, res, next) => {
  */
 type TrashParams = { type: string; id: string };
 
+/**
+ * Tra loại dữ liệu theo tên trên đường dẫn.
+ *
+ * Phải dùng hasOwn: viết thẳng SOURCES[type] thì "constructor" hay "toString"
+ * cũng trả về một giá trị (thừa kế từ Object) và request đi tiếp với thứ không
+ * phải model, gây lỗi 500.
+ */
+function findSource(type: string): TrashEntry | null {
+  return Object.hasOwn(SOURCES, type) ? SOURCES[type]! : null;
+}
+
 /** POST /api/trash/:type/:id/restore — đưa một mục trở lại chỗ cũ. */
 const restore: RequestHandler<TrashParams> = async (req, res, next) => {
   try {
-    const source = SOURCES[req.params.type];
+    const source = findSource(req.params.type);
     if (!source) {
       sendError(res, "Unknown trash type", 404);
       return;
@@ -177,7 +188,7 @@ router.post("/:type/:id/restore", requireAuth, restore);
 /** DELETE /api/trash/:type/:id — xoá hẳn, không lấy lại được. */
 const purge: RequestHandler<TrashParams> = async (req, res, next) => {
   try {
-    const source = SOURCES[req.params.type];
+    const source = findSource(req.params.type);
     if (!source) {
       sendError(res, "Unknown trash type", 404);
       return;
