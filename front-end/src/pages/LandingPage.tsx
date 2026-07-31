@@ -7,11 +7,18 @@ import ProductGallery from "#components/organisms/ProductGallery";
 import ServiceSection from "#components/organisms/ServiceSection";
 import StatsAndBrands from "#components/organisms/StatsAndBrands";
 import { useLandingProgress } from "#hooks/useLandingProgress";
+import { useContact } from "#hooks/useContact";
+import { useLanguage } from "#i18n";
+import { organizationSchema, websiteSchema } from "#lib/structuredData";
 import { useState } from "react";
 
 const LandingPage = () => {
   const [isReady, setIsReady] = useState(() => sessionStorage.getItem("preloaded") === "1");
   const { target } = useLandingProgress();
+  const { lang } = useLanguage();
+  // Dùng thông tin liên hệ thật đã nhập trong phần Cài đặt web để khai báo với
+  // Google/trợ lý AI — không hardcode để khỏi lệch khi đổi số điện thoại/địa chỉ.
+  const { data: contact } = useContact();
 
   const handlePreloaderComplete = () => {
     sessionStorage.setItem("preloaded", "1");
@@ -24,6 +31,7 @@ const LandingPage = () => {
         title="Agency sản xuất video & TVC tại Hà Nội"
         description="BeeZ Production — agency sản xuất video hàng đầu Hà Nội. TVC, phim quảng cáo, brand film và nội dung mạng xã hội điện ảnh cho những thương hiệu dám khác biệt."
         path="/"
+        jsonLd={[organizationSchema(contact, lang), websiteSchema()]}
       />
       {!isReady && <Preloader target={target} onComplete={handlePreloaderComplete} />}
       <div className="selection:text-primary relative flex w-full flex-col font-sans text-white antialiased">
