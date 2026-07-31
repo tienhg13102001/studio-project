@@ -9,6 +9,7 @@ import portfolioRouter from "./portfolio.ts";
 import projectsRouter from "./projects.ts";
 import servicesRouter from "./services.ts";
 import settingsRouter from "./settings.ts";
+import sitemapRouter from "./sitemap.ts";
 import teamContentRouter from "./team-content.ts";
 import uploadRouter from "./upload.ts";
 import usersRouter from "./users.ts";
@@ -39,5 +40,7 @@ router.use("/upload", uploadRouter);
 router.use("/team-content", teamContentRouter);
 router.use("/settings", settingsRouter);
 router.use("/visitors", visitorsRouter);
+// nginx trỏ /sitemap.xml về đây để sitemap luôn khớp dữ liệu thật.
+router.use("/sitemap.xml", sitemapRouter);
 
 export default router;

@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  Các trang công khai của beezvn.com. KHÔNG liệt kê công cụ nội bộ cần đăng nhập
-  (/portal, /bao-gia, /hop-dong) — chúng cũng bị chặn trong robots.txt.
-  Từng dịch vụ (/service/:id) và dự án hiện chưa có ở đây vì sitemap này là tĩnh;
-  sinh động theo dữ liệu là bước SEO tiếp theo.
+  BẢN DỰ PHÒNG — bình thường KHÔNG được dùng.
+
+  nginx trỏ /sitemap.xml thẳng về backend (back-end/src/routes/sitemap.ts) để
+  sitemap luôn khớp dữ liệu thật, gồm cả từng trang dịch vụ. File này chỉ còn
+  giá trị nếu ai đó lùi lại phần cấu hình nginx.
+
+  KHÔNG liệt kê công cụ nội bộ cần đăng nhập (/portal, /bao-gia, /hop-dong) —
+  robots.txt cũng đã chặn.
 -->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
