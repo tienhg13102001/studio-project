@@ -1,4 +1,5 @@
 import mongoose, { Schema, type Document } from "mongoose";
+import { softDeletePlugin, type SoftDeleteModel } from "../lib/softDelete.ts";
 
 export interface IPortfolioItem extends Document {
   image: string; // path or URL to the portfolio image
@@ -26,4 +27,8 @@ const portfolioItemSchema = new Schema<IPortfolioItem>(
   },
 );
 
-export const PortfolioItem = mongoose.model<IPortfolioItem>("PortfolioItem", portfolioItemSchema);
+// Bật thùng rác: xoá là đánh dấu, tự dọn hẳn sau 30 ngày.
+portfolioItemSchema.plugin(softDeletePlugin);
+
+export const PortfolioItem = mongoose.model<IPortfolioItem>("PortfolioItem", portfolioItemSchema) as
+  mongoose.Model<IPortfolioItem> & SoftDeleteModel<IPortfolioItem>;

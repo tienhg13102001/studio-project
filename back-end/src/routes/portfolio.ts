@@ -50,7 +50,7 @@ router.put("/:id", async (req, res, next) => {
 /** DELETE /api/portfolio/:id */
 router.delete("/:id", async (req, res, next) => {
   try {
-    const item = await PortfolioItem.findByIdAndDelete(req.params.id);
+    const item = await PortfolioItem.softDeleteById(req.params.id);
     if (!item) { sendError(res, "Portfolio item not found", 404); return; }
     sendSuccess(res, { deleted: true });
   } catch (e) {

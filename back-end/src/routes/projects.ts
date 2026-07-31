@@ -119,14 +119,17 @@ router.put("/:id", async (req, res, next) => {
   }
 });
 
-/** DELETE /api/projects/:id */
+/**
+ * DELETE /api/projects/:id — chuyển vào thùng rác, giữ 30 ngày rồi mới xoá hẳn.
+ *
+ * KHÔNG gỡ id khỏi `Service.projects` nữa: đã kiểm chứng populate cũng đi qua bộ
+ * lọc thùng rác nên dự án đã xoá không hiện ở trang dịch vụ. Giữ nguyên liên kết
+ * để lúc khôi phục dự án quay lại đúng chỗ cũ, không phải nối lại bằng tay.
+ */
 router.delete("/:id", async (req, res, next) => {
   try {
-    const project = await Project.findByIdAndDelete(req.params.id);
+    const project = await Project.softDeleteById(req.params.id);
     if (!project) { sendError(res, "Project not found", 404); return; }
-    if (project.service) {
-      await Service.findByIdAndUpdate(project.service, { $pull: { projects: project._id } });
-    }
     sendSuccess(res, { deleted: true });
   } catch (e) {
     next(e);

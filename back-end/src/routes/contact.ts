@@ -96,7 +96,7 @@ router.get("/inquiries", async (_req, res, next) => {
 /** DELETE /api/contact/inquiries/:id — remove one submission. */
 router.delete("/inquiries/:id", async (req, res, next) => {
   try {
-    const deleted = await Customer.findByIdAndDelete(req.params.id);
+    const deleted = await Customer.softDeleteById(req.params.id);
     if (!deleted) { sendError(res, "Inquiry not found", 404); return; }
     sendSuccess(res, { deleted: true });
   } catch (e) { next(e); }
