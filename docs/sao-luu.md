@@ -213,13 +213,17 @@ quản lý mật khẩu (1Password, Bitwarden…) và cập nhật lại mỗi k
 bằng một container tạm:
 
 ```bash
+cd /home/studio-project
+set -a; . ./.env; set +a          # nạp MONGO_ROOT_USER / MONGO_ROOT_PASS
+
 docker run --rm --network studio-project_beez-net mongo:7 \
   mongodump --quiet --archive --gzip --db beez_db \
   --host beez-mongodb -u "$MONGO_ROOT_USER" -p "$MONGO_ROOT_PASS" \
   --authenticationDatabase admin > /var/backups/beezvn/thu-cong.archive.gz
 ```
 
-(Tên mạng lấy từ `docker network ls`.)
+(Tên mạng lấy từ `docker network ls`. Cách này để mật khẩu lộ trong `ps` nên
+chỉ dùng khi cần chữa cháy, không đưa vào cron.)
 
 **`rclone không kết nối được`**
 Token Google hết hạn — chạy lại `rclone config`, chọn remote `gdrive`, mục

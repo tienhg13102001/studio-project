@@ -102,6 +102,13 @@ router.delete("/inquiries/:id", async (req, res, next) => {
   } catch (e) { next(e); }
 });
 
+/** "hoang@beezvn.com" → "ho***@beezvn.com" — đủ để nhận ra, không lộ cả địa chỉ. */
+function maskEmail(email: string | undefined): string {
+  const at = (email ?? "").indexOf("@");
+  if (at < 1) return "(không có email)";
+  return `${email!.slice(0, Math.min(2, at))}***${email!.slice(at)}`;
+}
+
 /** Lấy địa chỉ mạng thật của khách (đứng sau Cloudflare/nginx). */
 function clientIp(req: { headers: Record<string, unknown>; ip?: string }): string {
   const cf = req.headers["cf-connecting-ip"];
@@ -124,7 +131,11 @@ router.post("/inquiry", async (req, res, next) => {
     // điểm xấu và thư gửi khách thật rơi vào hộp thư rác.
     const verdict = checkSpam(clientIp(req), { name, email, phone, message, website });
     if (verdict.blocked) {
-      console.warn(`[contact] Bỏ qua một lượt gửi nghi máy tự động: ${verdict.reason}`);
+      // Ghi kèm dấu vết đã che bớt: chặn nhầm một khách thật thì đây là đường
+      // duy nhất để nhận ra và liên hệ lại. Không ghi nguyên email vào log.
+      console.warn(
+        `[contact] Bỏ qua một lượt gửi nghi máy tự động: ${verdict.reason} — ${maskEmail(email)}`,
+      );
       // CỐ Ý trả về như thành công: báo lỗi thẳng thì bot biết đường lách, còn
       // khách thật thì không bao giờ rơi vào nhánh này.
       sendSuccess(res, { id: null }, 201);
