@@ -68,7 +68,10 @@ export default function TrashTab({ data, loading, onRefetch }: TabProps) {
     return [...map.entries()];
   }, [items]);
 
-  const shown = filter === "all" ? items : items.filter((i) => i.type === filter);
+  // Khôi phục hết mục cuối của một loại thì nút lọc đó biến mất; không tự quay
+  // về "Tất cả" sẽ thành màn hình trống trong khi thùng rác vẫn còn thứ khác.
+  const active = counts.some(([t]) => t === filter) ? filter : "all";
+  const shown = active === "all" ? items : items.filter((i) => i.type === active);
 
   /** Báo cho các màn khác biết dữ liệu vừa đổi. */
   const notifyChanged = (type: string) => {
@@ -118,7 +121,7 @@ export default function TrashTab({ data, loading, onRefetch }: TabProps) {
         {items.length > 0 && (
           <div className="flex flex-wrap gap-1.5">
             <FilterChip
-              active={filter === "all"}
+              active={active === "all"}
               onClick={() => setFilter("all")}
               label="Tất cả"
               n={items.length}
@@ -126,7 +129,7 @@ export default function TrashTab({ data, loading, onRefetch }: TabProps) {
             {counts.map(([type, { label, n }]) => (
               <FilterChip
                 key={type}
-                active={filter === type}
+                active={active === type}
                 onClick={() => setFilter(type)}
                 label={label}
                 n={n}
