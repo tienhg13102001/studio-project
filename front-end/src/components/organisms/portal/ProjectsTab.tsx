@@ -38,8 +38,15 @@ import {
 import type { ProjectDisplay } from "#hooks/useProjects";
 import { apiDelete, apiPost, apiPut } from "#lib/api";
 import type { ApiProject, ApiService, ApiServiceTag, ApiUser } from "#lib/apiTypes";
-import { PencilSimpleIcon, PlusIcon, TrashIcon, XIcon } from "@phosphor-icons/react";
-import { useState } from "react";
+import { normalizeVi } from "#lib/utils";
+import {
+  MagnifyingGlassIcon,
+  PencilSimpleIcon,
+  PlusIcon,
+  TrashIcon,
+  XIcon,
+} from "@phosphor-icons/react";
+import { useRef, useState } from "react";
 
 // ─── Edit form ───────────────────────────────────────────────────────────────
 
@@ -115,25 +122,37 @@ export default function ProjectsTab({ data, raw, services, users, loading, onRef
   const [confirmDelete, setConfirmDelete] = useState<ApiProject | null>(null);
   const [deleting, setDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
+  // Khai báo TRƯỚC early-return `if (loading)` bên dưới, nếu không React sẽ báo
+  // "rendered fewer hooks than expected" ở lần render đang tải.
+  const [query, setQuery] = useState("");
+  // So sánh với ảnh chụp form lúc mới mở để biết CHÍNH XÁC là đã sửa hay chưa.
+  // Cần thiết vì chọn ngày / chọn người thực hiện không phát sự kiện DOM nên
+  // cách tự đoán của EditModal không thấy được.
+  const baselineRef = useRef("");
 
   const openEdit = (displayId: string) => {
     const rawItem = (raw ?? []).find((f) => f.id === displayId);
     if (!rawItem) return;
     setEditing(rawItem);
     setCreating(false);
-    setForm(toForm(rawItem));
+    const initial = toForm(rawItem);
+    setForm(initial);
+    baselineRef.current = JSON.stringify(initial);
     setError(null);
   };
   const openCreate = () => {
     setCreating(true);
     setEditing(null);
-    setForm(emptyProjectForm());
+    const initial = emptyProjectForm();
+    setForm(initial);
+    baselineRef.current = JSON.stringify(initial);
     setError(null);
   };
   const closeEdit = () => {
     setEditing(null);
     setCreating(false);
     setForm(null);
+    baselineRef.current = "";
   };
 
   const handleSave = async () => {
@@ -188,31 +207,57 @@ export default function ProjectsTab({ data, raw, services, users, loading, onRef
   const set = (k: keyof ProjectForm, v: unknown) => setForm((f) => (f ? { ...f, [k]: v } : f));
 
   if (loading) return <TableSkeleton cols={5} rows={5} />;
-  console.log(data);
+
+  const q = normalizeVi(query.trim());
+  const visible = !q
+    ? data
+    : data.filter((p) =>
+        [p.title, p.subtitle, p.tag].some((f) => normalizeVi(f ?? "").includes(q)),
+      );
 
   return (
     <>
       {/* ── Header ── */}
-      <div className="flex items-center justify-between">
-        <h2 className="text-foreground text-lg font-semibold">Projects</h2>
-        <Button size="sm" onClick={openCreate} className="bg-primary text-black hover:opacity-80">
-          <PlusIcon size={12} weight="bold" />
-          Add project
-        </Button>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h2 className="text-foreground text-lg font-semibold">Dự án</h2>
+        <div className="flex items-center gap-2">
+          <div className="relative w-full sm:w-56">
+            <MagnifyingGlassIcon
+              size={13}
+              className="text-foreground/30 pointer-events-none absolute top-1/2 left-2.5 -translate-y-1/2"
+            />
+            <Input
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Tìm nhanh…"
+              aria-label="Tìm nhanh trong danh sách dự án"
+              className="h-8 pl-7 text-xs"
+            />
+          </div>
+          <Button size="sm" onClick={openCreate} className="bg-primary text-black hover:opacity-80">
+            <PlusIcon size={12} weight="bold" />
+            Thêm dự án
+          </Button>
+        </div>
       </div>
 
       {/* ── Table ── */}
+      {q && visible.length === 0 ? (
+        <div className="border-foreground/8 text-foreground/30 rounded-xl border border-dashed py-12 text-center text-sm">
+          Không tìm thấy dự án nào khớp “{query}”.
+        </div>
+      ) : (
       <div className="border-foreground/8 overflow-hidden rounded-xl border">
-        <Table>
+        <Table containerClassName="max-h-[70vh]">
           <TableHeader>
             <TableRow className="hover:bg-transparent">
-              {["Project", "Tag", "Layout", "Prominent", ""].map((h) => (
+              {["Dự án", "Tag", "Kiểu", "Nổi bật", ""].map((h) => (
                 <TableHead key={h}>{h}</TableHead>
               ))}
             </TableRow>
           </TableHeader>
           <TableBody>
-            {data.map((p) => {
+            {visible.map((p) => {
               const rawItem = (raw ?? []).find((r) => r.id === p.id);
               return (
                 <TableRow key={p.id}>
@@ -266,7 +311,7 @@ export default function ProjectsTab({ data, raw, services, users, loading, onRef
                           }
                         }}
                         className="border-foreground/10 text-foreground/50 border hover:border-red-500/50 hover:text-red-400"
-                        title="Delete project"
+                        title="Xoá dự án"
                       >
                         <TrashIcon size={11} />
                       </Button>
@@ -278,14 +323,16 @@ export default function ProjectsTab({ data, raw, services, users, loading, onRef
           </TableBody>
         </Table>
       </div>
+      )}
 
       {/* ── Edit / Create Modal ── */}
       <EditModal
-        title={creating ? "Add Project" : `Edit — ${editing?.title ?? "…"}`}
+        title={creating ? "Thêm dự án" : `Sửa — ${editing?.title ?? "…"}`}
         isOpen={!!editing || creating}
         onClose={closeEdit}
         onSubmit={handleSave}
         saving={saving}
+        dirty={!!form && JSON.stringify(form) !== baselineRef.current}
         onDelete={
           editing
             ? () => {
@@ -452,7 +499,7 @@ export default function ProjectsTab({ data, raw, services, users, loading, onRef
                         checked={form.prominent}
                         onCheckedChange={(checked) => set("prominent", !!checked)}
                       />
-                      <span className="text-foreground/50 text-xs">Prominent</span>
+                      <span className="text-foreground/50 text-xs">Nổi bật</span>
                     </label>
                   </div>
                 </div>
@@ -492,7 +539,7 @@ export default function ProjectsTab({ data, raw, services, users, loading, onRef
       <AlertDialog open={!!confirmDelete} onOpenChange={(open) => !open && setConfirmDelete(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete project?</AlertDialogTitle>
+            <AlertDialogTitle>Xoá dự án?</AlertDialogTitle>
             <AlertDialogDescription>
               "<span className="text-foreground/80">{confirmDelete?.title}</span>" will be
               permanently deleted.

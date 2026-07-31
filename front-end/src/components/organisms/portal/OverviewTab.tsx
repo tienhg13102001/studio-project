@@ -4,7 +4,9 @@ import type { ServiceDisplay } from "#hooks/useServices";
 import type { ProjectDisplay } from "#hooks/useProjects";
 import { TeamTable } from "./TeamTab";
 import { BrandsGrid } from "./BrandsTab";
+import { InquiriesPreview } from "./InquiriesTab";
 import { Button } from "#components/ui/button";
+import type { ApiInquiry } from "#lib/apiTypes";
 
 type Props = {
   teamData:       ApiUser[]        | null;
@@ -14,6 +16,10 @@ type Props = {
   servicesData:   ServiceDisplay[] | null;
   allProjects:    ProjectDisplay[];
   visitorTotal:   number | null;
+  inquiriesData:    ApiInquiry[] | null;
+  inquiriesLoading: boolean;
+  /** Mốc "đã xem" để đánh dấu dòng liên hệ mới. */
+  inquiriesSeenAt:  number;
   onTabChange:    (id: string) => void;
 };
 
@@ -22,13 +28,14 @@ export default function OverviewTab({
   brandsData, brandsLoading,
   servicesData, allProjects,
   visitorTotal,
+  inquiriesData, inquiriesLoading, inquiriesSeenAt,
   onTabChange,
 }: Props) {
   const stats = [
-    { label: "Team Members",   value: teamData?.length    ?? "—", icon: <UsersThreeIcon  size={20} weight="duotone" />, color: "text-blue-400"    },
-    { label: "Brands",         value: brandsData?.length  ?? "—", icon: <StarIcon         size={20} weight="duotone" />, color: "text-amber-400"  },
-    { label: "Services",       value: servicesData?.length ?? "—",icon: <BriefcaseIcon    size={20} weight="duotone" />, color: "text-violet-400" },
-    { label: "Projects",       value: allProjects.length  || "—", icon: <ImageSquareIcon  size={20} weight="duotone" />, color: "text-emerald-400"},
+    { label: "Đội ngũ",        value: teamData?.length    ?? "—", icon: <UsersThreeIcon  size={20} weight="duotone" />, color: "text-blue-400"    },
+    { label: "Thương hiệu",    value: brandsData?.length  ?? "—", icon: <StarIcon         size={20} weight="duotone" />, color: "text-amber-400"  },
+    { label: "Dịch vụ",        value: servicesData?.length ?? "—",icon: <BriefcaseIcon    size={20} weight="duotone" />, color: "text-violet-400" },
+    { label: "Dự án",          value: allProjects.length  || "—", icon: <ImageSquareIcon  size={20} weight="duotone" />, color: "text-emerald-400"},
     { label: "Lượt truy cập",  value: visitorTotal != null ? visitorTotal.toLocaleString() : "—", icon: <EyeIcon size={20} weight="duotone" />, color: "text-cyan-400" },
   ];
 
@@ -47,12 +54,28 @@ export default function OverviewTab({
         ))}
       </div>
 
+      {/* Liên hệ mới — đặt trên cùng vì đây là việc cần xử lý trong ngày */}
+      <section>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-sm font-semibold text-foreground/80">Liên hệ mới nhất</h2>
+          <Button variant="link" onClick={() => onTabChange("inquiries")} className="text-xs text-primary p-0 h-auto">
+            Xem tất cả
+          </Button>
+        </div>
+        <InquiriesPreview
+          data={inquiriesData}
+          loading={inquiriesLoading}
+          seenAt={inquiriesSeenAt}
+          onOpenAll={() => onTabChange("inquiries")}
+        />
+      </section>
+
       {/* Team preview */}
       <section>
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-sm font-semibold text-foreground/80">Team Members</h2>
+          <h2 className="text-sm font-semibold text-foreground/80">Đội ngũ</h2>
           <Button variant="link" onClick={() => onTabChange("team")} className="text-xs text-primary p-0 h-auto">
-            View all
+            Xem tất cả
           </Button>
         </div>
         <TeamTable data={teamData} loading={teamLoading} preview />
@@ -61,9 +84,9 @@ export default function OverviewTab({
       {/* Brands preview */}
       <section>
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-sm font-semibold text-foreground/80">Brands</h2>
+          <h2 className="text-sm font-semibold text-foreground/80">Thương hiệu</h2>
           <Button variant="link" onClick={() => onTabChange("brands")} className="text-xs text-primary p-0 h-auto">
-            View all
+            Xem tất cả
           </Button>
         </div>
         <BrandsGrid data={brandsData} loading={brandsLoading} preview />

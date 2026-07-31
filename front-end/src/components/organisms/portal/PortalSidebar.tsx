@@ -1,4 +1,4 @@
-import type { PortalUser } from "#lib/portal.types";
+import { ROLE_LABEL, type PortalUser } from "#lib/portal.types";
 import {
   BriefcaseIcon,
   ChartLineUpIcon,
@@ -23,14 +23,14 @@ type NavItem = {
 };
 
 const NAV: NavItem[] = [
-  { icon: <SquaresFourIcon size={18} weight="duotone" />, label: "Overview",     to: "/portal/dashboard" },
-  { icon: <ChartLineUpIcon size={18} weight="duotone" />, label: "Analytics",    to: "/portal/analytics" },
-  { icon: <UsersThreeIcon  size={18} weight="duotone" />, label: "Team Members", to: "/portal/team" },
-  { icon: <StarIcon        size={18} weight="duotone" />, label: "Brands",       to: "/portal/brands" },
-  { icon: <BriefcaseIcon   size={18} weight="duotone" />, label: "Services",     to: "/portal/services" },
-  { icon: <ImageSquareIcon size={18} weight="duotone" />, label: "Projects",     to: "/portal/projects" },
-  { icon: <EnvelopeIcon    size={18} weight="duotone" />, label: "Liên hệ",      to: "/portal/inquiries" },
-  { icon: <GearIcon        size={18} weight="duotone" />, label: "Settings",     to: "/portal/settings" },
+  { icon: <SquaresFourIcon size={18} weight="duotone" />, label: "Tổng quan",  to: "/portal/dashboard" },
+  { icon: <ChartLineUpIcon size={18} weight="duotone" />, label: "Thống kê",   to: "/portal/analytics" },
+  { icon: <UsersThreeIcon  size={18} weight="duotone" />, label: "Đội ngũ",    to: "/portal/team" },
+  { icon: <StarIcon        size={18} weight="duotone" />, label: "Thương hiệu", to: "/portal/brands" },
+  { icon: <BriefcaseIcon   size={18} weight="duotone" />, label: "Dịch vụ",    to: "/portal/services" },
+  { icon: <ImageSquareIcon size={18} weight="duotone" />, label: "Dự án",      to: "/portal/projects" },
+  { icon: <EnvelopeIcon    size={18} weight="duotone" />, label: "Liên hệ",    to: "/portal/inquiries" },
+  { icon: <GearIcon        size={18} weight="duotone" />, label: "Cài đặt",    to: "/portal/settings" },
 ];
 
 type Props = {
@@ -38,9 +38,11 @@ type Props = {
   onLogout: () => void;
   /** Close the mobile drawer (no-op affordance on desktop). */
   onClose?: () => void;
+  /** Số liên hệ chưa xem — hiện thành pill cạnh mục "Liên hệ". 0 = ẩn. */
+  inquiryBadge?: number;
 };
 
-export default function PortalSidebar({ user, onLogout, onClose }: Props) {
+export default function PortalSidebar({ user, onLogout, onClose, inquiryBadge = 0 }: Props) {
   const { pathname } = useLocation();
 
   return (
@@ -50,7 +52,7 @@ export default function PortalSidebar({ user, onLogout, onClose }: Props) {
         <LogoYellow className="text-primary h-7 w-7 shrink-0" />
         <div className="min-w-0 flex-1">
           <p className="truncate text-sm leading-tight font-bold text-foreground">BeeZ Portal</p>
-          <p className="text-[10px] leading-tight text-foreground/30">Admin Dashboard</p>
+          <p className="text-[10px] leading-tight text-foreground/30">Bảng điều khiển</p>
         </div>
         {/* Close button — mobile drawer only */}
         <button
@@ -76,7 +78,7 @@ export default function PortalSidebar({ user, onLogout, onClose }: Props) {
                 <span>{item.icon}</span>
                 <span className="flex-1">{item.label}</span>
                 <span className="rounded-full border border-foreground/10 px-1.5 py-0.5 text-[9px] text-foreground/25">
-                  Soon
+                  Sắp có
                 </span>
               </button>
             );
@@ -94,6 +96,16 @@ export default function PortalSidebar({ user, onLogout, onClose }: Props) {
             >
               <span className={active ? "text-primary" : ""}>{item.icon}</span>
               <span className="flex-1">{item.label}</span>
+              {/* Badge liên hệ chưa xem — cùng hình dạng pill "Soon" ở trên để
+                  không làm lệch chiều cao hàng nav. */}
+              {item.to === "/portal/inquiries" && inquiryBadge > 0 && (
+                <span
+                  aria-label={`${inquiryBadge} liên hệ chưa xem`}
+                  className="border-primary/30 bg-primary/15 text-primary shrink-0 rounded-full border px-1.5 py-0.5 text-[9px] font-medium tabular-nums"
+                >
+                  {inquiryBadge > 9 ? "9+" : inquiryBadge}
+                </span>
+              )}
             </Link>
           );
         })}
@@ -114,7 +126,9 @@ export default function PortalSidebar({ user, onLogout, onClose }: Props) {
           </div>
           <div className="min-w-0 flex-1">
             <p className="truncate text-xs font-medium text-foreground">{user.name}</p>
-            <p className="truncate text-[10px] text-foreground/30">{user.accountRole}</p>
+            <p className="truncate text-[10px] text-foreground/30">
+              {ROLE_LABEL[user.accountRole] ?? user.accountRole}
+            </p>
           </div>
         </div>
         <button
@@ -122,7 +136,7 @@ export default function PortalSidebar({ user, onLogout, onClose }: Props) {
           className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-foreground/40 transition-colors hover:bg-foreground/5 hover:text-red-400"
         >
           <SignOutIcon size={15} />
-          Sign out
+          Đăng xuất
         </button>
       </div>
     </aside>
