@@ -12,6 +12,7 @@ import { apiFetch, resolveAssetUrl } from "#lib/api";
 import HighlightIcon from "#components/HighlightIcon";
 import { useLanguage, useTranslation, type Lang } from "#i18n";
 import { localized } from "#lib/localized";
+import { breadcrumbSchema, faqSchema, serviceSchema } from "#lib/structuredData";
 import Reveal from "#components/Reveal";
 import Seo from "#components/Seo";
 import { Button } from "#components/ui/button";
@@ -147,6 +148,14 @@ const ServicePage: React.FC = () => {
       ? service.stats.map((s) => ({ value: s.value, label: localized(s.label, lang) }))
       : t.service.stats;
 
+  // Chỉ khai báo hỏi-đáp khi dịch vụ này thực sự có FAQ (hàm trả null nếu rỗng).
+  const faqLd = faqSchema(
+    service.faqs.map((faq) => ({
+      question: localized(faq.question, lang),
+      answer: localized(faq.answer, lang),
+    })),
+  );
+
   return (
     <div className="min-h-screen">
       <Seo
@@ -154,6 +163,22 @@ const ServicePage: React.FC = () => {
         description={description.slice(0, 160)}
         path={`/service/${id}`}
         image={imageUrl}
+        // Khai báo dịch vụ + câu hỏi thường gặp cho máy đọc: Google có thể hiện
+        // thẳng phần hỏi-đáp trong kết quả, và trợ lý AI hay trích đúng dạng này.
+        jsonLd={[
+          serviceSchema({
+            name: title,
+            description: description.slice(0, 300),
+            path: `/service/${id}`,
+            image: imageUrl,
+          }),
+          breadcrumbSchema([
+            { name: t.nav.home, path: "/" },
+            { name: t.nav.services, path: "/service" },
+            { name: title, path: `/service/${id}` },
+          ]),
+          ...(faqLd ? [faqLd] : []),
+        ]}
       />
 
       {/* ── Hero ─────────────────────────────────────────────────────────── */}

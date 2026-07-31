@@ -20,6 +20,12 @@ type Props = {
   titleTemplate?: boolean;
   /** Discourage indexing (e.g. 404, private pages). */
   noindex?: boolean;
+  /**
+   * Dữ liệu có cấu trúc (JSON-LD) mô tả trang bằng ngôn ngữ máy đọc được.
+   * Google dùng để hiện kết quả giàu thông tin, còn các trợ lý AI dùng để biết
+   * Bee Z là ai và làm gì. Truyền một hoặc nhiều khối schema.
+   */
+  jsonLd?: Record<string, unknown> | Record<string, unknown>[];
 };
 
 const Seo: FC<Props> = ({
@@ -30,6 +36,7 @@ const Seo: FC<Props> = ({
   type = "website",
   titleTemplate = true,
   noindex = false,
+  jsonLd,
 }) => {
   const { lang } = useLanguage();
 
@@ -63,6 +70,14 @@ const Seo: FC<Props> = ({
       <meta name="twitter:title" content={fullTitle} />
       <meta name="twitter:description" content={description} />
       <meta name="twitter:image" content={ogImage} />
+
+      {/* Cùng một URL phục vụ cả tiếng Việt lẫn tiếng Anh (đổi bằng nút trên
+          trang), nên khai báo để Google biết đây là trang song ngữ. */}
+      <link rel="alternate" hrefLang="vi" href={canonical} />
+      <link rel="alternate" hrefLang="en" href={canonical} />
+      <link rel="alternate" hrefLang="x-default" href={canonical} />
+
+      {jsonLd && <script type="application/ld+json">{JSON.stringify(jsonLd)}</script>}
     </Helmet>
   );
 };

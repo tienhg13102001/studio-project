@@ -7,3 +7,5 @@ Disallow: /bao-gia
 Disallow: /hop-dong
 
 Sitemap: https://www.beezvn.com/sitemap.xml
+
+# Mô tả ngắn gọn về Bee Z cho trợ lý AI đọc: https://www.beezvn.com/llms.txt
