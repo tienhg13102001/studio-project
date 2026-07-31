@@ -2,6 +2,7 @@ import HeroCTA from "#components/molecules/HeroCTA";
 import ShinyText from "#components/molecules/ShinyText";
 import { useLanguage } from "#i18n";
 import { useLanding } from "#hooks/useLanding";
+import { useSettings } from "#hooks/useSettings";
 import { ArrowDownIcon } from "@phosphor-icons/react";
 import LogoYellow from "../../assets/icons/LogoYellow";
 import VideoBackground from "./VideoBackground";
@@ -9,6 +10,7 @@ import VideoBackground from "./VideoBackground";
 const HeroSection = () => {
   const { lang } = useLanguage();
   const { data } = useLanding(lang);
+  const { backgroundImage } = useSettings();
 
   // Use mock as fallback while API loads to avoid layout shift
   const content = data ?? {
@@ -43,7 +45,9 @@ const HeroSection = () => {
       >
         <ArrowDownIcon size={32} className="text-primary" />
       </div>
-      <VideoBackground src={data?.videoBackground} />
+      {/* Ảnh nền cấu hình trong portal được dùng làm ảnh chờ cho video, và thay
+          hẳn video trên điện thoại. */}
+      <VideoBackground src={data?.videoBackground} poster={backgroundImage || undefined} />
     </section>
   );
 };

@@ -4,7 +4,6 @@ import { useLanding } from "#hooks/useLanding";
 import LogoYellow from "../../assets/icons/LogoYellow";
 import { Button } from "#components/ui/button";
 import NavLinks from "#components/molecules/NavLinks";
-import ThemeToggle from "#components/molecules/ThemeToggle";
 import MobileMenu from "#components/molecules/MobileMenu";
 import { useLanguage, useTranslation } from "#i18n";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -67,9 +66,6 @@ const Navbar: React.FC<Props> = () => {
               </>
             )}
           </Button>
-
-          {/* Theme Toggle */}
-          <ThemeToggle />
 
           {/* User Login */}
           <Button variant="outline" onClick={() => navigate("/portal")}>

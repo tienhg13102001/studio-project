@@ -62,6 +62,30 @@
         "sameAs": ["https://www.facebook.com/BeeZProductions"]
       }
     </script>
+
+    <!--
+      Áp giao diện tối NGAY khi trang bắt đầu tải. Trước đây việc này nằm trong
+      React (useEffect) nên chỉ chạy sau khi trang đã hiện, khiến mỗi lần vào web
+      đều loé trắng một nhịp rồi mới tối lại — phá đúng khoảnh khắc ấn tượng đầu.
+      Đặt sẵn màu nền để cả lúc chưa có JS cũng không bị trắng.
+    -->
+    <style>
+      html { background-color: #0a0a0a; }
+      html.light { background-color: #ffffff; }
+    </style>
+    <script>
+      (function () {
+        try {
+          var t = localStorage.getItem("vite-ui-theme") || "dark";
+          if (t === "system") {
+            t = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+          }
+          document.documentElement.classList.add(t);
+        } catch (e) {
+          document.documentElement.classList.add("dark");
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>
