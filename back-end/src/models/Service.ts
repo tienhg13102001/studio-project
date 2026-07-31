@@ -74,6 +74,10 @@ const serviceSchema = new Schema<IService>(
     projects:       [{ type: Schema.Types.ObjectId, ref: "Project" }],
   },
   {
+    // Cần cho sitemap: khai báo ngày cập nhật gần nhất của từng trang để
+    // máy tìm kiếm biết nội dung nào vừa đổi. Không có dòng này thì updatedAt
+    // luôn rỗng.
+    timestamps: true,
     toJSON: {
       virtuals: true,
       versionKey: false,
