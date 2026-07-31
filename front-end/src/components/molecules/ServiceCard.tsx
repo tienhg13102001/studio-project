@@ -1,6 +1,6 @@
 import type { ServiceDisplay } from "#hooks/useServices";
 import { useRef, useState, type PointerEvent } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 type Props = {
   service: ServiceDisplay;
@@ -17,11 +17,10 @@ const ServiceCard: React.FC<Props> = ({ service }) => {
   // Fall back to a branded gradient when the thumbnail is missing/broken so the
   // card never shows a broken-image icon + alt text.
   const [imgOk, setImgOk] = useState(true);
-  const rootRef = useRef<HTMLDivElement>(null);
+  const rootRef = useRef<HTMLAnchorElement>(null);
   const spotRef = useRef<HTMLDivElement>(null);
-  const navigate = useNavigate();
 
-  const handleMove = (e: PointerEvent<HTMLDivElement>) => {
+  const handleMove = (e: PointerEvent<HTMLAnchorElement>) => {
     const el = rootRef.current;
     if (!el || !canTilt()) return;
     const r = el.getBoundingClientRect();
@@ -38,20 +37,15 @@ const ServiceCard: React.FC<Props> = ({ service }) => {
   };
 
   return (
-    <div
+    // Dùng <Link> (tức thẻ <a> thật) thay vì div bắt sự kiện bấm: máy tìm kiếm
+    // chỉ đi theo liên kết thật, nên trước đây 6 trang dịch vụ — nội dung giá trị
+    // nhất của web — gần như không có đường nào để Google vào.
+    <Link
+      to={`/service/${service.id}`}
       ref={rootRef}
       onPointerMove={handleMove}
       onPointerLeave={handleLeave}
-      className="group border-border/30 from-primary/15 via-card to-background focus-visible:ring-primary relative h-60 cursor-pointer overflow-hidden rounded-2xl border bg-linear-to-br transition-[transform,box-shadow] duration-200 ease-out transform-3d hover:shadow-lg focus-visible:ring-2 focus-visible:outline-none"
-      role="link"
-      tabIndex={0}
-      onClick={() => navigate(`/service/${service.id}`)}
-      onKeyDown={(e) => {
-        if (e.key === "Enter" || e.key === " ") {
-          e.preventDefault();
-          navigate(`/service/${service.id}`);
-        }
-      }}
+      className="group border-border/30 from-primary/15 via-card to-background focus-visible:ring-primary relative block h-60 cursor-pointer overflow-hidden rounded-2xl border bg-linear-to-br transition-[transform,box-shadow] duration-200 ease-out transform-3d hover:shadow-lg focus-visible:ring-2 focus-visible:outline-none"
     >
       {/* Hình nền với hiệu ứng zoom khi hover */}
       {imgOk && (
@@ -88,7 +82,7 @@ const ServiceCard: React.FC<Props> = ({ service }) => {
             "radial-gradient(200px circle at var(--mx,50%) var(--my,50%), rgba(255,255,255,0.18), transparent 55%)",
         }}
       />
-    </div>
+    </Link>
   );
 };
 

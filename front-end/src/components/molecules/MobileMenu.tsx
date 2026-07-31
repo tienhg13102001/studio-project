@@ -3,7 +3,6 @@ import { createPortal } from "react-dom";
 import { XIcon, CaretDownIcon, PhoneIcon } from "@phosphor-icons/react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "#components/ui/button";
-import ThemeToggle from "#components/molecules/ThemeToggle";
 import { useTranslation, useLanguage } from "#i18n";
 import type { Translations } from "#i18n";
 import { useServices } from "#hooks/useServices";
@@ -165,7 +164,10 @@ const MobileMenu: React.FC<Props> = ({ open, onClose }) => {
           >
             {t.nav.letsTalk}
           </Button>
-          <div className="flex items-center justify-between">
+          {/* Bỏ nút chuyển sáng/tối ở trang khách: chế độ sáng đang vỡ (nhiều
+              khối code cứng chữ trắng nên chữ trắng trên nền trắng). Nút vẫn
+              còn trong portal — nơi dùng token màu chuẩn nên hiển thị đúng. */}
+          <div className="flex items-center">
             <Button variant="outline" onClick={() => setLang(lang === "en" ? "vi" : "en")}>
               {lang === "en" ? (
                 <>
@@ -177,7 +179,6 @@ const MobileMenu: React.FC<Props> = ({ open, onClose }) => {
                 </>
               )}
             </Button>
-            <ThemeToggle />
           </div>
         </div>
       </div>

@@ -3,7 +3,8 @@
 @import "shadcn/tailwind.css";
 @import "@fontsource-variable/montserrat";
 @import "@fontsource-variable/lora";
-@import "@fontsource-variable/plus-jakarta-sans";
+/* Bỏ import plus-jakarta-sans: không nơi nào tham chiếu tới nó, chỉ làm build
+   ra thêm mấy file font không ai tải. */
 
 @custom-variant dark (&:is(.dark *));
 
@@ -128,6 +129,27 @@
   }
   html {
     @apply font-sans;
+  }
+  /*
+    Tiêu đề dùng font serif (Lora) — font này đã được cài và khai báo từ lâu
+    nhưng chưa nơi nào dùng, nên cả web chỉ có đúng một giọng chữ từ tiêu đề lớn
+    tới chữ trên nút. Có tương phản giữa giọng tiêu đề và giọng nội dung là thứ
+    tạo cảm giác "studio" thay vì "mẫu có sẵn".
+
+    Chỉ áp cho h1–h3 (tiêu đề thật). Không áp cho h4–h6 vì chúng hay được dùng
+    làm nhãn nhỏ trong thẻ, để serif sẽ rối.
+  */
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    letter-spacing: -0.015em;
+  }
+  /* Chữ nội dung: 14px mảnh trên nền tối rất khó đọc và làm trang trông rẻ. */
+  body {
+    font-size: 15.5px;
+    line-height: 1.65;
   }
   :root {
     --instagram-gradient: radial-gradient(

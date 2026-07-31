@@ -11,8 +11,14 @@ import { sendSuccess, sendError } from "../lib/response.ts";
 // ─── Image optimization config ───────────────────────────────────────────────
 /** Max width/height (px). Uploaded images are downscaled to fit inside this box. */
 const IMAGE_MAX_DIM = 1920;
-/** WebP quality (0-100). 80 is visually lossless for photos at a fraction of the size. */
-const IMAGE_QUALITY = 50;
+/**
+ * WebP quality (0-100).
+ *
+ * Trước đây để 50 (dù chú thích ghi 80) — quá tay với một hãng làm hình ảnh:
+ * vùng tối và da người bị loang vệt, mà ảnh đã nén hỏng thì không cứu lại được.
+ * 82 gần như không phân biệt được bằng mắt, đổi lại file lớn hơn khoảng 30%.
+ */
+const IMAGE_QUALITY = 82;
 
 /**
  * Resolve the public base URL for uploaded assets.

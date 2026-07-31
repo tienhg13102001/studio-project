@@ -64,6 +64,10 @@ const Seo: FC<Props> = ({
       <meta property="og:title" content={fullTitle} />
       <meta property="og:description" content={description} />
       <meta property="og:image" content={ogImage} />
+      {/* Zalo/Facebook đọc chắc hơn khi biết trước kích thước ảnh. */}
+      <meta property="og:image:width" content="1200" />
+      <meta property="og:image:height" content="630" />
+      <meta property="og:image:alt" content="BeeZ Production — sản xuất TVC và phim quảng cáo tại Hà Nội" />
 
       {/* Twitter */}
       <meta name="twitter:card" content="summary_large_image" />
