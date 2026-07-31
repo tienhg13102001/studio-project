@@ -56,7 +56,7 @@ const en = {
     stats: [
       { value: "1B+", label: "Views" },
       { value: "1000+", label: "Projects" },
-      { value: "50+", label: "Clients" },
+      { value: "100+", label: "Clients" },
     ],
     meetBadge: "The Team",
     meetHeading: "Meet Our Team",
