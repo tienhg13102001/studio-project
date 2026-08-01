@@ -4,28 +4,40 @@ import { sendSuccess } from "../lib/response.ts";
 
 const router = Router();
 
-/** GET /api/settings — the singleton global site settings (auto-created on first read) */
+/**
+ * Lấy đúng MỘT bản ghi cài đặt, tạo mới nếu bảng còn rỗng.
+ *
+ * VÌ SAO KHÔNG lọc theo `{ key: "global" }` như trước: bản ghi tạo từ phiên bản
+ * code cũ không có trường `key`. Lọc theo key thì không khớp bản ghi đó, mà lại
+ * dùng kèm `upsert` nên sinh thẳng ra một bản ghi THỨ HAI — bảng có hai bản,
+ * cài đặt cũ biến mất khỏi web mà không báo lỗi gì. Đã tái hiện được bằng kiểm
+ * thử trên MongoDB thật.
+ *
+ * Lấy theo `_id` nhỏ nhất để đọc và ghi luôn trỏ về cùng một bản ghi, kể cả khi
+ * trong bảng đang lỡ có nhiều bản.
+ */
+async function getSingleton() {
+  const existing = await SiteSettings.findOne().sort({ _id: 1 });
+  if (existing) return existing;
+  return SiteSettings.create({ key: "global" });
+}
+
+/** GET /api/settings — bản ghi cài đặt chung, tự tạo ở lần đọc đầu tiên. */
 router.get("/", async (_req, res, next) => {
   try {
-    const settings = await SiteSettings.findOneAndUpdate(
-      { key: "global" },
-      {},
-      { new: true, upsert: true, setDefaultsOnInsert: true },
-    );
-    sendSuccess(res, settings);
+    sendSuccess(res, await getSingleton());
   } catch (e) { next(e); }
 });
 
-/** PUT /api/settings — update the singleton global site settings (upsert) */
+/** PUT /api/settings — sửa bản ghi cài đặt chung. */
 router.put("/", async (req, res, next) => {
   try {
     const { backgroundImage } = req.body as { backgroundImage?: string };
 
-    const settings = await SiteSettings.findOneAndUpdate(
-      { key: "global" },
-      { ...(backgroundImage !== undefined ? { backgroundImage } : {}) },
-      { new: true, upsert: true, runValidators: true, setDefaultsOnInsert: true },
-    );
+    const settings = await getSingleton();
+    if (backgroundImage !== undefined) settings.backgroundImage = backgroundImage;
+    await settings.save();
+
     sendSuccess(res, settings);
   } catch (e) { next(e); }
 });
