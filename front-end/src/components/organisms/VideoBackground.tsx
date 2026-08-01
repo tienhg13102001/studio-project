@@ -18,25 +18,27 @@ const DEFAULT_POSTER = "/bg-main.webp";
 /**
  * Quyết định có tải video nền hay không.
  *
- * Video nền nặng vài chục MB. Trên điện thoại khung hình đằng nào cũng bị cắt
- * gần hết mà lại tốn dung lượng 4G của khách, nên chỉ hiện ảnh tĩnh. Cũng bỏ
- * qua khi khách bật tiết kiệm dữ liệu hoặc giảm chuyển động.
+ * Điện thoại CŨNG chạy video như máy tính: màn hình đầu tiên là thứ quyết định
+ * ấn tượng về một hãng làm phim, mà phần lớn khách vào bằng điện thoại — cắt
+ * video ở đó là cắt đúng chỗ cần nhất.
+ *
+ * Vẫn chừa hai lối thoát, và chỉ hai: khách tự bật tiết kiệm dữ liệu, hoặc tự
+ * bật giảm chuyển động trong hệ điều hành. Đó là lựa chọn của họ, không phải
+ * mình đoán hộ.
  */
 function useShouldPlayVideo(): boolean {
   const [play, setPlay] = useState(false);
 
   useEffect(() => {
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
     const decide = () => {
-      const bigScreen = window.matchMedia("(min-width: 768px)").matches;
-      const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       // `saveData` chỉ có trên một số trình duyệt — không có thì coi như không bật.
       const conn = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection;
-      setPlay(bigScreen && !reduced && !conn?.saveData);
+      setPlay(!reduced.matches && !conn?.saveData);
     };
     decide();
-    const mq = window.matchMedia("(min-width: 768px)");
-    mq.addEventListener("change", decide);
-    return () => mq.removeEventListener("change", decide);
+    reduced.addEventListener("change", decide);
+    return () => reduced.removeEventListener("change", decide);
   }, []);
 
   return play;
@@ -74,7 +76,9 @@ const VideoBackground = ({ src, poster }: Props) => {
           className="absolute top-0 left-0 h-full w-full object-cover"
         />
       )}
-      <div className="absolute inset-0 bg-black/75" />
+      {/* Lớp tối để chữ trắng đọc được. Trước để 75% — video và ảnh nền gần như
+          biến mất sau nó, đổi ảnh trong portal cũng không thấy khác gì. */}
+      <div className="absolute inset-0 bg-black/60" />
       {/* background black mờ dần từ dưới lên */}
       <div className="absolute inset-0 bg-linear-to-b from-background/10 to-transparent" />
       <div className="absolute inset-0 bg-linear-to-t from-background/90 to-transparent" />

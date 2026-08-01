@@ -25,15 +25,22 @@ const MainLayout: React.FC<Props> = () => {
       <Footer />
       <FloatingZalo />
 
-      {/* Global background image */}
+      {/*
+        Ảnh nền chung cho mọi trang khách, lấy từ mục Cài đặt trong portal.
+
+        Trước để `opacity-10` và vignette đen từ 10% bán kính — cộng lại thì chỉ
+        còn một elip bé tí giữa màn hình hiện ảnh ở 10%, tức là không ai nhìn
+        thấy gì và ô "Ảnh nền" trong portal thành nút bấm vô nghĩa. Nay để 30%
+        và nới vùng trong suốt ra 40% để ảnh hiện thật, vẫn đủ chìm cho chữ nổi.
+      */}
       <div
-        className="fixed inset-0 -z-10 bg-cover bg-center bg-no-repeat opacity-10"
+        className="fixed inset-0 -z-10 bg-cover bg-center bg-no-repeat opacity-30"
         style={{ backgroundImage: `url(${bgUrl})` }}
       >
-        {/* Vignette: black edges → transparent center */}
+        {/* Tối dần về phía mép, giữ chữ ở giữa dễ đọc. */}
         <div
           className="absolute inset-0"
-          style={{ background: "radial-gradient(ellipse at center, transparent 10%, black 80%)" }}
+          style={{ background: "radial-gradient(ellipse at center, transparent 40%, black 100%)" }}
         />
       </div>
     </div>
