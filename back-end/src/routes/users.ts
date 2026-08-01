@@ -1,15 +1,29 @@
 import { Router } from "express";
 import { sendSuccess, sendError } from "../lib/response.ts";
 import { User } from "../models/User.ts";
+import { optionalAuth } from "../middleware/requireAuth.ts";
 
 const router = Router();
 
-/** GET /api/users — public display data, password excluded */
-router.get("/", async (_req, res, next) => {
+/**
+ * Những gì trang Đội ngũ công khai cần hiện — và chỉ ngần này.
+ *
+ * Trước đây endpoint này trả về cả `email` và `accountRole` cho bất kỳ ai gọi,
+ * tức là công bố sẵn địa chỉ email của cả nhóm cùng thông tin ai là quản trị —
+ * đúng hai mảnh ghép để nhắm mục tiêu tấn công.
+ */
+const PUBLIC_FIELDS = "name role photo quote bio skills featured";
+
+/**
+ * GET /api/users — danh sách đội ngũ.
+ *
+ * Khách vãng lai chỉ nhận phần hiện trên trang. Người đã đăng nhập (portal quản
+ * lý nhân sự) nhận đầy đủ, trừ mật khẩu.
+ */
+router.get("/", optionalAuth, async (req, res, next) => {
   try {
-    const users = await User.find({ active: true })
-      .select("-password")
-      .sort({ featured: -1 });
+    const query = User.find({ active: true }).sort({ featured: -1 });
+    const users = await (req.user ? query.select("-password") : query.select(PUBLIC_FIELDS));
     sendSuccess(res, users);
   } catch (e) {
     next(e);
@@ -72,21 +86,28 @@ router.put("/:id", async (req, res, next) => {
  *  Rules:
  *   - A user may change their own password — must supply the correct currentPassword.
  *   - An admin may change ANY other user's password — no currentPassword needed.
- *  The actor's admin status is verified server-side (actorRole from the client is
- *  never trusted) to stay consistent regardless of what the client sends.
+ *
+ *  Danh tính người thao tác lấy từ token đăng nhập, KHÔNG lấy từ `actorId` trong
+ *  thân request. Chỗ này từng là đường chiếm tài khoản hoàn chỉnh: `GET /api/users`
+ *  công khai cả id lẫn `accountRole`, nên bất kỳ ai cũng đọc được id của một quản
+ *  trị viên, tự khai `actorId` là id đó, rồi đặt lại mật khẩu của người khác.
+ *  Vai trò vẫn tra lại trong cơ sở dữ liệu chứ không tin phần role trong token,
+ *  để việc hạ quyền một tài khoản có hiệu lực ngay mà không phải chờ token hết hạn.
  */
 router.put("/:id/password", async (req, res, next) => {
   try {
-    const { newPassword, currentPassword, actorId } = req.body as {
+    const { newPassword, currentPassword } = req.body as {
       newPassword?: string;
       currentPassword?: string;
-      actorId?: string;
     };
 
     if (!newPassword || newPassword.length < 6) {
       sendError(res, "New password must be at least 6 characters", 400);
       return;
     }
+
+    // Đã qua lớp khoá chung ở routes/index.ts nên chắc chắn có; kiểm lại cho chắc.
+    const actorId = req.user?.sub;
     if (!actorId) {
       sendError(res, "Not authenticated", 401);
       return;

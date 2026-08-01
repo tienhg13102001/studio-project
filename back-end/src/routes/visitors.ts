@@ -2,6 +2,7 @@ import { Router, type Request } from "express";
 import { createHash } from "crypto";
 import { VisitorStat, VisitLog, VisitorDaily, VisitorAgg } from "../models/Visitor.ts";
 import { sendSuccess } from "../lib/response.ts";
+import requireAuth from "../middleware/requireAuth.ts";
 
 const router = Router();
 
@@ -81,7 +82,7 @@ function parseDays(raw: unknown): number {
 }
 
 /** GET /api/visitors — trả về tổng số lượt truy cập hiện tại. */
-router.get("/", async (_req, res, next) => {
+router.get("/", requireAuth, async (_req, res, next) => {
   try {
     sendSuccess(res, { total: await getTotal() });
   } catch (e) {
@@ -90,7 +91,7 @@ router.get("/", async (_req, res, next) => {
 });
 
 /** GET /api/visitors/daily?days=30 — lượt truy cập unique theo từng ngày. */
-router.get("/daily", async (req, res, next) => {
+router.get("/daily", requireAuth, async (req, res, next) => {
   try {
     const days = parseDays(req.query.days);
     const rows = await VisitorDaily.find({ day: { $gte: cutoffDay(days) } })
@@ -106,7 +107,7 @@ router.get("/daily", async (req, res, next) => {
 });
 
 /** GET /api/visitors/breakdown?dim=source&days=30 — phân rã theo nguồn/thiết bị. */
-router.get("/breakdown", async (req, res, next) => {
+router.get("/breakdown", requireAuth, async (req, res, next) => {
   try {
     const dim = req.query.dim === "device" ? "device" : "source";
     const days = parseDays(req.query.days);
