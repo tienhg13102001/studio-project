@@ -1,5 +1,5 @@
 import React from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import Footer from "../organisms/Footer";
 import Navbar from "../organisms/Navbar";
 import ScrollToTop from "../atoms/ScrollToTop";
@@ -13,6 +13,7 @@ const DEFAULT_BG_URL = "/bg-main.webp";
 const MainLayout: React.FC<Props> = () => {
   const { backgroundImage } = useSettings();
   const bgUrl = backgroundImage || DEFAULT_BG_URL;
+  const { pathname } = useLocation();
 
   return (
     // `site` khoanh vùng phần dành cho khách: font tiêu đề serif, cỡ chữ lớn hơn
@@ -21,7 +22,17 @@ const MainLayout: React.FC<Props> = () => {
     <div className="site relative min-h-screen">
       <ScrollToTop />
       <Navbar />
-      <Outlet />
+      {/*
+        Chuyển cảnh khi đổi trang: trước đây bấm sang trang khác là nội dung cắt
+        phụt, cảm giác như trang bị giật. `key` đổi theo đường dẫn nên React dựng
+        lại nhánh này và hiệu ứng chạy đúng một lần mỗi lần điều hướng.
+
+        `motion-reduce:animate-none` để ai bật giảm chuyển động trong hệ điều
+        hành thì không thấy hiệu ứng nào — giống các phần còn lại của web.
+      */}
+      <div key={pathname} className="animate-in fade-in duration-300 motion-reduce:animate-none">
+        <Outlet />
+      </div>
       <Footer />
       <FloatingZalo />
 
