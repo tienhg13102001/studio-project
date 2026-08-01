@@ -131,8 +131,23 @@
   * {
     @apply border-border outline-ring/50;
   }
+  /*
+    body CỐ Ý KHÔNG có màu nền.
+
+    `index.html` đã đặt nền cho chính thẻ <html> để trang không loé trắng lúc
+    chưa có JS. Khi thẻ gốc đã có nền riêng, trình duyệt KHÔNG đẩy nền của body
+    lên canvas nữa — body tự vẽ nền của nó như một khối thường, mà khối thường
+    được vẽ SAU các thẻ có z-index âm.
+
+    Hậu quả nếu để lại: lớp ảnh nền chung (`-z-10` trong MainLayout) nằm sau
+    một bức tường đục và KHÔNG BAO GIỜ hiện ra, trên mọi màn hình. Đã mất nhiều
+    lần thử mới tìm ra, vì mọi thứ khác — DOM, CSS, đường dẫn ảnh — đều đúng.
+
+    Bỏ nền ở đây là an toàn: <html> đã có sẵn màu cho cả hai chế độ
+    (#0a0a0a khi tối, #ffffff khi sáng), khớp đúng với biến --background.
+  */
   body {
-    @apply bg-background text-foreground;
+    @apply text-foreground;
   }
   html {
     @apply font-sans;

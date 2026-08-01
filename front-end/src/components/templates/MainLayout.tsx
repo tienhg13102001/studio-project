@@ -39,14 +39,15 @@ const MainLayout: React.FC<Props> = () => {
       {/*
         Ảnh nền chung cho mọi trang khách, lấy từ mục Cài đặt trong portal.
 
-        Ban đầu để `opacity-10` + vignette đen từ 10% bán kính — không ai nhìn
-        thấy gì, ô "Ảnh nền" trong portal thành nút bấm vô nghĩa. Nâng lên 30%
-        vẫn chưa đủ: ở 30% một tấm ảnh sáng 122/255 chỉ ra #2b2b2b, gần như
-        không phân biệt được với nền #0a0a0a. Nay để 50% → khoảng #424242, nhìn
-        rõ là một tấm ảnh mà chữ trắng vẫn thừa tương phản để đọc.
+        Lớp này TỪNG KHÔNG BAO GIỜ hiện, dù mọi thứ ở đây đều đúng: nền của
+        `body` đè lên nó (xem lời giải thích dài ở `index.css`). Chỉnh độ mờ bao
+        nhiêu cũng vô nghĩa vì nó nằm sau một bức tường đục.
+
+        Sau khi gỡ bức tường đó, 35% là mức đã chụp ảnh so ba mức 22/32/45 rồi
+        chọn: ảnh hiện rõ là một tấm ảnh, nhưng vẫn chìm dưới chữ.
       */}
       <div
-        className="fixed inset-0 -z-10 bg-cover bg-center bg-no-repeat opacity-50"
+        className="fixed inset-0 -z-10 bg-cover bg-center bg-no-repeat opacity-35"
         style={{ backgroundImage: `url(${bgUrl})` }}
       >
         {/*
