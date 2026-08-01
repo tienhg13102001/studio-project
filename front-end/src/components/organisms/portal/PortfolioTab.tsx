@@ -18,6 +18,8 @@ import { apiDelete, apiPost, apiPut, resolveAssetUrl } from "#lib/api";
 import type { ApiPortfolioItem } from "#lib/apiTypes";
 import { PencilSimpleIcon, PlusIcon } from "@phosphor-icons/react";
 import { useState } from "react";
+import { useDragSort } from "#hooks/useDragSort";
+import { usePortalToast } from "#components/organisms/portal/PortalToast";
 
 // ─── Edit form ───────────────────────────────────────────────────────────────
 
@@ -36,6 +38,7 @@ function emptyPortfolioForm(order: number): PortfolioForm {
 type TabProps = { data: ApiPortfolioItem[] | null; loading: boolean; onRefetch: () => void };
 
 export default function PortfolioTab({ data, loading, onRefetch }: TabProps) {
+  const { toast } = usePortalToast();
   const [editing, setEditing] = useState<ApiPortfolioItem | null>(null);
   const [creating, setCreating] = useState(false);
   const [form, setForm]       = useState<PortfolioForm | null>(null);
@@ -95,12 +98,23 @@ export default function PortfolioTab({ data, loading, onRefetch }: TabProps) {
   const set = (k: keyof PortfolioForm, v: unknown) =>
     setForm((f) => (f ? { ...f, [k]: v } : f));
 
-  const items = data ?? [];
+  // Kéo thả đổi thứ tự ảnh. Thứ tự áp ngay trên màn hình rồi mới gửi lên máy
+  // chủ; lỗi thì trả lại đúng thứ tự cũ.
+  const { order: items, savingOrder, dragProps } = useDragSort(data ?? [], {
+    type: "portfolio",
+    onSaved: onRefetch,
+    onError: (m) => toast("Không lưu được thứ tự: " + m, "err"),
+  });
 
   return (
     <>
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold text-foreground">Portfolio</h2>
+        <div>
+          <h2 className="text-lg font-semibold text-foreground">Portfolio</h2>
+          <p className="text-foreground/40 text-xs">
+            {savingOrder ? "Đang lưu thứ tự…" : "Kéo thả một ảnh để đổi thứ tự hiển thị."}
+          </p>
+        </div>
         <Button size="sm" onClick={openCreate} className="bg-primary text-black hover:opacity-80">
           <PlusIcon size={12} weight="bold" />
           Add image
@@ -122,7 +136,8 @@ export default function PortfolioTab({ data, loading, onRefetch }: TabProps) {
           {items.map((p) => (
             <div
               key={p.id}
-              className="group relative overflow-hidden rounded-xl border border-foreground/8 bg-foreground/3"
+              {...dragProps(p.id)}
+              className="group relative cursor-grab overflow-hidden rounded-xl border border-foreground/8 bg-foreground/3 active:cursor-grabbing"
             >
               <img
                 src={resolveAssetUrl(p.image)}

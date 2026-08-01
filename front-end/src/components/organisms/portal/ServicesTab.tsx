@@ -1,4 +1,6 @@
 import { useRef, useState } from "react";
+import { useDragSort } from "#hooks/useDragSort";
+import { usePortalToast } from "#components/organisms/portal/PortalToast";
 import { PencilSimpleIcon, PlusIcon, TrashIcon, XIcon } from "@phosphor-icons/react";
 import { apiFetch, apiPost, apiPut, apiDelete, invalidateApiCache } from "#lib/api";
 import { localized } from "#lib/localized";
@@ -142,6 +144,14 @@ export default function ServicesTab({ data, raw, loading, onRefetch }: TabProps)
   // Ảnh chụp form lúc mới nạp — dùng để biết chính xác form có bị sửa hay chưa
   // (chọn icon không phát sự kiện DOM nên EditModal tự đoán sẽ không thấy).
   const baselineRef = useRef("");
+  const { toast } = usePortalToast();
+
+  // Kéo thả đổi thứ tự hiển thị của dịch vụ trên trang khách.
+  const { order: rows, savingOrder, dragProps } = useDragSort(data ?? [], {
+    type: "services",
+    onSaved: onRefetch,
+    onError: (m) => toast("Không lưu được thứ tự: " + m, "err"),
+  });
 
   const openEdit = async (displayId: string) => {
     setLoadingEdit(true);
@@ -303,7 +313,12 @@ export default function ServicesTab({ data, raw, loading, onRefetch }: TabProps)
     <>
       {/* ── Header ── */}
       <div className="flex items-center justify-between">
-        <h2 className="text-foreground text-lg font-semibold">Dịch vụ</h2>
+        <div>
+          <h2 className="text-foreground text-lg font-semibold">Dịch vụ</h2>
+          <p className="text-foreground/40 text-xs">
+            {savingOrder ? "Đang lưu thứ tự…" : "Kéo thả một hàng để đổi thứ tự hiển thị."}
+          </p>
+        </div>
         <Button size="sm" onClick={openCreate} className="bg-primary text-black hover:opacity-80">
           <PlusIcon size={12} weight="bold" />
           Thêm dịch vụ
@@ -321,10 +336,14 @@ export default function ServicesTab({ data, raw, loading, onRefetch }: TabProps)
             </TableRow>
           </TableHeader>
           <TableBody>
-            {(data ?? []).map((s) => {
+            {rows.map((s) => {
               const rawItem = (raw ?? []).find((r) => r.id === s.id);
               return (
-                <TableRow key={s.id}>
+                <TableRow
+                  key={s.id}
+                  {...dragProps(s.id)}
+                  className="cursor-grab active:cursor-grabbing"
+                >
                   <TableCell>
                     <div className="flex items-center gap-3">
                       {s.thumbnailImage && (

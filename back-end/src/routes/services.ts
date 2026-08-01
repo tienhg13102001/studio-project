@@ -11,7 +11,12 @@ router.get("/", async (req, res, next) => {
       sendError(res, "Invalid pagination params. page ≥ 1, 1 ≤ limit ≤ 100");
       return;
     }
-    const services = await Service.find();
+    // Sắp theo thứ tự hiển thị. Trước đây gọi `find()` trần nên ô "thứ tự"
+    // trong portal KHÔNG hề có tác dụng — gõ số vào đó bao lâu nay là vô ích,
+    // và dữ liệu thật hiện đang có số trùng nhau vì thế.
+    // Thêm `_id` làm mốc phụ để hai mục cùng số vẫn ra thứ tự cố định, không
+    // đổi ngẫu nhiên giữa các lần tải trang.
+    const services = await Service.find().sort({ order: 1, _id: 1 });
     sendPaginated(res, services, pagination.page, pagination.limit);
   } catch (e) {
     next(e);

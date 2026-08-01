@@ -105,8 +105,23 @@ export default function InquiriesTab({ data, loading }: TabProps) {
           <Table containerClassName="max-h-[70vh]">
             <TableHeader>
               <TableRow className="hover:bg-transparent">
-                {["Họ và tên", "Liên hệ", "Dịch vụ", "Tin nhắn", "Thời gian", ""].map((h) => (
-                  <TableHead key={h}>{h}</TableHead>
+                {/*
+                  Trên điện thoại chỉ giữ ba cột đọc được trong một màn: tên,
+                  cách liên hệ và nút xoá. Ba cột còn lại ẩn đi — bấm vào hàng
+                  là mở bảng chi tiết có đầy đủ mọi thứ, nên không mất thông tin
+                  nào. Trước đây phải vuốt ngang mới thấy hết sáu cột.
+                */}
+                {[
+                  { label: "Họ và tên", phone: true },
+                  { label: "Liên hệ", phone: true },
+                  { label: "Dịch vụ", phone: false },
+                  { label: "Tin nhắn", phone: false },
+                  { label: "Thời gian", phone: false },
+                  { label: "", phone: true },
+                ].map((h) => (
+                  <TableHead key={h.label} className={h.phone ? "" : "hidden md:table-cell"}>
+                    {h.label}
+                  </TableHead>
                 ))}
               </TableRow>
             </TableHeader>
@@ -132,7 +147,7 @@ export default function InquiriesTab({ data, loading }: TabProps) {
                       )}
                     </div>
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="hidden md:table-cell">
                     {c.serviceName ? (
                       <Badge
                         variant="outline"
@@ -144,10 +159,10 @@ export default function InquiriesTab({ data, loading }: TabProps) {
                       <span className="text-foreground/25 text-xs">—</span>
                     )}
                   </TableCell>
-                  <TableCell className="text-foreground/50 text-xs">
+                  <TableCell className="text-foreground/50 hidden text-xs md:table-cell">
                     <p className="line-clamp-2 max-w-xs">{c.message}</p>
                   </TableCell>
-                  <TableCell className="text-foreground/40 text-xs whitespace-nowrap">
+                  <TableCell className="text-foreground/40 hidden text-xs whitespace-nowrap md:table-cell">
                     {formatDate(c.createdAt)}
                   </TableCell>
                   <TableCell>
