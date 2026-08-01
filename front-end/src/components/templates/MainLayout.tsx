@@ -43,11 +43,14 @@ const MainLayout: React.FC<Props> = () => {
         `body` đè lên nó (xem lời giải thích dài ở `index.css`). Chỉnh độ mờ bao
         nhiêu cũng vô nghĩa vì nó nằm sau một bức tường đục.
 
-        Sau khi gỡ bức tường đó thì 35% hiện quá rõ, Hoàn chốt xuống 15% — đủ
-        thấy có một tấm ảnh phía sau, không tranh chỗ với nội dung.
+        Sau khi gỡ bức tường đó thì 35% hiện quá rõ; Hoàn hạ dần và chốt 10% —
+        chỉ đủ gợi ra có một tấm ảnh phía sau, không tranh chỗ với nội dung.
+
+        Trùng hợp: 10% chính là con số ban đầu của web. Nó luôn đúng về mặt gu,
+        chỉ là suốt thời gian đó chẳng ai nhìn thấy gì để mà đánh giá.
       */}
       <div
-        className="fixed inset-0 -z-10 bg-cover bg-center bg-no-repeat opacity-15"
+        className="fixed inset-0 -z-10 bg-cover bg-center bg-no-repeat opacity-10"
         style={{ backgroundImage: `url(${bgUrl})` }}
       >
         {/*
