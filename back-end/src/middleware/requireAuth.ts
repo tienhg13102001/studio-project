@@ -37,4 +37,20 @@ const requireAuth: RequestHandler = (req, res, next) => {
   next();
 };
 
+/**
+ * Nhận diện người gọi nếu có token hợp lệ, nhưng KHÔNG chặn khi không có.
+ *
+ * Dùng cho endpoint vừa phục vụ trang công khai vừa phục vụ portal, mà hai bên
+ * cần lượng thông tin khác nhau — ví dụ danh sách đội ngũ: khách chỉ cần tên và
+ * ảnh, còn portal cần cả email và vai trò tài khoản.
+ */
+export const optionalAuth: RequestHandler = (req, _res, next) => {
+  const [scheme, token] = (req.headers.authorization ?? "").split(" ");
+  if (scheme === "Bearer" && token) {
+    const payload = verifyToken(token);
+    if (payload) req.user = payload;
+  }
+  next();
+};
+
 export default requireAuth;

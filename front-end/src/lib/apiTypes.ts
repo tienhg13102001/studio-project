@@ -122,17 +122,24 @@ export type ApiContact = {
   };
 };
 
+/**
+ * Một thành viên đội ngũ.
+ *
+ * `email` và `accountRole` chỉ có khi người gọi ĐÃ ĐĂNG NHẬP. Trang Đội ngũ
+ * công khai không nhận hai trường này — server cắt đi để không công bố sẵn địa
+ * chỉ email cả nhóm kèm thông tin ai là quản trị.
+ */
 export type ApiUser = {
   id:       string;
   name:     string;
-  email:    string;
+  email?:   string;
   role:     LocalizedString;
   photo?:   string;
   quote?:   LocalizedString;
   bio?:     LocalizedString;
   skills:   string[];
   featured: boolean;
-  accountRole: "admin" | "member" | "editor";
+  accountRole?: "admin" | "member" | "editor";
 };
 
 export type ApiBrand = {

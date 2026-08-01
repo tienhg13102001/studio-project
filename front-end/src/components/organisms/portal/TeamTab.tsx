@@ -85,8 +85,8 @@ export function TeamTable({ data, loading, preview, onEdit, onDelete, onChangePa
                 </div>
               </TableCell>
               <TableCell>
-                <span className={`rounded-full border px-2 py-0.5 text-[10px] font-medium ${ROLE_COLOR[u.accountRole] ?? ""}`}>
-                  {ROLE_LABEL[u.accountRole] ?? u.accountRole}
+                <span className={`rounded-full border px-2 py-0.5 text-[10px] font-medium ${ROLE_COLOR[u.accountRole ?? "member"] ?? ""}`}>
+                  {ROLE_LABEL[u.accountRole ?? "member"] ?? u.accountRole}
                 </span>
               </TableCell>
               <TableCell>
@@ -182,7 +182,7 @@ function toForm(u: ApiUser): TeamForm {
     photo:       u.photo ?? "",
     skills:      u.skills.join(", "),
     featured:    u.featured,
-    accountRole: u.accountRole,
+    accountRole: u.accountRole ?? "member",
   };
 }
 

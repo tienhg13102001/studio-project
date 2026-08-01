@@ -5,6 +5,7 @@ import { Service } from "../models/Service.ts";
 import { sendError, sendSuccess } from "../lib/response.ts";
 import { sendMail, escapeHtml, isMailConfigured, LEAD_NOTIFY_TO } from "../lib/mailer.ts";
 import { checkSpam } from "../lib/spamGuard.ts";
+import requireAuth from "../middleware/requireAuth.ts";
 
 const router = Router();
 
@@ -77,8 +78,11 @@ router.get("/", async (_req, res, next) => {
  * GET /api/contact/inquiries — list contact-form submissions, newest first.
  * The stored `service` is a Service id; resolve it to a readable name so the
  * portal can show "Video Production" instead of an opaque ObjectId.
+ *
+ * Bắt buộc đăng nhập: danh sách này là tên, email và số điện thoại của khách.
+ * Trước đây ai gọi cũng đọc được.
  */
-router.get("/inquiries", async (_req, res, next) => {
+router.get("/inquiries", requireAuth, async (_req, res, next) => {
   try {
     const customers = await Customer.find().sort({ createdAt: -1 });
 
