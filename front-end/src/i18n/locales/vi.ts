@@ -46,6 +46,39 @@ const vi = {
     badge: "Chúng tôi đã hợp tác cùng những thương hiệu lớn",
     heading: "Được tin dùng bởi các thương hiệu",
   },
+  // Câu chữ do Hoàn tự soạn — sửa ở đây và ở en.ts cho khớp nhau.
+  process: {
+    sectionTitle: "Từ cuộc gọi đầu tiên tới thành phẩm",
+    sectionSubtitle: "Quy trình",
+    stepLabel: "BƯỚC",
+    steps: [
+      {
+        title: "Nhận brief",
+        desc: "Gọi hoặc gặp 30 phút. Quý khách brief mục tiêu, đối tượng và ngân sách, Bee Z sẽ xác nhận và thông tin lại.",
+        when: "Trong 24 giờ",
+      },
+      {
+        title: "Đề xuất & báo giá",
+        desc: "Ý tưởng, moodboard, kịch bản khung và bảng giá chi tiết từng hạng mục.",
+        when: "2–3 ngày làm việc",
+      },
+      {
+        title: "Tiền kỳ",
+        desc: "Chốt kịch bản, casting, bối cảnh, lịch quay. Quý khách duyệt trước khi máy chạy.",
+        when: "3–7 ngày",
+      },
+      {
+        title: "Quay",
+        desc: "Ekip và thiết bị của Bee Z. Quý khách có thể có mặt tại hiện trường hoặc xem trực tiếp từ xa.",
+        when: "1–3 ngày quay",
+      },
+      {
+        title: "Hậu kỳ & bàn giao",
+        desc: "Dựng, chỉnh màu, âm thanh. Hai vòng sửa miễn phí. Giao file gốc lại cho quý khách.",
+        when: "5–10 ngày",
+      },
+    ],
+  },
   team: {
     heroLine1: "Những người đứng sau",
     heroLine2: "BeeZ Production",
