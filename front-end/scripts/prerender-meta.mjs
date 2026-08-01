@@ -22,6 +22,16 @@ const SITE = "https://www.beezvn.com";
 const DIST = path.resolve(process.cwd(), "dist");
 const SUFFIX = " — BeeZ Production";
 
+/**
+ * Nguồn dữ liệu cho các trang chi tiết (dịch vụ, dự án).
+ *
+ * Gọi thẳng API đang chạy thật: lúc dựng ảnh Docker không có cơ sở dữ liệu,
+ * nhưng có mạng. Đổi được qua biến môi trường để chạy thử với máy chủ khác.
+ */
+const API = process.env.PRERENDER_API_URL ?? `${SITE}/api`;
+/** Chờ tối đa ngần này rồi bỏ cuộc — không để bản dựng treo vì API chậm. */
+const API_TIMEOUT_MS = Number(process.env.PRERENDER_TIMEOUT_MS ?? 20000);
+
 const ROUTES = [
   {
     path: "/service",
@@ -84,7 +94,28 @@ if (!fs.existsSync(indexPath)) {
 }
 const base = fs.readFileSync(indexPath, "utf8");
 
-for (const route of ROUTES) {
+/** Đưa đường dẫn ảnh đã lưu về dạng tuyệt đối — thẻ chia sẻ không nhận đường dẫn tương đối. */
+function absUrl(value) {
+  if (!value) return null;
+  // Gom về đúng một tên miền: ảnh lưu trong cơ sở dữ liệu dùng bản không có
+  // www, mà mọi khai báo khác của web đều là bản www. Để lệch thì trình quét
+  // link phải đi thêm một chặng chuyển hướng mới lấy được ảnh.
+  if (/^https?:\/\//i.test(value)) return value.replace(/^https?:\/\/(www\.)?beezvn\.com/i, SITE);
+  return SITE + (value.startsWith("/api") ? value : `/api/public${value}`);
+}
+
+/** Cắt mô tả cho vừa ô hiển thị của máy tìm kiếm, cắt ở ranh giới từ cho đỡ cụt. */
+function trim(text, max = 158) {
+  const s = String(text ?? "")
+    .replace(/\s+/g, " ")
+    .trim();
+  if (s.length <= max) return s;
+  const cut = s.slice(0, max);
+  const lastSpace = cut.lastIndexOf(" ");
+  return `${(lastSpace > max * 0.6 ? cut.slice(0, lastSpace) : cut).trimEnd()}…`;
+}
+
+function renderPage(route) {
   const url = SITE + route.path;
   const fullTitle = route.title + SUFFIX;
   let html = base;
@@ -113,16 +144,96 @@ for (const route of ROUTES) {
     warnings++;
   }
 
+  // Ảnh chia sẻ riêng của trang. Thiếu thì giữ ảnh mặc định của cả web.
+  const image = absUrl(route.image);
+  if (image) {
+    html = replaceMeta(html, "property", "og:image", image, "og:image");
+    html = replaceMeta(html, "name", "twitter:image", image, "twitter:image");
+  }
+
   const outDir = path.join(DIST, route.path.replace(/^\//, ""));
   fs.mkdirSync(outDir, { recursive: true });
   fs.writeFileSync(path.join(outDir, "index.html"), html);
-  console.log(`✓ dist${route.path}/index.html — "${fullTitle}"`);
+  return fullTitle;
 }
 
-console.log(`\nĐã sinh ${ROUTES.length} trang có thẻ mô tả riêng.`);
+for (const route of ROUTES) {
+  console.log(`✓ dist${route.path}/index.html — "${renderPage(route)}"`);
+}
+
+// ─── Trang chi tiết: dịch vụ và dự án ────────────────────────────────────────
+/**
+ * VÌ SAO PHẢI GỌI API: sitemap khai báo 6 trang dịch vụ để máy tìm kiếm lập chỉ
+ * mục, nhưng HTML thô của cả 6 lại là bản sao trang chủ — kể cả thẻ `canonical`,
+ * tức là mỗi trang tự khai "tôi chính là trang chủ". Hai tín hiệu ngược nhau nên
+ * không trang nào được xếp hạng, và mọi link dịch vụ chia sẻ lên Facebook/Zalo
+ * đều hiện tiêu đề trang chủ.
+ *
+ * Danh sách dịch vụ nằm trong cơ sở dữ liệu, mà lúc dựng ảnh Docker không có
+ * cơ sở dữ liệu — nên lấy qua API đang chạy thật.
+ *
+ * MỌI LỖI Ở ĐÂY CHỈ CẢNH BÁO: API chậm hay tắt thì bản dựng vẫn phải ra, chỉ là
+ * các trang chi tiết tạm thời quay về thẻ mặc định như trước.
+ */
+async function fetchJson(url) {
+  const res = await fetch(url, { signal: AbortSignal.timeout(API_TIMEOUT_MS) });
+  if (!res.ok) throw new Error(`${url} trả về ${res.status}`);
+  const body = await res.json();
+  if (!body?.success) throw new Error(`${url} báo lỗi: ${body?.error ?? "không rõ"}`);
+  return body.data;
+}
+
+async function detailRoutes() {
+  const [services, projectsRaw] = await Promise.all([
+    fetchJson(`${API}/services?limit=100`),
+    fetchJson(`${API}/projects`),
+  ]);
+
+  const routes = [];
+
+  for (const s of services.items ?? []) {
+    routes.push({
+      path: `/service/${s.id}`,
+      title: s.title?.vi || s.title?.en || "Dịch vụ",
+      description: trim(s.description?.vi || s.description?.en),
+      image: s.thumbnailImage,
+    });
+  }
+
+  // Dự án nằm dưới đúng dịch vụ của nó, để đường dẫn nói được thứ bậc.
+  const projects = [...(projectsRaw.verticalCards ?? []), ...(projectsRaw.horizontalCards ?? [])];
+  for (const p of projects) {
+    const serviceId = typeof p.service === "string" ? p.service : p.service?.id;
+    if (!serviceId) continue; // dự án mồ côi thì bỏ qua, không đoán
+    routes.push({
+      path: `/service/${serviceId}/${p.id}`,
+      title: p.title || "Dự án",
+      description: trim(p.subtitle?.vi || p.subtitle?.en || p.title),
+      image: p.thumbnailImage,
+    });
+  }
+
+  return routes;
+}
+
+let details = [];
+try {
+  details = await detailRoutes();
+  for (const route of details) renderPage(route);
+  const nSvc = details.filter((r) => r.path.split("/").length === 3).length;
+  console.log(`✓ ${nSvc} trang dịch vụ + ${details.length - nSvc} trang dự án`);
+} catch (e) {
+  console.warn(
+    `\n! Không lấy được dữ liệu từ ${API} (${e.message}).\n` +
+      `  Bỏ qua các trang chi tiết — bản dựng vẫn chạy bình thường.`,
+  );
+  warnings++;
+}
+
+console.log(`\nĐã sinh ${ROUTES.length + details.length} trang có thẻ mô tả riêng.`);
 if (warnings > 0) {
   console.warn(
-    `\n! ${warnings} thẻ không thay được — nhiều khả năng mẫu HTML đã đổi.\n` +
+    `\n! ${warnings} chỗ không xử lý được — nhiều khả năng mẫu HTML đã đổi.\n` +
       `  Bản dựng vẫn chạy bình thường, nhưng nên xem lại scripts/prerender-meta.mjs.`,
   );
 }

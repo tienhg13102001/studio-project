@@ -45,6 +45,8 @@ export const router = createBrowserRouter([
       { index: true, element: withSuspense(LandingPage) },
       { path: "service", element: withSuspense(ServicesPage) },
       { path: "service/:id", element: withSuspense(ServicePage) },
+      // Mỗi dự án một đường dẫn riêng để chia sẻ ra ngoài hiện đúng tên và ảnh.
+      { path: "service/:id/:projectId", element: withSuspense(ServicePage) },
       { path: "contact", element: withSuspense(ContactPage) },
       { path: "team", element: withSuspense(TeamPage) },
       { path: "portfolio", element: withSuspense(PortfolioPage) },

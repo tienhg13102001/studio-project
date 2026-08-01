@@ -40,11 +40,11 @@ function toProjectDisplay(f: ApiProject, lang: Lang): ProjectDisplay {
 }
 
 const ServicePage: React.FC = () => {
-  const { id } = useParams<{ id: string }>();
+  const { id, projectId: projectIdParam } = useParams<{ id: string; projectId?: string }>();
   const navigate = useNavigate();
   const { lang } = useLanguage();
   const t = useTranslation();
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
 
   const [service, setService] = useState<ApiService | null>(null);
   const [loading, setLoading] = useState(true);
@@ -54,19 +54,32 @@ const ServicePage: React.FC = () => {
   // staggered fade-up transitions actually play.
   const [heroIn, setHeroIn] = useState(false);
 
+  /**
+   * Mỗi dự án có một đường dẫn riêng: `/service/<dịch-vụ>/<dự-án>`.
+   *
+   * Trước đây dự án chỉ là tham số `?project=` — chia sẻ lên Facebook hay Zalo
+   * thì trình quét link không đọc tham số, nên mọi dự án đều hiện ra cùng một
+   * tiêu đề và cùng một ảnh của trang dịch vụ. Có đường dẫn riêng mới dựng sẵn
+   * được thẻ mô tả cho từng dự án.
+   *
+   * `replace` khi đóng để nút Quay lại của trình duyệt không kẹt lại ở chính
+   * dự án vừa đóng.
+   */
   const openProject = (projectId: string) => {
-    setSearchParams((prev) => {
-      prev.set(PROJECT_PARAM, projectId);
-      return prev;
-    });
+    navigate(`/service/${id}/${projectId}`);
   };
 
   const closeProject = () => {
-    setSearchParams((prev) => {
-      prev.delete(PROJECT_PARAM);
-      return prev;
-    });
+    navigate(`/service/${id}`, { replace: true });
   };
+
+  // Link kiểu cũ `?project=<id>` vẫn mở đúng dự án, nhưng được đổi ngay sang
+  // đường dẫn mới để mỗi dự án chỉ còn một địa chỉ duy nhất.
+  const legacyProjectId = searchParams.get(PROJECT_PARAM);
+  useEffect(() => {
+    if (!legacyProjectId || !id) return;
+    navigate(`/service/${id}/${legacyProjectId}`, { replace: true });
+  }, [legacyProjectId, id, navigate]);
 
   // Fire only once the hero is actually in the DOM (after the loading
   // spinner clears), otherwise the transition would settle while hidden.
@@ -126,7 +139,8 @@ const ServicePage: React.FC = () => {
     ...service.projects.filter((f) => !f.prominent),
   ];
 
-  const selectedProjectId = searchParams.get(PROJECT_PARAM);
+  // Ưu tiên đường dẫn mới, vẫn đọc `?project=` để link đã lỡ chia sẻ không chết.
+  const selectedProjectId = projectIdParam ?? searchParams.get(PROJECT_PARAM);
   const selectedProject = selectedProjectId
     ? (service.projects.find((f) => f.id === selectedProjectId) ?? null)
     : null;
@@ -158,11 +172,19 @@ const ServicePage: React.FC = () => {
 
   return (
     <div className="min-h-screen">
+      {/*
+        Đang mở một dự án thì thẻ mô tả nói về chính dự án đó, không phải về cả
+        dịch vụ — chia sẻ link ra ngoài mới hiện đúng tên và đúng ảnh.
+      */}
       <Seo
-        title={title}
-        description={description.slice(0, 160)}
-        path={`/service/${id}`}
-        image={imageUrl}
+        title={selectedProject ? selectedProject.title : title}
+        description={
+          selectedProject
+            ? localized(selectedProject.subtitle, lang).slice(0, 160)
+            : description.slice(0, 160)
+        }
+        path={selectedProject ? `/service/${id}/${selectedProject.id}` : `/service/${id}`}
+        image={selectedProject ? resolveAssetUrl(selectedProject.thumbnailImage) : imageUrl}
         // Khai báo dịch vụ + câu hỏi thường gặp cho máy đọc: Google có thể hiện
         // thẳng phần hỏi-đáp trong kết quả, và trợ lý AI hay trích đúng dạng này.
         jsonLd={[
