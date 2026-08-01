@@ -8,6 +8,7 @@ import contactRouter from "./contact.ts";
 import landingRouter from "./landing.ts";
 import portfolioRouter from "./portfolio.ts";
 import projectsRouter from "./projects.ts";
+import reorderRouter from "./reorder.ts";
 import servicesRouter from "./services.ts";
 import settingsRouter from "./settings.ts";
 import sitemapRouter from "./sitemap.ts";
@@ -75,6 +76,7 @@ router.use("/team-content", teamContentRouter);
 router.use("/settings", settingsRouter);
 router.use("/visitors", visitorsRouter);
 router.use("/trash", trashRouter);
+router.use("/reorder", reorderRouter);
 // nginx trỏ /sitemap.xml về đây để sitemap luôn khớp dữ liệu thật.
 router.use("/sitemap.xml", sitemapRouter);
 

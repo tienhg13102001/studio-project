@@ -19,6 +19,7 @@ import { apiDelete, apiPost, apiPut, resolveAssetUrl } from "#lib/api";
 import type { ApiBrand } from "#lib/apiTypes";
 import { PencilSimpleIcon, PlusIcon } from "@phosphor-icons/react";
 import { useState } from "react";
+import { useDragSort } from "#hooks/useDragSort";
 
 // ─── BrandsGrid (also used by OverviewTab) ───────────────────────────────────
 
@@ -27,9 +28,14 @@ type GridProps = {
   loading:  boolean;
   preview?: boolean;
   onEdit?:  (b: ApiBrand) => void;
+  /**
+   * Bật kéo thả đổi thứ tự. Chỉ tab Thương hiệu truyền vào — khối xem nhanh ở
+   * trang Tổng quan dùng chung lưới này nhưng không được phép sắp xếp.
+   */
+  dragProps?: (id: string) => Record<string, unknown>;
 };
 
-export function BrandsGrid({ data, loading, preview, onEdit }: GridProps) {
+export function BrandsGrid({ data, loading, preview, onEdit, dragProps }: GridProps) {
   const items = preview ? (data ?? []).slice(0, 6) : (data ?? []);
 
   if (loading)
@@ -46,7 +52,10 @@ export function BrandsGrid({ data, loading, preview, onEdit }: GridProps) {
       {items.map((b) => (
         <div
           key={b.id}
-          className="group relative flex flex-col items-center justify-center gap-2 rounded-xl border border-foreground/8 bg-foreground/3 p-4 transition-all hover:border-primary/30 hover:bg-primary/5"
+          {...(dragProps ? dragProps(b.id) : {})}
+          className={`group relative flex flex-col items-center justify-center gap-2 rounded-xl border border-foreground/8 bg-foreground/3 p-4 transition-all hover:border-primary/30 hover:bg-primary/5 ${
+            dragProps ? "cursor-grab active:cursor-grabbing" : ""
+          }`}
         >
           <img
             src={resolveAssetUrl(b.logo)}
@@ -96,6 +105,14 @@ export default function BrandsTab({ data, loading, onRefetch }: TabProps) {
   const [deleting, setDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const { toast } = usePortalToast();
+
+  // Kéo thả đổi thứ tự hiển thị. Thứ tự áp ngay trên màn hình rồi mới gửi lên
+  // máy chủ; máy chủ báo lỗi thì trả lại đúng thứ tự cũ.
+  const { order, savingOrder, dragProps } = useDragSort(data ?? [], {
+    type: "brands",
+    onSaved: onRefetch,
+    onError: (m) => toast("Không lưu được thứ tự: " + m, "err"),
+  });
 
   const openEdit  = (b: ApiBrand) => { setEditing(b); setCreating(false); setForm(toForm(b)); setError(null); };
   const openCreate = () => {
@@ -153,13 +170,18 @@ export default function BrandsTab({ data, loading, onRefetch }: TabProps) {
   return (
     <>
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold text-foreground">Thương hiệu</h2>
+        <div>
+          <h2 className="text-lg font-semibold text-foreground">Thương hiệu</h2>
+          <p className="text-foreground/40 text-xs">
+            {savingOrder ? "Đang lưu thứ tự…" : "Kéo thả một logo để đổi thứ tự hiển thị."}
+          </p>
+        </div>
         <Button size="sm" onClick={openCreate} className="bg-primary text-black hover:opacity-80">
           <PlusIcon size={12} weight="bold" />
           Thêm thương hiệu
         </Button>
       </div>
-      <BrandsGrid data={data} loading={loading} onEdit={openEdit} />
+      <BrandsGrid data={order} loading={loading} onEdit={openEdit} dragProps={dragProps} />
 
       <EditModal
         title={creating ? "Thêm thương hiệu" : `Sửa — ${editing?.name ?? ""}`}
