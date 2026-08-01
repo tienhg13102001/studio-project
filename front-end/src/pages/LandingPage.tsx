@@ -3,6 +3,7 @@ import CTASection from "#components/organisms/CTASection";
 import FeatureSection from "#components/organisms/FeatureSection";
 import HeroSection from "#components/organisms/HeroSection";
 import Preloader from "#components/organisms/Preloader";
+import ProcessSection from "#components/organisms/ProcessSection";
 import ProductGallery from "#components/organisms/ProductGallery";
 import ServiceSection from "#components/organisms/ServiceSection";
 import StatsAndBrands from "#components/organisms/StatsAndBrands";
@@ -39,6 +40,10 @@ const LandingPage = () => {
         <ServiceSection />
         <FeatureSection />
         <ProductGallery />
+        {/* Trả lời câu hỏi khách lần đầu luôn hỏi: làm việc với Bee Z diễn ra
+            thế nào, mất bao lâu. Đặt ngay trước phần thương hiệu và lời mời
+            liên hệ, tức là ngay trước lúc khách quyết định có gọi hay không. */}
+        <ProcessSection />
         <StatsAndBrands />
         <CTASection />
       </div>

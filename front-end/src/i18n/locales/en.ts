@@ -46,6 +46,39 @@ const en = {
     badge: "We’ve partnered with amazing brands",
     heading: "Trusted by Brands",
   },
+  // Bản dịch của khối Quy trình — sửa vi.ts thì sửa cả ở đây.
+  process: {
+    sectionTitle: "From the first call to the finished film",
+    sectionSubtitle: "How we work",
+    stepLabel: "STEP",
+    steps: [
+      {
+        title: "Brief",
+        desc: "A 30-minute call or meeting. You share the goal, the audience and the budget; we confirm what we understood and come back to you.",
+        when: "Within 24 hours",
+      },
+      {
+        title: "Proposal & quote",
+        desc: "Concept, moodboard, outline script and an itemised quote.",
+        when: "2–3 working days",
+      },
+      {
+        title: "Pre-production",
+        desc: "Locking the script, casting, locations and the shoot schedule. You approve before the cameras roll.",
+        when: "3–7 days",
+      },
+      {
+        title: "Shoot",
+        desc: "Bee Z crew and equipment. You are welcome on set, or you can watch the live feed remotely.",
+        when: "1–3 shoot days",
+      },
+      {
+        title: "Post & delivery",
+        desc: "Edit, colour and sound. Two rounds of revisions included. Master files handed back to you.",
+        when: "5–10 days",
+      },
+    ],
+  },
   team: {
     heroLine1: "The Minds Behind",
     heroLine2: "BeeZ Production",
