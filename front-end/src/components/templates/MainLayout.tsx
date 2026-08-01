@@ -39,19 +39,28 @@ const MainLayout: React.FC<Props> = () => {
       {/*
         Ảnh nền chung cho mọi trang khách, lấy từ mục Cài đặt trong portal.
 
-        Trước để `opacity-10` và vignette đen từ 10% bán kính — cộng lại thì chỉ
-        còn một elip bé tí giữa màn hình hiện ảnh ở 10%, tức là không ai nhìn
-        thấy gì và ô "Ảnh nền" trong portal thành nút bấm vô nghĩa. Nay để 30%
-        và nới vùng trong suốt ra 40% để ảnh hiện thật, vẫn đủ chìm cho chữ nổi.
+        Ban đầu để `opacity-10` + vignette đen từ 10% bán kính — không ai nhìn
+        thấy gì, ô "Ảnh nền" trong portal thành nút bấm vô nghĩa. Nâng lên 30%
+        vẫn chưa đủ: ở 30% một tấm ảnh sáng 122/255 chỉ ra #2b2b2b, gần như
+        không phân biệt được với nền #0a0a0a. Nay để 50% → khoảng #424242, nhìn
+        rõ là một tấm ảnh mà chữ trắng vẫn thừa tương phản để đọc.
       */}
       <div
-        className="fixed inset-0 -z-10 bg-cover bg-center bg-no-repeat opacity-30"
+        className="fixed inset-0 -z-10 bg-cover bg-center bg-no-repeat opacity-50"
         style={{ backgroundImage: `url(${bgUrl})` }}
       >
-        {/* Tối dần về phía mép, giữ chữ ở giữa dễ đọc. */}
+        {/*
+          Tối dần về phía mép, giữ chữ ở giữa dễ đọc.
+
+          Con số này quan trọng hơn vẻ ngoài của nó. Bán kính của gradient tính
+          theo góc màn hình, nên trên màn 16:9 thì "trong suốt tới 40%" chỉ chừa
+          sạch một elip cao bằng 57% màn hình — phần lớn nội dung rơi vào vùng
+          đã bị bôi đen, cộng thêm lớp mờ nữa thì ảnh coi như biến mất. Nới lên
+          60% để vùng sạch phủ 85% chiều cao, vẫn còn viền tối ở bốn mép.
+        */}
         <div
           className="absolute inset-0"
-          style={{ background: "radial-gradient(ellipse at center, transparent 40%, black 100%)" }}
+          style={{ background: "radial-gradient(ellipse at center, transparent 60%, black 120%)" }}
         />
       </div>
     </div>
