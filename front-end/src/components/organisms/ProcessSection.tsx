@@ -28,7 +28,13 @@ const ProcessSection = () => {
       <div className="mx-auto max-w-4xl">
         <SectionHeader title={t.process.sectionTitle} subtitle={t.process.sectionSubtitle} />
 
-        <ol>
+        {/*
+          `flow-root` ở đây KHÔNG phải cho đẹp. Không có nó, lề dưới của thẻ cuối
+          bị gộp xuyên qua đáy `ol` nên không nới thêm được chỗ nào — mà thẻ dính
+          chỉ dính trong lòng khối cha, nên thẻ 05 không kịp trôi lên đè thẻ 04 và
+          chồng bài đứt ở bước 4. `flow-root` giữ lề đó lại bên trong.
+        */}
+        <ol className="flow-root">
           {steps.map((step, i) => (
             /*
               CHÍNH `li` phải là thẻ dính, không phải thẻ con bên trong.
@@ -39,8 +45,12 @@ const ProcessSection = () => {
               nào đã dừng sẽ ở yên đó tới hết khối, đúng kiểu chồng bài.
 
               `marginBottom` mới là quãng cuộn giữa hai bước: ngắn quá thì thẻ
-              chưa kịp dừng đã bị đè, dài quá thì khách cuộn mỏi tay. Bước cuối
-              không cần quãng này.
+              chưa kịp dừng đã bị đè, dài quá thì khách cuộn mỏi tay.
+
+              BƯỚC CUỐI CŨNG PHẢI CÓ quãng này. Bỏ đi thì `ol` kết thúc ngay tại
+              thẻ cuối, mà thẻ dính chỉ dính được trong lòng khối cha — nên thẻ
+              05 không kịp trôi lên đè thẻ 04, chồng bài đứt ở bước 4. Giữ lại
+              quãng cuối cũng là lúc khách nhìn thấy trọn cả năm thẻ xếp chồng.
 
               Ai bật giảm chuyển động trong hệ điều hành thì trở lại thành danh
               sách xếp dọc bình thường.
@@ -51,7 +61,7 @@ const ProcessSection = () => {
               style={{
                 // Lệch dần để mép thẻ trước vẫn ló ra sau khi bị đè.
                 top: `calc(13vh + ${i * 16}px)`,
-                marginBottom: i === steps.length - 1 ? undefined : "42vh",
+                marginBottom: "42vh",
               }}
             >
               <article
