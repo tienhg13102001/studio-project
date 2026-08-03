@@ -259,13 +259,26 @@ const ServicePage: React.FC = () => {
           serviceSchema({
             name: title,
             description: description.slice(0, 300),
-            path: `/service/${id}`,
+            // PHẢI dựng từ `service`, không phải từ tham số địa chỉ: vào bằng
+            // /du-an/<tên> thì không có tham số dịch vụ nào cả, ghép chuỗi thẳng
+            // sẽ khai ra ".../service/undefined" cho máy tìm kiếm.
+            path: duongDanDichVu(service),
             image: imageUrl,
           }),
           breadcrumbSchema([
             { name: t.nav.home, path: "/" },
             { name: t.nav.services, path: "/service" },
-            { name: title, path: `/service/${id}` },
+            { name: title, path: duongDanDichVu(service) },
+            // Dự án nay có địa chỉ riêng nên nó là một nấc thật trong đường dẫn,
+            // không còn là một trạng thái của trang dịch vụ.
+            ...(selectedProject
+              ? [
+                  {
+                    name: selectedProject.title,
+                    path: duongDanDuAn(selectedProject, service),
+                  },
+                ]
+              : []),
           ]),
           ...(faqLd ? [faqLd] : []),
         ]}
