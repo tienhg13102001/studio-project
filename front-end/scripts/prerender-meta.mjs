@@ -205,6 +205,33 @@ async function detailRoutes() {
   }
 
   const projects = [...(projectsRaw.verticalCards ?? []), ...(projectsRaw.horizontalCards ?? [])];
+
+  /**
+   * CẢNH BÁO KHI API CHẠY CŨ HƠN BẢN ĐANG DỰNG.
+   *
+   * Thẻ mô tả được sinh lúc đóng gói, mà lúc đó nó hỏi API ĐANG CHẠY — tức là
+   * bản trước, chưa có thứ vừa thêm. Lần đổi sang địa chỉ đọc được đã vấp đúng
+   * chỗ này: sitemap khai /du-an/<tên> trong khi trang dựng sẵn nằm ở địa chỉ
+   * mã máy, nên chia sẻ lên Facebook/Zalo hiện tiêu đề chung suốt một lượt deploy
+   * mà không có gì báo.
+   *
+   * Nay nó nói thẳng ra, kèm cách chữa. Vẫn chỉ là cảnh báo — bản dựng phải ra
+   * được trong mọi hoàn cảnh.
+   */
+  const thieuTen = [
+    ...(services.items ?? []).filter((s) => !s.slug),
+    ...projects.filter((p) => !p.slug),
+  ].length;
+  if (thieuTen > 0) {
+    console.warn(
+      `\n! ${thieuTen} mục từ ${API} chưa có tên đường dẫn.\n` +
+        `  Nhiều khả năng API đang chạy là bản CŨ hơn mã nguồn này. Thẻ mô tả sẽ\n` +
+        `  được dựng ở địa chỉ mã máy, lệch với địa chỉ sitemap khai.\n` +
+        `  CÁCH CHỮA: đợi backend lên xong rồi dựng lại giao diện một lần nữa.`,
+    );
+    warnings++;
+  }
+
   for (const p of projects) {
     const serviceId = typeof p.service === "string" ? p.service : p.service?.id;
     const serviceSlug = typeof p.service === "string" ? null : p.service?.slug;
@@ -238,8 +265,11 @@ try {
 
 console.log(`\nĐã sinh ${ROUTES.length + details.length} trang có thẻ mô tả riêng.`);
 if (warnings > 0) {
+  // Dòng này KHÔNG được đoán nguyên nhân. Trước đây nó khẳng định luôn "mẫu HTML
+  // đã đổi", mà giờ cảnh báo còn đến từ chỗ khác (API chạy cũ hơn) — đoán sai
+  // nguyên nhân còn hại hơn không đoán, vì nó dẫn người đọc đi sai hướng.
   console.warn(
-    `\n! ${warnings} chỗ không xử lý được — nhiều khả năng mẫu HTML đã đổi.\n` +
-      `  Bản dựng vẫn chạy bình thường, nhưng nên xem lại scripts/prerender-meta.mjs.`,
+    `\n! ${warnings} cảnh báo ở trên — đọc kỹ từng cái, mỗi cái có cách chữa riêng.\n` +
+      `  Bản dựng vẫn chạy bình thường.`,
   );
 }
