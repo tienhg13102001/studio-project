@@ -60,6 +60,38 @@ router.get("/photos", async (_req, res, next) => {
   }
 });
 
+/**
+ * GET /api/projects/by-slug/:slug — tra một tên đường dẫn ra dự án nào.
+ *
+ * VÌ SAO CẦN: địa chỉ mới của dự án là /du-an/vf9-teaser — phẳng, không mang mã
+ * dịch vụ. Nhưng trang dự án vốn dựng bên trong trang dịch vụ, nên trước khi vẽ
+ * được gì thì phải biết dự án này thuộc dịch vụ nào. Trả về đúng phần tra cứu
+ * chứ không trả cả dự án: bên gọi đã có sẵn cách tải dịch vụ kèm toàn bộ dự án
+ * bên trong, gửi thừa chỉ tốn băng thông.
+ *
+ * Dự án còn đó nhưng dịch vụ cha đã vào thùng rác thì coi như không tìm thấy —
+ * đúng bằng cách sitemap đang loại những dự án đó ra.
+ */
+router.get("/by-slug/:slug", async (req, res, next) => {
+  try {
+    const project = await Project.findOne({ slug: req.params.slug }).populate<{
+      service: { _id: unknown; slug?: string } | null;
+    }>("service", "slug");
+
+    if (!project) { sendError(res, "Project not found", 404); return; }
+    if (!project.service) { sendError(res, "Project has no live service", 404); return; }
+
+    sendSuccess(res, {
+      projectId: String(project._id),
+      projectSlug: project.slug ?? null,
+      serviceId: String(project.service._id),
+      serviceSlug: project.service.slug ?? null,
+    });
+  } catch (e) {
+    next(e);
+  }
+});
+
 /** POST /api/projects */
 router.post("/", async (req, res, next) => {
   try {

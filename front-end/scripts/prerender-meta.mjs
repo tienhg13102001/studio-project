@@ -191,22 +191,26 @@ async function detailRoutes() {
 
   const routes = [];
 
+  // Địa chỉ phải khớp TỪNG KÝ TỰ với thứ mà thẻ canonical và sitemap khai, nếu
+  // không thì thẻ mô tả dựng sẵn nằm ở một đường dẫn còn máy tìm kiếm lại đi
+  // đường khác — công dựng thành vô ích. Lùi về mã máy khi chưa có tên đường
+  // dẫn, đúng như `front-end/src/lib/urls.ts` làm.
   for (const s of services.items ?? []) {
     routes.push({
-      path: `/service/${s.id}`,
+      path: `/service/${s.slug || s.id}`,
       title: s.title?.vi || s.title?.en || "Dịch vụ",
       description: trim(s.description?.vi || s.description?.en),
       image: s.thumbnailImage,
     });
   }
 
-  // Dự án nằm dưới đúng dịch vụ của nó, để đường dẫn nói được thứ bậc.
   const projects = [...(projectsRaw.verticalCards ?? []), ...(projectsRaw.horizontalCards ?? [])];
   for (const p of projects) {
     const serviceId = typeof p.service === "string" ? p.service : p.service?.id;
+    const serviceSlug = typeof p.service === "string" ? null : p.service?.slug;
     if (!serviceId) continue; // dự án mồ côi thì bỏ qua, không đoán
     routes.push({
-      path: `/service/${serviceId}/${p.id}`,
+      path: p.slug ? `/du-an/${p.slug}` : `/service/${serviceSlug || serviceId}/${p.id}`,
       title: p.title || "Dự án",
       description: trim(p.subtitle?.vi || p.subtitle?.en || p.title),
       image: p.thumbnailImage,
@@ -220,7 +224,9 @@ let details = [];
 try {
   details = await detailRoutes();
   for (const route of details) renderPage(route);
-  const nSvc = details.filter((r) => r.path.split("/").length === 3).length;
+  // Đếm theo tiền tố chứ không theo số dấu gạch: từ khi dự án có địa chỉ phẳng
+  // (/du-an/…) thì hai loại có cùng số đoạn, đếm kiểu cũ sẽ ra số sai.
+  const nSvc = details.filter((r) => r.path.startsWith("/service/")).length;
   console.log(`✓ ${nSvc} trang dịch vụ + ${details.length - nSvc} trang dự án`);
 } catch (e) {
   console.warn(

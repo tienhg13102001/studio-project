@@ -1,6 +1,7 @@
 import type { ServiceDisplay } from "#hooks/useServices";
 import { useRef, useState, type PointerEvent } from "react";
 import { Link } from "react-router-dom";
+import { duongDanDichVu } from "#lib/urls";
 
 type Props = {
   service: ServiceDisplay;
@@ -41,7 +42,7 @@ const ServiceCard: React.FC<Props> = ({ service }) => {
     // chỉ đi theo liên kết thật, nên trước đây 6 trang dịch vụ — nội dung giá trị
     // nhất của web — gần như không có đường nào để Google vào.
     <Link
-      to={`/service/${service.id}`}
+      to={duongDanDichVu(service)}
       ref={rootRef}
       onPointerMove={handleMove}
       onPointerLeave={handleLeave}

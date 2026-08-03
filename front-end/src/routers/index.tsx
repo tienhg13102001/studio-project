@@ -45,7 +45,10 @@ export const router = createBrowserRouter([
       { index: true, element: withSuspense(LandingPage) },
       { path: "service", element: withSuspense(ServicesPage) },
       { path: "service/:id", element: withSuspense(ServicePage) },
-      // Mỗi dự án một đường dẫn riêng để chia sẻ ra ngoài hiện đúng tên và ảnh.
+      // Địa chỉ chính thức của một dự án: phẳng và đọc được — /du-an/vf9-teaser.
+      { path: "du-an/:projectSlug", element: withSuspense(ServicePage) },
+      // Dạng cũ theo mã máy. GIỮ LẠI vĩnh viễn: link đã chia sẻ ra ngoài không
+      // được phép chết. Vào đây sẽ tự đổi sang địa chỉ mới ở trên.
       { path: "service/:id/:projectId", element: withSuspense(ServicePage) },
       { path: "contact", element: withSuspense(ContactPage) },
       { path: "team", element: withSuspense(TeamPage) },

@@ -18,6 +18,7 @@ import Seo from "#components/Seo";
 import { Button } from "#components/ui/button";
 import ProjectDetail from "#components/organisms/ProjectDetail";
 import type { ApiProject, ApiService } from "#lib/apiTypes";
+import { duongDanDichVu, duongDanDuAn } from "#lib/urls";
 import type { ProjectDisplay } from "#hooks/useProjects";
 import CTASection from "#components/organisms/CTASection";
 
@@ -40,7 +41,22 @@ function toProjectDisplay(f: ApiProject, lang: Lang): ProjectDisplay {
 }
 
 const ServicePage: React.FC = () => {
-  const { id, projectId: projectIdParam } = useParams<{ id: string; projectId?: string }>();
+  /**
+   * Trang này phục vụ BA dạng địa chỉ cùng lúc:
+   *   /service/<tên-hoặc-mã>                  — trang dịch vụ
+   *   /du-an/<tên-dự-án>                      — địa chỉ chính thức của dự án
+   *   /service/<mã>/<mã-dự-án>                — dạng cũ, chỉ còn để chuyển hướng
+   *
+   * Dạng cũ và tham số `?project=` không bị xoá: chúng đã nằm trong link khách
+   * lưu và tin nhắn đã gửi. Chúng vẫn mở đúng dự án rồi tự đổi địa chỉ trên
+   * thanh trình duyệt sang dạng mới, nên mỗi dự án chỉ còn MỘT địa chỉ chính
+   * thức trong mắt máy tìm kiếm.
+   */
+  const {
+    id,
+    projectId: projectIdParam,
+    projectSlug,
+  } = useParams<{ id?: string; projectId?: string; projectSlug?: string }>();
   const navigate = useNavigate();
   const { lang } = useLanguage();
   const t = useTranslation();
@@ -55,31 +71,52 @@ const ServicePage: React.FC = () => {
   const [heroIn, setHeroIn] = useState(false);
 
   /**
-   * Mỗi dự án có một đường dẫn riêng: `/service/<dịch-vụ>/<dự-án>`.
+   * Mở một dự án = đổi địa chỉ sang `/du-an/<tên>`.
    *
    * Trước đây dự án chỉ là tham số `?project=` — chia sẻ lên Facebook hay Zalo
    * thì trình quét link không đọc tham số, nên mọi dự án đều hiện ra cùng một
-   * tiêu đề và cùng một ảnh của trang dịch vụ. Có đường dẫn riêng mới dựng sẵn
-   * được thẻ mô tả cho từng dự án.
+   * tiêu đề và cùng một ảnh của trang dịch vụ.
    *
    * `replace` khi đóng để nút Quay lại của trình duyệt không kẹt lại ở chính
    * dự án vừa đóng.
    */
-  const openProject = (projectId: string) => {
-    navigate(`/service/${id}/${projectId}`);
+  const openProject = (project: ApiProject) => {
+    if (!service) return;
+    navigate(duongDanDuAn(project, service));
   };
 
   const closeProject = () => {
-    navigate(`/service/${id}`, { replace: true });
+    if (!service) return;
+    navigate(duongDanDichVu(service), { replace: true });
   };
 
-  // Link kiểu cũ `?project=<id>` vẫn mở đúng dự án, nhưng được đổi ngay sang
-  // đường dẫn mới để mỗi dự án chỉ còn một địa chỉ duy nhất.
-  const legacyProjectId = searchParams.get(PROJECT_PARAM);
+  /**
+   * Vào bằng `/du-an/<tên>` thì chưa biết dự án thuộc dịch vụ nào — mà nội dung
+   * trang lại dựng quanh dịch vụ. Hỏi máy chủ một câu để biết, rồi phần còn lại
+   * chạy y như khi vào thẳng trang dịch vụ.
+   */
+  const [khoaDichVuTuDuAn, setKhoaDichVuTuDuAn] = useState<string | null>(null);
   useEffect(() => {
-    if (!legacyProjectId || !id) return;
-    navigate(`/service/${id}/${legacyProjectId}`, { replace: true });
-  }, [legacyProjectId, id, navigate]);
+    if (!projectSlug) return;
+    let huy = false;
+    apiFetch<{ serviceSlug: string | null; serviceId: string }>(
+      `/api/projects/by-slug/${encodeURIComponent(projectSlug)}`,
+    )
+      .then((r) => {
+        if (!huy) setKhoaDichVuTuDuAn(r.serviceSlug || r.serviceId);
+      })
+      .catch((err: Error) => {
+        if (!huy) { setError(err.message); setLoading(false); }
+      });
+    return () => { huy = true; };
+  }, [projectSlug]);
+
+  // Khoá dùng để gọi máy chủ: lấy từ địa chỉ, hoặc tra ra từ tên dự án.
+  const khoaDichVu = id ?? khoaDichVuTuDuAn;
+
+  // Link kiểu cũ `?project=<mã>` vẫn mở đúng dự án. Việc đổi sang địa chỉ mới
+  // làm ở dưới, sau khi có dữ liệu để biết tên đường dẫn của dự án đó.
+  const legacyProjectId = searchParams.get(PROJECT_PARAM);
 
   // Fire only once the hero is actually in the DOM (after the loading
   // spinner clears), otherwise the transition would settle while hidden.
@@ -90,13 +127,40 @@ const ServicePage: React.FC = () => {
   }, [loading, service]);
 
   useEffect(() => {
-    if (!id) return;
+    if (!khoaDichVu) return;
     setLoading(true);
-    apiFetch<ApiService>(`/api/services/${id}`)
+    apiFetch<ApiService>(`/api/services/${encodeURIComponent(khoaDichVu)}`)
       .then(setService)
       .catch((err: Error) => setError(err.message))
       .finally(() => setLoading(false));
-  }, [id]);
+  }, [khoaDichVu]);
+
+  /**
+   * Đưa mọi địa chỉ cũ về đúng một địa chỉ chính thức.
+   *
+   * Phải chờ có dữ liệu mới làm được: từ mã dự án trong link cũ, phải tra ra
+   * tên đường dẫn của nó thì mới biết đích đến. `replace` để nút Quay lại không
+   * ném khách trở lại chính cái link cũ vừa rời đi.
+   *
+   * Dự án trong link cũ đã bị xoá thì bỏ luôn phần đó và về trang dịch vụ —
+   * khách vẫn xem được các dự án khác thay vì gặp một trang trống.
+   */
+  const maDuAnCu = projectIdParam ?? legacyProjectId;
+  useEffect(() => {
+    if (!service || projectSlug) return; // đang ở địa chỉ mới rồi
+
+    if (maDuAnCu) {
+      const duAn = service.projects.find((f) => f.id === maDuAnCu);
+      if (duAn?.slug) navigate(`/du-an/${duAn.slug}`, { replace: true });
+      else if (!duAn) navigate(duongDanDichVu(service), { replace: true });
+      // Có dự án nhưng chưa kịp có tên đường dẫn: ở lại địa chỉ cũ, vẫn mở đúng.
+      return;
+    }
+
+    if (id && service.slug && id !== service.slug) {
+      navigate(duongDanDichVu(service), { replace: true });
+    }
+  }, [service, maDuAnCu, projectSlug, id, navigate]);
 
   if (loading) {
     return (
@@ -139,11 +203,13 @@ const ServicePage: React.FC = () => {
     ...service.projects.filter((f) => !f.prominent),
   ];
 
-  // Ưu tiên đường dẫn mới, vẫn đọc `?project=` để link đã lỡ chia sẻ không chết.
-  const selectedProjectId = projectIdParam ?? searchParams.get(PROJECT_PARAM);
-  const selectedProject = selectedProjectId
-    ? (service.projects.find((f) => f.id === selectedProjectId) ?? null)
-    : null;
+  // Địa chỉ mới tìm theo tên; hai dạng cũ vẫn tìm theo mã để link đã lỡ chia sẻ
+  // không chết trong lúc chờ chuyển hướng ở trên chạy.
+  const selectedProject = projectSlug
+    ? (service.projects.find((f) => f.slug === projectSlug) ?? null)
+    : maDuAnCu
+      ? (service.projects.find((f) => f.id === maDuAnCu) ?? null)
+      : null;
 
   // ── Supporting content — sourced from the service document, with a fall-back
   //    to the localized defaults so services created before these fields
@@ -183,7 +249,9 @@ const ServicePage: React.FC = () => {
             ? localized(selectedProject.subtitle, lang).slice(0, 160)
             : description.slice(0, 160)
         }
-        path={selectedProject ? `/service/${id}/${selectedProject.id}` : `/service/${id}`}
+        path={
+          selectedProject ? duongDanDuAn(selectedProject, service) : duongDanDichVu(service)
+        }
         image={selectedProject ? resolveAssetUrl(selectedProject.thumbnailImage) : imageUrl}
         // Khai báo dịch vụ + câu hỏi thường gặp cho máy đọc: Google có thể hiện
         // thẳng phần hỏi-đáp trong kết quả, và trợ lý AI hay trích đúng dạng này.
@@ -318,7 +386,7 @@ const ServicePage: React.FC = () => {
               <Reveal key={f.id} delay={i * 60}>
                 <button
                   type="button"
-                  onClick={() => openProject(f.id)}
+                  onClick={() => openProject(f)}
                   className="group border-border bg-muted relative aspect-9/16 w-full overflow-hidden rounded-2xl border text-left"
                 >
                   <img

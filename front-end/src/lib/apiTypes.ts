@@ -39,6 +39,8 @@ export type ApiServiceTag = {
 
 export type ApiProject = {
   id:             string;
+  /** Tên đường dẫn đọc được — xem `lib/urls.ts`. Dữ liệu rất cũ có thể chưa có. */
+  slug?:          string;
   layout:         "vertical" | "horizontal";
   service:        ApiServiceTag; // populated
   thumbnailImage: string;
@@ -71,6 +73,8 @@ export type ApiStat = {
 
 export type ApiService = {
   id:             string;
+  /** Tên đường dẫn đọc được — xem `lib/urls.ts`. Dữ liệu rất cũ có thể chưa có. */
+  slug?:          string;
   tag:            string;
   thumbnailImage: string;
   title:          LocalizedString;

@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { isValidObjectId } from "mongoose";
 import { Service, type IService } from "../models/Service.ts";
 import { parsePagination, sendError, sendPaginated, sendSuccess } from "../lib/response.ts";
 
@@ -23,12 +24,32 @@ router.get("/", async (req, res, next) => {
   }
 });
 
+/**
+ * Nhận CẢ tên đường dẫn mới lẫn mã cũ.
+ *
+ * Tên đường dẫn được thử trước vì đó là địa chỉ chính thức từ nay. Mã cũ vẫn
+ * phải nhận vô thời hạn: nó đã nằm trong link khách lưu, trong tin nhắn đã gửi
+ * và trong sổ của máy tìm kiếm — bỏ nhận là giết hết những link đó.
+ *
+ * PHẢI kiểm mã có hợp lệ không trước khi gọi `findById`: đưa một chuỗi như
+ * "san-xuat-tvc" vào đó thì Mongoose ném lỗi ép kiểu và khách nhận 500 thay vì
+ * 404.
+ */
+async function timDichVu(khoa: string) {
+  const nap = {
+    path: "projects",
+    populate: { path: "members", select: "name photo" },
+  } as const;
+
+  const theoTen = await Service.findOne({ slug: khoa }).populate(nap);
+  if (theoTen) return theoTen;
+  if (!isValidObjectId(khoa)) return null;
+  return Service.findById(khoa).populate(nap);
+}
+
 router.get("/:id", async (req, res, next) => {
   try {
-    const service = await Service.findById(req.params.id).populate({
-      path: "projects",
-      populate: { path: "members", select: "name photo" },
-    });
+    const service = await timDichVu(req.params.id);
     if (!service) { sendError(res, "Service not found", 404); return; }
     sendSuccess(res, service);
   } catch (e) {

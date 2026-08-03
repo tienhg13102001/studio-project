@@ -62,8 +62,8 @@ ${urls}
 router.get("/", async (_req, res, next) => {
   try {
     const [services, projects] = await Promise.all([
-      Service.find().select("_id updatedAt").lean(),
-      Project.find().select("service updatedAt").lean(),
+      Service.find().select("_id slug updatedAt").lean(),
+      Project.find().select("slug service updatedAt").lean(),
     ]);
 
     // Ngày sửa gần nhất của bất kỳ dự án nào — dùng cho trang portfolio.
@@ -82,13 +82,16 @@ router.get("/", async (_req, res, next) => {
      */
     const liveServices = new Set(services.map((s) => String(s._id)));
     const projectEntries = (
-      projects as { _id: unknown; service?: unknown; updatedAt?: Date }[]
+      projects as { _id: unknown; slug?: string; service?: unknown; updatedAt?: Date }[]
     ).flatMap((p) => {
       const serviceId = p.service ? String(p.service) : "";
       if (!liveServices.has(serviceId)) return [];
+      // Chưa có tên đường dẫn thì bỏ qua thay vì khai địa chỉ mã cũ: mã cũ giờ
+      // chỉ còn là lối chuyển hướng, khai nó ra là mời máy tìm kiếm đi đường vòng.
+      if (!p.slug) return [];
       return [
         {
-          loc: `/service/${serviceId}/${String(p._id)}`,
+          loc: `/du-an/${p.slug}`,
           // Dự án đã đăng thì gần như không sửa nữa — khai đúng để máy tìm kiếm
           // dồn lượt quét vào những trang thật sự hay đổi.
           changefreq: "yearly",
@@ -104,8 +107,10 @@ router.get("/", async (_req, res, next) => {
       ...STATIC.map((e) =>
         e.loc === "/portfolio" ? { ...e, lastmod: day(latestProject as Date) } : e,
       ),
+      // Ưu tiên tên đường dẫn; mã cũ chỉ dùng khi chưa kịp điền tên, để sitemap
+      // không bao giờ rỗng dù việc điền tên có trục trặc.
       ...services.map((s) => ({
-        loc: `/service/${String(s._id)}`,
+        loc: `/service/${(s as { slug?: string }).slug || String(s._id)}`,
         changefreq: "monthly",
         priority: "0.8",
         lastmod: day((s as { updatedAt?: Date }).updatedAt),

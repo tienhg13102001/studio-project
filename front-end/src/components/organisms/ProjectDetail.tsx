@@ -174,6 +174,10 @@ const ProjectDetail: FC<Props> = ({ project, onClose }) => {
       {/* Icon close */}
       <Button
         onClick={onClose}
+        // Nút chỉ có mỗi hình chữ X nên máy đọc màn hình không đọc ra được gì
+        // ngoài chữ "nút". Nhãn này là thứ duy nhất nói cho người khiếm thị biết
+        // nó dùng để làm gì.
+        aria-label="Đóng dự án"
         className="bg-foreground/10 text-foreground hover:bg-foreground/20 fixed top-6 right-6 z-60 h-10 w-10 rounded-full p-3 backdrop-blur-md transition-colors"
       >
         <XIcon size={20} />

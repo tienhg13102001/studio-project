@@ -1,11 +1,14 @@
 import mongoose, { Schema, type Document, type PopulatedDoc } from "mongoose";
 import { softDeletePlugin, type SoftDeleteModel } from "../lib/softDelete.ts";
+import { slugPlugin } from "../lib/slug.ts";
 import type { IService } from "./Service.ts";
 import type { IUser } from "./User.ts";
 
 const localizedString = new Schema({ en: String, vi: String }, { _id: false });
 
 export interface IProject extends Document {
+  /** Tên đường dẫn đọc được, sinh một lần lúc tạo — xem `lib/slug.ts`. */
+  slug?: string;
   layout: "vertical" | "horizontal";
   service: PopulatedDoc<IService>;
   thumbnailImage: string;
@@ -52,6 +55,9 @@ const projectSchema = new Schema<IProject>(
 
 // Bật thùng rác: xoá là đánh dấu, tự dọn hẳn sau 30 ngày.
 projectSchema.plugin(softDeletePlugin);
+
+// Địa chỉ đọc được: /du-an/vf9-teaser-the-mark-of-leadership
+projectSchema.plugin(slugPlugin((doc) => (doc as { title?: string }).title ?? ""));
 
 export const Project = mongoose.model<IProject>("Project", projectSchema) as
   mongoose.Model<IProject> & SoftDeleteModel<IProject>;

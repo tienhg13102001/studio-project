@@ -4,6 +4,7 @@ import { Link, useLocation } from "react-router-dom";
 import { useTranslation, useLanguage } from "#i18n";
 import type { Translations } from "#i18n";
 import { useServices } from "#hooks/useServices";
+import { duongDanDichVu } from "#lib/urls";
 
 type NavKey = keyof Translations["nav"];
 
@@ -96,7 +97,7 @@ const NavLinks: React.FC<Props> = ({ scrolled }) => {
                   return (
                     <Link
                       key={service.id}
-                      to={`/service/${service.id}`}
+                      to={duongDanDichVu(service)}
                       className="group hover:bg-muted flex items-start gap-3 rounded-lg p-3 transition-colors"
                     >
                       <div className="min-w-0">

@@ -1,5 +1,6 @@
 import mongoose, { Schema, type Document, type PopulatedDoc } from "mongoose";
 import { softDeletePlugin, type SoftDeleteModel } from "../lib/softDelete.ts";
+import { slugPlugin } from "../lib/slug.ts";
 import type { IProject } from "./Project.ts";
 
 const localizedString = new Schema({ en: String, vi: String }, { _id: false });
@@ -48,6 +49,8 @@ export interface IStatItem {
 }
 
 export interface IService extends Document {
+  /** Tên đường dẫn đọc được, sinh một lần lúc tạo — xem `lib/slug.ts`. */
+  slug?:          string;
   tag:            string;
   thumbnailImage: string;
   title:          { en: string; vi: string };
@@ -93,6 +96,15 @@ const serviceSchema = new Schema<IService>(
 
 // Bật thùng rác: xoá là đánh dấu, tự dọn hẳn sau 30 ngày.
 serviceSchema.plugin(softDeletePlugin);
+
+// Địa chỉ đọc được: /service/san-xuat-tvc thay cho /service/6a1ea385…
+// Lấy tên tiếng Việt làm gốc vì khách của Bee Z chủ yếu là người Việt.
+serviceSchema.plugin(
+  slugPlugin((doc) => {
+    const t = (doc as { title?: { vi?: string; en?: string } }).title;
+    return t?.vi || t?.en || "";
+  }),
+);
 
 export const Service = mongoose.model<IService>("Service", serviceSchema) as
   mongoose.Model<IService> & SoftDeleteModel<IService>;

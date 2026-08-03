@@ -9,6 +9,7 @@ import { useServices } from "#hooks/useServices";
 import { useLanding } from "#hooks/useLanding";
 import UKFlag from "../../assets/icons/UKFlag";
 import VietNamFlag from "../../assets/icons/VietNamFlag";
+import { duongDanDichVu } from "#lib/urls";
 
 type NavKey = keyof Translations["nav"];
 
@@ -113,7 +114,7 @@ const MobileMenu: React.FC<Props> = ({ open, onClose }) => {
                             <li key={service.id}>
                               <Link
                                 key={service.id}
-                                to={`/service/${service.id}`}
+                                to={duongDanDichVu(service)}
                                 onClick={onClose}
                                 className="group hover:bg-muted flex items-center gap-3 rounded-lg px-3 py-2.5 transition-colors"
                               >
