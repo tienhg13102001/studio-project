@@ -10,6 +10,12 @@ import { Project } from "../models/Project.ts";
  * Sinh động thì thêm/xoá dịch vụ trong portal là sitemap tự cập nhật, không ai
  * phải nhớ sửa file.
  *
+ * Từng dự án cũng được khai. Bản dựng đã sinh sẵn cho mỗi dự án một trang HTML
+ * có tiêu đề, mô tả và ảnh riêng (`front-end/scripts/prerender-meta.mjs`), nhưng
+ * chúng chỉ tới được máy tìm kiếm qua đường lần theo link trong trang dịch vụ —
+ * mà nội dung dự án lại nằm sau một cú bấm, nên rất dễ bị bỏ sót. Khai thẳng ra
+ * đây là cách chắc chắn nhất để chúng được lập chỉ mục.
+ *
  * KHÔNG liệt kê /portal, /bao-gia, /hop-dong: công cụ nội bộ cần đăng nhập
  * (robots.txt cũng đã chặn).
  */
@@ -57,7 +63,7 @@ router.get("/", async (_req, res, next) => {
   try {
     const [services, projects] = await Promise.all([
       Service.find().select("_id updatedAt").lean(),
-      Project.find().select("updatedAt").lean(),
+      Project.find().select("service updatedAt").lean(),
     ]);
 
     // Ngày sửa gần nhất của bất kỳ dự án nào — dùng cho trang portfolio.
@@ -65,6 +71,34 @@ router.get("/", async (_req, res, next) => {
       .map((p) => (p as { updatedAt?: Date }).updatedAt)
       .filter(Boolean)
       .sort((a, b) => new Date(b as Date).getTime() - new Date(a as Date).getTime())[0];
+
+    /**
+     * CHỈ khai dự án nào còn dịch vụ cha còn sống.
+     *
+     * Đường dẫn dự án là /service/<dịch-vụ>/<dự-án>, nên dịch vụ bị xoá là cả
+     * đường dẫn hỏng theo. Khai một địa chỉ trả về 404 cho máy tìm kiếm còn hại
+     * hơn là không khai — nó làm giảm độ tin của cả sitemap. Lọc trước cho chắc,
+     * không đoán.
+     */
+    const liveServices = new Set(services.map((s) => String(s._id)));
+    const projectEntries = (
+      projects as { _id: unknown; service?: unknown; updatedAt?: Date }[]
+    ).flatMap((p) => {
+      const serviceId = p.service ? String(p.service) : "";
+      if (!liveServices.has(serviceId)) return [];
+      return [
+        {
+          loc: `/service/${serviceId}/${String(p._id)}`,
+          // Dự án đã đăng thì gần như không sửa nữa — khai đúng để máy tìm kiếm
+          // dồn lượt quét vào những trang thật sự hay đổi.
+          changefreq: "yearly",
+          // Thấp hơn trang dịch vụ (0.8): dự án là dẫn chứng, dịch vụ mới là
+          // trang khách tìm kiếm để đặt hàng.
+          priority: "0.6",
+          lastmod: day(p.updatedAt),
+        },
+      ];
+    });
 
     const entries: Entry[] = [
       ...STATIC.map((e) =>
@@ -76,6 +110,7 @@ router.get("/", async (_req, res, next) => {
         priority: "0.8",
         lastmod: day((s as { updatedAt?: Date }).updatedAt),
       })),
+      ...projectEntries,
     ];
 
     res.type("application/xml");
