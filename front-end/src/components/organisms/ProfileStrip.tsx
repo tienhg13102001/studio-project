@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { CaretLeftIcon, CaretRightIcon, XIcon } from "@phosphor-icons/react";
+import { CaretLeftIcon, CaretRightIcon, DownloadSimpleIcon, XIcon } from "@phosphor-icons/react";
 import { useTranslation } from "#i18n";
 import { resolveAssetUrl } from "#lib/api";
 import type { ApiPortfolioItem } from "#lib/apiTypes";
@@ -65,11 +65,35 @@ const ProfileStrip = ({ items }: Props) => {
 
   return (
     <section className="py-4">
-      <div className="mx-auto mb-5 max-w-7xl px-6">
-        <h2 className="text-foreground text-2xl font-semibold tracking-tight md:text-3xl">
-          {t.portfolio.profileHeading}
-        </h2>
-        <p className="text-muted-foreground mt-1 text-sm">{t.portfolio.profileHint}</p>
+      <div className="mx-auto mb-5 flex max-w-7xl flex-col gap-4 px-6 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <h2 className="text-foreground text-2xl font-semibold tracking-tight md:text-3xl">
+            {t.portfolio.profileHeading}
+          </h2>
+          <p className="text-muted-foreground mt-1 text-sm">{t.portfolio.profileHint}</p>
+        </div>
+
+        {/*
+          Khách doanh nghiệp và agency gần như luôn xin file hồ sơ năng lực để
+          gửi lại cho cấp trên duyệt — không có nút này thì họ phải nhắn xin, và
+          phần lớn sẽ không nhắn.
+
+          GHI RÕ DUNG LƯỢNG ngay trên nút: người dùng 4G quyết định bấm hay không
+          dựa vào con số đó, giấu đi chỉ khiến họ bấm rồi huỷ giữa chừng.
+
+          `download` để trình duyệt tải thẳng về máy thay vì mở trong tab — người
+          xin hồ sơ là để lưu lại, không phải để đọc ngay tại chỗ (muốn đọc ngay
+          thì đã có dải ảnh bên dưới).
+        */}
+        <a
+          href="/ho-so-nang-luc-beez-production.pdf"
+          download
+          className="border-primary/40 bg-primary/10 text-primary hover:bg-primary/20 focus-visible:outline-primary inline-flex w-fit shrink-0 items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2"
+        >
+          <DownloadSimpleIcon size={17} />
+          {t.portfolio.downloadProfile}
+          <span className="text-primary/60 font-normal tabular-nums">PDF · 1,2MB</span>
+        </a>
       </div>
 
       {/*

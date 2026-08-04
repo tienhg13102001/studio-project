@@ -14,6 +14,7 @@ const vi = {
     empty: "Chưa có hình ảnh nào — vui lòng quay lại sau.",
     profileHeading: "Hồ sơ năng lực",
     profileHint: "Kéo ngang để xem · bấm vào một trang để đọc rõ",
+    downloadProfile: "Tải hồ sơ năng lực",
     profilePage: "Trang",
     worksHeading: "Dự án đã thực hiện",
     worksHint: "Chọn một mảng để lọc",

@@ -14,6 +14,7 @@ const en = {
     empty: "No images yet — check back soon.",
     profileHeading: "Company profile",
     profileHint: "Drag sideways to browse · tap a page to read it",
+    downloadProfile: "Download profile",
     profilePage: "Page",
     worksHeading: "Selected work",
     worksHint: "Pick a category to filter",
