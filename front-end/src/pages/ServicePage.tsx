@@ -19,7 +19,7 @@ import { Button } from "#components/ui/button";
 import ProjectDetail from "#components/organisms/ProjectDetail";
 import type { ApiProject, ApiService } from "#lib/apiTypes";
 import { duongDanDichVu, duongDanDuAn } from "#lib/urls";
-import type { ProjectDisplay } from "#hooks/useProjects";
+import { mapCaseStudy, type ProjectDisplay } from "#hooks/useProjects";
 import CTASection from "#components/organisms/CTASection";
 
 const PROJECT_PARAM = "project";
@@ -37,6 +37,7 @@ function toProjectDisplay(f: ApiProject, lang: Lang): ProjectDisplay {
     shootDate: f.shootDate,
     shootLocation: f.shootLocation,
     members: f.members?.map((m) => m.name),
+    caseStudy: mapCaseStudy(f.caseStudy, lang),
   };
 }
 

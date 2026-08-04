@@ -6,9 +6,39 @@ import type { IUser } from "./User.ts";
 
 const localizedString = new Schema({ en: String, vi: String }, { _id: false });
 
+// Ba phần của câu chuyện dự án — xem `ICaseStudy` ngay dưới để biết vì sao có.
+const caseStudySchema = new Schema(
+  {
+    challenge: { type: localizedString, required: false },
+    approach:  { type: localizedString, required: false },
+    result:    { type: localizedString, required: false },
+  },
+  { _id: false },
+);
+
+/**
+ * Câu chuyện dự án — thứ biến bộ sưu tập thành bằng chứng năng lực.
+ *
+ * Trước đây mỗi dự án chỉ có tên, ảnh, video và ngày quay. Khách xem xong biết
+ * Bee Z quay đẹp, nhưng không biết Bee Z GIẢI QUYẾT ĐƯỢC VẤN ĐỀ GÌ — mà khách
+ * thuê TVC thì mua kết quả chứ không mua đoạn phim đẹp.
+ *
+ * Cả ba phần đều KHÔNG bắt buộc: chỉ vài dự án mạnh nhất mới đáng viết đầy đủ,
+ * số còn lại giữ nguyên như cũ và phần này tự ẩn đi.
+ */
+export interface ICaseStudy {
+  /** Khách cần gì, khó ở chỗ nào. */
+  challenge?: { en?: string; vi?: string };
+  /** Bee Z làm gì khác với cách làm thông thường. */
+  approach?: { en?: string; vi?: string };
+  /** Đo được gì — nên có số. */
+  result?: { en?: string; vi?: string };
+}
+
 export interface IProject extends Document {
   /** Tên đường dẫn đọc được, sinh một lần lúc tạo — xem `lib/slug.ts`. */
   slug?: string;
+  caseStudy?: ICaseStudy;
   layout: "vertical" | "horizontal";
   service: PopulatedDoc<IService>;
   thumbnailImage: string;
@@ -35,6 +65,7 @@ const projectSchema = new Schema<IProject>(
     shootDate:      { type: Date, required: false }, // date the project was shot (optional)
     shootLocation:  { type: String, required: false }, // VN province/city (optional)
     members:        [{ type: Schema.Types.ObjectId, ref: "User" }], // team members who worked on the project
+    caseStudy:      { type: caseStudySchema, required: false },
   },
   {
     // Cần cho sitemap: khai báo ngày cập nhật gần nhất của từng trang để

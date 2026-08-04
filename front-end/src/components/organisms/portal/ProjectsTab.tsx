@@ -13,6 +13,7 @@ import { Button } from "#components/ui/button";
 import { Checkbox } from "#components/ui/checkbox";
 import { DatePicker } from "#components/ui/date-picker";
 import { Input } from "#components/ui/input";
+import { Textarea } from "#components/ui/textarea";
 import { Label } from "#components/ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "#components/ui/popover";
 import EditModal from "#components/ui/portal/EditModal";
@@ -62,7 +63,26 @@ type ProjectForm = {
   shootDate: string;
   shootLocation: string;
   members: string[];
+  /** Câu chuyện dự án — chỉ giữ bản tiếng Việt trong ô nhập, xem chú thích ở form. */
+  caseStudy: { challenge: string; approach: string; result: string };
 };
+
+/** Ô rỗng thì KHÔNG gửi lên, để dữ liệu không đầy những chuỗi trống vô nghĩa. */
+function caseStudyLenApi(cs: ProjectForm["caseStudy"], goc?: ApiProject["caseStudy"]) {
+  const phan = (moi: string, cu?: { en?: string; vi?: string }) => {
+    const v = moi.trim();
+    // Giữ nguyên bản tiếng Anh đã có: người quản trị chỉ sửa ô tiếng Việt, xoá
+    // mất bản dịch cũ chỉ vì nó không hiện trên màn hình là một cách phá dữ liệu.
+    if (!v && !cu?.en) return undefined;
+    return { vi: v, en: cu?.en ?? "" };
+  };
+  const ra = {
+    challenge: phan(cs.challenge, goc?.challenge),
+    approach: phan(cs.approach, goc?.approach),
+    result: phan(cs.result, goc?.result),
+  };
+  return Object.values(ra).some(Boolean) ? ra : undefined;
+}
 
 function toForm(f: ApiProject): ProjectForm {
   const service =
@@ -83,6 +103,11 @@ function toForm(f: ApiProject): ProjectForm {
     shootDate: f.shootDate ? f.shootDate.slice(0, 10) : "",
     shootLocation: f.shootLocation ?? "",
     members: f.members?.map((m) => m.id) ?? [],
+    caseStudy: {
+      challenge: f.caseStudy?.challenge?.vi ?? f.caseStudy?.challenge?.en ?? "",
+      approach: f.caseStudy?.approach?.vi ?? f.caseStudy?.approach?.en ?? "",
+      result: f.caseStudy?.result?.vi ?? f.caseStudy?.result?.en ?? "",
+    },
   };
 }
 
@@ -99,6 +124,7 @@ function emptyProjectForm(): ProjectForm {
     shootDate: "",
     shootLocation: "",
     members: [],
+    caseStudy: { challenge: "", approach: "", result: "" },
   };
 }
 
@@ -173,6 +199,7 @@ export default function ProjectsTab({ data, raw, services, users, loading, onRef
         shootDate: form.shootDate || undefined,
         shootLocation: form.shootLocation || undefined,
         members: form.members.map((s) => s.trim()).filter(Boolean),
+        caseStudy: caseStudyLenApi(form.caseStudy, editing?.caseStudy),
       };
       if (creating) {
         await apiPost(`/api/projects`, payload);
@@ -372,6 +399,53 @@ export default function ProjectsTab({ data, raw, services, users, loading, onRef
                     />
                   </div>
                 </div>
+                {/*
+                  Câu chuyện dự án — cả ba ô đều KHÔNG bắt buộc.
+                  Chỉ vài dự án mạnh nhất mới đáng viết đầy đủ; dự án bỏ trống thì
+                  phần này không hiện gì trên web, không để lại tiêu đề trống.
+
+                  Chỉ có ô tiếng Việt: đây là phần dài do người quản trị tự gõ,
+                  bản tiếng Anh gần như luôn bị bỏ trống — mà web đã tự lùi sang
+                  bản tiếng Việt khi thiếu, nên bày thêm ba ô tiếng Anh chỉ làm
+                  màn hình rối mà không ai điền.
+                */}
+                <div className="border-border/60 rounded-lg border p-3">
+                  <p className="text-foreground mb-1 text-sm font-semibold">Câu chuyện dự án</p>
+                  <p className="text-muted-foreground mb-3 text-xs leading-relaxed">
+                    Bỏ trống cũng được. Viết vào đây thì khách xem dự án sẽ thấy Bee Z giải
+                    quyết được vấn đề gì, chứ không chỉ thấy phim đẹp.
+                  </p>
+                  <div className="flex flex-col gap-3">
+                    <div>
+                      <Label>Bài toán</Label>
+                      <Textarea
+                        rows={3}
+                        value={form.caseStudy.challenge}
+                        onChange={(e) => set("caseStudy", { ...form.caseStudy, challenge: e.target.value })}
+                        placeholder="Khách cần gì, khó ở chỗ nào?"
+                      />
+                    </div>
+                    <div>
+                      <Label>Cách làm</Label>
+                      <Textarea
+                        rows={3}
+                        value={form.caseStudy.approach}
+                        onChange={(e) => set("caseStudy", { ...form.caseStudy, approach: e.target.value })}
+                        placeholder="Bee Z xử lý ra sao — nêu đúng chỗ khó"
+                      />
+                    </div>
+                    <div>
+                      <Label>Kết quả</Label>
+                      <Textarea
+                        rows={2}
+                        value={form.caseStudy.result}
+                        onChange={(e) => set("caseStudy", { ...form.caseStudy, result: e.target.value })}
+                        placeholder="Đo được gì? Nên có số."
+                      />
+                    </div>
+                  </div>
+                </div>
+
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <Label>Shoot date</Label>

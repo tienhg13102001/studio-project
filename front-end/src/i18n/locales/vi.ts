@@ -34,6 +34,13 @@ const vi = {
     productImages: "Ảnh sản phẩm / hậu trường",
     watchMore: "Xem thêm",
     clickArrows: "Bấm mũi tên",
+    // Câu chuyện dự án — chỉ hiện ở dự án nào đã viết. Xem `ICaseStudy` ở backend.
+    caseStudy: {
+      heading: "Câu chuyện dự án",
+      challenge: "Bài toán",
+      approach: "Cách làm",
+      result: "Kết quả",
+    },
   },
   stats: {
     items: [

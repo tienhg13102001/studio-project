@@ -34,6 +34,12 @@ const en = {
     productImages: "Product Images / Behind the Scenes",
     watchMore: "Watch More",
     clickArrows: "Click arrows",
+    caseStudy: {
+      heading: "Case study",
+      challenge: "The challenge",
+      approach: "What we did",
+      result: "Results",
+    },
   },
   stats: {
     items: [

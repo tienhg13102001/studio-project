@@ -52,6 +52,17 @@ export type ApiProject = {
   shootDate?: string; // optional, ISO date string
   shootLocation?: string; // optional, VN province/city
   members?: ApiProjectMember[]; // optional, populated team members who worked on the project
+  caseStudy?: ApiCaseStudy;
+};
+
+/**
+ * Câu chuyện dự án. Cả ba phần đều không bắt buộc — chỉ vài dự án mạnh nhất mới
+ * đáng viết đầy đủ, số còn lại phần này tự ẩn.
+ */
+export type ApiCaseStudy = {
+  challenge?: LocalizedString;
+  approach?: LocalizedString;
+  result?: LocalizedString;
 };
 
 export type ApiProjectMember = {

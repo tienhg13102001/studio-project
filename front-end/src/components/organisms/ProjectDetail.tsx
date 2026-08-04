@@ -18,6 +18,7 @@ import {
 } from "@phosphor-icons/react";
 import { useEffect, useRef, useState, type CSSProperties, type FC } from "react";
 import { useNavigate } from "react-router-dom";
+import CaseStudyBlock from "#components/molecules/CaseStudyBlock";
 
 type Props = {
   project: ProjectDisplay;
@@ -290,6 +291,8 @@ const ProjectDetail: FC<Props> = ({ project, onClose }) => {
               <p className="text-foreground/80 text-sm leading-relaxed">{project.subtitle}</p>
             </div>
 
+            {project.caseStudy && <CaseStudyBlock caseStudy={project.caseStudy} compact />}
+
             {(project.shootLocation || project.shootDate) && (
               <div className="text-muted-foreground mt-4 flex flex-wrap items-center gap-4 text-sm">
                 {project.shootLocation && (
@@ -429,6 +432,9 @@ const ProjectDetail: FC<Props> = ({ project, onClose }) => {
             </h3>
             <p className="text-foreground/80 text-sm leading-relaxed">{project.subtitle}</p>
           </div>
+
+          {/* Câu chuyện dự án — chỉ hiện ở dự án đã viết. */}
+          {project.caseStudy && <CaseStudyBlock caseStudy={project.caseStudy} />}
 
           {/* Members */}
           {project.members && project.members.length > 0 && (

@@ -1,8 +1,15 @@
 import { apiFetch, invalidateApiCache, resolveAssetUrl } from "#lib/api";
 import type { ApiProject, ApiProjectsContent } from "#lib/apiTypes";
 import type { Lang } from "#i18n";
-import { localized } from "#lib/localized";
+import { localized, localizedOrFallback } from "#lib/localized";
 import { useCallback, useEffect, useRef, useState } from "react";
+
+/** Câu chuyện dự án đã dịch sẵn. Phần nào chưa viết thì không có mặt ở đây. */
+export type CaseStudyDisplay = {
+  challenge?: string;
+  approach?: string;
+  result?: string;
+};
 
 export type ProjectDisplay = {
   id: string;
@@ -15,7 +22,32 @@ export type ProjectDisplay = {
   shootDate?: string;
   shootLocation?: string;
   members?: string[];
+  caseStudy?: CaseStudyDisplay;
 };
+
+/**
+ * Dịch câu chuyện dự án, bỏ hẳn phần chưa viết.
+ *
+ * Dùng `localizedOrFallback` chứ không phải `localized`: mấy phần này do người
+ * quản trị tự gõ, bản tiếng Anh gần như luôn để trống — mà để trống thì thà hiện
+ * bản tiếng Việt còn hơn hiện một mảng trắng.
+ *
+ * Trả `undefined` khi cả ba phần đều rỗng, để bên hiển thị chỉ cần kiểm một chỗ.
+ */
+export function mapCaseStudy(
+  cs: ApiProject["caseStudy"],
+  lang: Lang,
+): CaseStudyDisplay | undefined {
+  if (!cs) return undefined;
+  const ra: CaseStudyDisplay = {};
+  const challenge = localizedOrFallback(cs.challenge, lang);
+  const approach = localizedOrFallback(cs.approach, lang);
+  const result = localizedOrFallback(cs.result, lang);
+  if (challenge) ra.challenge = challenge;
+  if (approach) ra.approach = approach;
+  if (result) ra.result = result;
+  return Object.keys(ra).length > 0 ? ra : undefined;
+}
 
 function mapProject(f: ApiProject, lang: Lang): ProjectDisplay {
   return {
@@ -29,6 +61,7 @@ function mapProject(f: ApiProject, lang: Lang): ProjectDisplay {
     shootDate: f.shootDate,
     shootLocation: f.shootLocation,
     members: f.members?.map((m) => m.name),
+    caseStudy: mapCaseStudy(f.caseStudy, lang),
   };
 }
 

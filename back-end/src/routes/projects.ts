@@ -121,6 +121,7 @@ router.post("/", async (req, res, next) => {
       shootDate: body.shootDate,
       shootLocation: body.shootLocation,
       members: body.members,
+      caseStudy: body.caseStudy,
     });
     if (body.service) {
       await Service.findByIdAndUpdate(body.service, { $push: { projects: project._id } });
@@ -137,11 +138,11 @@ router.post("/", async (req, res, next) => {
 /** PUT /api/projects/:id */
 router.put("/:id", async (req, res, next) => {
   try {
-    const { title, subtitle, thumbnailImage, layout, prominent, service, video, photos, shootDate, shootLocation, members } =
+    const { title, subtitle, thumbnailImage, layout, prominent, service, video, photos, shootDate, shootLocation, members, caseStudy } =
       req.body as Record<string, unknown>;
     const project = await Project.findByIdAndUpdate(
       req.params.id,
-      { title, subtitle, thumbnailImage, layout, prominent, service, video, photos, shootDate, shootLocation, members },
+      { title, subtitle, thumbnailImage, layout, prominent, service, video, photos, shootDate, shootLocation, members, caseStudy },
       { new: true, runValidators: true },
     ).populate("service").populate("members", "name photo");
     if (!project) { sendError(res, "Project not found", 404); return; }
