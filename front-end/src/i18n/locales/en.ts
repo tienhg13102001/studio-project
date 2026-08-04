@@ -12,6 +12,17 @@ const en = {
   portfolio: {
     subtitle: "A selection of our standout projects and visuals.",
     empty: "No images yet — check back soon.",
+    profileHeading: "Company profile",
+    profileHint: "Drag sideways to browse · tap a page to read it",
+    profilePage: "Page",
+    worksHeading: "Selected work",
+    worksHint: "Pick a category to filter",
+    all: "All",
+    projectCount: "projects",
+    emptyFilter: "No projects in this category yet.",
+    closeReader: "Close page",
+    prevPage: "Previous page",
+    nextPage: "Next page",
   },
   cta: {
     contactBeez: "Contact BeeZ",

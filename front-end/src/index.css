@@ -345,3 +345,31 @@
     animation: none;
   }
 }
+
+/*
+  Dải cuộn ngang (hồ sơ năng lực ở trang Portfolio).
+
+  CỐ Ý KHÔNG GIẤU thanh cuộn: nó là dấu hiệu duy nhất trên máy tính cho biết còn
+  kéo được nữa. Giấu đi thì dải trông như đã hết ở tấm cuối cùng nhìn thấy, và
+  phần lớn khách sẽ không bao giờ kéo. Thay vì giấu thì làm nó mảnh và cùng tông
+  để không phá bố cục.
+
+  Trên điện thoại trình duyệt tự ẩn thanh cuộn nên phần này không ảnh hưởng gì.
+*/
+.dai-ngang {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in oklab, var(--color-foreground) 22%, transparent) transparent;
+}
+.dai-ngang::-webkit-scrollbar {
+  height: 6px;
+}
+.dai-ngang::-webkit-scrollbar-track {
+  background: transparent;
+}
+.dai-ngang::-webkit-scrollbar-thumb {
+  background: color-mix(in oklab, var(--color-foreground) 22%, transparent);
+  border-radius: 999px;
+}
+.dai-ngang::-webkit-scrollbar-thumb:hover {
+  background: color-mix(in oklab, var(--color-foreground) 38%, transparent);
+}

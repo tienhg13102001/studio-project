@@ -12,6 +12,17 @@ const vi = {
   portfolio: {
     subtitle: "Tuyển chọn những dự án và hình ảnh tiêu biểu của chúng tôi.",
     empty: "Chưa có hình ảnh nào — vui lòng quay lại sau.",
+    profileHeading: "Hồ sơ năng lực",
+    profileHint: "Kéo ngang để xem · bấm vào một trang để đọc rõ",
+    profilePage: "Trang",
+    worksHeading: "Dự án đã thực hiện",
+    worksHint: "Chọn một mảng để lọc",
+    all: "Tất cả",
+    projectCount: "dự án",
+    emptyFilter: "Chưa có dự án nào trong mảng này.",
+    closeReader: "Đóng trang đang xem",
+    prevPage: "Trang trước",
+    nextPage: "Trang sau",
   },
   cta: {
     contactBeez: "Liên hệ BeeZ",

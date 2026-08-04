@@ -1,63 +1,77 @@
 import Seo from "#components/Seo";
 import PageHero from "#components/organisms/PageHero";
+import ProfileStrip from "#components/organisms/ProfileStrip";
+import WorkLibrary from "#components/organisms/WorkLibrary";
 import { usePortfolio } from "#hooks/usePortfolio";
-import { useTranslation } from "#i18n";
-import { resolveAssetUrl } from "#lib/api";
+import { useProjects } from "#hooks/useProjects";
+import { useLanguage, useTranslation } from "#i18n";
 
+/**
+ * Trang Portfolio.
+ *
+ * TRƯỚC ĐÂY: chín tấm ảnh xếp dọc, cao 13.122px — khoảng mười lăm màn hình cuộn.
+ * Không một chỗ nào bấm được, không một giây video nào xem được, không tấm nào
+ * ghi tên dự án. Trong khi đó 66 dự án kèm video nằm sau trang Dịch vụ, phải bấm
+ * hai lần mới tới, và từ đây không có đường nào dẫn sang.
+ *
+ * NAY: hai khối rõ ràng —
+ *   1. Hồ sơ năng lực: chính chín trang đó, cho chạy ngang thành dải phim, bấm
+ *      vào để đọc to. Chúng KHÔNG mất đi, chỉ thôi chiếm hết trang.
+ *   2. Thư viện dự án: toàn bộ dự án, lọc được theo mảng việc, mỗi thẻ dẫn thẳng
+ *      tới địa chỉ riêng của dự án.
+ *
+ * Thứ tự này có chủ ý: khách vừa vào cần biết Bee Z là ai (hồ sơ), rồi mới cần
+ * bằng chứng (dự án). Đảo lại thì bằng chứng không có chỗ dựa.
+ */
 const PortfolioPage = () => {
   const t = useTranslation();
-  const { data, loading } = usePortfolio();
-  const items = data ?? [];
+  const { lang } = useLanguage();
+  const { data: hoSo, loading: dangTaiHoSo } = usePortfolio();
+  const { raw, loading: dangTaiDuAn } = useProjects(lang);
+
+  // Gộp hai nhóm bố cục lại: với người xem thì đây chỉ là "các dự án", việc thẻ
+  // dựng đứng hay nằm ngang là chuyện của trang Dịch vụ, không phải chuyện ở đây.
+  const duAn = [...(raw?.verticalCards ?? []), ...(raw?.horizontalCards ?? [])];
 
   return (
     <div className="min-h-screen pt-17">
       <Seo
         title="Portfolio"
-        description="Bộ sưu tập dự án và hình ảnh tiêu biểu của BeeZ Production — TVC, Event, TikTok/Reel, F&B, Lookbook và nhiều hơn nữa."
+        description="Hồ sơ năng lực và toàn bộ dự án đã thực hiện của BeeZ Production — TVC, sự kiện, F&B, lookbook, nội dung mạng xã hội. Lọc theo mảng việc, xem video từng dự án."
         path="/portfolio"
       />
 
-      {/*
-        Trước đây trang này chỉ là chồng ảnh, không có tiêu đề cấp một lẫn một
-        dòng chữ nào — máy tìm kiếm không có căn cứ nào để hiểu trang nói về gì,
-        mà người xem cũng không biết mình đang xem tuyển tập của ai.
-      */}
       <PageHero title="Portfolio" subtitle={t.portfolio.subtitle} />
 
-      <p className="text-muted-foreground mx-auto mb-10 max-w-2xl px-6 text-center text-sm leading-relaxed">
-        Những hình ảnh dưới đây được chọn từ các dự án BeeZ Production đã thực hiện: TVC và phim
-        quảng cáo, phim giới thiệu doanh nghiệp, nội dung mạng xã hội, cùng ảnh hậu trường tại phim
-        trường. Mỗi dự án đều do đội ngũ tự làm trọn khâu — từ ý tưởng, quay dựng đến hậu kỳ.
-      </p>
+      {dangTaiHoSo ? (
+        <div className="flex gap-4 px-6 pb-4">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div
+              key={i}
+              className="border-border/60 bg-foreground/5 h-[300px] w-[220px] shrink-0 animate-pulse rounded-xl border md:h-[420px] md:w-[320px]"
+            />
+          ))}
+        </div>
+      ) : (
+        <ProfileStrip items={hoSo ?? []} />
+      )}
 
-      {/* Gallery — capped width on large screens, responsive grid */}
-      <section className="border-foreground/8 bg-foreground/3 max-w-341.5 mx-auto overflow-hidden rounded-b-2xl border mb-10">
-        {loading ? (
-          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {Array.from({ length: 6 }).map((_, i) => (
-              <div
-                key={i}
-                className="border-foreground/8 bg-foreground/5 aspect-square animate-pulse rounded-2xl border"
-              />
-            ))}
-          </div>
-        ) : items.length === 0 ? (
-          <p className="text-muted-foreground py-16 text-center">{t.portfolio.empty}</p>
-        ) : (
-          <>
-            {items.map((p) => (
-              <figure key={p.id} className="group">
-                <img
-                  src={resolveAssetUrl(p.image)}
-                  alt={p.title || "BeeZ Production portfolio"}
-                  loading="lazy"
-                  className="w-full object-cover transition-transform duration-500"
-                />
-              </figure>
-            ))}
-          </>
-        )}
-      </section>
+      {dangTaiDuAn ? (
+        <div className="mx-auto grid max-w-7xl grid-cols-2 gap-4 px-6 py-12 md:grid-cols-4">
+          {Array.from({ length: 8 }).map((_, i) => (
+            <div
+              key={i}
+              className="border-border/60 bg-foreground/5 aspect-[4/3] animate-pulse rounded-xl border"
+            />
+          ))}
+        </div>
+      ) : (
+        <WorkLibrary projects={duAn} />
+      )}
+
+      {!dangTaiHoSo && !dangTaiDuAn && (hoSo ?? []).length === 0 && duAn.length === 0 && (
+        <p className="text-muted-foreground py-20 text-center">{t.portfolio.empty}</p>
+      )}
     </div>
   );
 };
