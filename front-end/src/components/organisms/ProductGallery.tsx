@@ -51,24 +51,37 @@ function justify(ratios: number[], width: number, targetHeight: number): Row[] {
 const GalleryImage: FC<{
   src: string;
   index: number;
+  /** Tên mảng việc của ảnh — dùng làm mô tả thay thế, xem chú thích ở thẻ `img`. */
+  groupLabel: string;
   style: CSSProperties;
   onOpen: (src: string) => void;
   onRatio: (src: string, ratio: number) => void;
-}> = ({ src, index, style, onOpen, onRatio }) => {
+}> = ({ src, index, groupLabel, style, onOpen, onRatio }) => {
   const [loaded, setLoaded] = useState(false);
 
   return (
     <button
       type="button"
       onClick={() => onOpen(src)}
-      aria-label={`Xem ảnh ${index + 1}`}
+      aria-label={`Phóng to ảnh ${index + 1} — ${groupLabel}`}
       style={style}
       className="group border-border/40 bg-muted focus-visible:ring-primary relative block shrink-0 overflow-hidden rounded-lg border focus-visible:ring-2 focus-visible:outline-none"
     >
       {!loaded && <div className="bg-foreground/8 absolute inset-0 animate-pulse" />}
+      {/*
+        MÔ TẢ THAY THẾ Ở ĐÂY LÀ CHO MÁY TÌM KIẾM, không phải cho máy đọc màn hình.
+
+        Nút bọc ngoài đã có `aria-label` nên máy đọc màn hình lấy tên từ đó và BỎ
+        QUA `alt` — không bị đọc trùng. Nhưng Google thì vẫn đọc `alt` để xếp hạng
+        Google Hình ảnh, mà trước đây ô này để rỗng nên toàn bộ ảnh sản phẩm của
+        Bee Z không bao giờ xuất hiện được ở đó.
+
+        Đây là ảnh dự án thật, không phải hoạ tiết trang trí — nên `alt=""` (vốn
+        có nghĩa "ảnh này không mang thông tin") là khai sai.
+      */}
       <img
         src={src}
-        alt=""
+        alt={`${groupLabel} — BeeZ Production`}
         loading="lazy"
         decoding="async"
         onLoad={(e) => {
@@ -206,6 +219,7 @@ const ProductGallery: FC = () => {
                     key={`${src}-${i}`}
                     src={src}
                     index={i}
+                    groupLabel={localized(active.title, lang) || active.tag}
                     style={{ width: row.height * ratio, height: row.height }}
                     onOpen={setLightboxSrc}
                     onRatio={onRatio}
@@ -235,7 +249,7 @@ const ProductGallery: FC = () => {
           </button>
           <img
             src={lightboxSrc}
-            alt=""
+            alt={`${localized(active.title, lang) || active.tag} — BeeZ Production`}
             onClick={(e) => e.stopPropagation()}
             className="max-h-[90vh] max-w-[95vw] rounded-lg object-contain shadow-2xl"
           />
