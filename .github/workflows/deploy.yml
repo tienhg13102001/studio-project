@@ -22,4 +22,15 @@ jobs:
             cd /home/studio-project
             git pull origin main
             docker compose up -d --build
-            docker image prune -f
+            # GIỮ LẠI ẢNH CỦA BẢN VỪA BỊ THAY RA.
+            #
+            # `docker image prune -f` trần xoá mọi ảnh không còn container nào
+            # dùng — kể cả bản vừa chạy cách đây vài phút. Đẩy nhầm thứ gì lên
+            # thì không còn gì để quay về: phải dựng lại từ mã nguồn, mất vài
+            # phút web hỏng, và còn phụ thuộc lúc đó GitHub với kho thư viện có
+            # sống không.
+            #
+            # `until=24h` chỉ dọn ảnh cũ quá một ngày. Rác hôm qua vẫn được dọn,
+            # nhưng bản trước thì nằm sẵn đó để lùi về trong vài giây.
+            # Cách lùi: xem docs/lui-ban-cu.md
+            docker image prune -f --filter "until=24h"
