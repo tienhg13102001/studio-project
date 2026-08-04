@@ -47,6 +47,7 @@ export default function AnalyticsTab() {
   const { data: daily, loading } = useVisitorDaily(days);
   const { data: sources } = useVisitorBreakdown("source", days);
   const { data: devices } = useVisitorBreakdown("device", days);
+  const { data: paths } = useVisitorBreakdown("path", days);
 
   const series = useMemo(() => fillDays(daily, days), [daily, days]);
   const sumRange = series.reduce((a, b) => a + b.count, 0);
@@ -170,25 +171,63 @@ export default function AnalyticsTab() {
         <BreakdownCard title="Nguồn traffic" rows={sources} labels={SOURCE_LABELS} />
         <BreakdownCard title="Thiết bị" rows={devices} labels={DEVICE_LABELS} />
       </div>
+
+      {/*
+        Để RIÊNG một hàng, không xếp cạnh hai thẻ trên — vì đây là loại số khác
+        hẳn. Hai thẻ trên đếm KHÁCH (mỗi người một lần/ngày), thẻ này đếm LƯỢT XEM
+        (một người xem mười trang là mười lượt). Xếp cạnh nhau thì người đọc sẽ tự
+        động so sánh hai con số không so sánh được.
+      */}
+      <BreakdownCard
+        title="Trang được xem nhiều nhất"
+        subtitle="Tính theo lượt xem — một khách xem nhiều trang thì tính nhiều lượt"
+        rows={paths}
+        labels={{}}
+        format={nhanDuongDan}
+      />
     </div>
   );
 }
 
+/** Đổi đường dẫn thành tên đọc được. Địa chỉ dạng tên nên tự nó đã dễ đọc. */
+function nhanDuongDan(key: string): string {
+  const co: Record<string, string> = {
+    "/": "Trang chủ",
+    "/service": "Danh sách dịch vụ",
+    "/portfolio": "Portfolio",
+    "/team": "Đội ngũ",
+    "/contact": "Liên hệ",
+    khac: "Trang khác",
+  };
+  if (co[key]) return co[key];
+  if (key.startsWith("/du-an/")) return `Dự án · ${key.slice(7).replace(/-/g, " ")}`;
+  if (key.startsWith("/service/")) return `Dịch vụ · ${key.slice(9).replace(/-/g, " ")}`;
+  return key;
+}
+
 function BreakdownCard({
   title,
+  subtitle,
   rows,
   labels,
+  format,
 }: {
   title: string;
+  /** Dòng giải thích nhỏ dưới tiêu đề — dùng khi đơn vị đếm khác thẻ bên cạnh. */
+  subtitle?: string;
   rows: { key: string; count: number }[] | null;
   labels: Record<string, string>;
+  /** Đổi khoá thành nhãn khi không tra được bằng bảng cố định (VD: đường dẫn). */
+  format?: (key: string) => string;
 }) {
   const max = Math.max(1, ...(rows ?? []).map((r) => r.count));
   const totalRows = (rows ?? []).reduce((a, b) => a + b.count, 0);
 
   return (
     <div className="border-foreground/8 bg-foreground/3 rounded-xl border p-5">
-      <h2 className="text-foreground/80 mb-4 text-sm font-semibold">{title}</h2>
+      <h2 className="text-foreground/80 text-sm font-semibold">{title}</h2>
+      {subtitle && <p className="text-foreground/40 mt-0.5 mb-3 text-xs">{subtitle}</p>}
+      {!subtitle && <div className="mb-4" />}
       {!rows || rows.length === 0 ? (
         <p className="text-foreground/40 py-6 text-center text-sm">Chưa có dữ liệu.</p>
       ) : (
@@ -197,8 +236,10 @@ function BreakdownCard({
             const pct = totalRows ? Math.round((r.count / totalRows) * 100) : 0;
             return (
               <div key={r.key}>
-                <div className="mb-1 flex justify-between text-xs">
-                  <span className="text-foreground">{labels[r.key] ?? r.key}</span>
+                <div className="mb-1 flex justify-between gap-3 text-xs">
+                  <span className="text-foreground truncate" title={r.key}>
+                    {labels[r.key] ?? format?.(r.key) ?? r.key}
+                  </span>
                   <span className="text-foreground/50 tabular-nums">
                     {fmt(r.count)} · {pct}%
                   </span>

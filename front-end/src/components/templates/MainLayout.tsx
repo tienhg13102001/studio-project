@@ -5,6 +5,7 @@ import Navbar from "../organisms/Navbar";
 import ScrollToTop from "../atoms/ScrollToTop";
 import FloatingZalo from "#components/molecules/FloatingZalo";
 import { useSettings } from "#hooks/useSettings";
+import { usePageView } from "#hooks/usePageView";
 
 type Props = {};
 
@@ -14,6 +15,10 @@ const MainLayout: React.FC<Props> = () => {
   const { backgroundImage } = useSettings();
   const bgUrl = backgroundImage || DEFAULT_BG_URL;
   const { pathname } = useLocation();
+
+  // Đếm lượt xem trang. Đặt Ở ĐÂY chứ không ở lớp bọc Portal: số liệu này là về
+  // KHÁCH, đếm cả lượt nhân viên vào sửa nội dung thì nó vô nghĩa.
+  usePageView();
 
   return (
     // `site` khoanh vùng phần dành cho khách: font tiêu đề serif, cỡ chữ lớn hơn

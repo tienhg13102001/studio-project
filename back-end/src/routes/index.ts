@@ -39,7 +39,15 @@ router.get("/health", (_req, res) => {
  * So khớp chính xác cả chuỗi, không dùng tiền tố — để `/contact/inquiry` mở
  * không kéo theo `/contact/inquiries/<id>` (xoá liên hệ) cũng mở.
  */
-const PUBLIC_WRITES = new Set(["/auth/login", "/contact/inquiry", "/visitors"]);
+const PUBLIC_WRITES = new Set([
+  "/auth/login",
+  "/contact/inquiry",
+  "/visitors",
+  // Ghi nhận lượt xem trang. So khớp là so CHÍNH XÁC cả đường dẫn, nên
+  // "/visitors" ở trên KHÔNG tự mở cho "/visitors/page" — thiếu dòng này thì mọi
+  // lượt xem của khách chưa đăng nhập đều bị chặn, tức là không đếm được gì.
+  "/visitors/page",
+]);
 
 const READ_METHODS = new Set(["GET", "HEAD", "OPTIONS"]);
 

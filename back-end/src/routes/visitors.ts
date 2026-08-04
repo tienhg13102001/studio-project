@@ -52,6 +52,35 @@ function parseSource(referrer?: string, utm?: string): string {
   }
 }
 
+/**
+ * Rút gọn địa chỉ trang về một khoá đếm được.
+ *
+ * VÌ SAO KHÔNG GHI THẲNG ĐỊA CHỈ: bất kỳ ai cũng gọi được vào đây, và mỗi địa
+ * chỉ lạ sẽ đẻ ra một bản ghi mới. Gọi một triệu địa chỉ ngẫu nhiên là một triệu
+ * bản ghi rác trong cơ sở dữ liệu. Chỉ nhận những dạng địa chỉ web thật sự có,
+ * còn lại dồn hết vào một ô "khac" — số lượng khoá vì thế luôn bị chặn trên bởi
+ * số dịch vụ + số dự án, không phụ thuộc kẻ gọi.
+ *
+ * BỎ QUA TRANG NỘI BỘ: /portal, /bao-gia, /hop-dong là công cụ của nhân viên.
+ * Đếm chúng vào đây chỉ làm nhiễu số liệu về KHÁCH.
+ */
+function parsePath(raw?: unknown): string | null {
+  if (typeof raw !== "string" || !raw.startsWith("/")) return null;
+
+  // Bỏ tham số, bỏ dấu / cuối, hạ chữ thường.
+  const p = raw.split("?")[0]!.split("#")[0]!.replace(/\/+$/, "").toLowerCase() || "/";
+  if (p.length > 120) return null;
+
+  if (/^\/(portal|bao-gia|hop-dong)(\/|$)/.test(p)) return null; // công cụ nội bộ
+  if (["/", "/service", "/portfolio", "/team", "/contact"].includes(p)) return p;
+
+  // Dạng có tham số: giữ nguyên vì số lượng bị chặn bởi dữ liệu thật.
+  if (/^\/service\/[a-z0-9][a-z0-9-]{0,80}$/.test(p)) return p;
+  if (/^\/du-an\/[a-z0-9][a-z0-9-]{0,80}$/.test(p)) return p;
+
+  return "khac";
+}
+
 /** Suy ra loại thiết bị từ User-Agent. */
 function parseDevice(ua?: string): string {
   if (!ua) return "unknown";
@@ -106,10 +135,11 @@ router.get("/daily", requireAuth, async (req, res, next) => {
   }
 });
 
-/** GET /api/visitors/breakdown?dim=source&days=30 — phân rã theo nguồn/thiết bị. */
+/** GET /api/visitors/breakdown?dim=source&days=30 — phân rã theo nguồn/thiết bị/trang. */
 router.get("/breakdown", requireAuth, async (req, res, next) => {
   try {
-    const dim = req.query.dim === "device" ? "device" : "source";
+    const dimHopLe = ["source", "device", "path"];
+    const dim = dimHopLe.includes(String(req.query.dim)) ? String(req.query.dim) : "source";
     const days = parseDays(req.query.days);
     const rows = await VisitorAgg.aggregate<{ _id: string; count: number }>([
       { $match: { dim, day: { $gte: cutoffDay(days) } } },
@@ -171,6 +201,47 @@ router.post("/", async (req, res, next) => {
       }
       throw err;
     }
+  } catch (e) {
+    next(e);
+  }
+});
+
+/**
+ * POST /api/visitors/page — ghi nhận một LƯỢT XEM TRANG.
+ *
+ * VÌ SAO TÁCH HẲN KHỎI `POST /api/visitors`: cái kia đếm KHÁCH DUY NHẤT, mỗi
+ * người một lần trong ngày, và nó thoát ra ngay khi thấy trùng. Lượt xem trang
+ * thì ngược lại — một khách xem mười trang là mười lượt. Nhét chung vào đó sẽ
+ * phá con số khách duy nhất đang chạy đúng bấy lâu nay.
+ *
+ * ĐÂY LÀ "LƯỢT XEM", KHÔNG PHẢI "KHÁCH". Một người mở đi mở lại một dự án thì
+ * tính nhiều lượt. Con số này trả lời câu "trang nào được xem nhiều", không trả
+ * lời câu "bao nhiêu người".
+ *
+ * KHÔNG đụng tới tổng lượt truy cập, lượt-theo-ngày, nguồn hay thiết bị.
+ */
+router.post("/page", async (req, res, next) => {
+  try {
+    const body = (req.body ?? {}) as { path?: unknown };
+    const path = parsePath(body.path);
+
+    // Địa chỉ không hợp lệ hoặc là trang nội bộ → im lặng bỏ qua. Trả 200 chứ
+    // không trả lỗi: đây là việc phụ, không đáng để hiện lỗi lên màn hình khách.
+    if (!path) return sendSuccess(res, { recorded: false });
+
+    // Bỏ qua trình thu thập dữ liệu tự động — chúng không phải khách, mà lại là
+    // thứ dễ thổi phồng con số nhất.
+    const ua = String(req.headers["user-agent"] ?? "");
+    if (/bot|crawl|spider|slurp|headless|preview|monitor/i.test(ua)) {
+      return sendSuccess(res, { recorded: false });
+    }
+
+    await VisitorAgg.updateOne(
+      { day: todayUTC(), dim: "path", key: path },
+      { $inc: { count: 1 } },
+      { upsert: true },
+    );
+    sendSuccess(res, { recorded: true });
   } catch (e) {
     next(e);
   }
