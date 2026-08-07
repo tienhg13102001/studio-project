@@ -20,8 +20,20 @@ const MeetOurTeam: React.FC = () => {
   const { lang } = useLanguage();
   const { data: users, loading } = useTeam();
 
-  const featured = users?.find((u) => u.featured);
-  const others = users?.filter((u) => !u.featured) ?? [];
+  /**
+   * Khối nổi bật là bố cục lớn có ảnh to và trích dẫn — chỉ vừa MỘT người.
+   *
+   * LỖI CŨ: `others` lọc bỏ MỌI người được tick, trong khi chỉ MỘT người được
+   * đưa lên khối nổi bật. Nên tick người thứ hai là người đó biến mất khỏi web
+   * hoàn toàn — không nằm ở khối nổi bật, cũng không nằm trong lưới. Đã tái hiện
+   * bằng dữ liệu thật: tick hai người thì người thứ hai mất tích.
+   *
+   * Nay loại đúng MỘT người đang ở khối nổi bật ra khỏi lưới. Ai tick thêm thì
+   * vẫn hiện ở lưới như bình thường — sai thứ tự ưu tiên thì sửa được, chứ mất
+   * người khỏi trang thì không ai phát hiện ra.
+   */
+  const featured = users?.find((u) => u.featured) ?? null;
+  const others = (users ?? []).filter((u) => u.id !== featured?.id);
 
   if (loading) return null;
   if (!users?.length) return null;

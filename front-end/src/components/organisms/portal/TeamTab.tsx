@@ -482,15 +482,31 @@ export default function TeamTab({ data, loading, onRefetch }: TabProps) {
                     </SelectContent>
                   </Select>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Checkbox
-                    id="team-featured"
-                    checked={form.featured}
-                    onCheckedChange={(checked) => set("featured", !!checked)}
-                  />
-                  <label htmlFor="team-featured" className="text-sm text-foreground/60 cursor-pointer">
-                    Featured member
-                  </label>
+                {/*
+                  Khối nổi bật trên trang Đội ngũ là bố cục lớn có ảnh to và
+                  trích dẫn — chỉ vừa MỘT người. Nói thẳng điều đó ra đây, chứ
+                  không để người dùng tick vài người rồi tự đoán vì sao trang
+                  không như mong đợi.
+                */}
+                <div>
+                  <div className="flex items-center gap-2">
+                    <Checkbox
+                      id="team-featured"
+                      checked={form.featured}
+                      onCheckedChange={(checked) => set("featured", !!checked)}
+                    />
+                    <label
+                      htmlFor="team-featured"
+                      className="text-foreground/60 cursor-pointer text-sm"
+                    >
+                      Đưa lên khối nổi bật
+                    </label>
+                  </div>
+                  <p className="text-foreground/40 mt-1 text-xs leading-relaxed">
+                    Chỉ <b>một người</b> được lên khối nổi bật ở đầu trang Đội ngũ. Tick nhiều
+                    người thì chỉ người đầu danh sách được lên đó, những người còn lại vẫn hiện
+                    bình thường ở lưới bên dưới.
+                  </p>
                 </div>
               </div>
 
