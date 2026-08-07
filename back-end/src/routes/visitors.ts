@@ -72,6 +72,20 @@ function parsePath(raw?: unknown): string | null {
   if (p.length > 120) return null;
 
   if (/^\/(portal|bao-gia|hop-dong)(\/|$)/.test(p)) return null; // công cụ nội bộ
+
+  /**
+   * BỎ QUA ĐỊA CHỈ KIỂU CŨ (có đoạn 24 ký tự mã máy).
+   *
+   * Link cũ như /service/6a1ea3851b490b84af4d27ed vẫn sống — mở lên là web tự
+   * đổi sang /service/san-xuat-tvc. Nhưng bộ đếm chạy NGAY khi trang vừa mở,
+   * tức là trước lúc đổi xong, nên MỘT lần xem bị ghi thành HAI lượt: một dòng
+   * mã máy không ai đọc được, một dòng tên.
+   *
+   * Bỏ qua dạng cũ là xong cả hai: bảng thống kê sạch, và số lượt đúng — vì
+   * địa chỉ đích vẫn được ghi một nhịp sau đó.
+   */
+  if (/\/[a-f0-9]{24}(\/|$)/.test(p)) return null;
+
   if (["/", "/service", "/portfolio", "/team", "/contact"].includes(p)) return p;
 
   // Dạng có tham số: giữ nguyên vì số lượng bị chặn bởi dữ liệu thật.
