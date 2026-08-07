@@ -66,13 +66,35 @@ router.post("/", async (req, res, next) => {
 });
 
 /** PUT /api/users/:id — update user fields (no password) */
+/**
+ * PUT /api/users/:id — sửa hồ sơ.
+ *
+ * VAI TRÒ TÀI KHOẢN chỉ quản trị mới đổi được. Bộ gác ở `routes/index.ts` cho
+ * nhân viên sửa hồ sơ CỦA CHÍNH HỌ — nếu route này nhận luôn `accountRole` từ
+ * thân request thì họ chỉ cần gửi kèm `accountRole: "admin"` là tự lên quản trị.
+ * Đây là lỗ hổng leo thang đặc quyền hoàn chỉnh, và nó không lộ ra ở giao diện
+ * vì Portal không hiện ô đó cho nhân viên.
+ *
+ * Vai trò người thao tác tra lại trong cơ sở dữ liệu chứ không đọc từ token, để
+ * hạ quyền một tài khoản là có hiệu lực ngay.
+ */
 router.put("/:id", async (req, res, next) => {
   try {
     const { name, email, role, photo, quote, bio, skills, featured, accountRole } =
       req.body as Record<string, unknown>;
+
+    const nguoiThaoTac = await User.findById(req.user?.sub).select("accountRole").lean();
+    const laQuanTri = nguoiThaoTac?.accountRole === "admin";
+
+    const capNhat: Record<string, unknown> = {
+      name, email, role, photo, quote, bio, skills, featured,
+    };
+    // `undefined` thì Mongoose bỏ qua ô đó — giữ nguyên vai trò đang có.
+    if (laQuanTri) capNhat["accountRole"] = accountRole;
+
     const user = await User.findByIdAndUpdate(
       req.params.id,
-      { name, email, role, photo, quote, bio, skills, featured, accountRole },
+      capNhat,
       { new: true, runValidators: true },
     ).select("-password");
     if (!user) { sendError(res, "User not found", 404); return; }

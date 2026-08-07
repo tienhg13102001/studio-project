@@ -1,6 +1,7 @@
-import { Router } from "express";
-import { sendSuccess } from "../lib/response.ts";
+import { Router, type Request, type Response, type NextFunction } from "express";
+import { sendSuccess, sendError } from "../lib/response.ts";
 import requireAuth from "../middleware/requireAuth.ts";
+import { User } from "../models/User.ts";
 
 import authRouter from "./auth.ts";
 import brandsRouter from "./brands.ts";
@@ -51,6 +52,43 @@ const PUBLIC_WRITES = new Set([
 
 const READ_METHODS = new Set(["GET", "HEAD", "OPTIONS"]);
 
+// ─── Phân quyền theo vai trò ─────────────────────────────────────────────────
+/**
+ * Hai mức: `admin` làm được mọi thứ, `member` (nhân viên) chỉ đăng và sửa dự án
+ * cùng hồ sơ của chính mình.
+ *
+ * VÌ SAO CHẶN Ở MÁY CHỦ chứ không chỉ ẩn nút trong Portal: ẩn nút là giấu đường
+ * đi, không phải khoá cửa. Mối lo không phải nhân viên cố tình phá — mà là tài
+ * khoản bị dùng chung, hoặc còn sống sau khi người đó nghỉ việc. Thứ nằm sau
+ * cánh cửa này là danh sách liên hệ khách: tên, số điện thoại, email của từng
+ * người đã hỏi mua.
+ */
+
+/** Đọc dữ liệu nhạy cảm — chỉ quản trị. */
+const ADMIN_ONLY_READS = [
+  /^\/contact\/inquiries(\/|$)/, // liên hệ khách hàng
+  /^\/visitors(\/|$)/, // số liệu truy cập
+  /^\/trash(\/|$)/, // thùng rác
+];
+
+/**
+ * Nhân viên được ghi ở ĐÚNG những chỗ này, ngoài ra cấm hết.
+ *
+ * KHÔNG có DELETE nào trong danh sách — Hoàn chốt: nhân viên chỉ thêm và sửa,
+ * xoá phải là người có thẩm quyền. Sửa nhầm còn cứu được, xoá nhầm thì không.
+ */
+const MEMBER_WRITES: { method: string; re: RegExp }[] = [
+  { method: "POST", re: /^\/projects$/ }, // thêm dự án
+  { method: "PUT", re: /^\/projects\/[^/]+$/ }, // sửa dự án (mọi dự án — Hoàn chốt)
+  { method: "POST", re: /^\/upload(\/|$)/ }, // tải ảnh & video lên
+  { method: "PUT", re: /^\/users\/[^/]+$/ }, // sửa hồ sơ — chỉ của mình, kiểm thêm ở dưới
+  { method: "PUT", re: /^\/users\/[^/]+\/password$/ }, // đổi mật khẩu của chính mình
+];
+
+/** Lấy id người dùng từ đường dẫn dạng /users/<id> hoặc /users/<id>/password. */
+const idTrongDuongDan = (p: string): string | null =>
+  /^\/users\/([^/]+)/.exec(p)?.[1] ?? null;
+
 /**
  * Mặc định là KHOÁ: mọi POST/PUT/PATCH/DELETE đều phải kèm token đăng nhập.
  *
@@ -62,14 +100,74 @@ const READ_METHODS = new Set(["GET", "HEAD", "OPTIONS"]);
  * tên vào danh sách trên và nhìn thấy ngay khi review.
  */
 router.use((req, res, next) => {
-  if (READ_METHODS.has(req.method)) return next();
-
   // Bỏ dấu gạch chéo cuối để "/visitors/" không lách qua được phép so khớp.
   const path = req.path.length > 1 ? req.path.replace(/\/+$/, "") : req.path;
-  if (PUBLIC_WRITES.has(path)) return next();
+  const laDoc = READ_METHODS.has(req.method);
+  const docNhayCam = laDoc && ADMIN_ONLY_READS.some((re) => re.test(path));
 
-  requireAuth(req, res, next);
+  // Đọc dữ liệu công khai: đi thẳng, không tra cứu gì cho nhanh.
+  if (laDoc && !docNhayCam) return next();
+  if (!laDoc && PUBLIC_WRITES.has(path)) return next();
+
+  requireAuth(req, res, () => {
+    void kiemTraVaiTro(req, res, next, path, laDoc);
+  });
 });
+
+/**
+ * Kiểm vai trò, ĐỌC TỪ CƠ SỞ DỮ LIỆU chứ không đọc từ token.
+ *
+ * Token có sẵn `accountRole`, dùng nó thì nhanh hơn — nhưng nó được đóng dấu lúc
+ * đăng nhập và sống 7 ngày. Nghĩa là hạ quyền một người xong họ vẫn giữ quyền cũ
+ * suốt một tuần, và tài khoản đã xoá vẫn dùng được tới lúc token hết hạn. Với
+ * một cánh cửa bảo mật thì như vậy là không chấp nhận được.
+ *
+ * Cái giá là một truy vấn nhỏ mỗi lần gọi — không đáng kể với một portal ba
+ * người, và chỉ chạy cho thao tác ghi hoặc đọc dữ liệu nhạy cảm.
+ */
+async function kiemTraVaiTro(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+  path: string,
+  laDoc: boolean,
+): Promise<void> {
+  try {
+    const nguoi = await User.findById(req.user?.sub).select("accountRole").lean();
+
+    // Token hợp lệ nhưng người dùng đã bị xoá → cắt quyền ngay.
+    if (!nguoi) {
+      sendError(res, "Tài khoản không còn tồn tại", 401);
+      return;
+    }
+    if (nguoi.accountRole === "admin") return next();
+
+    if (laDoc) {
+      sendError(res, "Bạn không có quyền xem mục này", 403);
+      return;
+    }
+
+    const duocGhi = MEMBER_WRITES.some((r) => r.method === req.method && r.re.test(path));
+    if (!duocGhi) {
+      sendError(res, "Bạn không có quyền thực hiện thao tác này", 403);
+      return;
+    }
+
+    // Sửa hồ sơ thì CHỈ được sửa của chính mình. Thiếu kiểm này thì nhân viên
+    // sửa được hồ sơ người khác — kể cả tự nâng mình lên quản trị.
+    if (path.startsWith("/users/")) {
+      const id = idTrongDuongDan(path);
+      if (!id || id !== req.user?.sub) {
+        sendError(res, "Bạn chỉ sửa được hồ sơ của chính mình", 403);
+        return;
+      }
+    }
+
+    next();
+  } catch (e) {
+    next(e);
+  }
+}
 
 router.use("/landing", landingRouter);
 router.use("/services", servicesRouter);

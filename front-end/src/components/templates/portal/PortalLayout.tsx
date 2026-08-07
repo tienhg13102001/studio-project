@@ -8,6 +8,7 @@ import type { PortalUser } from "#lib/portal.types";
 import { cn } from "#lib/utils";
 import { useEffect, useState } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import { DUONG_DAN_CHI_QUAN_TRI } from "#hooks/useVaiTro";
 
 /**
  * Protected shell for all /portal/* routes (except /portal login itself).
@@ -44,6 +45,21 @@ const PortalLayout = () => {
       navigate("/portal", { replace: true });
     }
   }, [navigate]);
+
+  /**
+   * Nhân viên gõ thẳng địa chỉ một mục chỉ dành cho quản trị thì đưa về Dự án.
+   *
+   * Ẩn mục trong menu là chưa đủ — địa chỉ vẫn gõ tay được, và người dùng hay
+   * lưu dấu trang. Không có bước này thì họ vào một trang trống báo lỗi 403 và
+   * tưởng web hỏng. Máy chủ vẫn là chỗ chặn thật; đây chỉ là để không ai phải
+   * nhìn màn hình lỗi.
+   */
+  useEffect(() => {
+    if (!user || user.accountRole === "admin") return;
+    if (DUONG_DAN_CHI_QUAN_TRI.some((p) => pathname === p || pathname.startsWith(`${p}/`))) {
+      navigate("/portal/projects", { replace: true });
+    }
+  }, [user, pathname, navigate]);
 
   const handleLogout = () => {
     clearSession();

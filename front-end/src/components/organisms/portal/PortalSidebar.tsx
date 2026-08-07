@@ -15,6 +15,7 @@ import {
 } from "@phosphor-icons/react";
 import { Link, useLocation } from "react-router-dom";
 import LogoYellow from "../../../assets/icons/LogoYellow";
+import { useVaiTro, DUONG_DAN_CHI_QUAN_TRI } from "#hooks/useVaiTro";
 
 type NavItem = {
   icon: React.ReactNode;
@@ -46,6 +47,7 @@ type Props = {
 
 export default function PortalSidebar({ user, onLogout, onClose, inquiryBadge = 0 }: Props) {
   const { pathname } = useLocation();
+  const { laQuanTri } = useVaiTro();
 
   return (
     <aside className="flex h-full w-60 shrink-0 flex-col border-r border-foreground/8 bg-card">
@@ -67,8 +69,13 @@ export default function PortalSidebar({ user, onLogout, onClose, inquiryBadge = 
       </div>
 
       {/* Nav */}
+      {/*
+        Nhân viên chỉ thấy những mục họ vào được. Đây là để gọn mắt và đỡ bấm
+        nhầm — KHÔNG phải lớp bảo vệ. Cửa thật khoá ở máy chủ, và nó đọc vai trò
+        thẳng từ cơ sở dữ liệu chứ không tin thứ trình duyệt gửi lên.
+      */}
       <nav className="flex flex-1 flex-col gap-0.5 overflow-y-auto px-3 py-4">
-        {NAV.map((item) => {
+        {NAV.filter((i) => laQuanTri || !DUONG_DAN_CHI_QUAN_TRI.includes(i.to)).map((item) => {
           const active = pathname === item.to || pathname.startsWith(`${item.to}/`);
           if (item.soon) {
             return (
