@@ -21,6 +21,7 @@ import type { ApiProject, ApiService } from "#lib/apiTypes";
 import { duongDanDichVu, duongDanDuAn } from "#lib/urls";
 import { mapCaseStudy, type ProjectDisplay } from "#hooks/useProjects";
 import CTASection from "#components/organisms/CTASection";
+import TestimonialSection from "#components/organisms/TestimonialSection";
 
 const PROJECT_PARAM = "project";
 
@@ -468,6 +469,12 @@ const ServicePage: React.FC = () => {
           </div>
         </Reveal>
       </section>
+
+      {/* Nhận xét của khách ĐÃ TỪNG THUÊ ĐÚNG mảng này — không lấy chung của cả
+          web. Khách đang đọc trang quay sự kiện thì lời của một khách quay cưới
+          không nói lên điều gì với họ. Khối tự ẩn nếu mảng này chưa có nhận xét
+          nào được gắn vào. */}
+      <TestimonialSection serviceId={service.id} />
 
       {/* ── CTA ──────────────────────────────────────────────────────────── */}
       <CTASection />

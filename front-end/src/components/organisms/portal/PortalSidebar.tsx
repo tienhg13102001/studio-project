@@ -2,6 +2,7 @@ import { ROLE_LABEL, type PortalUser } from "#lib/portal.types";
 import {
   BriefcaseIcon,
   ChartLineUpIcon,
+  ChatCircleTextIcon,
   EnvelopeIcon,
   GearIcon,
   HouseIcon,
@@ -32,6 +33,7 @@ const NAV: NavItem[] = [
   { icon: <BriefcaseIcon   size={18} weight="duotone" />, label: "Dịch vụ",    to: "/portal/services" },
   { icon: <ImageSquareIcon size={18} weight="duotone" />, label: "Dự án",      to: "/portal/projects" },
   { icon: <EnvelopeIcon    size={18} weight="duotone" />, label: "Liên hệ",    to: "/portal/inquiries" },
+  { icon: <ChatCircleTextIcon size={18} weight="duotone" />, label: "Nhận xét", to: "/portal/testimonials" },
   { icon: <GearIcon        size={18} weight="duotone" />, label: "Cài đặt",    to: "/portal/settings" },
   { icon: <TrashIcon       size={18} weight="duotone" />, label: "Thùng rác",  to: "/portal/trash" },
 ];

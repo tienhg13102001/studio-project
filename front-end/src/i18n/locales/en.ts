@@ -97,6 +97,13 @@ const en = {
       },
     ],
   },
+  // Section heading only — the quotes themselves live in the database (Portal →
+  // Nhận xét), because they change over time and must be editable without a
+  // rebuild.
+  testimonials: {
+    sectionTitle: "What our clients say",
+    sectionSubtitle: "Testimonials",
+  },
   team: {
     heroLine1: "The Minds Behind",
     heroLine2: "BeeZ Production",

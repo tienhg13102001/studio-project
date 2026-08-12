@@ -7,6 +7,7 @@ import ProcessSection from "#components/organisms/ProcessSection";
 import ProductGallery from "#components/organisms/ProductGallery";
 import ServiceSection from "#components/organisms/ServiceSection";
 import StatsAndBrands from "#components/organisms/StatsAndBrands";
+import TestimonialSection from "#components/organisms/TestimonialSection";
 import { useLandingProgress } from "#hooks/useLandingProgress";
 import { useContact } from "#hooks/useContact";
 import { useLanguage } from "#i18n";
@@ -45,6 +46,11 @@ const LandingPage = () => {
             liên hệ, tức là ngay trước lúc khách quyết định có gọi hay không. */}
         <ProcessSection />
         <StatsAndBrands />
+        {/* Đặt SAU phần thương hiệu và NGAY TRƯỚC lời mời liên hệ: logo chứng
+            minh "có tên tuổi từng thuê", nhận xét trả lời "thuê rồi thì thấy
+            thế nào" — và đó là câu cuối cùng khách hỏi trước khi bấm gọi.
+            Khối tự ẩn nếu chưa có nhận xét nào được đánh dấu nổi bật. */}
+        <TestimonialSection />
         <CTASection />
       </div>
     </>

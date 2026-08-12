@@ -14,6 +14,7 @@ import servicesRouter from "./services.ts";
 import settingsRouter from "./settings.ts";
 import sitemapRouter from "./sitemap.ts";
 import teamContentRouter from "./team-content.ts";
+import testimonialsRouter from "./testimonials.ts";
 import trashRouter from "./trash.ts";
 import uploadRouter from "./upload.ts";
 import usersRouter from "./users.ts";
@@ -69,6 +70,10 @@ const ADMIN_ONLY_READS = [
   /^\/contact\/inquiries(\/|$)/, // liên hệ khách hàng
   /^\/visitors(\/|$)/, // số liệu truy cập
   /^\/trash(\/|$)/, // thùng rác
+  // Danh sách nhận xét ĐẦY ĐỦ, gồm cả bản đã tắt. Bản bị tắt thường là bản
+  // khách xin gỡ xuống — để lọt ra đường công khai thì tắt cũng như không.
+  // Đường công khai `/testimonials` (chỉ bản đang bật) KHÔNG bị chặn.
+  /^\/testimonials\/all$/,
 ];
 
 /**
@@ -179,6 +184,7 @@ router.use("/portfolio", portfolioRouter);
 router.use("/auth", authRouter);
 router.use("/upload", uploadRouter);
 router.use("/team-content", teamContentRouter);
+router.use("/testimonials", testimonialsRouter);
 router.use("/settings", settingsRouter);
 router.use("/visitors", visitorsRouter);
 router.use("/trash", trashRouter);

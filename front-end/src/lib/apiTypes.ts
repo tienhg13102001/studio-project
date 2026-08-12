@@ -165,6 +165,24 @@ export type ApiBrand = {
   order:    number;
 };
 
+/**
+ * Nhận xét của khách hàng — quản trong Portal, hiện ở trang chủ và trang dịch vụ.
+ *
+ * `service` là MÃ dịch vụ dạng chuỗi chứ không phải cả bản ghi: máy chủ cố ý
+ * không populate vì nơi hiển thị đã có sẵn dịch vụ đang mở, chỉ cần so mã.
+ */
+export type ApiTestimonial = {
+  id:          string;
+  quote:       LocalizedString;
+  /** Rỗng = nhận xét ẩn danh, không hiện dòng tên. */
+  authorName:  string;
+  authorTitle: string;
+  service:     string | null;
+  featured:    boolean;
+  order:       number;
+  active:      boolean;
+};
+
 /** A single portfolio image — managed in the portal, shown on /portfolio. */
 export type ApiPortfolioItem = {
   id:    string;

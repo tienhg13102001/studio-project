@@ -98,6 +98,13 @@ const vi = {
       },
     ],
   },
+  // Chỉ có tiêu đề khối. Lời nhận xét nằm trong cơ sở dữ liệu (quản ở Portal →
+  // Nhận xét), vì nó thay đổi theo thời gian và phải sửa được mà không cần
+  // dựng lại web.
+  testimonials: {
+    sectionTitle: "Khách hàng nói gì",
+    sectionSubtitle: "Nhận xét",
+  },
   team: {
     heroLine1: "Những người đứng sau",
     heroLine2: "BeeZ Production",

@@ -3,6 +3,7 @@ import { sendError, sendSuccess } from "../lib/response.ts";
 import { Brand } from "../models/Brand.ts";
 import { PortfolioItem } from "../models/Portfolio.ts";
 import { Service } from "../models/Service.ts";
+import { Testimonial } from "../models/Testimonial.ts";
 
 /**
  * Sắp xếp lại thứ tự hiển thị bằng MỘT lời gọi.
@@ -17,11 +18,12 @@ import { Service } from "../models/Service.ts";
  */
 const router = Router();
 
-/** Chỉ ba loại này có thứ tự hiển thị. Danh sách cố định, không tra động. */
+/** Chỉ bốn loại này có thứ tự hiển thị. Danh sách cố định, không tra động. */
 const SOURCES = {
   services: Service,
   brands: Brand,
   portfolio: PortfolioItem,
+  testimonials: Testimonial,
 };
 
 type SortableType = keyof typeof SOURCES;

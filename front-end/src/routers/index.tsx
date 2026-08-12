@@ -22,6 +22,7 @@ const PortalBrandsPage = lazy(() => import("../pages/portal/BrandsPage"));
 const PortalServicesPage = lazy(() => import("../pages/portal/ServicesPage"));
 const PortalProjectsPage = lazy(() => import("../pages/portal/ProjectsPage"));
 const PortalInquiriesPage = lazy(() => import("../pages/portal/InquiriesPage"));
+const PortalTestimonialsPage = lazy(() => import("../pages/portal/TestimonialsPage"));
 const PortalSettingsPage = lazy(() => import("../pages/portal/SettingsPage"));
 const PortalTrashPage = lazy(() => import("../pages/portal/TrashPage"));
 
@@ -71,6 +72,7 @@ export const router = createBrowserRouter([
       { path: "/portal/services", element: withSuspense(PortalServicesPage) },
       { path: "/portal/projects", element: withSuspense(PortalProjectsPage) },
       { path: "/portal/inquiries", element: withSuspense(PortalInquiriesPage) },
+      { path: "/portal/testimonials", element: withSuspense(PortalTestimonialsPage) },
       { path: "/portal/settings", element: withSuspense(PortalSettingsPage) },
       { path: "/portal/trash", element: withSuspense(PortalTrashPage) },
       // Any unknown /portal/* (other than /portal itself) → dashboard

@@ -7,6 +7,7 @@ import { Customer } from "../models/Customer.ts";
 import { PortfolioItem } from "../models/Portfolio.ts";
 import { Project } from "../models/Project.ts";
 import { Service } from "../models/Service.ts";
+import { Testimonial } from "../models/Testimonial.ts";
 
 /**
  * Thùng rác dùng chung cho portal.
@@ -42,6 +43,7 @@ const LABELS = {
   brands: "Thương hiệu",
   portfolio: "Ảnh portfolio",
   inquiries: "Yêu cầu liên hệ",
+  testimonials: "Nhận xét khách",
 } as const;
 
 function purgeAt(deletedAt: Date): string {
@@ -118,6 +120,25 @@ const SOURCES: Record<string, TrashEntry> = {
       })),
     restore: async (id) => !!(await PortfolioItem.restoreById(id)),
     purge: async (id) => !!(await PortfolioItem.purgeById(id)),
+  },
+
+  testimonials: {
+    list: async () =>
+      (await Testimonial.findDeleted()).map((t) => ({
+        type: "testimonials",
+        typeLabel: LABELS.testimonials,
+        // Nhận xét ẩn danh không có tên người nói, nên lấy chính lời nói làm
+        // tiêu đề — nếu không thì trong thùng rác nó là một thẻ trống trơn và
+        // không ai biết mình sắp khôi phục hay xoá hẳn cái gì.
+        id: String(t._id),
+        title: t.authorName || t.quote?.vi?.slice(0, 40) || "Nhận xét ẩn danh",
+        subtitle: t.authorTitle || "",
+        image: "",
+        deletedAt: t.deletedAt.toISOString(),
+        purgeAt: purgeAt(t.deletedAt),
+      })),
+    restore: async (id) => !!(await Testimonial.restoreById(id)),
+    purge: async (id) => !!(await Testimonial.purgeById(id)),
   },
 
   inquiries: {
