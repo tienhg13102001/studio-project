@@ -1,4 +1,5 @@
 import "dotenv/config";
+import { Types } from "mongoose";
 import { connectDB, disconnectDB } from "../lib/db.ts";
 import { Service } from "../models/Service.ts";
 import { Testimonial } from "../models/Testimonial.ts";
@@ -101,7 +102,7 @@ async function chay(): Promise<void> {
   await connectDB();
 
   const dichVu = await Service.find().select("tag").lean();
-  const theoTag = new Map(dichVu.map((s) => [s.tag, String(s._id)]));
+  const theoTag = new Map(dichVu.map((s) => [s.tag, new Types.ObjectId(String(s._id))]));
 
   let them = 0;
   let boQua = 0;

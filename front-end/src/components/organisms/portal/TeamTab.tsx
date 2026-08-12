@@ -37,9 +37,15 @@ type TableProps = {
   onDelete?: (u: ApiUser) => void;
   onChangePassword?:  (u: ApiUser) => void;
   canChangePassword?: (u: ApiUser) => boolean;
+  /**
+   * Dòng nào được phép bấm Sửa. Không truyền = ai cũng sửa được.
+   * Nhân viên chỉ sửa được hồ sơ của chính mình, nên nút Sửa ở dòng người khác
+   * phải biến mất — để đó thì bấm vào chỉ nhận lỗi "không có quyền".
+   */
+  canEdit?: (u: ApiUser) => boolean;
 };
 
-export function TeamTable({ data, loading, preview, onEdit, onDelete, onChangePassword, canChangePassword }: TableProps) {
+export function TeamTable({ data, loading, preview, onEdit, onDelete, onChangePassword, canChangePassword, canEdit }: TableProps) {
   const rows = preview ? (data ?? []).slice(0, 4) : (data ?? []);
 
   if (loading) return <TableSkeleton cols={onEdit ? 6 : 5} rows={4} />;
@@ -98,15 +104,17 @@ export function TeamTable({ data, loading, preview, onEdit, onDelete, onChangePa
               {onEdit && (
                 <TableCell>
                   <div className="flex items-center gap-2">
-                    <Button
-                      variant="outline"
-                      size="xs"
-                      onClick={() => onEdit(u)}
-                      className="border-foreground/10 text-foreground/50 hover:border-primary/40 hover:text-primary"
-                    >
-                      <PencilSimpleIcon size={11} />
-                      Sửa
-                    </Button>
+                    {(!canEdit || canEdit(u)) && (
+                      <Button
+                        variant="outline"
+                        size="xs"
+                        onClick={() => onEdit(u)}
+                        className="border-foreground/10 text-foreground/50 hover:border-primary/40 hover:text-primary"
+                      >
+                        <PencilSimpleIcon size={11} />
+                        Sửa
+                      </Button>
+                    )}
                     {onChangePassword && (!canChangePassword || canChangePassword(u)) && (
                       <Button
                         variant="ghost"
@@ -301,8 +309,10 @@ export default function TeamTab({ data, loading, onRefetch }: TabProps) {
         bio:         form.bioEn   || form.bioVi   ? { en: form.bioEn,   vi: form.bioVi   } : undefined,
         photo:       form.photo || undefined,
         skills:      form.skills.split(",").map((s) => s.trim()).filter(Boolean),
-        featured:    form.featured,
-        accountRole: form.accountRole,
+        // Hai ô này chỉ quản trị mới được đổi. Máy chủ đã chặn rồi, nhưng cũng
+        // KHÔNG gửi lên khi không phải quản trị: gửi một thứ mình biết chắc sẽ
+        // bị bỏ qua chỉ tổ làm người đọc mã sau này tưởng nó có tác dụng.
+        ...(isAdmin ? { featured: form.featured, accountRole: form.accountRole } : {}),
       };
       if (creating) {
         await apiPost(`/api/users`, { ...payload, password: form.password });
@@ -370,10 +380,14 @@ export default function TeamTab({ data, loading, onRefetch }: TabProps) {
               className="h-8 pl-7 text-xs"
             />
           </div>
-          <Button size="sm" onClick={openCreate} className="bg-primary text-black hover:opacity-80">
-            <PlusIcon size={12} weight="bold" />
-            Thêm thành viên
-          </Button>
+          {/* Tạo tài khoản là việc của quản trị. Máy chủ chặn nhân viên ở
+              POST /api/users, nên để nút này lại thì bấm vào chỉ nhận lỗi. */}
+          {isAdmin && (
+            <Button size="sm" onClick={openCreate} className="bg-primary text-black hover:opacity-80">
+              <PlusIcon size={12} weight="bold" />
+              Thêm thành viên
+            </Button>
+          )}
         </div>
       </div>
 
@@ -387,9 +401,12 @@ export default function TeamTab({ data, loading, onRefetch }: TabProps) {
         data={filtered}
         loading={loading}
         onEdit={openEdit}
-        onDelete={(u) => { setConfirmDelete(u); setDeleteError(null); }}
+        // Chỉ quản trị mới thấy nút xoá — máy chủ không cho nhân viên xoá bất
+        // cứ thứ gì (sửa nhầm còn cứu được, xoá nhầm thì không).
+        onDelete={isAdmin ? (u) => { setConfirmDelete(u); setDeleteError(null); } : undefined}
         onChangePassword={openPassword}
         canChangePassword={allowPasswordChange}
+        canEdit={(u) => isAdmin || currentUser?.id === u.id}
       />
       )}
 
@@ -466,48 +483,63 @@ export default function TeamTab({ data, loading, onRefetch }: TabProps) {
                     onChange={(e) => set("skills", e.target.value)}
                   />
                 </div>
-                <div>
-                  <Label>Account Role</Label>
-                  <Select
-                    value={form.accountRole}
-                    onValueChange={(v) => set("accountRole", v as TeamForm["accountRole"])}
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="admin">Quản trị</SelectItem>
-                      <SelectItem value="editor">Biên tập</SelectItem>
-                      <SelectItem value="member">Thành viên</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+                {/*
+                  CHỈ QUẢN TRỊ thấy ô này. Máy chủ đã chặn nhân viên tự đổi vai
+                  trò (xem back-end/src/routes/users.ts) — nhưng để ô này hiện ra
+                  thì nhân viên chọn "Quản trị", bấm Lưu, nhận thông báo "Đã lưu"
+                  rồi tưởng mình đã lên quyền, tới lúc tải lại mới thấy không đổi.
+                  Vừa khó hiểu, vừa trông y như một lỗ hổng.
+                */}
+                {isAdmin && (
+                  <div>
+                    <Label>Vai trò tài khoản</Label>
+                    <Select
+                      value={form.accountRole}
+                      onValueChange={(v) => set("accountRole", v as TeamForm["accountRole"])}
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="admin">Quản trị</SelectItem>
+                        <SelectItem value="editor">Biên tập</SelectItem>
+                        <SelectItem value="member">Thành viên</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
                 {/*
                   Khối nổi bật trên trang Đội ngũ là bố cục lớn có ảnh to và
                   trích dẫn — chỉ vừa MỘT người. Nói thẳng điều đó ra đây, chứ
                   không để người dùng tick vài người rồi tự đoán vì sao trang
                   không như mong đợi.
+
+                  CHỈ QUẢN TRỊ: đây không phải thông tin cá nhân mà là quyết định
+                  về bố cục trang web. Để nhân viên tự tick thì họ tự đẩy mình lên
+                  mặt tiền và đá người đang ở đó xuống. Máy chủ cũng chặn.
                 */}
-                <div>
-                  <div className="flex items-center gap-2">
-                    <Checkbox
-                      id="team-featured"
-                      checked={form.featured}
-                      onCheckedChange={(checked) => set("featured", !!checked)}
-                    />
-                    <label
-                      htmlFor="team-featured"
-                      className="text-foreground/60 cursor-pointer text-sm"
-                    >
-                      Đưa lên khối nổi bật
-                    </label>
+                {isAdmin && (
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <Checkbox
+                        id="team-featured"
+                        checked={form.featured}
+                        onCheckedChange={(checked) => set("featured", !!checked)}
+                      />
+                      <label
+                        htmlFor="team-featured"
+                        className="text-foreground/60 cursor-pointer text-sm"
+                      >
+                        Đưa lên khối nổi bật
+                      </label>
+                    </div>
+                    <p className="text-foreground/40 mt-1 text-xs leading-relaxed">
+                      Chỉ <b>một người</b> được lên khối nổi bật ở đầu trang Đội ngũ. Tick nhiều
+                      người thì chỉ người đầu danh sách được lên đó, những người còn lại vẫn hiện
+                      bình thường ở lưới bên dưới.
+                    </p>
                   </div>
-                  <p className="text-foreground/40 mt-1 text-xs leading-relaxed">
-                    Chỉ <b>một người</b> được lên khối nổi bật ở đầu trang Đội ngũ. Tick nhiều
-                    người thì chỉ người đầu danh sách được lên đó, những người còn lại vẫn hiện
-                    bình thường ở lưới bên dưới.
-                  </p>
-                </div>
+                )}
               </div>
 
               {/* ── Right: photo ────────────────── */}

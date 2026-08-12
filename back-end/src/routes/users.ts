@@ -69,11 +69,17 @@ router.post("/", async (req, res, next) => {
 /**
  * PUT /api/users/:id — sửa hồ sơ.
  *
- * VAI TRÒ TÀI KHOẢN chỉ quản trị mới đổi được. Bộ gác ở `routes/index.ts` cho
- * nhân viên sửa hồ sơ CỦA CHÍNH HỌ — nếu route này nhận luôn `accountRole` từ
- * thân request thì họ chỉ cần gửi kèm `accountRole: "admin"` là tự lên quản trị.
- * Đây là lỗ hổng leo thang đặc quyền hoàn chỉnh, và nó không lộ ra ở giao diện
- * vì Portal không hiện ô đó cho nhân viên.
+ * HAI Ô CHỈ QUẢN TRỊ ĐƯỢC ĐỔI: `accountRole` và `featured`.
+ *
+ * `accountRole` — bộ gác ở `routes/index.ts` cho nhân viên sửa hồ sơ CỦA CHÍNH
+ * HỌ; nếu route này nhận luôn vai trò từ thân request thì họ chỉ cần gửi kèm
+ * `accountRole: "admin"` là tự lên quản trị. Đây là lỗ hổng leo thang đặc quyền
+ * hoàn chỉnh, và nó KHÔNG lộ ra ở giao diện.
+ *
+ * `featured` — không phải thông tin cá nhân mà là một quyết định về bố cục
+ * trang web: nó đưa người đó vào khối lớn có ảnh to trên trang Đội ngũ, và khối
+ * đó chỉ vừa MỘT người. Để nhân viên tự bật thì họ tự đẩy mình lên mặt tiền và
+ * đá người đang ở đó xuống.
  *
  * Vai trò người thao tác tra lại trong cơ sở dữ liệu chứ không đọc từ token, để
  * hạ quyền một tài khoản là có hiệu lực ngay.
@@ -87,10 +93,13 @@ router.put("/:id", async (req, res, next) => {
     const laQuanTri = nguoiThaoTac?.accountRole === "admin";
 
     const capNhat: Record<string, unknown> = {
-      name, email, role, photo, quote, bio, skills, featured,
+      name, email, role, photo, quote, bio, skills,
     };
-    // `undefined` thì Mongoose bỏ qua ô đó — giữ nguyên vai trò đang có.
-    if (laQuanTri) capNhat["accountRole"] = accountRole;
+    // `undefined` thì Mongoose bỏ qua ô đó — giữ nguyên giá trị đang có.
+    if (laQuanTri) {
+      capNhat["accountRole"] = accountRole;
+      capNhat["featured"] = featured;
+    }
 
     const user = await User.findByIdAndUpdate(
       req.params.id,
