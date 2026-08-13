@@ -171,7 +171,7 @@ const vi = {
       "F&B": "Quay chụp món ăn & sản phẩm",
       LOOKBOOK: "Lookbook & chiến dịch thời trang",
       SHORT: "Video ngắn cho mạng xã hội",
-      EVENT: "Khoảnh khắc không có lần thứ hai",
+      EVENT: "Sự kiện & concert, ghi hình đa máy",
       WEDDING: "Khi tình yêu được kể bằng điện ảnh",
     } as Record<string, string>,
     heroTagline:

@@ -172,7 +172,7 @@ const en = {
       "F&B": "Food & product on camera",
       LOOKBOOK: "Fashion lookbooks & campaigns",
       SHORT: "Short-form for social",
-      EVENT: "Moments that never come twice",
+      EVENT: "Events & concerts, multi-camera",
       WEDDING: "When love is told like cinema",
     } as Record<string, string>,
     heroTagline:
