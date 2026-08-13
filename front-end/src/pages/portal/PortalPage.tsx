@@ -5,11 +5,9 @@ import {
   ArrowLeftIcon,
   ArrowRightIcon,
   BriefcaseIcon,
-  ClipboardTextIcon,
   EnvelopeIcon,
   EyeIcon,
   EyeSlashIcon,
-  FileTextIcon,
   HouseIcon,
   LockIcon,
   SpinnerIcon,
@@ -160,25 +158,14 @@ const PortalPage = () => {
                 />
               </button>
 
-              {/* Quick access — builder tools (require login) */}
-              <div className="grid grid-cols-2 gap-3">
-                <button
-                  onClick={() => navigate("/bao-gia")}
-                  className="group hover:border-primary/50 hover:bg-primary/10 border-foreground/10 bg-foreground/5 flex flex-col gap-1.5 rounded-xl border px-4 py-3 text-left transition-all"
-                >
-                  <FileTextIcon size={20} weight="duotone" className="text-primary" />
-                  <span className="text-foreground text-sm font-semibold">Báo giá</span>
-                  <span className="text-foreground/40 text-xs">Tạo báo giá dịch vụ</span>
-                </button>
-                <button
-                  onClick={() => navigate("/hop-dong")}
-                  className="group hover:border-primary/50 hover:bg-primary/10 border-foreground/10 bg-foreground/5 flex flex-col gap-1.5 rounded-xl border px-4 py-3 text-left transition-all"
-                >
-                  <ClipboardTextIcon size={20} weight="duotone" className="text-primary" />
-                  <span className="text-foreground text-sm font-semibold">Hợp đồng</span>
-                  <span className="text-foreground/40 text-xs">Tạo hợp đồng &amp; BBNT</span>
-                </button>
-              </div>
+              {/*
+                Đã bỏ hai nút tắt "Báo giá" và "Hợp đồng" — Hoàn không dùng nữa.
+
+                Hai trang /bao-gia và /hop-dong vẫn còn và vẫn cần đăng nhập:
+                bỏ luôn cả route thì mọi đường dẫn đã lỡ gửi cho ai đó sẽ chết,
+                mà đây là công cụ do bên khác làm và có thể đang dùng. Muốn xoá
+                hẳn thì nói, còn khoảng 15 file thành phần đi kèm.
+              */}
 
               <button
                 onClick={handleSwitchAccount}

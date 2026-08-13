@@ -153,7 +153,27 @@ const vi = {
   },
   service: {
     experienceBadge: "5+ năm kinh nghiệm đa nền tảng",
+    // Dòng vàng dưới tên dịch vụ trong H1. Câu chung, chỉ dùng khi mảng nào đó
+    // chưa có câu riêng ở `heroAccentByTag`.
     heroAccent: "Sản xuất video",
+    /**
+     * Câu riêng cho từng mảng, tra theo `tag` của dịch vụ.
+     *
+     * VÌ SAO PHẢI RIÊNG: H1 là tín hiệu mạnh nhất của một trang. Trước đây cả
+     * sáu trang dịch vụ đều kết thúc H1 bằng đúng một câu "Sản xuất video", nên
+     * một nửa H1 giống hệt nhau — làm loãng đúng thứ cần sắc nét. Riêng trang
+     * cưới còn sai nghĩa: chụp ảnh cưới không phải "sản xuất video".
+     *
+     * Thêm mảng mới mà quên khai ở đây thì tự lùi về câu chung, không vỡ trang.
+     */
+    heroAccentByTag: {
+      TVC: "Phim quảng cáo cho thương hiệu",
+      "F&B": "Quay chụp món ăn & sản phẩm",
+      LOOKBOOK: "Lookbook & chiến dịch thời trang",
+      SHORT: "Video ngắn cho mạng xã hội",
+      EVENT: "Sự kiện chỉ diễn ra một lần",
+      WEDDING: "Phim cưới kể chuyện thật",
+    } as Record<string, string>,
     heroTagline:
       "Talking head chuyên nghiệp, motion graphics phức tạp, meme giải trí và video bắt trend cho mọi ngành hàng và phong cách!",
     startProject: "Bắt đầu dự án",

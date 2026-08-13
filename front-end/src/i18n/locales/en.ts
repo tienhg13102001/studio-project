@@ -152,7 +152,29 @@ const en = {
   },
   service: {
     experienceBadge: "5+ Years Multi-Platform Experience",
+    // Gold line under the service name in the H1. Generic fallback, used only
+    // when a service tag has no entry in `heroAccentByTag`.
     heroAccent: "Video Production",
+    /**
+     * Per-vertical accent line, looked up by the service's `tag`.
+     *
+     * WHY PER-PAGE: the H1 is a page's strongest signal. All six service pages
+     * used to end their H1 with the same "Video Production", so half of every
+     * H1 was identical — diluting the one thing that should be sharp. The
+     * wedding page was also plainly wrong: wedding photography is not video
+     * production.
+     *
+     * A new vertical with no entry here falls back to the generic line rather
+     * than breaking the page.
+     */
+    heroAccentByTag: {
+      TVC: "Brand films & commercials",
+      "F&B": "Food & product on camera",
+      LOOKBOOK: "Fashion lookbooks & campaigns",
+      SHORT: "Short-form for social",
+      EVENT: "Events that happen once",
+      WEDDING: "Wedding films, real stories",
+    } as Record<string, string>,
     heroTagline:
       "Professional talking head content, complex motion graphics, entertainment memes, and trend-based videos for every industry and style!",
     startProject: "Let's Talk",

@@ -308,8 +308,10 @@ const ServicePage: React.FC = () => {
             className={`text-foreground text-4xl font-bold tracking-tight md:text-6xl ${reveal("delay-100")}`}
           >
             {title}
+            {/* Dòng vàng phải KHÁC NHAU giữa các mảng — xem `heroAccentByTag`
+                trong i18n để biết vì sao. Mảng chưa khai thì lùi về câu chung. */}
             <span className="from-primary via-chart-2 to-chart-4 mt-1 block bg-linear-to-r bg-clip-text text-transparent">
-              {t.service.heroAccent}
+              {t.service.heroAccentByTag[service.tag] ?? t.service.heroAccent}
             </span>
           </h1>
 
