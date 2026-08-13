@@ -304,13 +304,24 @@ const ServicePage: React.FC = () => {
             {t.service.experienceBadge}
           </span>
 
+          {/*
+            `text-balance` chia chữ đều giữa các dòng thay vì để dòng cuối trơ
+            một hai từ — cần nhất trên điện thoại, nơi tên mảng dài như "Quay
+            Phim & Chụp Ảnh Sự Kiện" phải xuống hai dòng.
+          */}
           <h1
-            className={`text-foreground text-4xl font-bold tracking-tight md:text-6xl ${reveal("delay-100")}`}
+            className={`text-foreground text-4xl font-bold tracking-tight text-balance md:text-6xl ${reveal("delay-100")}`}
           >
             {title}
-            {/* Dòng vàng phải KHÁC NHAU giữa các mảng — xem `heroAccentByTag`
-                trong i18n để biết vì sao. Mảng chưa khai thì lùi về câu chung. */}
-            <span className="from-primary via-chart-2 to-chart-4 mt-1 block bg-linear-to-r bg-clip-text text-transparent">
+            {/*
+              Dòng vàng phải KHÁC NHAU giữa các mảng — xem `heroAccentByTag`
+              trong i18n để biết vì sao. Mảng chưa khai thì lùi về câu chung.
+
+              Nhỏ hơn tên mảng một bậc (4xl→3xl, 6xl→5xl) để rõ đâu là tên dịch
+              vụ, đâu là câu mô tả — trước đây hai dòng bằng nhau nên đọc lướt
+              không phân biệt được.
+            */}
+            <span className="from-primary via-chart-2 to-chart-4 mt-1 block bg-linear-to-r bg-clip-text text-3xl text-transparent text-balance md:text-5xl">
               {t.service.heroAccentByTag[service.tag] ?? t.service.heroAccent}
             </span>
           </h1>

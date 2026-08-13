@@ -2,7 +2,6 @@ import { lazy, Suspense, type ComponentType, type LazyExoticComponent } from "re
 import { createBrowserRouter, Navigate } from "react-router-dom";
 import MainLayout from "../components/templates/MainLayout";
 import PortalLayout from "../components/templates/portal/PortalLayout";
-import RequirePortalAuth from "../components/templates/portal/RequirePortalAuth";
 
 const LandingPage = lazy(() => import("../pages/LandingPage"));
 const ServicesPage = lazy(() => import("../pages/ServicesPage"));
@@ -10,8 +9,6 @@ const ServicePage = lazy(() => import("../pages/ServicePage"));
 const ContactPage = lazy(() => import("../pages/ContactPage"));
 const TeamPage = lazy(() => import("../pages/TeamPage"));
 const PortfolioPage = lazy(() => import("../pages/PortfolioPage"));
-const BaoGiaPage = lazy(() => import("../pages/BaoGiaPage"));
-const HopDongPage = lazy(() => import("../pages/HopDongPage"));
 const NotFoundPage = lazy(() => import("../pages/NotFoundPage"));
 const PortalPage = lazy(() => import("../pages/portal/PortalPage"));
 
@@ -80,14 +77,8 @@ export const router = createBrowserRouter([
     ],
   },
 
-  // Full-screen builder tools — require a portal login (no portal shell).
-  {
-    element: <RequirePortalAuth />,
-    children: [
-      { path: "/bao-gia", element: withSuspense(BaoGiaPage) },
-      { path: "/hop-dong", element: withSuspense(HopDongPage) },
-    ],
-  },
+  // Hai công cụ /bao-gia và /hop-dong đã gỡ hẳn theo yêu cầu của Hoàn — kèm
+  // toàn bộ mã nguồn của chúng. Giờ hai đường đó rơi vào trang 404 bên dưới.
   {
     path: "*",
     element: withSuspense(NotFoundPage),

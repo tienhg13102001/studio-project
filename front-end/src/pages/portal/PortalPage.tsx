@@ -158,14 +158,8 @@ const PortalPage = () => {
                 />
               </button>
 
-              {/*
-                Đã bỏ hai nút tắt "Báo giá" và "Hợp đồng" — Hoàn không dùng nữa.
-
-                Hai trang /bao-gia và /hop-dong vẫn còn và vẫn cần đăng nhập:
-                bỏ luôn cả route thì mọi đường dẫn đã lỡ gửi cho ai đó sẽ chết,
-                mà đây là công cụ do bên khác làm và có thể đang dùng. Muốn xoá
-                hẳn thì nói, còn khoảng 15 file thành phần đi kèm.
-              */}
+              {/* Đã bỏ hai nút tắt "Báo giá" và "Hợp đồng"; hai công cụ đó cũng
+                  đã gỡ hẳn khỏi web theo yêu cầu của Hoàn. */}
 
               <button
                 onClick={handleSwitchAccount}

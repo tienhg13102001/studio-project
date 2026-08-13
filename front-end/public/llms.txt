@@ -38,5 +38,5 @@ trích số cũ có thể đã thay đổi.
 
 ## Lưu ý cho trình thu thập dữ liệu
 
-Các đường dẫn /portal, /bao-gia, /hop-dong là công cụ nội bộ cần đăng nhập,
-không phải nội dung công khai (đã chặn trong robots.txt).
+Đường dẫn /portal là công cụ nội bộ cần đăng nhập, không phải nội dung công khai
+(đã chặn trong robots.txt).

@@ -1,10 +1,8 @@
 User-agent: *
 Allow: /
+# Công cụ nội bộ cần đăng nhập — không index
 Disallow: /portal
 Disallow: /portal/
-# Công cụ nội bộ cần đăng nhập — không index
-Disallow: /bao-gia
-Disallow: /hop-dong
 
 Sitemap: https://www.beezvn.com/sitemap.xml
 

@@ -168,12 +168,12 @@ const en = {
      * than breaking the page.
      */
     heroAccentByTag: {
-      TVC: "Brand films & commercials",
+      TVC: "Commercials for your brand",
       "F&B": "Food & product on camera",
       LOOKBOOK: "Fashion lookbooks & campaigns",
       SHORT: "Short-form for social",
-      EVENT: "Events that happen once",
-      WEDDING: "Wedding films, real stories",
+      EVENT: "Moments that never come twice",
+      WEDDING: "When love is told like cinema",
     } as Record<string, string>,
     heroTagline:
       "Professional talking head content, complex motion graphics, entertainment memes, and trend-based videos for every industry and style!",

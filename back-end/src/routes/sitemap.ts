@@ -16,8 +16,8 @@ import { Project } from "../models/Project.ts";
  * mà nội dung dự án lại nằm sau một cú bấm, nên rất dễ bị bỏ sót. Khai thẳng ra
  * đây là cách chắc chắn nhất để chúng được lập chỉ mục.
  *
- * KHÔNG liệt kê /portal, /bao-gia, /hop-dong: công cụ nội bộ cần đăng nhập
- * (robots.txt cũng đã chặn).
+ * KHÔNG liệt kê /portal: công cụ nội bộ cần đăng nhập (robots.txt cũng đã chặn).
+ * (/bao-gia và /hop-dong đã gỡ hẳn khỏi web.)
  */
 
 const router = Router();

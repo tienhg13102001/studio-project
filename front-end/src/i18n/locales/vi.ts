@@ -167,12 +167,12 @@ const vi = {
      * Thêm mảng mới mà quên khai ở đây thì tự lùi về câu chung, không vỡ trang.
      */
     heroAccentByTag: {
-      TVC: "Phim quảng cáo cho thương hiệu",
+      TVC: "Phim quảng cáo cho thương hiệu của bạn",
       "F&B": "Quay chụp món ăn & sản phẩm",
       LOOKBOOK: "Lookbook & chiến dịch thời trang",
       SHORT: "Video ngắn cho mạng xã hội",
-      EVENT: "Sự kiện chỉ diễn ra một lần",
-      WEDDING: "Phim cưới kể chuyện thật",
+      EVENT: "Khoảnh khắc không có lần thứ hai",
+      WEDDING: "Khi tình yêu được kể bằng điện ảnh",
     } as Record<string, string>,
     heroTagline:
       "Talking head chuyên nghiệp, motion graphics phức tạp, meme giải trí và video bắt trend cho mọi ngành hàng và phong cách!",
