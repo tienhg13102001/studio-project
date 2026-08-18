@@ -65,7 +65,7 @@ export const CASE_STUDY: BaiCaseStudy[] = [
     challenge:
       "Bánh trung thu là mặt hàng thời vụ — cả năm gói gọn trong vài tuần bán hàng. Phim phải lên đúng lúc thị trường bắt đầu mua: sớm hơn thì nguội, muộn hơn thì mất mùa, và không có mùa thứ hai để sửa.\n\nKhó hơn nữa: đúng mùa đó mọi thương hiệu đều tung ảnh bánh đẹp. Một thước phim chỉ đẹp thôi thì chìm nghỉm giữa hàng chục thước phim cũng đẹp.",
     approach:
-      "Không dựng phim quanh chiếc bánh, mà dựng quanh lý do người ta mua bánh trung thu — mang về cho gia đình. Ánh sáng ấm, nhịp chậm, để chiếc bánh xuất hiện như một phần của khung cảnh sum họp chứ không phải nhân vật chính đứng giữa nền trơn. Ai cũng quay được bánh đẹp; cảm giác đoàn viên thì phải dựng.\n\nPhần không ai nhìn thấy trên phim: bánh trung thu dưới đèn không giữ được lâu — mặt bánh bóng dầu và xỉn đi sau vài phút. Nên buổi quay chạy theo nhịp thay bánh liên tục, mỗi lần vào khung là một chiếc mới còn nguyên mặt. Đó là lý do một cảnh dài vài giây trên phim tốn nhiều bánh hơn người xem tưởng.",
+      "Fresh Garden quay với Bee Z lần thứ hai.\n\nKhông dựng phim quanh chiếc bánh, mà dựng quanh lý do người ta mua bánh trung thu — mang về cho gia đình. Ánh sáng ấm, nhịp chậm, để chiếc bánh xuất hiện như một phần của khung cảnh sum họp chứ không phải nhân vật chính đứng giữa nền trơn. Ai cũng quay được bánh đẹp; cảm giác đoàn viên thì phải dựng.\n\nPhần không ai nhìn thấy trên phim: bánh trung thu dưới đèn không giữ được lâu — mặt bánh bóng dầu và xỉn đi sau vài phút. Nên buổi quay chạy theo nhịp thay bánh liên tục, mỗi lần vào khung là một chiếc mới còn nguyên mặt. Đó là lý do một cảnh dài vài giây trên phim tốn nhiều bánh hơn người xem tưởng.",
     // Hoàn xác nhận không có chỉ số nào.
   },
   {
