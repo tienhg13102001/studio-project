@@ -6,6 +6,7 @@ const vi = {
     blog: "Blog",
     team: "Đội ngũ",
     portfolio: "Portfolio",
+    pricing: "Bảng giá",
     contact: "Liên hệ",
     letsTalk: "Kết Nối",
   },

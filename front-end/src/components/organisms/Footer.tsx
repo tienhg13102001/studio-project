@@ -17,6 +17,9 @@ const NAV_ITEMS = [
   { key: "home", to: "/" },
   { key: "services", to: "/service" },
   { key: "team", to: "/team" },
+  // Trang TĨNH ngoài React: phải dùng <a> chứ không <Link>, nếu không bấm vào
+  // sẽ rơi vào trang 404 (xem chú thích đầy đủ trong NavLinks.tsx).
+  { key: "pricing", to: "/bang-gia", ngoaiReact: true },
   { key: "contact", to: "/contact" },
 ] as const;
 
@@ -53,12 +56,21 @@ const Footer: React.FC = () => {
           <ul className="space-y-2">
             {NAV_ITEMS.map((item) => (
               <li key={item.key}>
-                <Link
-                  to={item.to}
-                  className="text-muted-foreground hover:text-primary text-sm transition-colors"
-                >
-                  {t.nav[item.key]}
-                </Link>
+                {"ngoaiReact" in item && item.ngoaiReact ? (
+                  <a
+                    href={item.to}
+                    className="text-muted-foreground hover:text-primary text-sm transition-colors"
+                  >
+                    {t.nav[item.key]}
+                  </a>
+                ) : (
+                  <Link
+                    to={item.to}
+                    className="text-muted-foreground hover:text-primary text-sm transition-colors"
+                  >
+                    {t.nav[item.key]}
+                  </Link>
+                )}
               </li>
             ))}
           </ul>

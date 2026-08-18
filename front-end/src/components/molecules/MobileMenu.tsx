@@ -13,13 +13,20 @@ import { duongDanDichVu } from "#lib/urls";
 
 type NavKey = keyof Translations["nav"];
 
-const NAV_ITEMS: { key: NavKey; to: string; hasDropdown?: boolean }[] = [
+const NAV_ITEMS: {
+  key: NavKey;
+  to: string;
+  hasDropdown?: boolean;
+  /** Trang tĩnh ngoài React — xem chú thích trong NavLinks.tsx. */
+  ngoaiReact?: boolean;
+}[] = [
   { key: "home", to: "/" },
   { key: "services", to: "/service", hasDropdown: true },
   // { key: "rental", to: "/rental" },
   // { key: "blog",   to: "/blog" },
   { key: "team", to: "/team" },
   { key: "portfolio", to: "/portfolio" },
+  { key: "pricing", to: "/bang-gia", ngoaiReact: true },
   { key: "contact", to: "/contact" },
 ];
 
@@ -128,6 +135,16 @@ const MobileMenu: React.FC<Props> = ({ open, onClose }) => {
                       </ul>
                     </div>
                   </div>
+                ) : item.ngoaiReact ? (
+                  <a
+                    href={item.to}
+                    onClick={onClose}
+                    className={`hover:bg-muted flex rounded-lg px-3 py-3 text-sm font-medium transition-colors ${
+                      isActive(item) ? "text-primary bg-primary/5 font-semibold" : "text-foreground"
+                    }`}
+                  >
+                    {t.nav[item.key]}
+                  </a>
                 ) : (
                   <Link
                     to={item.to}

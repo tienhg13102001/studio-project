@@ -12,6 +12,14 @@ const NAV_ITEMS: {
   key: NavKey;
   to: string;
   hasDropdown?: boolean;
+  /**
+   * Trang TĨNH nằm ngoài React — phải dùng thẻ <a> thường.
+   *
+   * VÌ SAO: <Link> của React Router định tuyến trong trình duyệt, không gọi lại
+   * máy chủ. Mà /bang-gia là file tĩnh do nginx phục vụ, React không có route
+   * nào khớp — nên bấm <Link> sẽ rơi thẳng vào trang 404 dù file vẫn nằm đó.
+   */
+  ngoaiReact?: boolean;
 }[] = [
   { key: "home", to: "/" },
   { key: "services", to: "/service", hasDropdown: true },
@@ -19,6 +27,7 @@ const NAV_ITEMS: {
   // { key: "blog",   to: "/blog" },
   { key: "team", to: "/team" },
   { key: "portfolio", to: "/portfolio" },
+  { key: "pricing", to: "/bang-gia", ngoaiReact: true },
   { key: "contact", to: "/contact" },
 ];
 
@@ -76,6 +85,10 @@ const NavLinks: React.FC<Props> = ({ scrolled }) => {
                 className={`transition-transform duration-200 ${openDropdown === item.key ? "rotate-180" : ""}`}
               />
             </Link>
+          ) : item.ngoaiReact ? (
+            <a href={item.to} className={linkClass(item)}>
+              {t.nav[item.key]}
+            </a>
           ) : (
             <Link to={item.to} className={linkClass(item)}>
               {t.nav[item.key]}

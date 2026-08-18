@@ -31,6 +31,10 @@ const STATIC: Entry[] = [
   { loc: "/service", changefreq: "weekly", priority: "0.9" },
   { loc: "/portfolio", changefreq: "weekly", priority: "0.9" },
   { loc: "/team", changefreq: "monthly", priority: "0.8" },
+  // Trang tĩnh nằm ở front-end/public/bang-gia/, nginx phục vụ thẳng — React
+  // không có route nào cho nó. Vẫn phải khai ở đây vì sitemap sinh từ backend
+  // chứ không đọc thư mục, nên trang tĩnh không tự vào được.
+  { loc: "/bang-gia", changefreq: "monthly", priority: "0.8" },
   { loc: "/contact", changefreq: "monthly", priority: "0.7" },
 ];
 

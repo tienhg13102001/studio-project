@@ -6,6 +6,7 @@ const en = {
     blog: "Blog",
     team: "Team",
     portfolio: "Portfolio",
+    pricing: "Pricing",
     contact: "Contact",
     letsTalk: "Let's Talk",
   },
