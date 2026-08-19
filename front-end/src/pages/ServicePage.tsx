@@ -9,6 +9,7 @@ import {
   StarIcon,
 } from "@phosphor-icons/react";
 import { apiFetch, resolveAssetUrl } from "#lib/api";
+import CountUp from "#components/molecules/CountUp";
 import HighlightIcon from "#components/HighlightIcon";
 import { useLanguage, useTranslation, type Lang } from "#i18n";
 import { localized } from "#lib/localized";
@@ -472,7 +473,13 @@ const ServicePage: React.FC = () => {
             {stats.map((s, i) => (
               <Reveal key={s.label} delay={i * 80}>
                 <div className="flex flex-col items-center gap-1 text-center">
-                  <span className="text-primary text-4xl font-bold md:text-5xl">{s.value}</span>
+                  {/* Đếm dần khi cuộn tới, giống khối số ở trang chủ. Ô nào số nhỏ
+                      hơn 10 hoặc không có số ("1 tỷ+", "Timeless") thì CountUp tự
+                      hiện tĩnh — đếm 0→1 trông như hỏng chứ không ấn tượng. */}
+                  <CountUp
+                    value={s.value}
+                    className="text-primary text-4xl font-bold md:text-5xl"
+                  />
                   <span className="text-muted-foreground text-xs font-medium tracking-widest uppercase">
                     {s.label}
                   </span>
