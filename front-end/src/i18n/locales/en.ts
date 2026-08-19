@@ -56,9 +56,9 @@ const en = {
   },
   stats: {
     items: [
-      { value: "1000+", label: "Projects",  icon: "UserIcon",       details: ["TVC & Commercials", "Short-form", "Interviews – Brand films", "Social Media Content"] },
-      { value: "100+",  label: "Clients",   icon: "UsersThreeIcon", details: ["F&B Brands", "Banking", "Health-care", "Entertainment"] },
-      { value: "1 Billion", label: "Views", icon: "VideoIcon",      details: ["YouTube", "TikTok", "Instagram Reels", "Facebook"] },
+      { value: "800+",  label: "Projects",  icon: "UserIcon",       details: ["TVC & Commercials", "Short-form", "Interviews – Brand films", "Social Media Content"] },
+      { value: "400+",  label: "Clients",   icon: "UsersThreeIcon", details: ["F&B Brands", "Banking", "Health-care", "Entertainment"] },
+      { value: "1B+", label: "Views", icon: "VideoIcon",      details: ["YouTube", "TikTok", "Instagram Reels", "Facebook"] },
     ],
   },
   brands: {
@@ -114,8 +114,8 @@ const en = {
     aboutDescription: "We are a creative team passionate about visual storytelling. From TVCs and short films to social media content — every project receives our cinematic attention to detail and commitment to excellence.",
     stats: [
       { value: "1B+", label: "Views" },
-      { value: "1000+", label: "Projects" },
-      { value: "100+", label: "Clients" },
+      { value: "800+", label: "Projects" },
+      { value: "400+", label: "Clients" },
     ],
     meetBadge: "The Team",
     meetHeading: "Meet Our Team",
@@ -152,7 +152,8 @@ const en = {
     submit: "Send Message",
   },
   service: {
-    experienceBadge: "5+ Years Multi-Platform Experience",
+    // Same shared number set — see vi.ts.
+    experienceBadge: "9 Years Multi-Platform Experience",
     // Gold line under the service name in the H1. Generic fallback, used only
     // when a service tag has no entry in `heroAccentByTag`.
     heroAccent: "Video Production",
@@ -202,8 +203,8 @@ const en = {
       },
     ],
     stats: [
-      { value: "1000+", label: "Videos Produced" },
-      { value: "5+", label: "Years Experience" },
+      { value: "800+", label: "Projects" },
+      { value: "9", label: "Years Experience" },
       { value: "1B+", label: "Combined Views" },
       { value: "4", label: "Platforms" },
     ],

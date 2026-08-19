@@ -57,9 +57,9 @@ const vi = {
   },
   stats: {
     items: [
-      { value: "1000+", label: "Dự án",        icon: "UserIcon",       details: ["TVC & Quảng Cáo", "Nội dung ngắn", "Phỏng vấn – Brand film", "Nội dung mạng xã hội"] },
-      { value: "100+",  label: "Khách hàng",    icon: "UsersThreeIcon", details: ["Thương hiệu F&B", "Ngân hàng", "Y tế", "Giải trí"] },
-      { value: "1 Tỷ",  label: "Lượt xem",    icon: "VideoIcon",      details: ["YouTube", "TikTok", "Instagram Reels", "Facebook"] },
+      { value: "800+",  label: "Dự án",        icon: "UserIcon",       details: ["TVC & Quảng Cáo", "Nội dung ngắn", "Phỏng vấn – Brand film", "Nội dung mạng xã hội"] },
+      { value: "400+",  label: "Khách hàng",    icon: "UsersThreeIcon", details: ["Thương hiệu F&B", "Ngân hàng", "Y tế", "Giải trí"] },
+      { value: "1 tỷ+", label: "Lượt xem",    icon: "VideoIcon",      details: ["YouTube", "TikTok", "Instagram Reels", "Facebook"] },
     ],
   },
   brands: {
@@ -115,8 +115,8 @@ const vi = {
     aboutDescription: "Chúng tôi là đội ngũ sáng tạo đam mê kể chuyện bằng hình ảnh. Từ TVC và phim ngắn đến nội dung mạng xã hội — mỗi dự án đều nhận được sự chú ý tỉ mỉ theo phong cách điện ảnh và cam kết về chất lượng.",
     stats: [
       { value: "1 tỷ+", label: "Lượt xem" },
-      { value: "1000+", label: "Dự án" },
-      { value: "100+", label: "Khách hàng" },
+      { value: "800+", label: "Dự án" },
+      { value: "400+", label: "Khách hàng" },
     ],
     meetBadge: "Đội ngũ",
     meetHeading: "Khám phá đội ngũ",
@@ -153,7 +153,12 @@ const vi = {
     submit: "Gửi tin nhắn",
   },
   service: {
-    experienceBadge: "5+ năm kinh nghiệm đa nền tảng",
+    // Bộ số Hoàn chốt 19/08/2026, dùng CHUNG cho cả web: 9 năm · 800+ dự án
+    // · 400+ thương hiệu · 1 tỷ+ lượt xem. Trước đây trang dịch vụ ghi "5+ năm"
+    // ngay trên khối thống kê ghi "10+ năm" — hai con số đá nhau cách nhau
+    // chưa tới một màn hình. Đổi ở đây thì phải đổi cả `stats` của dịch vụ
+    // trong Portal → Dịch vụ.
+    experienceBadge: "9 năm kinh nghiệm đa nền tảng",
     // Dòng vàng dưới tên dịch vụ trong H1. Câu chung, chỉ dùng khi mảng nào đó
     // chưa có câu riêng ở `heroAccentByTag`.
     heroAccent: "Sản xuất video",
@@ -201,9 +206,9 @@ const vi = {
       },
     ],
     stats: [
-      { value: "1000+", label: "Video đã sản xuất" },
-      { value: "5+", label: "Năm kinh nghiệm" },
-      { value: "1B+", label: "Lượt xem" },
+      { value: "800+", label: "Dự án" },
+      { value: "9", label: "Năm kinh nghiệm" },
+      { value: "1 tỷ+", label: "Lượt xem" },
       { value: "4", label: "Nền tảng" },
     ],
   },
