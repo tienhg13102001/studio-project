@@ -362,44 +362,6 @@ const ServicePage: React.FC = () => {
         </div>
       </section>
 
-      {/* ── FAQ ──────────────────────────────────────────────────────────── */}
-      {service.faqs.length > 0 && (
-        <section className="mx-auto max-w-3xl px-6 py-16">
-          <Reveal>
-            <h2 className="text-foreground mb-10 text-center text-3xl font-bold">
-              {t.service.faqTitle}
-            </h2>
-          </Reveal>
-          <div className="flex flex-col gap-3">
-            {service.faqs.map((faq, i) => (
-              <Reveal key={i} delay={i * 70}>
-                <div className="border-border bg-card overflow-hidden rounded-2xl border">
-                  <button
-                    onClick={() => setOpenFaq(openFaq === i ? null : i)}
-                    className="text-foreground hover:bg-muted/50 flex w-full items-center justify-between gap-4 px-6 py-4 text-left text-sm font-medium transition-colors"
-                  >
-                    <span>{localized(faq.question, lang)}</span>
-                    <PlusIcon
-                      size={18}
-                      className={`text-primary shrink-0 transition-transform duration-300 ${openFaq === i ? "rotate-45" : ""}`}
-                    />
-                  </button>
-                  <div
-                    className={`grid transition-all duration-300 ${openFaq === i ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"}`}
-                  >
-                    <div className="overflow-hidden">
-                      <p className="border-border text-muted-foreground border-t px-6 py-4 text-sm leading-relaxed">
-                        {localized(faq.answer, lang)}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </Reveal>
-            ))}
-          </div>
-        </section>
-      )}
-
       {/* ── Video Showcase ───────────────────────────────────────────────── */}
       {projects.length > 0 && (
         <section id="showcase" className="mx-auto max-w-7xl scroll-mt-24 px-6 py-16">
@@ -495,6 +457,48 @@ const ServicePage: React.FC = () => {
           không nói lên điều gì với họ. Khối tự ẩn nếu mảng này chưa có nhận xét
           nào được gắn vào. */}
       <TestimonialSection serviceId={service.id} />
+
+      {/* VÌ SAO CÂU HỎI NẰM DƯỚI CÙNG: trước đây khối này đứng ngay sau
+         hero, trên cả video — khách vào trang phải lướt qua mười mấy dòng
+         câu hỏi mới thấy sản phẩm. Người vào trang dịch vụ muốn xem làm
+         được gì trước; câu hỏi là thứ đọc sau khi đã thích. */}
+      {/* ── FAQ ──────────────────────────────────────────────────────────── */}
+      {service.faqs.length > 0 && (
+        <section className="mx-auto max-w-3xl px-6 py-16">
+          <Reveal>
+            <h2 className="text-foreground mb-10 text-center text-3xl font-bold">
+              {t.service.faqTitle}
+            </h2>
+          </Reveal>
+          <div className="flex flex-col gap-3">
+            {service.faqs.map((faq, i) => (
+              <Reveal key={i} delay={i * 70}>
+                <div className="border-border bg-card overflow-hidden rounded-2xl border">
+                  <button
+                    onClick={() => setOpenFaq(openFaq === i ? null : i)}
+                    className="text-foreground hover:bg-muted/50 flex w-full items-center justify-between gap-4 px-6 py-4 text-left text-sm font-medium transition-colors"
+                  >
+                    <span>{localized(faq.question, lang)}</span>
+                    <PlusIcon
+                      size={18}
+                      className={`text-primary shrink-0 transition-transform duration-300 ${openFaq === i ? "rotate-45" : ""}`}
+                    />
+                  </button>
+                  <div
+                    className={`grid transition-all duration-300 ${openFaq === i ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"}`}
+                  >
+                    <div className="overflow-hidden">
+                      <p className="border-border text-muted-foreground border-t px-6 py-4 text-sm leading-relaxed">
+                        {localized(faq.answer, lang)}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </Reveal>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* ── CTA ──────────────────────────────────────────────────────────── */}
       <CTASection />
