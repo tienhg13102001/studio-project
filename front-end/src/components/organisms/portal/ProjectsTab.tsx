@@ -274,7 +274,8 @@ export default function ProjectsTab({ data, raw, services, users, loading, onRef
           Không tìm thấy dự án nào khớp “{query}”.
         </div>
       ) : (
-      <div className="border-foreground/8 overflow-hidden rounded-xl border">
+      // `bang-the`: dưới 640px bảng đổi thành thẻ xếp dọc — xem index.css.
+      <div className="bang-the border-foreground/8 overflow-hidden rounded-xl border">
         <Table containerClassName="max-h-[70vh]">
           <TableHeader>
             <TableRow className="hover:bg-transparent">
@@ -303,13 +304,13 @@ export default function ProjectsTab({ data, raw, services, users, loading, onRef
                       </div>
                     </div>
                   </TableCell>
-                  <TableCell>
+                  <TableCell data-label="Mảng">
                     <Badge variant={"default"}>{p.tag}</Badge>
                   </TableCell>
-                  <TableCell className="text-foreground/60 text-xs">
+                  <TableCell data-label="Kiểu" className="text-foreground/60 text-xs">
                     {rawItem?.layout ?? "—"}
                   </TableCell>
-                  <TableCell>
+                  <TableCell data-label="Nổi bật">
                     {rawItem?.prominent ? (
                       <Badge variant="primary">Yes</Badge>
                     ) : (

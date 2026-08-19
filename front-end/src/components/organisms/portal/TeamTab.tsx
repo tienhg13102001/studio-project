@@ -51,7 +51,8 @@ export function TeamTable({ data, loading, preview, onEdit, onDelete, onChangePa
   if (loading) return <TableSkeleton cols={onEdit ? 6 : 5} rows={4} />;
 
   return (
-    <div className="overflow-hidden rounded-xl border border-foreground/8">
+    // `bang-the`: dưới 640px bảng đổi thành thẻ xếp dọc — xem index.css.
+    <div className="bang-the overflow-hidden rounded-xl border border-foreground/8">
       {/* Bản preview trên Tổng quan chỉ 4 dòng nên không cần giới hạn chiều cao. */}
       <Table containerClassName={preview ? undefined : "max-h-[70vh]"}>
         <TableHeader>
@@ -79,8 +80,8 @@ export function TeamTable({ data, loading, preview, onEdit, onDelete, onChangePa
                   </div>
                 </div>
               </TableCell>
-              <TableCell className="text-xs text-foreground/60">{u.role.en}</TableCell>
-              <TableCell>
+              <TableCell data-label="Vai trò" className="text-xs text-foreground/60">{u.role.en}</TableCell>
+              <TableCell data-label="Kỹ năng">
                 <div className="flex flex-wrap gap-1">
                   {u.skills.slice(0, 2).map((s) => (
                     <Badge key={s} variant="default" className="text-[10px]">{s}</Badge>
@@ -90,12 +91,12 @@ export function TeamTable({ data, loading, preview, onEdit, onDelete, onChangePa
                   )}
                 </div>
               </TableCell>
-              <TableCell>
+              <TableCell data-label="Quyền">
                 <span className={`rounded-full border px-2 py-0.5 text-[10px] font-medium ${ROLE_COLOR[u.accountRole ?? "member"] ?? ""}`}>
                   {ROLE_LABEL[u.accountRole ?? "member"] ?? u.accountRole}
                 </span>
               </TableCell>
-              <TableCell>
+              <TableCell data-label="Trạng thái">
                 <span className="inline-flex items-center gap-1 text-[10px] text-emerald-400">
                   <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
                   Đang hoạt động

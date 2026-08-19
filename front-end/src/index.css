@@ -373,3 +373,75 @@
 .dai-ngang::-webkit-scrollbar-thumb:hover {
   background: color-mix(in oklab, var(--color-foreground) 38%, transparent);
 }
+
+/*
+  Bảng trong Portal → THẺ XẾP DỌC trên điện thoại.
+
+  VÌ SAO: `ui/table.tsx` đặt `min-w-150` cho <table> để cột không bị bóp méo,
+  nên trên màn 390px phải cuộn ngang mới xem hết một dòng. Với bảng Đội ngũ và
+  Dự án — thứ Hoàn mở hằng ngày trên điện thoại — đó là thao tác thừa mỗi lần.
+
+  CÁCH LÀM: dưới 640px, đổi table/tr/td thành khối xếp dọc; tên cột lấy từ
+  `data-label` của từng ô rồi in ra bằng ::before. Không phải viết lại markup
+  cho từng bảng, và bản trên máy tính KHÔNG đổi gì.
+
+  Ô nào không khai `data-label` (ảnh, cụm nút) thì không hiện nhãn.
+*/
+@media (max-width: 639px) {
+  .bang-the {
+    border: 0 !important;
+    border-radius: 0 !important;
+    overflow: visible !important;
+  }
+  /* Vùng cuộn không còn cần giới hạn chiều cao khi đã xếp dọc. */
+  .bang-the > div {
+    max-height: none !important;
+    overflow-x: visible !important;
+  }
+  .bang-the table {
+    min-width: 0 !important;
+  }
+  .bang-the thead {
+    display: none;
+  }
+  .bang-the tbody,
+  .bang-the tr,
+  .bang-the td {
+    display: block;
+    width: 100%;
+  }
+  .bang-the tr {
+    border: 1px solid color-mix(in oklab, var(--color-foreground) 10%, transparent);
+    border-radius: 12px;
+    margin-bottom: 10px;
+    padding: 10px 12px;
+    background: color-mix(in oklab, var(--color-foreground) 3%, transparent);
+  }
+  .bang-the td {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    border: 0 !important;
+    padding: 5px 0 !important;
+    text-align: right;
+  }
+  .bang-the td::before {
+    content: attr(data-label);
+    flex: 0 0 auto;
+    text-align: left;
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: color-mix(in oklab, var(--color-foreground) 40%, transparent);
+    padding-top: 2px;
+  }
+  /* Ô không có nhãn (ảnh, cụm nút) chiếm trọn bề ngang, canh trái. */
+  .bang-the td:not([data-label])::before {
+    content: none;
+  }
+  .bang-the td:not([data-label]) {
+    justify-content: flex-start;
+    text-align: left;
+  }
+}
