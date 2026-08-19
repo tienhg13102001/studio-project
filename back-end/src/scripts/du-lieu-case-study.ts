@@ -1,5 +1,5 @@
 /**
- * NGUỒN của 6 case study đầu tiên — Hoàn duyệt từng bài ngày 18/08/2026.
+ * NGUỒN của 8 case study — Hoàn duyệt từng bài: 6 bài ngày 18/08, 2 bài ngày 19/08/2026.
  *
  * CHỈ TIẾNG VIỆT, cố ý. Ô nhập trong Portal (Dự án → sửa → Bài toán / Cách làm /
  * Kết quả) chỉ có tiếng Việt; web tự hiện bản tiếng Việt cho cả khách xem tiếng
@@ -76,5 +76,23 @@ export const CASE_STUDY: BaiCaseStudy[] = [
     approach:
       "Một máy. Không pre-wedding, không buổi dựng cảnh trước.\n\nVới đám cưới của người nổi tiếng, số người của bên chụp là thứ khách mời cảm nhận rõ nhất: càng đông càng giống một buổi sản xuất, càng ít càng giống một ngày cưới thật. Một máy nghĩa là một người di chuyển — không có tiếng gọi nhau chỉnh vị trí, không ai chắn tầm nhìn của khách mời, không ai lọt vào khung điện thoại của gia đình.\n\nĐổi lại, người cầm máy không có phương án hai: mỗi khoảnh khắc chỉ có một cơ hội và một góc duy nhất. Chọn cách này là đặt cược vào khả năng đọc trước diễn biến, chứ không vào số lượng thiết bị.",
     result: "Bài đăng ảnh đạt 100.000 lượt xem.",
+  },
+  {
+    slug: "fpt-camera-2",
+    ten: "FPT Camera",
+    challenge:
+      "Camera an ninh là món khó quay nhất trong nhóm hàng công nghệ gia dụng: nhỏ, màu trắng, đứng yên, nhìn từ góc nào cũng gần như nhau. Toàn bộ giá trị của nó lại nằm ở thứ không quay được — nhận diện thú cưng, quét toàn cảnh, canh nhà lúc chủ đi vắng.\n\n12 video, hai ngày quay. Mỗi video một bối cảnh khác: phòng khách, lối vào, ban đêm, có thú cưng đi qua khung. Chiếc camera thì đứng yên suốt — thứ phải đổi liên tục là căn phòng quanh nó.",
+    approach:
+      "Thứ quyết định không phải máy quay mà là thứ tự quay. Buổi quay thường chạy theo thứ tự kịch bản; hai ngày cho 12 bối cảnh thì cách đó không đủ, vì mỗi lần đổi bối cảnh là dựng lại toàn bộ hệ đèn — mà dựng đèn tốn thời gian hơn quay.\n\nNên lịch xếp theo bối cảnh chứ không theo số thứ tự video: các cảnh dùng chung một không gian được gom quay liền mạch, kể cả khi chúng nằm rải ở nhiều video khác nhau. Dựng đèn một lần cho nhiều cảnh, thay vì mười hai lần cho mười hai video.\n\nCòn với sản phẩm: camera không tự diễn được, nên thứ diễn phải là căn nhà. Người xem không nhìn chiếc camera để hiểu nó làm được gì — họ nhìn con mèo đi ngang khung, nhìn góc phòng hiện rõ lúc trời tối. Camera chỉ cần có mặt đúng chỗ mà một người thật sẽ lắp nó.",
+    // Hoàn chưa đưa chỉ số nào cho bộ này.
+  },
+  {
+    slug: "cheese-coffe",
+    ten: "Cheese Coffee",
+    challenge:
+      "Cheese Coffee cần một campaign, không phải một video. Khác nhau ở chỗ: campaign là bộ hình phải nhận ra được là cùng một nhà — cùng tông màu, cùng nhịp — trong khi từng phần vẫn phải tự đứng được khi tách riêng ra một bài đăng.\n\nVà món chính là đồ uống lạnh. Một ly cà phê chỉ đẹp trong vài phút: đá tan, thành ly đổ mồ hôi, lớp kem xẹp xuống. Chính cái ngưỡng đó quyết định nhịp của buổi quay, chứ không phải kịch bản.",
+    approach:
+      "Dựng xong xuôi rồi mới rót. Khung hình, ánh sáng và hậu cảnh được căn sẵn bằng ly mẫu; ly thật chỉ vào khung ở phút cuối, khi mọi thứ còn lại đã đứng im. Làm ngược lại thì mỗi lần chỉnh đèn là hỏng một ly.\n\nQuán cà phê có lợi thế mà studio không có: chính không gian quán là bối cảnh, và đó cũng là thứ khách sẽ tới. Nên phần lớn khung hình quay tại chỗ, giữ nguyên ánh sáng và chất liệu của quán, thay vì bê ly ra nền trơn. Bộ hình nhờ vậy bán được cả đồ uống lẫn lý do bước vào quán.",
+    // Hoàn chưa đưa chỉ số nào cho bộ này.
   },
 ];
