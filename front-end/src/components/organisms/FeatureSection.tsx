@@ -5,7 +5,8 @@ import SectionHeader from "#components/molecules/SectionHeader";
 import { useProjects, type ProjectDisplay } from "#hooks/useProjects";
 import { useLanguage, useTranslation } from "#i18n";
 import type { FC } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { duongDanDuAn } from "#lib/urls";
 import ProjectDetail from "./ProjectDetail";
 
 const PROJECT_PARAM = "project";
@@ -20,16 +21,35 @@ const FeatureSection: FC<Props> = () => {
   const { lang } = useLanguage();
   const { verticalCards, horizontalCards } = useProjects(lang);
   const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
 
   const top = verticalCards || [];
   const bottom = horizontalCards || [];
 
+  // VẪN ĐỌC `?project=`: link kiểu cũ đã nằm trong tin nhắn khách gửi nhau và
+  // trong lịch sử trình duyệt — bỏ đi là những link đó chết.
   const projectId = searchParams.get(PROJECT_PARAM);
   const selectedProject: ProjectDisplay | null = projectId
     ? [...top, ...bottom].find((p) => p.id === projectId) || null
     : null;
 
+  /**
+   * Bấm một dự án ở trang chủ = ĐỔI ĐỊA CHỈ sang `/du-an/<tên>`.
+   *
+   * Trước đây nó chỉ gắn thêm `?project=<mã>` vào địa chỉ trang chủ. Ba cái hại:
+   * dán link lên Facebook/Zalo thì trình quét không đọc tham số nên mọi dự án
+   * hiện ra cùng một tiêu đề và cùng một ảnh của trang chủ; máy tìm kiếm không
+   * coi đó là một trang riêng; và cùng một dự án có tới hai địa chỉ khác nhau
+   * tuỳ khách bấm từ trang chủ hay từ trang dịch vụ.
+   *
+   * Dự án chưa kịp có tên đường dẫn thì vẫn mở kiểu cũ ngay tại trang chủ —
+   * thà mở đúng dự án bằng địa chỉ xấu còn hơn đưa khách tới trang gãy.
+   */
   const openProject = (card: ProjectDisplay) => {
+    if (card.slug) {
+      navigate(duongDanDuAn(card, { id: "" }));
+      return;
+    }
     setSearchParams(
       (prev) => {
         prev.set(PROJECT_PARAM, card.id);

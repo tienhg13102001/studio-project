@@ -13,6 +13,8 @@ export type CaseStudyDisplay = {
 
 export type ProjectDisplay = {
   id: string;
+  /** Tên đường dẫn — cần để dựng `/du-an/<tên>`. */
+  slug?: string;
   tag: string;
   thumbnailImage: string;
   title: string;
@@ -52,6 +54,7 @@ export function mapCaseStudy(
 function mapProject(f: ApiProject, lang: Lang): ProjectDisplay {
   return {
     id: f.id,
+    slug: f.slug,
     tag: f.service?.tag ?? "",
     thumbnailImage: resolveAssetUrl(f.thumbnailImage),
     title: f.title,

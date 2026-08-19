@@ -47,10 +47,13 @@ const ProcessSection = () => {
               `marginBottom` mới là quãng cuộn giữa hai bước: ngắn quá thì thẻ
               chưa kịp dừng đã bị đè, dài quá thì khách cuộn mỏi tay.
 
-              BƯỚC CUỐI CŨNG PHẢI CÓ quãng này. Bỏ đi thì `ol` kết thúc ngay tại
-              thẻ cuối, mà thẻ dính chỉ dính được trong lòng khối cha — nên thẻ
-              05 không kịp trôi lên đè thẻ 04, chồng bài đứt ở bước 4. Giữ lại
-              quãng cuối cũng là lúc khách nhìn thấy trọn cả năm thẻ xếp chồng.
+              BƯỚC CUỐI VẪN PHẢI CÓ quãng này, NHƯNG NGẮN HƠN HẲN. Bỏ hẳn thì
+              `ol` kết thúc ngay tại thẻ cuối, mà thẻ dính chỉ dính được trong
+              lòng khối cha — nên thẻ 05 không kịp trôi lên đè thẻ 04, chồng bài
+              đứt ở bước 4. Nhưng để nguyên 42vh thì sau thẻ 05 không còn thẻ nào
+              trôi lên lấp chỗ đó nữa, thành một mảng trống gần 400px trước khối
+              số liệu — Hoàn báo đúng chỗ này. 14vh vừa đủ để thẻ 05 dừng lại và
+              khách kịp thấy trọn năm thẻ xếp chồng, rồi đi tiếp ngay.
 
               Ai bật giảm chuyển động trong hệ điều hành thì trở lại thành danh
               sách xếp dọc bình thường.
@@ -61,7 +64,7 @@ const ProcessSection = () => {
               style={{
                 // Lệch dần để mép thẻ trước vẫn ló ra sau khi bị đè.
                 top: `calc(13vh + ${i * 16}px)`,
-                marginBottom: "42vh",
+                marginBottom: i === steps.length - 1 ? "14vh" : "42vh",
               }}
             >
               <article
