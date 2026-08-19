@@ -27,7 +27,9 @@ const NAV_ITEMS: {
   // { key: "blog",   to: "/blog" },
   { key: "team", to: "/team" },
   { key: "portfolio", to: "/portfolio" },
-  { key: "pricing", to: "/bang-gia", ngoaiReact: true },
+  // KHÔNG hiện "Bảng giá" trong menu — Hoàn chốt: chỉ gửi link tận tay cho
+  // khách khi cần. Trang /bang-gia vẫn sống, chỉ là không có nút dẫn tới.
+  // Muốn bật lại: { key: "pricing", to: "/bang-gia", ngoaiReact: true }
   { key: "contact", to: "/contact" },
 ];
 

@@ -26,7 +26,6 @@ const NAV_ITEMS: {
   // { key: "blog",   to: "/blog" },
   { key: "team", to: "/team" },
   { key: "portfolio", to: "/portfolio" },
-  { key: "pricing", to: "/bang-gia", ngoaiReact: true },
   { key: "contact", to: "/contact" },
 ];
 

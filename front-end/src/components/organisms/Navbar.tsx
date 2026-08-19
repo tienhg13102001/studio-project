@@ -29,11 +29,23 @@ const Navbar: React.FC<Props> = () => {
 
   return (
     <>
+      {/*
+        Bố cục LƯỚI 3 cột `1fr auto 1fr` chứ không phải `justify-between`.
+
+        VÌ SAO: với `justify-between`, cụm menu giữa chỉ nằm đúng tâm màn hình
+        khi hai bên rộng bằng nhau. Bên trái chỉ có logo nhỏ, bên phải có số điện
+        thoại + đổi ngôn ngữ + đăng nhập + nút Kết Nối — nên menu bị đẩy lệch hẳn
+        sang trái. Lưới với hai cột biên bằng nhau (1fr) thì cột giữa luôn nằm
+        đúng tâm, bất kể hai bên rộng bao nhiêu.
+
+        Trên điện thoại cụm menu bị ẩn (`lg:flex`) nên cột giữa co về 0 — logo
+        vẫn sát trái, nhóm nút vẫn sát phải, không đổi gì.
+      */}
       <nav
-        className={`fixed top-0 left-0 z-20 flex w-full items-center justify-between px-6 py-4 transition-all duration-700 md:px-12 ${scrolled && pathname === "/" ? "bg-background/50 shadow-sm backdrop-blur-sm" : pathname !== "/" ? "bg-background/50 shadow-sm backdrop-blur-sm" : "bg-transparent"}`}
+        className={`fixed top-0 left-0 z-20 grid w-full grid-cols-[1fr_auto_1fr] items-center px-6 py-4 transition-all duration-700 md:px-12 ${scrolled && pathname === "/" ? "bg-background/50 shadow-sm backdrop-blur-sm" : pathname !== "/" ? "bg-background/50 shadow-sm backdrop-blur-sm" : "bg-transparent"}`}
       >
         {/* LogoYellow */}
-        <div className="flex cursor-pointer items-center" onClick={() => navigate("/")}>
+        <div className="flex cursor-pointer items-center justify-self-start" onClick={() => navigate("/")}>
           <LogoYellow className="h-8 w-8 text-white" />
         </div>
 
@@ -41,7 +53,7 @@ const Navbar: React.FC<Props> = () => {
         <NavLinks scrolled={scrolled} />
 
         {/* Right Actions */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 justify-self-end">
           {/* Hotline — khách gọi trực tiếp, 1 chạm. Chỗ hẹp trên mobile nên chỉ
               hiện từ desktop; bản mobile nằm trong menu trượt. */}
           {landing?.phone && (

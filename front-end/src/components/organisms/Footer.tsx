@@ -17,9 +17,6 @@ const NAV_ITEMS = [
   { key: "home", to: "/" },
   { key: "services", to: "/service" },
   { key: "team", to: "/team" },
-  // Trang TĨNH ngoài React: phải dùng <a> chứ không <Link>, nếu không bấm vào
-  // sẽ rơi vào trang 404 (xem chú thích đầy đủ trong NavLinks.tsx).
-  { key: "pricing", to: "/bang-gia", ngoaiReact: true },
   { key: "contact", to: "/contact" },
 ] as const;
 
