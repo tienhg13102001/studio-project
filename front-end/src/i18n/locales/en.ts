@@ -27,7 +27,7 @@ const en = {
     nextPage: "Next page",
   },
   cta: {
-    contactBeez: "Contact BeeZ",
+    contactBeez: "Contact Bee Z",
     viewMyWorkss: "View My Works",
   },
   services: {
@@ -107,7 +107,7 @@ const en = {
   },
   team: {
     heroLine1: "The Minds Behind",
-    heroLine2: "BeeZ Production",
+    heroLine2: "Bee Z Production",
     heroSubtitle: "The creative, dedicated and passionate team behind every project",
     aboutBadge: "About Us",
     aboutHeading: "Who We Are",
@@ -126,7 +126,7 @@ const en = {
     contact: "Contact",
     hours: "Working Hours",
     followUs: "Follow Us",
-    rights: "© {year} BeeZ Production. All rights reserved.",
+    rights: "© {year} Bee Z Production.",
     visitors: "Visitors",
   },
   contact: {

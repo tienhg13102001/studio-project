@@ -1,3 +1,13 @@
+/*
+ * QUY ƯỚC XƯNG HÔ — Hoàn chốt 19/08/2026, áp cho CẢ WEB:
+ *   · gọi khách là "bạn"        (KHÔNG "quý khách")
+ *   · viết tên là "Bee Z"       (KHÔNG "BeeZ" liền)
+ *   · nói "team"                (KHÔNG "ê-kíp" / "Ekip")
+ * Trước đây trang chủ gọi "bạn", khối Quy trình lại gọi "quý khách", và tên
+ * công ty viết hai kiểu trong cùng một trang — khách đọc như hai người viết.
+ * Sửa ở đây thì sửa cả en.ts, và nhớ chữ trong CƠ SỞ DỮ LIỆU (Portal → Dịch vụ)
+ * cũng theo quy ước này.
+ */
 const vi = {
   nav: {
     home: "Trang chủ",
@@ -27,7 +37,7 @@ const vi = {
     nextPage: "Trang sau",
   },
   cta: {
-    contactBeez: "Liên hệ BeeZ",
+    contactBeez: "Liên hệ Bee Z",
     viewMyWorkss: "Xem dịch vụ",
   },
   services: {
@@ -74,7 +84,7 @@ const vi = {
     steps: [
       {
         title: "Nhận brief",
-        desc: "Gọi hoặc gặp 30 phút. Quý khách brief mục tiêu, đối tượng và ngân sách, Bee Z sẽ xác nhận và thông tin lại.",
+        desc: "Gọi hoặc gặp 30 phút. Bạn nói mục tiêu, đối tượng và ngân sách, Bee Z xác nhận lại xem đã hiểu đúng chưa.",
         when: "Trong 24 giờ",
       },
       {
@@ -84,17 +94,17 @@ const vi = {
       },
       {
         title: "Tiền kỳ",
-        desc: "Chốt kịch bản, casting, bối cảnh, lịch quay. Quý khách duyệt trước khi máy chạy.",
+        desc: "Chốt kịch bản, casting, bối cảnh, lịch quay. Bạn duyệt trước khi máy chạy.",
         when: "3–7 ngày",
       },
       {
         title: "Quay",
-        desc: "Ekip và thiết bị của Bee Z. Quý khách có thể có mặt tại hiện trường hoặc xem trực tiếp từ xa.",
+        desc: "Team và thiết bị của Bee Z. Bạn có thể có mặt tại hiện trường hoặc xem trực tiếp từ xa.",
         when: "1–3 ngày quay",
       },
       {
         title: "Hậu kỳ & bàn giao",
-        desc: "Dựng, chỉnh màu, âm thanh. Hai vòng sửa miễn phí. Giao file gốc lại cho quý khách.",
+        desc: "Dựng, chỉnh màu, âm thanh. Hai vòng sửa miễn phí. Giao file gốc lại cho bạn.",
         when: "5–10 ngày",
       },
     ],
@@ -108,7 +118,7 @@ const vi = {
   },
   team: {
     heroLine1: "Những người đứng sau",
-    heroLine2: "BeeZ Production",
+    heroLine2: "Bee Z Production",
     heroSubtitle: "Đội ngũ sáng tạo, tận tâm và đầy nhiệt huyết đứng sau mọi dự án",
     aboutBadge: "Về chúng tôi",
     aboutHeading: "Chúng tôi là ai",
@@ -127,7 +137,7 @@ const vi = {
     contact: "Liên hệ",
     hours: "Giờ làm việc",
     followUs: "Theo dõi",
-    rights: "Bản quyền © {year} BeeZ Production. Mọi quyền được bảo lưu.",
+    rights: "Bản quyền © {year} Bee Z Production.",
     visitors: "Lượt truy cập",
   },
   contact: {
