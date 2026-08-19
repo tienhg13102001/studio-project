@@ -11,7 +11,7 @@ const en = {
     letsTalk: "Let's Talk",
   },
   portfolio: {
-    subtitle: "A selection of our standout projects and visuals.",
+    subtitle: "A few projects and images worth showing.",
     empty: "No images yet — check back soon.",
     profileHeading: "Company profile",
     profileHint: "Drag sideways to browse · tap a page to read it",
@@ -32,14 +32,14 @@ const en = {
   },
   services: {
     sectionTitle: "What We Do",
-    sectionSubtitle: "From broadcast to short-form content, we master every format",
+    sectionSubtitle: "From broadcast TVCs to short-form for social",
   },
   featured: {
     sectionTitle: "Featured",
   },
   gallery: {
     sectionTitle: "Product Images",
-    sectionSubtitle: "A collection of behind-the-scenes and product shots from our projects",
+    sectionSubtitle: "Behind the scenes and finished work from our shoots",
   },
   project: {
     about: "About",
@@ -56,14 +56,14 @@ const en = {
   },
   stats: {
     items: [
-      { value: "800+",  label: "Projects",  icon: "UserIcon",       details: ["TVC & Commercials", "Short-form", "Interviews – Brand films", "Social Media Content"] },
+      { value: "800+",  label: "Projects",  icon: "UserIcon",       details: ["TVC & commercials", "Short-form", "Interviews – Brand films", "Social Media Content"] },
       { value: "400+",  label: "Clients",   icon: "UsersThreeIcon", details: ["F&B Brands", "Banking", "Health-care", "Entertainment"] },
       { value: "1B+", label: "Views", icon: "VideoIcon",      details: ["YouTube", "TikTok", "Instagram Reels", "Facebook"] },
     ],
   },
   brands: {
-    badge: "We’ve partnered with amazing brands",
-    heading: "Trusted by Brands",
+    badge: "Some of the brands Bee Z has worked with",
+    heading: "Bee Z clients",
   },
   // Bản dịch của khối Quy trình — sửa vi.ts thì sửa cả ở đây.
   process: {
@@ -108,20 +108,20 @@ const en = {
   team: {
     heroLine1: "The Minds Behind",
     heroLine2: "Bee Z Production",
-    heroSubtitle: "The creative, dedicated and passionate team behind every project",
+    heroSubtitle: "The people who actually make each project",
     aboutBadge: "About Us",
     aboutHeading: "Who We Are",
-    aboutDescription: "We are a creative team passionate about visual storytelling. From TVCs and short films to social media content — every project receives our cinematic attention to detail and commitment to excellence.",
+    aboutDescription: "Bee Z makes TVCs, short films and social content for brands. Concept, shoot, edit, colour and sound are handled by one team, so nothing falls through the gap between the people who think it up and the people who shoot it.",
     stats: [
       { value: "1B+", label: "Views" },
       { value: "800+", label: "Projects" },
       { value: "400+", label: "Clients" },
     ],
     meetBadge: "The Team",
-    meetHeading: "Meet Our Team",
+    meetHeading: "Meet the Bee Z team",
   },
   footer: {
-    tagline: "A creative production studio crafting TVCs, brand films and social content — telling brand stories through cinematic visuals.",
+    tagline: "A production studio making TVCs, commercials and content for brands.",
     quickLinks: "Quick Links",
     contact: "Contact",
     hours: "Working Hours",
@@ -132,23 +132,23 @@ const en = {
   contact: {
     title: "Contact",
     intro:
-      "Whether you have questions about services, pricing, or anything else, our team is ready to answer.",
+      "Questions about services, pricing or anything else — just write. Bee Z will answer.",
     emailLabel: "Email",
     phoneLabel: "Phone",
     locationLabel: "Location",
     workingHours: "Working Hours",
-    connectWithUs: "Connect With Us",
+    connectWithUs: "Follow Bee Z",
     formTitle: "Send a Message",
     sentTitle: "Message sent!",
     sentDesc: "We'll get back to you as soon as possible.",
-    sendAnother: "Send another message",
+    sendAnother: "Send a new message",
     nameLabel: "Full Name",
     namePlaceholder: "Your name",
     phoneFieldLabel: "Phone",
     serviceLabel: "Service of Interest",
     servicePlaceholder: "Select a service",
     messageLabel: "Message",
-    messagePlaceholder: "Tell us about your project...",
+    messagePlaceholder: "Tell us about the project...",
     submit: "Send Message",
   },
   service: {
@@ -170,32 +170,32 @@ const en = {
      * than breaking the page.
      */
     heroAccentByTag: {
-      TVC: "Commercials for your brand",
+      TVC: "Brand commercials",
       "F&B": "Food & product on camera",
       LOOKBOOK: "Fashion lookbooks & campaigns",
       SHORT: "Short-form for social",
       EVENT: "Events & concerts, multi-camera",
-      WEDDING: "When love is told like cinema",
+      WEDDING: "Wedding photos and film",
     } as Record<string, string>,
     heroTagline:
-      "Professional talking head content, complex motion graphics, entertainment memes, and trend-based videos for every industry and style!",
+      "Talking head, motion graphics, memes and trend-based video, for any industry.",
     startProject: "Let's Talk",
     viewWork: "View Work",
     faqTitle: "Frequently Asked Questions",
     showcaseTitle: "Video Showcase",
     showcaseSubtitle: "Sample work from our shortform content production",
     featuredBadge: "Featured",
-    ctaTitle: "Ready to Go Viral?",
-    ctaSubtitle: "Let's build your short-form content empire together",
+    ctaTitle: "Start making short-form?",
+    ctaSubtitle: "Write to Bee Z and we will map out the approach",
     ctaButton: "Start Creating",
     highlights: [
       {
         title: "Talking Head Videos",
-        desc: "Expert-led content with complex motion graphics.",
+        desc: "An expert on camera, with motion graphics.",
       },
       {
         title: "Trend-Based Content",
-        desc: "Memes, trending audio, viral formats across industries.",
+        desc: "Memes, trending audio, formats that are working now.",
       },
       {
         title: "Multi-Platform",

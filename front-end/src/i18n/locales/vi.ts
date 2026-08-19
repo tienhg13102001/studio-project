@@ -21,7 +21,7 @@ const vi = {
     letsTalk: "Kết Nối",
   },
   portfolio: {
-    subtitle: "Tuyển chọn những dự án và hình ảnh tiêu biểu của chúng tôi.",
+    subtitle: "Vài dự án và hình ảnh tiêu biểu.",
     empty: "Chưa có hình ảnh nào — vui lòng quay lại sau.",
     profileHeading: "Hồ sơ năng lực",
     profileHint: "Kéo ngang để xem · bấm vào một trang để đọc rõ",
@@ -42,14 +42,14 @@ const vi = {
   },
   services: {
     sectionTitle: "Lĩnh vực hoạt động",
-    sectionSubtitle: "Từ truyền hình đến nội dung ngắn, chúng tôi làm chủ mọi định dạng",
+    sectionSubtitle: "Từ TVC truyền hình đến video ngắn cho mạng xã hội",
   },
   featured: {
     sectionTitle: "Nổi bật",
   },
   gallery: {
     sectionTitle: "Hình ảnh sản phẩm",
-    sectionSubtitle: "Tuyển tập hình ảnh hậu trường và sản phẩm từ các dự án của chúng tôi",
+    sectionSubtitle: "Hậu trường và thành phẩm từ các buổi quay",
   },
   project: {
     about: "Giới thiệu",
@@ -67,14 +67,14 @@ const vi = {
   },
   stats: {
     items: [
-      { value: "800+",  label: "Dự án",        icon: "UserIcon",       details: ["TVC & Quảng Cáo", "Nội dung ngắn", "Phỏng vấn – Brand film", "Nội dung mạng xã hội"] },
+      { value: "800+",  label: "Dự án",        icon: "UserIcon",       details: ["TVC & quảng cáo", "Nội dung ngắn", "Phỏng vấn – Brand film", "Nội dung mạng xã hội"] },
       { value: "400+",  label: "Khách hàng",    icon: "UsersThreeIcon", details: ["Thương hiệu F&B", "Ngân hàng", "Y tế", "Giải trí"] },
       { value: "1 tỷ+", label: "Lượt xem",    icon: "VideoIcon",      details: ["YouTube", "TikTok", "Instagram Reels", "Facebook"] },
     ],
   },
   brands: {
-    badge: "Chúng tôi đã hợp tác cùng những thương hiệu lớn",
-    heading: "Được tin dùng bởi các thương hiệu",
+    badge: "Một số thương hiệu đã làm cùng Bee Z",
+    heading: "Khách hàng của Bee Z",
   },
   // Câu chữ do Hoàn tự soạn — sửa ở đây và ở en.ts cho khớp nhau.
   process: {
@@ -119,20 +119,20 @@ const vi = {
   team: {
     heroLine1: "Những người đứng sau",
     heroLine2: "Bee Z Production",
-    heroSubtitle: "Đội ngũ sáng tạo, tận tâm và đầy nhiệt huyết đứng sau mọi dự án",
+    heroSubtitle: "Những người trực tiếp làm ra từng dự án",
     aboutBadge: "Về chúng tôi",
     aboutHeading: "Chúng tôi là ai",
-    aboutDescription: "Chúng tôi là đội ngũ sáng tạo đam mê kể chuyện bằng hình ảnh. Từ TVC và phim ngắn đến nội dung mạng xã hội — mỗi dự án đều nhận được sự chú ý tỉ mỉ theo phong cách điện ảnh và cam kết về chất lượng.",
+    aboutDescription: "Bee Z làm TVC, phim ngắn và nội dung mạng xã hội cho thương hiệu. Ý tưởng, quay, dựng, chỉnh màu, âm thanh đều do một team làm, nên không có khoảng trống giữa bên nghĩ ra và bên bấm máy.",
     stats: [
       { value: "1 tỷ+", label: "Lượt xem" },
       { value: "800+", label: "Dự án" },
       { value: "400+", label: "Khách hàng" },
     ],
     meetBadge: "Đội ngũ",
-    meetHeading: "Khám phá đội ngũ",
+    meetHeading: "Gặp team Bee Z",
   },
   footer: {
-    tagline: "Studio sản xuất phim quảng cáo, TVC và nội dung sáng tạo — kể câu chuyện thương hiệu bằng hình ảnh điện ảnh.",
+    tagline: "Studio sản xuất TVC, phim quảng cáo và nội dung cho thương hiệu.",
     quickLinks: "Liên kết nhanh",
     contact: "Liên hệ",
     hours: "Giờ làm việc",
@@ -143,23 +143,23 @@ const vi = {
   contact: {
     title: "Liên hệ",
     intro:
-      "Dù bạn có câu hỏi về dịch vụ, giá cả hay bất cứ điều gì, đội ngũ của chúng tôi sẵn sàng trả lời.",
+      "Cần hỏi về dịch vụ, báo giá hay bất cứ điều gì, cứ nhắn. Bee Z trả lời.",
     emailLabel: "Email",
     phoneLabel: "Điện thoại",
     locationLabel: "Địa điểm",
     workingHours: "Giờ làm việc",
-    connectWithUs: "Kết nối với chúng tôi",
+    connectWithUs: "Theo dõi Bee Z",
     formTitle: "Gửi tin nhắn",
     sentTitle: "Đã gửi thành công!",
     sentDesc: "Chúng tôi sẽ phản hồi sớm nhất có thể.",
-    sendAnother: "Gửi tin nhắn khác",
+    sendAnother: "Gửi tin nhắn mới",
     nameLabel: "Họ và tên",
     namePlaceholder: "Tên của bạn",
     phoneFieldLabel: "Điện thoại",
     serviceLabel: "Dịch vụ quan tâm",
     servicePlaceholder: "Chọn dịch vụ",
     messageLabel: "Tin nhắn",
-    messagePlaceholder: "Chia sẻ về dự án của bạn...",
+    messagePlaceholder: "Kể qua về dự án...",
     submit: "Gửi tin nhắn",
   },
   service: {
@@ -183,32 +183,32 @@ const vi = {
      * Thêm mảng mới mà quên khai ở đây thì tự lùi về câu chung, không vỡ trang.
      */
     heroAccentByTag: {
-      TVC: "Phim quảng cáo cho thương hiệu của bạn",
+      TVC: "Phim quảng cáo thương hiệu",
       "F&B": "Quay chụp món ăn & sản phẩm",
       LOOKBOOK: "Lookbook & chiến dịch thời trang",
       SHORT: "Video ngắn cho mạng xã hội",
       EVENT: "Sự kiện & concert, ghi hình đa máy",
-      WEDDING: "Khi tình yêu được kể bằng điện ảnh",
+      WEDDING: "Ảnh và phim ngày cưới",
     } as Record<string, string>,
     heroTagline:
-      "Talking head chuyên nghiệp, motion graphics phức tạp, meme giải trí và video bắt trend cho mọi ngành hàng và phong cách!",
+      "Talking head, motion graphics, meme và video bắt trend, làm cho mọi ngành hàng.",
     startProject: "Bắt đầu dự án",
     viewWork: "Xem dự án",
     faqTitle: "Câu hỏi thường gặp",
     showcaseTitle: "Thư viện video",
     showcaseSubtitle: "Một số dự án nội dung dạng ngắn của chúng tôi",
     featuredBadge: "Nổi bật",
-    ctaTitle: "Sẵn sàng tạo nội dung viral?",
-    ctaSubtitle: "Cùng nhau xây dựng hệ thống nội dung dạng ngắn cho thương hiệu của bạn",
+    ctaTitle: "Bắt đầu làm nội dung ngắn?",
+    ctaSubtitle: "Nhắn cho Bee Z để bàn hướng làm",
     ctaButton: "Bắt đầu ngay",
     highlights: [
       {
         title: "Talking Head",
-        desc: "Nội dung dẫn dắt bởi chuyên gia với motion graphics phức tạp.",
+        desc: "Chuyên gia nói trước ống kính, kèm đồ hoạ chuyển động.",
       },
       {
         title: "Nội dung bắt trend",
-        desc: "Meme, audio thịnh hành, các format viral trên mọi lĩnh vực.",
+        desc: "Meme, nhạc đang hot, format đang viral.",
       },
       {
         title: "Đa nền tảng",
