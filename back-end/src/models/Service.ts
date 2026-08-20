@@ -57,6 +57,19 @@ export interface IService extends Document {
   description:    { en: string; vi: string };
   /** Small accent line under the description in the service hero. */
   heroTagline?:   { en: string; vi: string };
+  /**
+   * Tiêu đề và mô tả DÀNH RIÊNG CHO MÁY TÌM KIẾM — không hiện trên trang.
+   *
+   * VÌ SAO TÁCH RIÊNG: trước đây thẻ <title> lấy thẳng `title`, còn thẻ mô tả
+   * lấy thẳng `description`. Muốn nhồi từ khoá khách hay gõ ("quay TVC Hà Nội")
+   * là buộc phải đổi luôn chữ H1 và đoạn mở đầu khách đọc — hai việc có mục
+   * đích ngược nhau: chữ trên trang cần gọn và đẹp, chữ cho máy tìm kiếm cần
+   * đủ từ khoá và đủ dài.
+   *
+   * Bỏ trống thì lùi về `title` / `description` như cũ, nên không bắt buộc điền.
+   */
+  seoTitle?:      { en: string; vi: string };
+  seoDescription?: { en: string; vi: string };
   faqs:           IFaqItem[];
   highlights:     IHighlightItem[];
   stats:          IStatItem[];
@@ -71,6 +84,8 @@ const serviceSchema = new Schema<IService>(
     title:          { type: localizedString, required: true },
     description:    { type: localizedString, required: true },
     heroTagline:    { type: localizedString },
+    seoTitle:       { type: localizedString },
+    seoDescription: { type: localizedString },
     faqs:           { type: [faqItemSchema], default: [] },
     highlights:     { type: [highlightItemSchema], default: [] },
     stats:          { type: [statItemSchema], default: [] },

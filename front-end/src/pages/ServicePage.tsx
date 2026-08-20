@@ -12,7 +12,7 @@ import { apiFetch, resolveAssetUrl } from "#lib/api";
 import CountUp from "#components/molecules/CountUp";
 import HighlightIcon from "#components/HighlightIcon";
 import { useLanguage, useTranslation, type Lang } from "#i18n";
-import { localized } from "#lib/localized";
+import { localized, localizedOrFallback } from "#lib/localized";
 import { breadcrumbSchema, faqSchema, serviceSchema } from "#lib/structuredData";
 import Reveal from "#components/Reveal";
 import Seo from "#components/Seo";
@@ -203,6 +203,16 @@ const ServicePage: React.FC = () => {
   }
 
   const title = localized(service.title, lang);
+  /**
+   * Chữ cho MÁY TÌM KIẾM, tách hẳn khỏi chữ khách đọc trên trang.
+   *
+   * `title` và `description` ở trên là thứ hiện thành H1 và đoạn mở đầu — cần
+   * gọn. Hai cái dưới đây chỉ chui vào thẻ <title>, thẻ mô tả và thẻ chia sẻ
+   * Zalo/Facebook — cần đủ từ khoá khách hay gõ và đủ dài. Chưa điền trong
+   * Portal thì lùi về đúng hành vi cũ.
+   */
+  const tieuDeSeo = localizedOrFallback(service.seoTitle, lang);
+  const moTaSeo = localizedOrFallback(service.seoDescription, lang);
   const description = localized(service.description, lang);
   // Hero accent line — sourced from the service document, falling back to the
   // localized default so services created before this field render something.
@@ -269,11 +279,16 @@ const ServicePage: React.FC = () => {
         dịch vụ — chia sẻ link ra ngoài mới hiện đúng tên và đúng ảnh.
       */}
       <Seo
-        title={selectedProject ? selectedProject.title : title}
+        /* Đang mở dự án thì tiêu đề là tên dự án. Ngược lại ưu tiên tiêu đề SEO
+           đã soạn riêng trong Portal; chưa có thì lùi về tên dịch vụ. */
+        title={selectedProject ? selectedProject.title : tieuDeSeo || title}
+        /* Tiêu đề SEO đã tự mang tên thương hiệu nên bỏ phần đuôi tự thêm, tránh
+           thành "… | Bee Z — BeeZ Production". */
+        titleTemplate={!selectedProject && !!tieuDeSeo ? false : true}
         description={
           selectedProject
             ? localized(selectedProject.subtitle, lang).slice(0, 160)
-            : description.slice(0, 160)
+            : (moTaSeo || description).slice(0, 165)
         }
         path={
           selectedProject ? duongDanDuAn(selectedProject, service) : duongDanDichVu(service)

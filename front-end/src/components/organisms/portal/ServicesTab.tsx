@@ -65,6 +65,8 @@ type ServiceForm = {
   descVi: string;
   taglineEn: string;
   taglineVi: string;
+  seoTitleVi: string;
+  seoDescVi: string;
   thumbnailImage: string;
   tag: string;
   order: number;
@@ -81,6 +83,8 @@ function toForm(s: ApiService): ServiceForm {
     descVi: s.description.vi,
     taglineEn: s.heroTagline?.en ?? "",
     taglineVi: s.heroTagline?.vi ?? "",
+    seoTitleVi: s.seoTitle?.vi ?? "",
+    seoDescVi: s.seoDescription?.vi ?? "",
     thumbnailImage: s.thumbnailImage,
     tag: s.tag,
     order: s.order ?? 0,
@@ -113,6 +117,8 @@ function emptyServiceForm(): ServiceForm {
     descVi: "",
     taglineEn: "",
     taglineVi: "",
+    seoTitleVi: "",
+    seoDescVi: "",
     thumbnailImage: "",
     tag: "",
     order: 0,
@@ -197,6 +203,10 @@ export default function ServicesTab({ data, raw, loading, onRefetch }: TabProps)
         title: { en: form.titleEn, vi: form.titleVi },
         description: { en: form.descEn, vi: form.descVi },
         heroTagline: { en: form.taglineEn, vi: form.taglineVi },
+        // Bỏ trống thì gửi chuỗi rỗng để máy chủ xoá đi, chứ không gửi undefined
+        // (Mongoose bỏ qua undefined nên trường cũ sẽ nằm lại mãi).
+        seoTitle: { en: "", vi: form.seoTitleVi.trim() },
+        seoDescription: { en: "", vi: form.seoDescVi.trim() },
         thumbnailImage: form.thumbnailImage,
         tag: form.tag,
         order: form.order,
@@ -466,6 +476,57 @@ export default function ServicesTab({ data, raw, loading, onRefetch }: TabProps)
                     value={form.taglineVi}
                     onChange={(e) => set("taglineVi", e.target.value)}
                   />
+                </div>
+
+                {/*
+                  HAI Ô NÀY KHÔNG HIỆN TRÊN TRANG. Chúng chỉ chui vào thẻ tiêu đề
+                  của trình duyệt, dòng xanh trong kết quả Google, và thẻ xem
+                  trước khi dán link lên Zalo/Facebook. Bỏ trống thì tự lấy
+                  Title và Description ở trên — nên không bắt buộc điền.
+
+                  Tách riêng vì hai thứ có mục đích ngược nhau: chữ trên trang
+                  cần gọn và đẹp, chữ cho máy tìm kiếm cần đủ từ khoá khách hay
+                  gõ ("quay TVC Hà Nội") và đủ dài để lấp khung Google.
+                */}
+                <div className="border-primary/25 bg-primary/5 space-y-3 rounded-lg border p-3">
+                  <p className="text-muted-foreground text-xs leading-relaxed">
+                    <span className="text-primary font-semibold">Chỉ dành cho Google &amp; Zalo</span>{" "}
+                    — không hiện trên trang. Bỏ trống thì tự lấy Title/Description ở trên.
+                  </p>
+                  <div>
+                    <Label>
+                      Tiêu đề SEO{" "}
+                      <span
+                        className={
+                          form.seoTitleVi.length > 60 ? "text-destructive" : "text-muted-foreground"
+                        }
+                      >
+                        ({form.seoTitleVi.length}/60)
+                      </span>
+                    </Label>
+                    <AutoTextarea
+                      value={form.seoTitleVi}
+                      onChange={(e) => set("seoTitleVi", e.target.value)}
+                      placeholder="Sản xuất TVC & phim quảng cáo — Hà Nội & TP.HCM | Bee Z"
+                    />
+                  </div>
+                  <div>
+                    <Label>
+                      Mô tả SEO{" "}
+                      <span
+                        className={
+                          form.seoDescVi.length > 160 ? "text-destructive" : "text-muted-foreground"
+                        }
+                      >
+                        ({form.seoDescVi.length}/160)
+                      </span>
+                    </Label>
+                    <AutoTextarea
+                      value={form.seoDescVi}
+                      onChange={(e) => set("seoDescVi", e.target.value)}
+                      placeholder="Hai câu nói rõ làm gì, ở đâu, khác gì — có từ khoá khách hay gõ."
+                    />
+                  </div>
                 </div>
                 <div className="grid grid-cols-[2fr_1fr] gap-3">
                   <div>

@@ -141,7 +141,9 @@ function duLieuCoCauTruc(route) {
     khoi.push({
       "@context": "https://schema.org",
       "@type": "Service",
-      name: route.title,
+      // Tên thật của dịch vụ, KHÔNG dùng tiêu đề SEO: khối này khai "Bee Z bán
+      // dịch vụ gì", tên phải sạch chứ không phải một dòng nhồi từ khoá.
+      name: route.tenThat ?? route.title,
       description: route.description,
       url,
       ...(absUrl(route.image) ? { image: absUrl(route.image) } : {}),
@@ -232,7 +234,7 @@ function nhetJsonLd(html, khoi) {
 
 function renderPage(route) {
   const url = SITE + route.path;
-  const fullTitle = route.title + SUFFIX;
+  const fullTitle = route.khongThemDuoi ? route.title : route.title + SUFFIX;
   let html = base;
 
   // <title>
@@ -315,10 +317,15 @@ async function detailRoutes() {
   for (const s of services.items ?? []) {
     routes.push({
       path: `/service/${s.slug || s.id}`,
-      title: s.title?.vi || s.title?.en || "Dịch vụ",
-      description: trim(s.description?.vi || s.description?.en),
+      // Ưu tiên chữ soạn riêng cho máy tìm kiếm (Portal → Dịch vụ → "Chỉ dành
+      // cho Google & Zalo"). Chưa điền thì lùi về tên và mô tả hiện trên trang.
+      title: s.seoTitle?.vi?.trim() || s.title?.vi || s.title?.en || "Dịch vụ",
+      // Tiêu đề SEO đã tự mang tên thương hiệu nên không thêm đuôi nữa.
+      khongThemDuoi: Boolean(s.seoTitle?.vi?.trim()),
+      description: trim(s.seoDescription?.vi?.trim() || s.description?.vi || s.description?.en),
       image: s.thumbnailImage,
       loai: "dich-vu",
+      tenThat: s.title?.vi || s.title?.en || "Dịch vụ",
       faqs: s.faqs ?? [],
     });
   }

@@ -83,6 +83,12 @@ export type ApiStat = {
 };
 
 export type ApiService = {
+  /**
+   * Chữ dành riêng cho máy tìm kiếm — KHÔNG hiện trên trang.
+   * Trống thì lùi về `title` / `description`. Sửa ở Portal → Dịch vụ.
+   */
+  seoTitle?:       LocalizedString;
+  seoDescription?: LocalizedString;
   id:             string;
   /** Tên đường dẫn đọc được — xem `lib/urls.ts`. Dữ liệu rất cũ có thể chưa có. */
   slug?:          string;

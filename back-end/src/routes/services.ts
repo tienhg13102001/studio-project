@@ -83,11 +83,16 @@ router.post("/", async (req, res, next) => {
 /** PUT /api/services/:id */
 router.put("/:id", async (req, res, next) => {
   try {
-    const { title, description, heroTagline, thumbnailImage, tag, faqs, highlights, stats, order } =
-      req.body as Record<string, unknown>;
+    const {
+      title, description, heroTagline, seoTitle, seoDescription,
+      thumbnailImage, tag, faqs, highlights, stats, order,
+    } = req.body as Record<string, unknown>;
     const service = await Service.findByIdAndUpdate(
       req.params.id,
-      { title, description, heroTagline, thumbnailImage, tag, faqs, highlights, stats, order },
+      {
+        title, description, heroTagline, seoTitle, seoDescription,
+        thumbnailImage, tag, faqs, highlights, stats, order,
+      },
       { new: true, runValidators: true },
     );
     if (!service) { sendError(res, "Service not found", 404); return; }
