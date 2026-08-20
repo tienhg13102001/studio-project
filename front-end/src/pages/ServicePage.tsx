@@ -243,6 +243,12 @@ const ServicePage: React.FC = () => {
         }))
       : t.service.highlights.map((h) => ({ ...h, icon: undefined }));
 
+  /**
+   * Thẻ dùng cho tên mảng ở đầu trang: `h1` khi đang xem trang dịch vụ, `p` khi
+   * đang mở một dự án. Xem ghi chú ngay tại chỗ dùng để biết vì sao.
+   */
+  const TieuDeMang = selectedProject ? "p" : "h1";
+
   const stats =
     service.stats.length > 0
       ? service.stats.map((s) => ({ value: s.value, label: localized(s.label, lang) }))
@@ -327,7 +333,15 @@ const ServicePage: React.FC = () => {
             một hai từ — cần nhất trên điện thoại, nơi tên mảng dài như "Quay
             Phim & Chụp Ảnh Sự Kiện" phải xuống hai dòng.
           */}
-          <h1
+          {/*
+            ĐANG MỞ MỘT DỰ ÁN THÌ ĐÂY KHÔNG CÒN LÀ TIÊU ĐỀ CHÍNH.
+
+            Địa chỉ lúc đó là `/du-an/<tên>` — trang của DỰ ÁN, và tiêu đề thật
+            nằm trong khối dự án đè lên trên. Để nguyên `h1` ở đây thì 66 trang
+            dự án đều có tiêu đề chính là TÊN DỊCH VỤ, giống hệt nhau từng nhóm,
+            còn tên dự án thì tụt xuống hàng hai. Máy tìm kiếm đọc đúng cái sai.
+          */}
+          <TieuDeMang
             className={`text-foreground text-4xl font-bold tracking-tight text-balance md:text-6xl ${reveal("delay-100")}`}
           >
             {title}
@@ -342,7 +356,7 @@ const ServicePage: React.FC = () => {
             <span className="from-primary via-chart-2 to-chart-4 mt-1 block bg-linear-to-r bg-clip-text text-3xl text-transparent text-balance md:text-5xl">
               {t.service.heroAccentByTag[service.tag] ?? t.service.heroAccent}
             </span>
-          </h1>
+          </TieuDeMang>
 
           <p
             className={`text-muted-foreground mx-auto mt-6 max-w-2xl text-base leading-relaxed md:text-lg ${reveal("delay-200")}`}

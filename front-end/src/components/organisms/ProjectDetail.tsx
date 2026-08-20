@@ -237,7 +237,10 @@ const ProjectDetail: FC<Props> = ({ project, onClose }) => {
                   <FilmReelIcon size={22} className="text-foreground" />
                 </div>
                 <div className="min-w-0 flex-1 pt-0.5">
-                  <h1 className="text-foreground truncate text-base font-bold">{project.title}</h1>
+                  {/* Thanh này là bản RÚT GỌN của tiêu đề bên dưới, cùng nội dung
+                      nhưng cho màn nhỏ. Để `h1` thì một trang có hai `h1` giống hệt
+                      nhau — máy tìm kiếm phải đoán cái nào là tiêu đề thật. */}
+                  <p className="text-foreground truncate text-base font-bold">{project.title}</p>
                   <div className="mt-1.5 flex items-center gap-2">
                     {project.subtitle && (
                       <span className="text-muted-foreground truncate text-xs">

@@ -38,24 +38,28 @@ const ROUTES = [
     title: "Dịch vụ sản xuất video & TVC",
     description:
       "Các dịch vụ của BeeZ Production: sản xuất TVC, phim quảng cáo, phim doanh nghiệp, brand film và nội dung mạng xã hội — trọn gói từ ý tưởng tới hậu kỳ.",
+     loai: "tinh",
   },
   {
     path: "/portfolio",
     title: "Portfolio — dự án đã thực hiện",
     description:
       "Tuyển tập TVC, phim doanh nghiệp và hình ảnh hậu trường do BeeZ Production thực hiện cho các thương hiệu tại Việt Nam.",
+     loai: "tinh",
   },
   {
     path: "/team",
     title: "Đội ngũ",
     description:
       "Những người trực tiếp làm nên mỗi dự án của BeeZ Production — đạo diễn, quay phim, dựng phim và sản xuất.",
+     loai: "tinh",
   },
   {
     path: "/contact",
     title: "Liên hệ",
     description:
       "Liên hệ BeeZ Production để nhận tư vấn và báo giá sản xuất TVC, phim doanh nghiệp, brand film tại Hà Nội.",
+     loai: "tinh",
   },
 ];
 
@@ -115,6 +119,117 @@ function trim(text, max = 158) {
   return `${(lastSpace > max * 0.6 ? cut.slice(0, lastSpace) : cut).trimEnd()}…`;
 }
 
+/**
+ * Dựng khối dữ liệu có cấu trúc cho từng trang và nhét thẳng vào HTML thô.
+ *
+ * VÌ SAO CẦN: trước đây HTML thô chỉ có khối `Organization` của cả web. Khối
+ * `FAQPage` (12 câu hỏi trang TVC), `Service` và `BreadcrumbList` do React sinh
+ * ra, tức là CHỈ CÓ SAU KHI CHẠY JAVASCRIPT. Google có chạy JS nhưng đó là lượt
+ * quét thứ hai, chậm và không chắc — mà đây lại đúng là khối đáng giá nhất, cái
+ * làm câu hỏi nở ra ngay trong kết quả tìm kiếm.
+ *
+ * Gắn `data-tra-truoc` để lúc React chạy còn biết đường gỡ bản này ra, tránh
+ * một trang có hai khối giống hệt nhau (xem `src/components/Seo.tsx`).
+ */
+const SITE_NAME_LD = "BeeZ Production";
+
+function duLieuCoCauTruc(route) {
+  const khoi = [];
+  const url = SITE + route.path;
+
+  if (route.loai === "dich-vu") {
+    khoi.push({
+      "@context": "https://schema.org",
+      "@type": "Service",
+      name: route.title,
+      description: route.description,
+      url,
+      ...(absUrl(route.image) ? { image: absUrl(route.image) } : {}),
+      provider: { "@id": `${SITE}/#organization` },
+      areaServed: { "@type": "Country", name: "Vietnam" },
+    });
+    khoi.push({
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        { "@type": "ListItem", position: 1, name: "Trang chủ", item: SITE + "/" },
+        { "@type": "ListItem", position: 2, name: "Dịch vụ", item: SITE + "/service" },
+        { "@type": "ListItem", position: 3, name: route.title, item: url },
+      ],
+    });
+    const faqs = (route.faqs ?? [])
+      .map((f) => ({
+        q: (f.question?.vi || f.question?.en || "").trim(),
+        a: (f.answer?.vi || f.answer?.en || "").trim(),
+      }))
+      .filter((f) => f.q && f.a);
+    if (faqs.length) {
+      khoi.push({
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        mainEntity: faqs.map((f) => ({
+          "@type": "Question",
+          name: f.q,
+          acceptedAnswer: { "@type": "Answer", text: f.a },
+        })),
+      });
+    }
+  }
+
+  if (route.loai === "du-an") {
+    khoi.push({
+      "@context": "https://schema.org",
+      "@type": "CreativeWork",
+      name: route.title,
+      description: route.description,
+      url,
+      ...(absUrl(route.image) ? { image: absUrl(route.image) } : {}),
+      creator: { "@id": `${SITE}/#organization` },
+      inLanguage: "vi",
+    });
+    khoi.push({
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        { "@type": "ListItem", position: 1, name: "Trang chủ", item: SITE + "/" },
+        { "@type": "ListItem", position: 2, name: "Portfolio", item: SITE + "/portfolio" },
+        { "@type": "ListItem", position: 3, name: route.title, item: url },
+      ],
+    });
+  }
+
+  if (route.loai === "tinh") {
+    khoi.push({
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        { "@type": "ListItem", position: 1, name: "Trang chủ", item: SITE + "/" },
+        { "@type": "ListItem", position: 2, name: route.title, item: url },
+      ],
+    });
+  }
+
+  return khoi;
+}
+
+/** Nhét các khối JSON-LD vào ngay trước </head>. */
+function nhetJsonLd(html, khoi) {
+  if (!khoi.length) return html;
+  const the = khoi
+    .map(
+      (k) =>
+        `    <script type="application/ld+json" data-tra-truoc="1">${JSON.stringify(k).replace(/</g, "\u003c")}</script>`,
+    )
+    .join("\n");
+  if (!/<\/head>/i.test(html)) {
+    console.warn("  ! Bỏ qua JSON-LD: không tìm thấy </head>");
+    warnings++;
+    return html;
+  }
+  return html.replace(/<\/head>/i, `${the}
+  </head>`);
+}
+
 function renderPage(route) {
   const url = SITE + route.path;
   const fullTitle = route.title + SUFFIX;
@@ -150,6 +265,8 @@ function renderPage(route) {
     html = replaceMeta(html, "property", "og:image", image, "og:image");
     html = replaceMeta(html, "name", "twitter:image", image, "twitter:image");
   }
+
+  html = nhetJsonLd(html, duLieuCoCauTruc(route));
 
   const outDir = path.join(DIST, route.path.replace(/^\//, ""));
   fs.mkdirSync(outDir, { recursive: true });
@@ -201,6 +318,8 @@ async function detailRoutes() {
       title: s.title?.vi || s.title?.en || "Dịch vụ",
       description: trim(s.description?.vi || s.description?.en),
       image: s.thumbnailImage,
+      loai: "dich-vu",
+      faqs: s.faqs ?? [],
     });
   }
 
@@ -241,6 +360,7 @@ async function detailRoutes() {
       title: p.title || "Dự án",
       description: trim(p.subtitle?.vi || p.subtitle?.en || p.title),
       image: p.thumbnailImage,
+      loai: "du-an",
     });
   }
 

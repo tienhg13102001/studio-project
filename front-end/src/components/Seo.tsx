@@ -1,5 +1,5 @@
 import { useLanguage } from "#i18n";
-import type { FC } from "react";
+import { useEffect, type FC } from "react";
 import { Helmet } from "react-helmet-async";
 
 const SITE_URL = "https://www.beezvn.com";
@@ -39,6 +39,26 @@ const Seo: FC<Props> = ({
   jsonLd,
 }) => {
   const { lang } = useLanguage();
+
+  /**
+   * Gỡ khối dữ liệu có cấu trúc do bản dựng nhét sẵn vào HTML.
+   *
+   * `scripts/prerender-meta.mjs` nhét `Service` / `FAQPage` / `BreadcrumbList`
+   * thẳng vào HTML thô để máy tìm kiếm đọc được NGAY, không phải đợi chạy
+   * JavaScript. Nhưng khi React chạy, chính component này lại dựng đúng những
+   * khối đó một lần nữa — thành hai bản giống hệt trên cùng một trang, và Google
+   * phải đoán tin bản nào.
+   *
+   * Gỡ bản dựng sẵn đi là xong: HTML thô vẫn có nó (thứ máy tìm kiếm đọc lượt
+   * đầu), còn trên trình duyệt thì chỉ còn bản React quản — bản này còn tự đổi
+   * theo khi khách bấm sang trang khác mà không tải lại.
+   */
+  useEffect(() => {
+    document
+      .querySelectorAll('script[type="application/ld+json"][data-tra-truoc]')
+      .forEach((el) => el.remove());
+  }, []);
+
 
   const fullTitle = titleTemplate ? `${title} — ${SITE_NAME}` : title;
   const canonical = path ? `${SITE_URL}${path}` : SITE_URL;
