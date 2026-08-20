@@ -24,7 +24,7 @@ const ProcessSection = () => {
   const steps = t.process.steps;
 
   return (
-    <section className="px-6 py-20 md:py-28">
+    <section className="px-6 pt-20 pb-8 md:pt-28 md:pb-10">
       <div className="mx-auto max-w-4xl">
         <SectionHeader title={t.process.sectionTitle} subtitle={t.process.sectionSubtitle} />
 
@@ -47,13 +47,17 @@ const ProcessSection = () => {
               `marginBottom` mới là quãng cuộn giữa hai bước: ngắn quá thì thẻ
               chưa kịp dừng đã bị đè, dài quá thì khách cuộn mỏi tay.
 
-              BƯỚC CUỐI VẪN PHẢI CÓ quãng này, NHƯNG NGẮN HƠN HẲN. Bỏ hẳn thì
-              `ol` kết thúc ngay tại thẻ cuối, mà thẻ dính chỉ dính được trong
-              lòng khối cha — nên thẻ 05 không kịp trôi lên đè thẻ 04, chồng bài
-              đứt ở bước 4. Nhưng để nguyên 42vh thì sau thẻ 05 không còn thẻ nào
-              trôi lên lấp chỗ đó nữa, thành một mảng trống gần 400px trước khối
-              số liệu — Hoàn báo đúng chỗ này. 14vh vừa đủ để thẻ 05 dừng lại và
-              khách kịp thấy trọn năm thẻ xếp chồng, rồi đi tiếp ngay.
+              BƯỚC CUỐI CŨNG PHẢI CÓ quãng này, và KHÔNG rút ngắn tuỳ ý được.
+
+              Đo trên trình duyệt thật ở bốn cỡ màn (1440x700, 1440x900,
+              1920x1080, 390x844): dưới 30vh là thẻ 05 KHÔNG kịp lên tới đỉnh
+              trong lúc bốn thẻ kia còn dính — chồng bài đứt ở bước 4. 26vh vẫn
+              đứt riêng ở màn 1920x1080. 34vh là mức thấp nhất chạy được cả bốn,
+              và còn giữ được 80–120px cuộn để khách kịp nhìn trọn năm thẻ.
+
+              ĐỪNG hạ xuống nữa mà không đo lại. Ngày 19/08 đã hạ xuống 14vh cho
+              đỡ trống và làm đứt hiệu ứng trên web thật — nhìn bằng mắt không
+              phát hiện ra, phải cuộn từng nấc 10px mới thấy.
 
               Ai bật giảm chuyển động trong hệ điều hành thì trở lại thành danh
               sách xếp dọc bình thường.
@@ -64,7 +68,7 @@ const ProcessSection = () => {
               style={{
                 // Lệch dần để mép thẻ trước vẫn ló ra sau khi bị đè.
                 top: `calc(13vh + ${i * 16}px)`,
-                marginBottom: i === steps.length - 1 ? "14vh" : "42vh",
+                marginBottom: i === steps.length - 1 ? "34vh" : "42vh",
               }}
             >
               <article

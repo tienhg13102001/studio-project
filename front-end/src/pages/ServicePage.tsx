@@ -415,8 +415,11 @@ const ServicePage: React.FC = () => {
       <section className="mx-auto max-w-7xl px-6 py-12">
         <div className="grid gap-6 md:grid-cols-3">
           {highlights.map((h, i) => (
-            <Reveal key={h.title} delay={i * 100}>
-              <div className="border-border bg-card flex flex-col gap-3 rounded-2xl border p-6">
+            /* `h-full` ở CẢ HAI lớp: ô lưới tự kéo cao bằng hàng, nhưng thẻ bên
+               trong không tự cao theo nếu không bảo nó. Thiếu một trong hai là
+               thẻ chữ ngắn lùn hơn thẻ chữ dài, so le trông rất bẩn. */
+            <Reveal key={h.title} delay={i * 100} className="h-full">
+              <div className="border-border bg-card flex h-full flex-col gap-3 rounded-2xl border p-6">
                 <div className="bg-primary/10 text-primary flex h-11 w-11 items-center justify-center rounded-xl">
                   <HighlightIcon icon={h.icon} index={i} size={22} weight="duotone" />
                 </div>
