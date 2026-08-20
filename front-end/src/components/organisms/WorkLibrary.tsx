@@ -114,6 +114,8 @@ const WorkLibrary = ({ projects }: Props) => {
               <li key={p.id}>
                 <Link
                   to={duongDanDuAn(p, dv ?? { id: "" })}
+                  /* Cờ để nút X trong trang dự án biết đường lùi về đây. */
+                  state={{ tuTrongWeb: true }}
                   className="border-border/60 bg-card group focus-visible:outline-primary block overflow-hidden rounded-xl border transition-all duration-200 hover:-translate-y-1 hover:border-primary/40 focus-visible:outline-2 focus-visible:outline-offset-2"
                 >
                   {/*

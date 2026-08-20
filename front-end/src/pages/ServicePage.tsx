@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams, useNavigate, useSearchParams } from "react-router-dom";
+import { useLocation, useParams, useNavigate, useSearchParams } from "react-router-dom";
 import {
   ArrowLeftIcon,
   LightningIcon,
@@ -61,6 +61,7 @@ const ServicePage: React.FC = () => {
     projectSlug,
   } = useParams<{ id?: string; projectId?: string; projectSlug?: string }>();
   const navigate = useNavigate();
+  const viTri = useLocation();
   const { lang } = useLanguage();
   const t = useTranslation();
   const [searchParams] = useSearchParams();
@@ -85,10 +86,26 @@ const ServicePage: React.FC = () => {
    */
   const openProject = (project: ApiProject) => {
     if (!service) return;
-    navigate(duongDanDuAn(project, service));
+    navigate(duongDanDuAn(project, service), { state: { tuTrongWeb: true } });
   };
 
+  /**
+   * Đóng dự án = QUAY LẠI ĐÚNG CHỖ KHÁCH VỪA ĐỨNG.
+   *
+   * Trước đây nút X luôn đi tới trang dịch vụ. Khách bấm một dự án ở TRANG CHỦ
+   * để xem nhanh, đóng ra lại bị quăng sang trang dịch vụ — mất mạch, mất cả vị
+   * trí đang cuộn, phải cuộn lại từ đầu.
+   *
+   * Cờ `tuTrongWeb` do chính chỗ mở dự án gắn vào, nên chỉ lùi khi biết chắc
+   * trang trước đó là trang của mình. KHÔNG lùi mù theo lịch sử trình duyệt:
+   * khách vào thẳng bằng link chia sẻ thì trang trước đó là Google hay Facebook,
+   * lùi là đá khách ra khỏi web.
+   */
   const closeProject = () => {
+    if (viTri.state?.tuTrongWeb) {
+      navigate(-1);
+      return;
+    }
     if (!service) return;
     navigate(duongDanDichVu(service), { replace: true });
   };

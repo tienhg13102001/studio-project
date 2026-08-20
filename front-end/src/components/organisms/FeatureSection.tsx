@@ -47,7 +47,7 @@ const FeatureSection: FC<Props> = () => {
    */
   const openProject = (card: ProjectDisplay) => {
     if (card.slug) {
-      navigate(duongDanDuAn(card, { id: "" }));
+      navigate(duongDanDuAn(card, { id: "" }), { state: { tuTrongWeb: true } });
       return;
     }
     setSearchParams(
