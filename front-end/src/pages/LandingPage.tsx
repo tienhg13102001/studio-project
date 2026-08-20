@@ -29,9 +29,14 @@ const LandingPage = () => {
 
   return (
     <>
+      {/* Tiêu đề tự mang tên thương hiệu nên tắt phần đuôi tự thêm. Chữ này CHỈ
+          hiện ở tab trình duyệt, kết quả Google và thẻ chia sẻ Zalo — không
+          phải H1 trên trang. Xếp theo thứ khách gõ nhiều nhất: "sản xuất TVC",
+          rồi tới địa danh. */}
       <Seo
-        title="Agency sản xuất video & TVC tại Hà Nội"
-        description="BeeZ Production — agency sản xuất video hàng đầu Hà Nội. TVC, phim quảng cáo, brand film và nội dung mạng xã hội điện ảnh cho những thương hiệu dám khác biệt."
+        title="Sản xuất TVC & video quảng cáo — Hà Nội & TP.HCM | Bee Z"
+        titleTemplate={false}
+        description="Bee Z Production sản xuất TVC, phim quảng cáo, video sự kiện và nội dung mạng xã hội tại Hà Nội và TP.HCM. Giá khởi điểm công khai từ 50 triệu."
         path="/"
         jsonLd={[organizationSchema(contact, lang), websiteSchema()]}
       />
