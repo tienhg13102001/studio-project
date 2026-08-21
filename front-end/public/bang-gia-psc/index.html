@@ -411,13 +411,19 @@ details[open] summary .plus::after{transform:translate(-50%,-50%) scaleY(0)}
 /* ---------- HERO ---------- */
 /* Hero có ảnh cao sẵn rồi nên đệm trên phải mỏng, không thì đầu trang rỗng một mảng */
 .plate.hero-p{padding-top:0}
-.hero-in{padding:26px 0 8px}
+/* CHỈ khai đệm TRÊN/DƯỚI, tuyệt đối không dùng dạng viết tắt `padding:` ở đây.
+   Khối hero mang hai lớp `wrap hero-in`; `.wrap` lo đệm hai bên (16px trên điện
+   thoại, 32px từ 768px trở lên). Dạng viết tắt đặt lại cả bốn cạnh nên số 0 ở
+   giữa xoá sạch đệm hai bên đó — chữ dính hẳn vào mép màn hình. Trên máy tính
+   lỗi bị `margin:0 auto` che mất nên chỉ điện thoại mới lộ. Đã đo: hero 0px
+   trong khi mọi khối khác 16px (màn 390px), và 80px so với 112px (màn 1280px). */
+.hero-in{padding-top:26px;padding-bottom:8px}
 @media (max-width:700px){
-  .hero-in{padding:18px 0 4px}
+  .hero-in{padding-top:18px;padding-bottom:4px}
   .plate.hero-p{padding-bottom:92px}
   .plate.hero-p .ghost{bottom:14px;right:6px;font-size:clamp(2.2rem,9vw,4rem)}
 }
-@media (min-width:768px){.hero-in{padding:40px 0 12px}}
+@media (min-width:768px){.hero-in{padding-top:40px;padding-bottom:12px}}
 .hero-in h1{font-size:var(--t-h1);line-height:1.02;margin-top:14px;max-width:16ch}
 .lede{margin-top:16px;color:var(--dim);max-width:54ch}
 .anchors{display:grid;grid-template-columns:1fr 1fr}
@@ -450,6 +456,9 @@ footer{background:var(--deep);border-top:1px solid var(--line);padding:44px 0 40
 .dock-in{max-width:var(--maxw);margin:0 auto;padding:9px 16px;display:flex;align-items:center;gap:12px}
 .dock p{font-size:13px;color:var(--dim);flex:1;min-width:0}
 .dock p b{display:block;color:var(--text);font-size:var(--t-note);font-weight:700}
+/* Trái tim đứng cùng dòng chữ: hạ 2px cho khớp đường chân chữ, chừa 6px
+   trước chữ. `flex:none` vì thẻ <a> bên cạnh cũng có svg và đã khai vậy. */
+.dock p b svg{color:var(--gold);vertical-align:-2px;margin-right:6px;flex:none}
 /* Màn hẹp: bỏ vế phụ, không thì dòng vỡ hai hàng và thanh cao gấp rưỡi */
 @media (max-width:520px){.dock-extra{display:none}}
 /* Nút chốt deal — thứ duy nhất trên trang được phép rực. Vàng phẳng trông như
@@ -1178,7 +1187,7 @@ html.anim .rise.in{opacity:1;transform:none}
 
 <div class="dock">
   <div class="dock-in">
-    <p><b>Chốt lịch cưới của bạn</b>0967 395 577<span class="dock-extra"> · Bee Z có mặt trên toàn quốc</span></p>
+    <p><b><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>Nhắn ngay cho Bee Z</b>0967 395 577<span class="dock-extra"> · Bee Z có mặt trên toàn quốc</span></p>
     <a href="tel:0967395577" aria-label="Gọi 0967 395 577">
       <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
       Gọi ngay
