@@ -2,6 +2,9 @@ import "dotenv/config";
 import { connectDB, disconnectDB } from "../lib/db.ts";
 import { Project } from "../models/Project.ts";
 import { CASE_STUDY } from "./du-lieu-case-study.ts";
+// Đợt 2 để riêng file cho dễ soát: dữ kiện Hoàn đưa ngày 21/08 mỏng hơn đợt 1
+// nhiều, nên cần biết bài nào thuộc đợt nào khi rà lại.
+import { CASE_STUDY_DOT_2 } from "./du-lieu-case-study-dot-2.ts";
 
 /**
  * Nạp câu chuyện dự án (Bài toán / Cách làm / Kết quả) cho 6 dự án đầu tiên.
@@ -32,7 +35,7 @@ async function chay(): Promise<void> {
   let boQua = 0;
   let khongThay = 0;
 
-  for (const b of CASE_STUDY) {
+  for (const b of [...CASE_STUDY, ...CASE_STUDY_DOT_2]) {
     const duAn = await Project.findOne({ slug: b.slug });
     if (!duAn) {
       khongThay++;
