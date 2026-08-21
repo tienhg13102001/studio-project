@@ -93,5 +93,28 @@ export function khoiLienKet({ dichVu, duAn, duongDanHienTai, loai }) {
     );
   }
 
-  return phan.join("");
+  if (!phan.length) return "";
+
+  /**
+   * BỌC TRONG KHỐI MẮT KHÔNG THẤY NHƯNG MÁY VẪN ĐỌC.
+   *
+   * Trước đây khối này để trần trong `#root`. Hồi còn màn hình chờ thì không ai
+   * thấy vì lớp phủ che đúng khoảnh khắc đó. Bỏ màn hình chờ ngày 21/08 xong là
+   * nó lộ ra: khách tải lại trang thấy nháy một nhịp danh sách chữ trắng trên
+   * nền đen trước khi giao diện thật hiện lên. Hoàn báo đúng chỗ này.
+   *
+   * Dùng đúng cách mà trình đọc màn hình vẫn dùng để giấu chữ khỏi mắt mà không
+   * giấu khỏi máy: thu về một điểm ảnh rồi cắt sạch phần tràn. KHÔNG dùng
+   * `display:none` — cách đó giấu khỏi cả trình đọc màn hình, và máy tìm kiếm
+   * cũng đánh giá thấp hơn.
+   *
+   * ĐÂY KHÔNG PHẢI LINK ẨN ĐỂ GIAN LẬN: đúng những link mà ứng dụng cũng dựng
+   * ra sau khi chạy — trang portfolio thật sự có đủ 66 link này, chỉ là chúng
+   * chỉ tồn tại sau khi có JavaScript. React thay thế nguyên khối này ngay khi
+   * khởi động, nên nó chỉ sống được vài trăm mili giây.
+   */
+  const giau =
+    "position:absolute;width:1px;height:1px;padding:0;margin:-1px;" +
+    "overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0";
+  return `<div style="${giau}">${phan.join("")}</div>`;
 }
