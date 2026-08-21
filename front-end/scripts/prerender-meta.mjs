@@ -286,7 +286,12 @@ function renderPage(route, dsDichVu = [], dsDuAn = []) {
     loai: route.loai ?? "tinh",
   });
   if (lienKet) {
-    const reRoot = /<div id="root"><\/div>/i;
+    // Khớp cả khi #root ĐÃ có link — bước trang chủ ghi đè lên chính file gốc,
+    // nên chạy script hai lần mà không dựng lại thì lần hai không thấy #root
+    // rỗng nữa và bỏ qua toàn bộ 77 trang. Khớp lỏng thì chạy lại bao nhiêu lần
+    // cũng ra kết quả như nhau. (Khối chèn vào không chứa <div> nên dấu </div>
+    // đầu tiên luôn là dấu đóng của chính #root.)
+    const reRoot = /<div id="root">[\s\S]*?<\/div>/i;
     if (reRoot.test(html)) {
       html = html.replace(reRoot, `<div id="root">${lienKet}</div>`);
     } else {
@@ -380,14 +385,92 @@ async function detailRoutes() {
     warnings++;
   }
 
+  /**
+   * TÊN DỰ ÁN BỊ TRÙNG — phải tách ra, nếu không hai trang khác nhau có chung
+   * một thẻ <title> và máy tìm kiếm không phân biệt được.
+   *
+   * Đo ngày 21/08/2026: OWEN ×2, Cardina ×2, FPT Camera ×2. Đây là dự án làm
+   * nhiều đợt cho cùng một khách, tên trên trang giữ nguyên là đúng — chỉ thẻ
+   * tiêu đề cần phân biệt, và phân biệt bằng DỮ LIỆU CÓ SẴN (tháng/năm quay)
+   * chứ không bịa thêm chữ.
+   */
+  const demTen = new Map();
+  for (const p of projects) {
+    const k = (p.title || "").trim().toLowerCase();
+    demTen.set(k, (demTen.get(k) ?? 0) + 1);
+  }
+
+  /** "tháng 5/2026" — chỉ dùng khi thật sự có ngày quay. */
+  const thangNam = (d) => {
+    if (!d) return null;
+    const x = new Date(d);
+    return Number.isNaN(x.getTime()) ? null : `tháng ${x.getMonth() + 1}/${x.getFullYear()}`;
+  };
+  /** "22/05/2026" — dùng khi hai đợt rơi vào cùng một tháng. */
+  const ngayDayDu = (d) => {
+    if (!d) return null;
+    const x = new Date(d);
+    if (Number.isNaN(x.getTime())) return null;
+    const hai = (n) => String(n).padStart(2, "0");
+    return `${hai(x.getDate())}/${hai(x.getMonth() + 1)}/${x.getFullYear()}`;
+  };
+
+  /**
+   * Tháng/năm chưa chắc tách được: FPT Camera quay hai đợt 08/05 và 22/05, cùng
+   * tháng 5/2026, nên gắn tháng vào vẫn ra hai tiêu đề y hệt. Đếm lại lần nữa
+   * trên tiêu đề ĐÃ gắn tháng; chỗ nào vẫn đụng thì xuống tới ngày.
+   */
+  const demSauThang = new Map();
+  for (const p of projects) {
+    const ten = (p.title || "Dự án").trim();
+    const k = demTen.get(ten.toLowerCase()) > 1 && thangNam(p.shootDate)
+      ? `${ten} — ${thangNam(p.shootDate)}`
+      : ten;
+    demSauThang.set(k.toLowerCase(), (demSauThang.get(k.toLowerCase()) ?? 0) + 1);
+  }
+
   for (const p of projects) {
     const serviceId = typeof p.service === "string" ? p.service : p.service?.id;
     const serviceSlug = typeof p.service === "string" ? null : p.service?.slug;
     if (!serviceId) continue; // dự án mồ côi thì bỏ qua, không đoán
+    const tenMang = typeof p.service === "string" ? null : p.service?.title?.vi;
+    const khi = thangNam(p.shootDate);
+    const noi = (p.shootLocation ?? "").trim();
+
+    // `.trim()`: dữ liệu có tên thừa dấu cách ("OWEN "), để nguyên thì ra
+    // "OWEN  — tháng 12/2025" với hai dấu cách giữa.
+    const tenGoc = (p.title || "Dự án").trim();
+    const bitrung = demTen.get(tenGoc.toLowerCase()) > 1;
+    const theoThang = bitrung && khi ? `${tenGoc} — ${khi}` : tenGoc;
+    const tieuDe =
+      bitrung && demSauThang.get(theoThang.toLowerCase()) > 1 && ngayDayDu(p.shootDate)
+        ? `${tenGoc} — ${ngayDayDu(p.shootDate)}`
+        : theoThang;
+
+    /**
+     * PHỤ ĐỀ TRỐNG THÌ DỰNG MÔ TẢ TỪ DỮ LIỆU THẬT.
+     *
+     * 11 dự án có phụ đề rỗng hoặc chỉ lặp lại đúng cái tên, nên thẻ mô tả của
+     * chúng cũng chỉ là cái tên — Google gọi đó là nội dung mỏng và bỏ qua.
+     * Ghép từ mảng, địa điểm và tháng quay: toàn thứ có sẵn trong dữ liệu,
+     * không bịa một chữ nào.
+     */
+    const phuDe = (p.subtitle?.vi || p.subtitle?.en || "").trim();
+    const phuDeThat = phuDe && phuDe.toLowerCase() !== tenGoc.trim().toLowerCase() ? phuDe : "";
+    const moTaGhep = [
+      `Dự án ${tenGoc} do Bee Z Production thực hiện`,
+      tenMang ? ` — ${tenMang.toLowerCase()}` : "",
+      noi ? `, quay tại ${noi}` : "",
+      khi ? `, ${khi}` : "",
+      ". Xem phim, hình ảnh và thông tin dự án tại beezvn.com.",
+    ].join("");
+
     routes.push({
       path: p.slug ? `/du-an/${p.slug}` : `/service/${serviceSlug || serviceId}/${p.id}`,
-      title: p.title || "Dự án",
-      description: trim(p.subtitle?.vi || p.subtitle?.en || p.title),
+      title: tieuDe,
+      // Tên thật (chưa gắn tháng) dùng cho JSON-LD và cho khối link nội bộ.
+      tenThat: tenGoc,
+      description: trim(phuDeThat || moTaGhep),
       image: p.thumbnailImage,
       loai: "du-an",
       // Để khối link nội bộ biết dự án này treo dưới mảng nào.
@@ -423,7 +506,7 @@ const dsDichVu = details
   .map((r) => ({ path: r.path, title: r.tenThat ?? r.title }));
 const dsDuAn = details
   .filter((r) => r.loai === "du-an")
-  .map((r) => ({ path: r.path, title: r.title, dichVuPath: r.dichVuPath }));
+  .map((r) => ({ path: r.path, title: r.tenThat ?? r.title, dichVuPath: r.dichVuPath }));
 
 for (const route of ROUTES) {
   console.log(`✓ dist${route.path}/index.html — "${renderPage(route, dsDichVu, dsDuAn)}"`);
@@ -459,7 +542,12 @@ const lienKetTrangChu = khoiLienKet({
 });
 if (lienKetTrangChu) {
   const goc = fs.readFileSync(indexPath, "utf8");
-  const reRoot = /<div id="root"><\/div>/i;
+  // Khớp cả khi #root ĐÃ có link — bước trang chủ ghi đè lên chính file gốc,
+    // nên chạy script hai lần mà không dựng lại thì lần hai không thấy #root
+    // rỗng nữa và bỏ qua toàn bộ 77 trang. Khớp lỏng thì chạy lại bao nhiêu lần
+    // cũng ra kết quả như nhau. (Khối chèn vào không chứa <div> nên dấu </div>
+    // đầu tiên luôn là dấu đóng của chính #root.)
+    const reRoot = /<div id="root">[\s\S]*?<\/div>/i;
   if (reRoot.test(goc)) {
     fs.writeFileSync(indexPath, goc.replace(reRoot, `<div id="root">${lienKetTrangChu}</div>`));
     console.log("✓ dist/index.html — đã thêm link nội bộ cho trang chủ");
