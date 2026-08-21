@@ -2,30 +2,39 @@ import Seo from "#components/Seo";
 import CTASection from "#components/organisms/CTASection";
 import FeatureSection from "#components/organisms/FeatureSection";
 import HeroSection from "#components/organisms/HeroSection";
-import Preloader from "#components/organisms/Preloader";
 import ProcessSection from "#components/organisms/ProcessSection";
 import ProductGallery from "#components/organisms/ProductGallery";
 import ServiceSection from "#components/organisms/ServiceSection";
 import StatsAndBrands from "#components/organisms/StatsAndBrands";
 import TestimonialSection from "#components/organisms/TestimonialSection";
-import { useLandingProgress } from "#hooks/useLandingProgress";
 import { useContact } from "#hooks/useContact";
 import { useLanguage } from "#i18n";
 import { organizationSchema, websiteSchema } from "#lib/structuredData";
-import { useState } from "react";
 
+/**
+ * ĐÃ BỎ MÀN HÌNH CHỜ — Hoàn chốt ngày 21/08/2026.
+ *
+ * Trang chủ từng che toàn bộ nội dung bằng một lớp phủ có thanh chạy, tới khi
+ * bốn lời gọi API xong mới mở ra. Ba cái hại đo được:
+ *
+ *   · Thanh cố tình chạy chậm hơn dữ liệu. Đo trên web thật: dữ liệu về lúc
+ *     giây 1,5 nhưng thanh tới 100% ở giây 7.
+ *   · Nó hoãn luôn thời điểm Google đo tốc độ trang, mà điểm đó ăn vào thứ hạng
+ *     — và trang chủ chính là trang được chấm.
+ *   · Khách vào lần đầu phải nhìn một thanh chạy trước khi thấy được thứ họ
+ *     đến để xem.
+ *
+ * Giờ nội dung hiện ngay, từng khối tự lấp vào khi dữ liệu về.
+ *
+ * Component `Preloader` GIỮ NGUYÊN trong mã nguồn, không xoá: Hoàn thích hiệu
+ * ứng đó và tính chuyển sang dùng trong Portal, nơi chờ vài giây là bình thường
+ * và không tốn một đồng SEO nào.
+ */
 const LandingPage = () => {
-  const [isReady, setIsReady] = useState(() => sessionStorage.getItem("preloaded") === "1");
-  const { target } = useLandingProgress();
   const { lang } = useLanguage();
   // Dùng thông tin liên hệ thật đã nhập trong phần Cài đặt web để khai báo với
   // Google/trợ lý AI — không hardcode để khỏi lệch khi đổi số điện thoại/địa chỉ.
   const { data: contact } = useContact();
-
-  const handlePreloaderComplete = () => {
-    sessionStorage.setItem("preloaded", "1");
-    setIsReady(true);
-  };
 
   return (
     <>
@@ -40,7 +49,6 @@ const LandingPage = () => {
         path="/"
         jsonLd={[organizationSchema(contact, lang), websiteSchema()]}
       />
-      {!isReady && <Preloader target={target} onComplete={handlePreloaderComplete} />}
       <div className="selection:text-primary relative flex w-full flex-col font-sans text-white antialiased">
         <HeroSection />
         <ServiceSection />
