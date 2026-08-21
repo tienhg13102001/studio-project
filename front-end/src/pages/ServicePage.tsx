@@ -430,7 +430,12 @@ const ServicePage: React.FC = () => {
                     src={resolveAssetUrl(f.thumbnailImage)}
                     alt={f.title}
                     className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                  />
+                  
+                      /* Nằm dưới màn hình đầu nên tải lười. Trước đây cả 20 ảnh
+                         tải ngay lúc mở trang dù khách chưa cuộn tới. */
+                      loading="lazy"
+                      decoding="async"
+                    />
                   <div className="absolute inset-0 bg-linear-to-t from-black/85 via-black/15 to-transparent" />
 
                   {/* Play button */}
