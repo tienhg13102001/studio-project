@@ -18,6 +18,8 @@ import path from "node:path";
  * được cả nội dung là chuyển sang dựng tĩnh khi xuất bản.
  */
 
+import { khoiLienKet } from "./lien-ket-noi-bo.mjs";
+
 const SITE = "https://www.beezvn.com";
 const DIST = path.resolve(process.cwd(), "dist");
 const SUFFIX = " — BeeZ Production";
@@ -232,7 +234,7 @@ function nhetJsonLd(html, khoi) {
   </head>`);
 }
 
-function renderPage(route) {
+function renderPage(route, dsDichVu = [], dsDuAn = []) {
   const url = SITE + route.path;
   const fullTitle = route.khongThemDuoi ? route.title : route.title + SUFFIX;
   let html = base;
@@ -270,14 +272,34 @@ function renderPage(route) {
 
   html = nhetJsonLd(html, duLieuCoCauTruc(route));
 
+  /**
+   * Nhét link nội bộ vào trong `#root`.
+   *
+   * React thay thế nguyên khối này ngay khi khởi động, nên người dùng không
+   * thấy. Nhưng lượt quét ĐẦU TIÊN của Google chạy trước khi có JavaScript —
+   * và trước hôm nay nó nhận về một `#root` rỗng, KHÔNG MỘT THẺ <a> NÀO.
+   */
+  const lienKet = khoiLienKet({
+    dichVu: dsDichVu,
+    duAn: dsDuAn,
+    duongDanHienTai: route.path,
+    loai: route.loai ?? "tinh",
+  });
+  if (lienKet) {
+    const reRoot = /<div id="root"><\/div>/i;
+    if (reRoot.test(html)) {
+      html = html.replace(reRoot, `<div id="root">${lienKet}</div>`);
+    } else {
+      console.warn("  ! Bỏ qua link nội bộ: không tìm thấy #root rỗng");
+      warnings++;
+    }
+  }
+
+
   const outDir = path.join(DIST, route.path.replace(/^\//, ""));
   fs.mkdirSync(outDir, { recursive: true });
   fs.writeFileSync(path.join(outDir, "index.html"), html);
   return fullTitle;
-}
-
-for (const route of ROUTES) {
-  console.log(`✓ dist${route.path}/index.html — "${renderPage(route)}"`);
 }
 
 // ─── Trang chi tiết: dịch vụ và dự án ────────────────────────────────────────
@@ -368,6 +390,8 @@ async function detailRoutes() {
       description: trim(p.subtitle?.vi || p.subtitle?.en || p.title),
       image: p.thumbnailImage,
       loai: "du-an",
+      // Để khối link nội bộ biết dự án này treo dưới mảng nào.
+      dichVuPath: `/service/${serviceSlug || serviceId}`,
     });
   }
 
@@ -377,17 +401,72 @@ async function detailRoutes() {
 let details = [];
 try {
   details = await detailRoutes();
-  for (const route of details) renderPage(route);
-  // Đếm theo tiền tố chứ không theo số dấu gạch: từ khi dự án có địa chỉ phẳng
-  // (/du-an/…) thì hai loại có cùng số đoạn, đếm kiểu cũ sẽ ra số sai.
-  const nSvc = details.filter((r) => r.path.startsWith("/service/")).length;
-  console.log(`✓ ${nSvc} trang dịch vụ + ${details.length - nSvc} trang dự án`);
 } catch (e) {
   console.warn(
     `\n! Không lấy được dữ liệu từ ${API} (${e.message}).\n` +
       `  Bỏ qua các trang chi tiết — bản dựng vẫn chạy bình thường.`,
   );
   warnings++;
+}
+
+/**
+ * DỰNG SAU KHI ĐÃ CÓ DANH SÁCH, KHÔNG DỰNG TRƯỚC.
+ *
+ * Khối link nội bộ cần biết đủ 6 mảng và 66 dự án mới dựng được, mà danh sách
+ * đó nằm sau lời gọi API. Giữ thứ tự cũ thì chính trang portfolio — trang đáng
+ * ra phải trỏ tới cả 66 dự án — lại là trang duy nhất không có link nào.
+ *
+ * API hỏng thì `details` rỗng: trang tĩnh vẫn dựng, chỉ là không có link dự án.
+ */
+const dsDichVu = details
+  .filter((r) => r.loai === "dich-vu")
+  .map((r) => ({ path: r.path, title: r.tenThat ?? r.title }));
+const dsDuAn = details
+  .filter((r) => r.loai === "du-an")
+  .map((r) => ({ path: r.path, title: r.title, dichVuPath: r.dichVuPath }));
+
+for (const route of ROUTES) {
+  console.log(`✓ dist${route.path}/index.html — "${renderPage(route, dsDichVu, dsDuAn)}"`);
+}
+
+try {
+  for (const route of details) renderPage(route, dsDichVu, dsDuAn);
+  // Đếm theo tiền tố chứ không theo số dấu gạch: từ khi dự án có địa chỉ phẳng
+  // (/du-an/…) thì hai loại có cùng số đoạn, đếm kiểu cũ sẽ ra số sai.
+  const nSvc = details.filter((r) => r.path.startsWith("/service/")).length;
+  console.log(`✓ ${nSvc} trang dịch vụ + ${details.length - nSvc} trang dự án`);
+} catch (e) {
+  console.warn(`\n! Lỗi khi dựng trang chi tiết: ${e.message}`);
+  warnings++;
+}
+
+/**
+ * TRANG CHỦ CŨNG PHẢI CÓ LINK — nó là trang duy nhất bị sót.
+ *
+ * `dist/index.html` chính là file gốc mà mọi trang khác chép ra, nên nó không
+ * nằm trong danh sách dựng và lần đầu chạy chỉ có 2 thẻ <a> trong khi các trang
+ * khác có 13-79. Trớ trêu: trang được Google ghé nhiều nhất lại là trang không
+ * dẫn đi đâu.
+ *
+ * Ghi ĐÈ sau cùng, khi `base` đã nằm sẵn trong bộ nhớ, nên không ảnh hưởng các
+ * trang vừa dựng.
+ */
+const lienKetTrangChu = khoiLienKet({
+  dichVu: dsDichVu,
+  duAn: dsDuAn,
+  duongDanHienTai: "/",
+  loai: "tinh",
+});
+if (lienKetTrangChu) {
+  const goc = fs.readFileSync(indexPath, "utf8");
+  const reRoot = /<div id="root"><\/div>/i;
+  if (reRoot.test(goc)) {
+    fs.writeFileSync(indexPath, goc.replace(reRoot, `<div id="root">${lienKetTrangChu}</div>`));
+    console.log("✓ dist/index.html — đã thêm link nội bộ cho trang chủ");
+  } else {
+    console.warn("  ! Trang chủ: không tìm thấy #root rỗng, bỏ qua link nội bộ");
+    warnings++;
+  }
 }
 
 console.log(`\nĐã sinh ${ROUTES.length + details.length} trang có thẻ mô tả riêng.`);
