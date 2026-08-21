@@ -31,10 +31,16 @@ const STATIC: Entry[] = [
   { loc: "/service", changefreq: "weekly", priority: "0.9" },
   { loc: "/portfolio", changefreq: "weekly", priority: "0.9" },
   { loc: "/team", changefreq: "monthly", priority: "0.8" },
-  // Trang tĩnh nằm ở front-end/public/bang-gia/, nginx phục vụ thẳng — React
-  // không có route nào cho nó. Vẫn phải khai ở đây vì sitemap sinh từ backend
-  // chứ không đọc thư mục, nên trang tĩnh không tự vào được.
+  // Hai trang bảng giá là file tĩnh nằm trong front-end/public/, nginx phục vụ
+  // thẳng — React không có route nào cho chúng. Vẫn phải khai ở đây vì sitemap
+  // sinh từ backend chứ không đọc thư mục, nên trang tĩnh không tự vào được.
+  //
+  // /bang-gia-psc là bảng giá cưới của Bee Z Wedding Film, khai thêm ngày
+  // 21/08/2026. Bản thân trang đó khai `robots: index,follow`, nên khai ở đây
+  // là nhất quán với chính nó: sitemap mời vào mà trang lại chặn thì Google
+  // ghi nhận mâu thuẫn rồi bỏ qua cả hai lời khai.
   { loc: "/bang-gia", changefreq: "monthly", priority: "0.8" },
+  { loc: "/bang-gia-psc", changefreq: "monthly", priority: "0.8" },
   { loc: "/contact", changefreq: "monthly", priority: "0.7" },
 ];
 
