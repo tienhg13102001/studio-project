@@ -211,6 +211,23 @@
     animation: shiny-sweep 4.5s linear infinite;
   }
 
+  /* ── Tia điện chạy dọc viền logo (hero trang chủ) ──────────────────────
+     Xem components/molecules/LogoTiaDien.tsx để biết vì sao chạy theo viền
+     chứ không phải tia sét bay quanh.
+
+     BA CON SỐ DƯỚI ĐÂY LÀ HOÀN CHỐT, đừng chỉnh bừa:
+       · vòng 3.78s   = tốc độ 0.9× trong bảng xem thử
+       · nét đứt 74.6 = độ mạnh 1.1× (trên tổng 1000 đơn vị đã chuẩn hoá)
+       · vệt sau chậm nửa vòng để hai vệt không dính vào nhau
+     Nét đứt càng dài thì càng ngả sang viền sáng liên tục và mất chất điện. */
+  .tia-vien {
+    stroke-dasharray: 74.6 925.4;
+    animation: tia-chay 3.78s linear infinite;
+  }
+  .tia-vien-sau {
+    animation-delay: -1.89s;
+  }
+
   /* ── NotFound page motion ─────────────────────────────────────────────── */
   .animate-nf-drift {
     animation: nf-drift 9s ease-in-out infinite;
@@ -265,6 +282,14 @@
 @keyframes shiny-sweep {
   to {
     background-position: -220% 0;
+  }
+}
+
+/* Trượt điểm bắt đầu của nét đứt đi trọn 1000 đơn vị = đúng một vòng quanh
+   hình. Số âm để vệt chạy xuôi theo chiều vẽ của đường. */
+@keyframes tia-chay {
+  to {
+    stroke-dashoffset: -1000;
   }
 }
 
@@ -335,6 +360,7 @@
 
 @media (prefers-reduced-motion: reduce) {
   .text-shiny,
+  .tia-vien,
   .animate-glow,
   .animate-glow2,
   .animate-nf-drift,

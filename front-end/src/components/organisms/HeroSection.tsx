@@ -4,7 +4,7 @@ import { useLanguage } from "#i18n";
 import { useLanding } from "#hooks/useLanding";
 import { useSettings } from "#hooks/useSettings";
 import { ArrowDownIcon } from "@phosphor-icons/react";
-import LogoYellow from "../../assets/icons/LogoYellow";
+import LogoTiaDien from "#components/molecules/LogoTiaDien";
 import VideoBackground from "./VideoBackground";
 
 const HeroSection = () => {
@@ -28,8 +28,10 @@ const HeroSection = () => {
 
   return (
     <section className="relative z-10 flex min-h-screen grow flex-col items-center justify-center px-4 pt-20 text-center lg:pb-24">
-      <div className="mb-6 opacity-90">
-        <LogoYellow className="h-16 w-16 text-white md:h-20 md:w-20 lg:h-24 lg:w-24" />
+      {/* Logo có tia điện chạy dọc viền. `opacity-90` bỏ đi: làm mờ cả khối thì
+          quầng sáng của tia cũng mờ theo, mà chính quầng đó mới ra chất điện. */}
+      <div className="mb-6">
+        <LogoTiaDien className="h-16 w-16 md:h-20 md:w-20 lg:h-24 lg:w-24" />
       </div>
       <h1 className="mb-4 text-4xl leading-tight font-bold tracking-tight md:text-6xl lg:text-7xl">
         <span className="block text-white">{content.heroLine1}</span>
