@@ -26,10 +26,20 @@ import { sendMail, isMailConfigured, LEAD_NOTIFY_TO, escapeHtml } from "../lib/m
  *
  * Xem thử email trông thế nào mà KHÔNG gửi thật:
  *   ... canh-bao-sao-luu.ts 5 0 0 --khong-gui
+ *
+ * Gửi THẬT một email thử (để chắc đường báo động thông tới hộp thư):
+ *   ... canh-bao-sao-luu.ts 5 0 0 --thu
+ *
+ * VÌ SAO CÓ CỜ `--thu`: ngày 22/08/2026 tao gửi một email thử với số liệu
+ * bịa, và Hoàn nhận được thì tưởng sao lưu hỏng thật — vì email thử với
+ * email thật trông y hệt nhau. Một hệ thống báo động mà kêu nhầm vài lần là
+ * người ta thôi không tin nữa, rồi tới lần kêu thật cũng bỏ qua nốt.
  */
 
 const THAM_SO = process.argv.slice(2);
 const KHONG_GUI = THAM_SO.includes("--khong-gui");
+/** Gửi thật nhưng đánh dấu rõ là email thử, để không ai tưởng có sự cố. */
+const LA_THU = THAM_SO.includes("--thu");
 const so = THAM_SO.filter((x) => !x.startsWith("--"));
 
 /** Quá ngần này ngày không có bản mới là hỏng. Sao lưu chạy hằng ngày, cho trượt 1 ngày. */
@@ -42,7 +52,13 @@ const soFile = Number(so[1]);
 const dbKB = Number(so[2]);
 
 function than(loi: string[]): string {
-  return `
+  const dauThu = LA_THU
+    ? `<p style="background:#fff8e1;border-left:4px solid #f5b800;padding:10px 14px;margin:0 0 14px">
+         <b>ĐÂY LÀ EMAIL THỬ.</b> Số liệu bên dưới là số bịa để kiểm xem đường báo
+         động có thông không. Sao lưu vẫn đang bình thường — không cần làm gì cả.
+       </p>`
+    : "";
+  return `${dauThu}
     <p><b>Sao lưu beezvn.com đang có vấn đề.</b></p>
     <ul>${loi.map((x) => `<li>${escapeHtml(x)}</li>`).join("")}</ul>
     <p>Số liệu đo được lúc kiểm:</p>
@@ -82,7 +98,9 @@ async function chay(): Promise<void> {
 
   loi.forEach((x) => console.log(`   ✗ ${x}`));
 
-  const tieuDe = "⚠ Sao lưu beezvn.com có vấn đề";
+  const tieuDe = LA_THU
+    ? "[THỬ — không phải sự cố] Sao lưu beezvn.com"
+    : "⚠ Sao lưu beezvn.com có vấn đề";
   if (KHONG_GUI) {
     console.log(`   (--khong-gui) tiêu đề: ${tieuDe}`);
     return;
