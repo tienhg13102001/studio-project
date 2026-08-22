@@ -6,7 +6,7 @@ import { Button } from "#components/ui/button";
 import NavLinks from "#components/molecules/NavLinks";
 import MobileMenu from "#components/molecules/MobileMenu";
 import { useLanguage, useTranslation } from "#i18n";
-import { useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import UKFlag from "../../assets/icons/UKFlag";
 import VietNamFlag from "../../assets/icons/VietNamFlag";
 
@@ -44,10 +44,28 @@ const Navbar: React.FC<Props> = () => {
       <nav
         className={`fixed top-0 left-0 z-20 grid w-full grid-cols-[1fr_auto_1fr] items-center px-6 py-4 transition-all duration-700 md:px-12 ${scrolled && pathname === "/" ? "bg-background/50 shadow-sm backdrop-blur-sm" : pathname !== "/" ? "bg-background/50 shadow-sm backdrop-blur-sm" : "bg-transparent"}`}
       >
-        {/* LogoYellow */}
-        <div className="flex cursor-pointer items-center justify-self-start" onClick={() => navigate("/")}>
+        {/*
+          THẺ <Link> CHỨ KHÔNG PHẢI <div onClick>.
+
+          Bấm chuột thì bản cũ cũng về được trang chủ, nên nhìn qua tưởng không
+          sao. Nhưng một cái <div> bắt sự kiện bấm thì KHÔNG phải là đường dẫn:
+
+            · bàn phím không tới được, Enter không ăn — người không dùng chuột
+              mất hẳn nút về trang chủ
+            · trình đọc màn hình không đọc ra đây là link, cũng không có tên gọi
+            · bấm giữa / Ctrl+bấm không mở được tab mới, cách quen của nhiều người
+            · máy tìm kiếm không thấy đường dẫn nào — đúng thứ vừa mất công chữa
+              hồi tháng 8 khi 48 trang không được lập chỉ mục vì thiếu link nội bộ
+
+          Chân trang đã dùng <Link to="/"> từ trước; nay thanh đầu làm giống.
+        */}
+        <Link
+          to="/"
+          aria-label="Về trang chủ Bee Z Production"
+          className="focus-visible:ring-primary flex items-center justify-self-start rounded-md focus-visible:ring-2 focus-visible:outline-none"
+        >
           <LogoYellow className="h-8 w-8 text-white" />
-        </div>
+        </Link>
 
         {/* Center Navigation */}
         <NavLinks scrolled={scrolled} />
