@@ -193,6 +193,25 @@ const ServicePage: React.FC = () => {
   if (error || !service) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center gap-4">
+        {/*
+          KHAI noindex Ở ĐÂY LÀ BẮT BUỘC.
+
+          Nhánh này chạy khi địa chỉ trỏ tới một dịch vụ hoặc dự án KHÔNG TỒN
+          TẠI — hay gặp nhất là dự án đã đổi tên đường dẫn, còn Google thì vẫn
+          nhớ tên cũ. Máy chủ trả HTTP 200 (ứng dụng chạy bằng JavaScript nên
+          mọi địa chỉ đều 200), nội dung lại là một dòng báo lỗi.
+
+          Thiếu dòng này thì trang giữ nguyên `index, follow` khai sẵn trong
+          index.html — tức là địa chỉ chết nhưng vẫn mời máy tìm kiếm vào lập
+          chỉ mục. Google gọi đúng tên: "Lỗi 404 mềm". Đo ngày 24/08/2026:
+          9 địa chỉ đang nằm ở diện này trong Search Console, và
+          /du-an/<tên-sai> là nguồn chính.
+
+          So sánh: địa chỉ lạ hoàn toàn (/khong-co-that) rơi vào NotFoundPage
+          và trang đó ĐÃ khai noindex từ trước — nên nó sạch. Chỉ riêng nhánh
+          này bị bỏ sót.
+        */}
+        <Seo title="Không tìm thấy trang" description="Trang bạn tìm không tồn tại." noindex />
         <p className="text-muted-foreground">{error ?? "Service not found"}</p>
         <Button variant="outline" onClick={() => navigate(-1)}>
           <ArrowLeftIcon size={16} className="mr-2" />
