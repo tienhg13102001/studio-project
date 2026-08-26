@@ -22,7 +22,13 @@ import { sendMail, isMailConfigured, LEAD_NOTIFY_TO, escapeHtml } from "../lib/m
  * docker-compose của một hệ thống đang chạy.
  *
  * Cách chạy:
- *   docker exec beez-backend npx tsx src/scripts/canh-bao-sao-luu.ts <tuổi-ngày> <số-file> <MB>
+ *   docker exec beez-backend npx tsx src/scripts/canh-bao-sao-luu.ts \n *     <tuổi-tại-chỗ> <số-file-tại-chỗ> <KB> [tuổi-ngoài] [số-file-ngoài]
+ *
+ * HAI BẢN, HAI PHÉP KIỂM RIÊNG: bản tại chỗ ở /var/backups/beezvn cứu được
+ * xoá nhầm; bản ngoài máy chủ (Google Drive) mới cứu được ổ hỏng hay mất cả
+ * máy. Chúng hỏng vì những lý do KHÁC NHAU — bản tại chỗ có thể vẫn chạy đều
+ * trong khi việc đẩy lên Drive đã chết hàng tháng. Kiểm mỗi bản tại chỗ rồi
+ * báo "bình thường" đúng là kiểu im lặng mà script này sinh ra để chống.
  *
  * Xem thử email trông thế nào mà KHÔNG gửi thật:
  *   ... canh-bao-sao-luu.ts 5 0 0 --khong-gui
@@ -50,6 +56,9 @@ const NGUONG_KB = 10;
 const tuoiNgay = Number(so[0]);
 const soFile = Number(so[1]);
 const dbKB = Number(so[2]);
+/** Bản ngoài máy chủ. Thiếu tham số = chưa cấu hình đích, bỏ qua phần kiểm này. */
+const rTuoiNgay = so.length > 3 ? Number(so[3]) : null;
+const rSoFile = so.length > 4 ? Number(so[4]) : null;
 
 function than(loi: string[]): string {
   const dauThu = LA_THU
@@ -65,6 +74,7 @@ function than(loi: string[]): string {
     <ul>
       <li>Bản kết xuất mới nhất: <b>${escapeHtml(String(tuoiNgay))} ngày tuổi</b>, ${escapeHtml(String(dbKB))} KB</li>
       <li>Ảnh và video đã chép: <b>${escapeHtml(String(soFile))} file</b></li>
+      <li>Bản ngoài máy chủ: <b>${escapeHtml(rTuoiNgay === null ? "chưa cấu hình" : rTuoiNgay < 0 ? "KHÔNG VỚI TỚI ĐƯỢC" : rTuoiNgay + " ngày tuổi, " + rSoFile + " file")}</b></li>
     </ul>
     <p>Cách xem chuyện gì xảy ra — đăng nhập máy chủ rồi chạy:</p>
     <pre>tail -50 /var/log/beez-sao-luu.log
@@ -89,7 +99,22 @@ async function chay(): Promise<void> {
     loi.push(`Bản kết xuất chỉ ${dbKB} KB — gần như chắc chắn rỗng hoặc dở dang.`);
   if (soFile <= 0) loi.push("Chưa chép được ảnh/video nào.");
 
-  console.log(`   bản mới nhất: ${tuoiNgay} ngày · ${dbKB} KB · ${soFile} file ảnh/video`);
+  // ── Bản ngoài máy chủ ────────────────────────────────────────────────────
+  if (rTuoiNgay !== null) {
+    if (rTuoiNgay < 0)
+      loi.push("KHÔNG với tới được bản ngoài máy chủ — uỷ quyền Google Drive có thể đã hỏng.");
+    else if (rTuoiNgay > NGUONG_NGAY)
+      loi.push(`Bản ngoài máy chủ đã ${rTuoiNgay} ngày tuổi — việc đẩy lên Drive đã ngừng chạy.`);
+    if (rTuoiNgay >= 0 && rSoFile !== null && rSoFile < soFile)
+      loi.push(`Ngoài máy chủ mới có ${rSoFile}/${soFile} file ảnh/video — đẩy lên chưa xong.`);
+  }
+
+  console.log(`   tại chỗ      : ${tuoiNgay} ngày · ${dbKB} KB · ${soFile} file ảnh/video`);
+  console.log(
+    `   ngoài máy chủ: ${
+      rTuoiNgay === null ? "chưa cấu hình" : rTuoiNgay < 0 ? "KHÔNG với tới được" : `${rTuoiNgay} ngày · ${rSoFile} file`
+    }`,
+  );
 
   if (loi.length === 0) {
     console.log("   mọi thứ bình thường, không gửi email.");
