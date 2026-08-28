@@ -3,6 +3,7 @@ import { createHash } from "crypto";
 import { VisitorStat, VisitLog, VisitorDaily, VisitorAgg } from "../models/Visitor.ts";
 import { sendSuccess } from "../lib/response.ts";
 import requireAuth from "../middleware/requireAuth.ts";
+import { nhanDienBot } from "../lib/nhan-dien-bot.ts";
 
 const router = Router();
 
@@ -178,7 +179,31 @@ router.get("/breakdown", requireAuth, async (req, res, next) => {
 router.post("/", async (req, res, next) => {
   try {
     const day = todayUTC();
-    const key = visitKey(getClientIp(req), day);
+    const ip = getClientIp(req);
+
+    /**
+     * LỌC BOT TRƯỚC KHI ĐẾM.
+     *
+     * Ngày 28/08/2026 bộ đếm nhảy từ 17 lên 224 chỉ sau một đêm, mà 349/354
+     * địa chỉ là máy chủ thuê ở nước ngoài. Một con số toàn bot thì không đo
+     * được hiệu quả marketing.
+     *
+     * VẪN GHI LẠI, chỉ không cộng vào tổng: lượt bot vào chiều `bot` với khoá
+     * là lý do bị bắt. Nhờ đó nhìn được hôm nay lọc ra bao nhiêu và bộ lọc
+     * đang bắt cái gì — nếu nó bắt nhầm thì lộ ra ngay, chứ không im lặng ăn
+     * mất khách thật.
+     */
+    const bot = nhanDienBot(req.headers["user-agent"], ip);
+    if (bot.laBot) {
+      await VisitorAgg.updateOne(
+        { day, dim: "bot", key: bot.viSao },
+        { $inc: { count: 1 } },
+        { upsert: true },
+      );
+      return sendSuccess(res, { total: await getTotal() });
+    }
+
+    const key = visitKey(ip, day);
 
     try {
       await VisitLog.create({ key });
