@@ -2,6 +2,8 @@ import { Router, type Request, type Response, type NextFunction } from "express"
 import { sendSuccess, sendError } from "../lib/response.ts";
 import requireAuth from "../middleware/requireAuth.ts";
 import { User } from "../models/User.ts";
+import { ghiNhanTaiTrang } from "../lib/dau-vet-tai-trang.ts";
+import { layIpKhach } from "../lib/ip-khach.ts";
 
 import authRouter from "./auth.ts";
 import brandsRouter from "./brands.ts";
@@ -28,6 +30,18 @@ import visitorsRouter from "./visitors.ts";
  * bên dưới chính là `/api/landing` khi chạy thật.
  */
 const router = Router();
+
+/**
+ * Đánh dấu địa chỉ nào đã thật sự tải nội dung trang.
+ *
+ * Bộ đếm lượt truy cập dùng dấu vết này để loại loại bot gọi thẳng vào
+ * `/api/visitors` mà chưa hề mở web. Xem `lib/dau-vet-tai-trang.ts` để biết
+ * vì sao chọn đúng ba đường dẫn này chứ không phải `/settings`.
+ */
+router.get(["/services", "/landing", "/contact"], (req, _res, next) => {
+  ghiNhanTaiTrang(layIpKhach(req));
+  next();
+});
 
 router.get("/health", (_req, res) => {
   sendSuccess(res, { status: "ok", timestamp: new Date().toISOString() });

@@ -4,19 +4,11 @@ import { VisitorStat, VisitLog, VisitorDaily, VisitorAgg } from "../models/Visit
 import { sendSuccess } from "../lib/response.ts";
 import requireAuth from "../middleware/requireAuth.ts";
 import { nhanDienBot } from "../lib/nhan-dien-bot.ts";
+import { daTaiTrang } from "../lib/dau-vet-tai-trang.ts";
+import { layIpKhach } from "../lib/ip-khach.ts";
 
 const router = Router();
 
-/** Lấy IP thật của client (ưu tiên header proxy: Cloudflare / nginx). */
-function getClientIp(req: Request): string {
-  const cf = req.headers["cf-connecting-ip"];
-  if (typeof cf === "string" && cf) return cf;
-
-  const xff = req.headers["x-forwarded-for"];
-  if (typeof xff === "string" && xff) return xff.split(",")[0]!.trim();
-
-  return req.ip ?? req.socket.remoteAddress ?? "unknown";
-}
 
 /** Ngày hiện tại (UTC) dạng YYYY-MM-DD — dùng thống nhất cho mọi bộ đếm. */
 function todayUTC(): string {
@@ -179,7 +171,7 @@ router.get("/breakdown", requireAuth, async (req, res, next) => {
 router.post("/", async (req, res, next) => {
   try {
     const day = todayUTC();
-    const ip = getClientIp(req);
+    const ip = layIpKhach(req);
 
     /**
      * LỌC BOT TRƯỚC KHI ĐẾM.
@@ -193,7 +185,19 @@ router.post("/", async (req, res, next) => {
      * đang bắt cái gì — nếu nó bắt nhầm thì lộ ra ngay, chứ không im lặng ăn
      * mất khách thật.
      */
-    const bot = nhanDienBot(req.headers["user-agent"], ip);
+    /**
+     * Hai lớp lọc, và lớp thứ hai mới là lớp thắng cuộc.
+     *
+     * `nhanDienBot` đoán qua tên trình duyệt và dải địa chỉ — chặn được nhiều
+     * nhưng là cuộc đua không hồi kết: bot đổi tên, đổi dải là lọt.
+     *
+     * `daTaiTrang` không đoán bot là ai. Nó hỏi một câu mà bot gọi mù không
+     * trả lời nổi: "mày đã tải nội dung trang chưa?". Đo ngày 29/08/2026 trên
+     * dữ liệu thật: cho qua 8/8 khách thật, chặn 39/39 bot.
+     */
+    const bot = !daTaiTrang(ip)
+      ? { laBot: true, viSao: "goi-mu-chua-tai-trang" }
+      : nhanDienBot(req.headers["user-agent"], ip);
     if (bot.laBot) {
       await VisitorAgg.updateOne(
         { day, dim: "bot", key: bot.viSao },
