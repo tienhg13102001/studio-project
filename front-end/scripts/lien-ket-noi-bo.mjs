@@ -36,8 +36,11 @@ const a = (href, text) => `<a href="${esc(href)}">${esc(text)}</a>`;
  * @param {string} p.duongDanHienTai  đường dẫn của chính trang đang dựng
  * @param {"tinh"|"dich-vu"|"du-an"} p.loai
  */
-export function khoiLienKet({ dichVu, duAn, duongDanHienTai, loai }) {
+export function khoiLienKet({ dichVu, duAn, duongDanHienTai, loai, noiDung }) {
   const phan = [];
+
+  // Chữ thật của trang đi TRƯỚC danh sách link — xem chú thích khoiNoiDung().
+  if (noiDung) phan.push(noiDung);
 
   // Luôn có: đường về các trang chính. Đây là bộ khung mọi trang đều trỏ tới
   // nhau, thứ mà một web tĩnh bình thường có sẵn còn ứng dụng JavaScript thì
@@ -117,4 +120,59 @@ export function khoiLienKet({ dichVu, duAn, duongDanHienTai, loai }) {
     "position:absolute;width:1px;height:1px;padding:0;margin:-1px;" +
     "overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0";
   return `<div style="${giau}">${phan.join("")}</div>`;
+}
+
+/**
+ * Dựng phần chữ THẬT của trang dự án để nhét vào HTML tĩnh.
+ *
+ * VÌ SAO CẦN — đo ngày 04/09/2026 trên chính /du-an/masterise:
+ *
+ *   Bài case study trong cơ sở dữ liệu : 1.129 chữ
+ *   Chữ có trong HTML thô              :     0
+ *
+ * Bài chỉ hiện ra sau khi trình duyệt chạy JavaScript. Google CÓ chạy JavaScript
+ * nhưng ở hàng đợi thứ hai và tuỳ hứng — mà với trang nó đã xếp loại "mỏng,
+ * không đáng lưu" thì nó ít có lý do quay lại lần hai. Nói cách khác: 21 bài đã
+ * viết xong đang nằm sau một cánh cửa Google chưa chắc mở.
+ *
+ * Khối này cũng vá luôn một lỗ khác ít ai để ý: trước hôm nay HTML thô của trang
+ * dự án KHÔNG CÓ MỘT THẺ <h1> NÀO. Máy tìm kiếm không có chỗ nào để đọc ra
+ * "trang này nói về cái gì" ngoài thẻ <title>.
+ *
+ * ĐÂY KHÔNG PHẢI CHỮ ẨN ĐỂ GIAN LẬN — cùng một lập luận với khối link ở trên.
+ * Đúng từng chữ mà ứng dụng cũng dựng ra sau khi chạy, và React thay thế nguyên
+ * khối này ngay khi khởi động nên nó chỉ sống vài trăm mili giây. Giấu bằng
+ * cách thu về một điểm ảnh (chứ không phải `display:none`) là để khách không
+ * thấy nháy một nhịp chữ trắng trên nền đen — đúng lỗi Hoàn báo hôm 21/08.
+ *
+ * KHÔNG DÙNG <div>: hàm gọi thay `#root` bằng biểu thức dừng ở dấu `</div>`
+ * đầu tiên, nên mọi thứ nhét vào trong phải tránh thẻ đó. Dùng <article>.
+ *
+ * @param {object} p
+ * @param {string} p.ten        tên dự án, dựng thành <h1>
+ * @param {object} [p.caseStudy]  { challenge:{vi}, approach:{vi} }
+ */
+export function khoiNoiDung({ ten, caseStudy }) {
+  // Bài viết ngăn đoạn bằng dòng trắng. Giữ đúng cách ngăn đó thành <p> để máy
+  // tìm kiếm đọc ra văn xuôi nhiều đoạn, không phải một khối chữ dính liền.
+  const doan = (s) =>
+    String(s ?? "")
+      .split(/\n{2,}/)
+      .map((x) => x.trim())
+      .filter(Boolean)
+      .map((x) => `<p>${esc(x)}</p>`)
+      .join("");
+
+  const thuThach = doan(caseStudy?.challenge?.vi);
+  const cachLam = doan(caseStudy?.approach?.vi);
+
+  // Chưa có bài thì chỉ dựng mỗi <h1>. Vẫn hơn không có thẻ tiêu đề nào.
+  if (!ten) return "";
+
+  return (
+    `<article><h1>${esc(ten)}</h1>` +
+    (thuThach ? `<h2>Thử thách</h2>${thuThach}` : "") +
+    (cachLam ? `<h2>Cách Bee Z làm</h2>${cachLam}` : "") +
+    `</article>`
+  );
 }

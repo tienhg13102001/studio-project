@@ -18,7 +18,7 @@ import path from "node:path";
  * được cả nội dung là chuyển sang dựng tĩnh khi xuất bản.
  */
 
-import { khoiLienKet } from "./lien-ket-noi-bo.mjs";
+import { khoiLienKet, khoiNoiDung } from "./lien-ket-noi-bo.mjs";
 
 const SITE = "https://www.beezvn.com";
 const DIST = path.resolve(process.cwd(), "dist");
@@ -190,6 +190,12 @@ function duLieuCoCauTruc(route) {
       ...(absUrl(route.image) ? { image: absUrl(route.image) } : {}),
       creator: { "@id": `${SITE}/#organization` },
       inLanguage: "vi",
+      // Bài case study đưa luôn vào dữ liệu có cấu trúc. Khối này sinh ra để
+      // máy đọc nên không có chuyện bị coi là chữ giấu, và nó đứng được kể cả
+      // khi Google chưa kịp chạy JavaScript.
+      ...(route.caseStudy?.challenge?.vi?.trim()
+        ? { abstract: route.caseStudy.challenge.vi.trim() }
+        : {}),
     });
     khoi.push({
       "@context": "https://schema.org",
@@ -284,6 +290,12 @@ function renderPage(route, dsDichVu = [], dsDuAn = []) {
     duAn: dsDuAn,
     duongDanHienTai: route.path,
     loai: route.loai ?? "tinh",
+    // Chỉ trang dự án mới có bài để nhét. Trang dịch vụ đã có mô tả dài sẵn
+    // trong thẻ meta, trang tĩnh thì nội dung nằm trong mã nguồn giao diện.
+    noiDung:
+      route.loai === "du-an"
+        ? khoiNoiDung({ ten: route.tenThat ?? route.title, caseStudy: route.caseStudy })
+        : "",
   });
   if (lienKet) {
     // Khớp cả khi #root ĐÃ có link — bước trang chủ ghi đè lên chính file gốc,
@@ -473,6 +485,8 @@ async function detailRoutes() {
       description: trim(phuDeThat || moTaGhep),
       image: p.thumbnailImage,
       loai: "du-an",
+      // Bài case study — nhét thẳng vào HTML tĩnh chứ không để JavaScript vẽ.
+      caseStudy: p.caseStudy,
       // Để khối link nội bộ biết dự án này treo dưới mảng nào.
       dichVuPath: `/service/${serviceSlug || serviceId}`,
     });
