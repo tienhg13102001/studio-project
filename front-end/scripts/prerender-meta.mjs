@@ -137,7 +137,9 @@ const SITE_NAME_LD = "BeeZ Production";
 
 function duLieuCoCauTruc(route) {
   const khoi = [];
-  const url = SITE + route.path;
+  // Trang bản sao phải khai địa chỉ CHÍNH TẮC, không khai địa chỉ của chính nó
+  // — nếu không thì mỗi bản sao lại tự nhận mình là một tác phẩm riêng.
+  const url = SITE + (route.canonicalTo ?? route.path);
 
   if (route.loai === "dich-vu") {
     khoi.push({
@@ -241,7 +243,15 @@ function nhetJsonLd(html, khoi) {
 }
 
 function renderPage(route, dsDichVu = [], dsDuAn = []) {
-  const url = SITE + route.path;
+  /**
+   * HAI ĐỊA CHỈ, ĐỪNG LẪN:
+   *   route.path        — nơi ĐẶT tệp html
+   *   route.canonicalTo — địa chỉ THẬT mà máy tìm kiếm nên tính điểm cho
+   *
+   * Chúng chỉ khác nhau ở trang bản sao. Xem chú thích chỗ dựng danh sách
+   * dịch vụ để biết vì sao có bản sao.
+   */
+  const url = SITE + (route.canonicalTo ?? route.path);
   const fullTitle = route.khongThemDuoi ? route.title : route.title + SUFFIX;
   let html = base;
 
@@ -367,6 +377,33 @@ async function detailRoutes() {
       tenThat: s.title?.vi || s.title?.en || "Dịch vụ",
       faqs: s.faqs ?? [],
     });
+
+    /**
+     * BẢN SAO Ở ĐỊA CHỈ MÃ MÁY — khai canonical trỏ về địa chỉ tên thật.
+     *
+     * Hồi web còn dùng mã máy, mỗi dịch vụ nằm ở /service/6a1ea4f100... Đổi
+     * sang tên đọc được rồi thì địa chỉ cũ VẪN SỐNG: giao diện nhận cả hai
+     * (`service/:id`), nên máy chủ trả 200 với nội dung y hệt.
+     *
+     * Đo log Googlebot ngày 05/09/2026: cả tuần Google chỉ bò được 96 lượt vào
+     * beezvn.com, trong đó 8 lượt vào trang dịch vụ mà 3 lượt rơi vào mấy địa
+     * chỉ mã máy này. Tệ hơn, chúng không có tệp dựng sẵn nên nhận file mặc
+     * định — tức là khai canonical trỏ về TRANG CHỦ, một lời khai sai.
+     *
+     * Ngân sách bò của web nhỏ như beezvn.com rất hẹp (4 trang dự án mỗi tuần).
+     * Mỗi lượt tiêu vào bản sao là một lượt không tiêu vào trang chưa ai đọc.
+     *
+     * KHÔNG chuyển hướng 301: giao diện đang phục vụ địa chỉ đó thật, và nếu
+     * còn chỗ nào trong app hay trong tin nhắn cũ trỏ tới thì chuyển hướng có
+     * thể làm hỏng. Khai canonical đạt đúng mục đích mà không đụng gì.
+     */
+    if (s.slug && s.id && s.slug !== s.id) {
+      routes.push({
+        ...routes[routes.length - 1],
+        path: `/service/${s.id}`,
+        canonicalTo: `/service/${s.slug}`,
+      });
+    }
   }
 
   const projects = [...(projectsRaw.verticalCards ?? []), ...(projectsRaw.horizontalCards ?? [])];
