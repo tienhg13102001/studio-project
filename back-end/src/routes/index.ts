@@ -32,16 +32,54 @@ import visitorsRouter from "./visitors.ts";
 const router = Router();
 
 /**
+ * Các nhánh API mà CHỈ giao diện web mới cần gọi. Chạm vào một trong số này
+ * nghĩa là có một trang thật đang tải dữ liệu để dựng nội dung.
+ *
+ * KHÔNG CÓ `/settings`: nó dễ đoán như `/visitors`, và đo ngày 29/08/2026 thì
+ * giao diện gọi nó SAU `/visitors` ở 6 trên 8 khách — lấy nó làm mốc là chặn
+ * nhầm gần hết khách thật.
+ */
+const NHANH_NOI_DUNG = [
+  "/landing",
+  "/services",
+  "/projects",
+  "/portfolio",
+  "/brands",
+  "/team-content",
+  "/testimonials",
+  "/contact",
+];
+
+/**
  * Đánh dấu địa chỉ nào đã thật sự tải nội dung trang.
  *
- * Bộ đếm lượt truy cập dùng dấu vết này để loại loại bot gọi thẳng vào
- * `/api/visitors` mà chưa hề mở web. Xem `lib/dau-vet-tai-trang.ts` để biết
- * vì sao chọn đúng ba đường dẫn này chứ không phải `/settings`.
+ * Bộ đếm lượt truy cập dùng dấu vết này để loại bot gọi thẳng vào
+ * `/api/visitors` mà chưa hề mở web. Xem `lib/dau-vet-tai-trang.ts`.
+ *
+ * DÙNG `router.use` CHỨ KHÔNG PHẢI `router.get([...])` — ĐÂY LÀ CHỖ ĐÃ SAI.
+ *
+ * Bản đầu viết `router.get(["/services", "/landing", "/contact"], ...)`.
+ * `router.get` khớp CHÍNH XÁC đường dẫn, nên `/api/services` thì khớp còn
+ * `/api/services/san-xuat-tvc` thì KHÔNG. Mà trang dự án lại chỉ gọi
+ * `/api/projects/by-slug/<tên>` rồi `/api/services/<tên>` — không cái nào khớp.
+ *
+ * Hậu quả đo được ngày 11/09/2026: khách vào THẲNG một trang dự án không bao
+ * giờ được ghi nhận, nên bộ đếm xếp họ vào "gọi mù chưa tải trang" và loại bỏ.
+ * Tức là loại đúng toàn bộ khách đến từ Google và từ link chia sẻ — nhóm khách
+ * mà cả tháng 8 và 9 đang dồn sức kéo về. Số khách mỗi ngày tụt từ 12-23 xuống
+ * còn 1-9 ngay sau khi bộ lọc lên, và `goi-mu-chua-tai-trang` thành lý do chặn
+ * nhiều nhất gần như mọi ngày.
+ *
+ * `router.use(path)` khớp cả đường dẫn đó LẪN mọi đường dẫn con của nó, nên
+ * route mới thêm sau này cũng tự được phủ. Chỉ ghi nhận với phương thức GET:
+ * POST vào `/contact` là gửi biểu mẫu, không phải tải nội dung.
  */
-router.get(["/services", "/landing", "/contact"], (req, _res, next) => {
-  ghiNhanTaiTrang(layIpKhach(req));
-  next();
-});
+for (const nhanh of NHANH_NOI_DUNG) {
+  router.use(nhanh, (req: Request, _res: Response, next: NextFunction) => {
+    if (req.method === "GET") ghiNhanTaiTrang(layIpKhach(req));
+    next();
+  });
+}
 
 router.get("/health", (_req, res) => {
   sendSuccess(res, { status: "ok", timestamp: new Date().toISOString() });

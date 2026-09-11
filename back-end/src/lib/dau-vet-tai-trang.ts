@@ -21,9 +21,31 @@ import { createHash } from "crypto";
  *
  * ĐÃ ĐO TRÊN DỮ LIỆU THẬT: luật này cho qua 8/8 khách thật và chặn 39/39 bot.
  *
- * VÌ SAO LÀ services/landing/contact CHỨ KHÔNG PHẢI settings: giao diện gọi
- * `/api/settings` SAU `/api/visitors` ở 6 trên 8 khách. Lấy settings làm mốc
- * là chặn nhầm gần hết khách thật. Ba đường dẫn dưới đây luôn được gọi TRƯỚC.
+ * VÌ SAO KHÔNG LẤY `/api/settings` LÀM MỐC: giao diện gọi nó SAU
+ * `/api/visitors` ở 6 trên 8 khách. Lấy settings làm mốc là chặn nhầm gần hết
+ * khách thật.
+ *
+ * ── LỖI NẶNG ĐÃ SỬA NGÀY 11/09/2026 ───────────────────────────────────────
+ *
+ * Bản đầu đăng ký mốc bằng `router.get(["/services", "/landing", "/contact"])`.
+ * `router.get` khớp CHÍNH XÁC, nên `/api/services` khớp còn
+ * `/api/services/san-xuat-tvc` thì không. Trang dự án lại chỉ gọi
+ * `/api/projects/by-slug/<tên>` rồi `/api/services/<tên>`.
+ *
+ * Nghĩa là khách vào THẲNG một trang dự án không bao giờ để lại dấu vết, và
+ * hàm này trả về false cho họ — bộ đếm xếp họ vào "gọi mù" rồi loại bỏ. Loại
+ * trúng toàn bộ khách đến từ Google và từ link chia sẻ.
+ *
+ * Đo được: số khách mỗi ngày rơi từ 12-23 xuống 1-9 ngay sau khi bộ lọc lên,
+ * và `goi-mu-chua-tai-trang` thành lý do chặn nhiều nhất gần như mọi ngày.
+ * Phép thử trực tiếp ngày 11/09: mô phỏng khách vào thẳng /du-an/masterise thì
+ * tổng đứng yên ở 1096, mô phỏng khách vào trang chủ thì tổng lên 1097.
+ *
+ * Nay `routes/index.ts` dùng `router.use(path)` — khớp cả đường dẫn con.
+ *
+ * BÀI HỌC GIỮ LẠI: một bộ lọc im lặng loại bỏ dữ liệu thì sai của nó không kêu
+ * lên. Chỗ cứu được là chiều `bot` vẫn ghi lý do — nhìn vào đó mới thấy
+ * "gọi mù" cao bất thường. Đừng bao giờ bỏ phần ghi lại lý do bị chặn.
  *
  * NHỚ TRONG BỘ NHỚ, KHÔNG GHI CƠ SỞ DỮ LIỆU: đây là dấu vết sống vài phút, ghi
  * xuống đĩa chỉ tổ đẻ rác. Đổi lại, khởi động lại máy chủ là mất sạch — khách
