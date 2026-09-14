@@ -90,3 +90,29 @@ export function daTaiTrang(ip: string): boolean {
   }
   return true;
 }
+
+/**
+ * Đợi dấu vết tới trong một khoảng ngắn thay vì phán ngay.
+ *
+ * VÌ SAO — đo log nginx 72 giờ tới 14/09/2026: 5 trên 13 khách thật bị chặn
+ * nhầm vì yêu cầu ĐẾM tới backend TRƯỚC yêu cầu TẢI NỘI DUNG. Bộ đếm nằm ở
+ * Footer, thuộc gói JavaScript chính, chạy ngay khi mở trang; còn mọi trang nội
+ * dung đều tải lười (`lazy()`), phải tải thêm một mảnh mã rồi mới gọi API. Hai
+ * yêu cầu đua nhau, thứ tự tới là ngẫu nhiên. Phép đo "8/8" ngày 29/08 là trúng
+ * may, và bản vá đường dẫn ngày 11/09 mới chữa được một nửa.
+ *
+ * Người thật gửi yêu cầu nội dung trong vòng một giây quanh đó. Bot gọi mù thì
+ * không bao giờ gửi. Nên đợi vài giây là tách được hai loại mà không phải sửa
+ * thứ tự bên giao diện — thứ tự đó sẽ lại vỡ lần tới có ai thêm một trang.
+ *
+ * Cái giá là yêu cầu của bot bị giữ lại vài giây. Vài chục lượt bot mỗi ngày
+ * thì không đáng kể, còn khách thật không phải chờ: dấu vết tới là trả lời ngay.
+ */
+export async function choDauVet(ip: string, toiDaMs = 5000, buocMs = 200): Promise<boolean> {
+  const het = Date.now() + toiDaMs;
+  while (Date.now() < het) {
+    if (daTaiTrang(ip)) return true;
+    await new Promise((xong) => setTimeout(xong, buocMs));
+  }
+  return daTaiTrang(ip);
+}

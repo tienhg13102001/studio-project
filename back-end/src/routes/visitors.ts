@@ -4,7 +4,7 @@ import { VisitorStat, VisitLog, VisitorDaily, VisitorAgg } from "../models/Visit
 import { sendSuccess } from "../lib/response.ts";
 import requireAuth from "../middleware/requireAuth.ts";
 import { nhanDienBot } from "../lib/nhan-dien-bot.ts";
-import { daTaiTrang } from "../lib/dau-vet-tai-trang.ts";
+import { daTaiTrang, choDauVet } from "../lib/dau-vet-tai-trang.ts";
 import { layIpKhach } from "../lib/ip-khach.ts";
 
 const router = Router();
@@ -195,7 +195,11 @@ router.post("/", async (req, res, next) => {
      * trả lời nổi: "mày đã tải nội dung trang chưa?". Đo ngày 29/08/2026 trên
      * dữ liệu thật: cho qua 8/8 khách thật, chặn 39/39 bot.
      */
-    const bot = !daTaiTrang(ip)
+    // Không phán ngay: yêu cầu đếm hay tới TRƯỚC yêu cầu nội dung vài phần giây
+    // (bộ đếm ở Footer chạy trước các trang tải lười). Cho dấu vết một khoảng
+    // để tới — đo 14/09/2026: thiếu bước này thì 5/13 khách thật bị vứt.
+    const daTai = daTaiTrang(ip) || (await choDauVet(ip));
+    const bot = !daTai
       ? { laBot: true, viSao: "goi-mu-chua-tai-trang" }
       : nhanDienBot(req.headers["user-agent"], ip);
     if (bot.laBot) {
