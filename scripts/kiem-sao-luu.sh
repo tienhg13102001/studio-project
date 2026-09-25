@@ -67,5 +67,19 @@ if ! docker inspect -f '{{.State.Running}}' "$BACKEND_CONTAINER" 2>/dev/null | g
   exit 1
 fi
 
-docker exec "$BACKEND_CONTAINER" \
-  npx tsx src/scripts/canh-bao-sao-luu.ts "$tuoi" "$so_file" "$kb" "$r_tuoi" "$r_file"
+# CHƯA CẤU HÌNH ĐÍCH ≠ ĐÍCH HỎNG.
+#
+# Trước đây luôn truyền đủ 5 tham số, nên khi không có BACKUP_REMOTE thì phần
+# kiểm bản ngoài nhận tuổi -1 và hiểu là "không với tới được", rồi gửi email
+# báo uỷ quyền Google Drive hỏng — trong khi thực ra chỉ là chạy bằng tay mà
+# quên truyền biến. Ngày 25/09/2026 đúng chuyện đó xảy ra và Hoàn nhận một
+# email báo động giả.
+#
+# Một hệ thống báo động kêu nhầm vài lần là người ta thôi không tin nữa, rồi
+# tới lần kêu thật cũng bỏ qua nốt. Nên chưa cấu hình đích thì truyền ĐÚNG 3
+# tham số, để `canh-bao-sao-luu.ts` bỏ hẳn phần kiểm bản ngoài máy chủ.
+if [[ -n "${BACKUP_REMOTE:-}" ]]; then
+  docker exec "$BACKEND_CONTAINER"     npx tsx src/scripts/canh-bao-sao-luu.ts "$tuoi" "$so_file" "$kb" "$r_tuoi" "$r_file"
+else
+  docker exec "$BACKEND_CONTAINER"     npx tsx src/scripts/canh-bao-sao-luu.ts "$tuoi" "$so_file" "$kb"
+fi
