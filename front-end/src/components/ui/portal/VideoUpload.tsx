@@ -13,6 +13,10 @@ export default function VideoUpload({ value, onChange }: VideoUploadProps) {
   const [uploading, setUploading] = useState(false);
   const [processing, setProcessing] = useState(false);
   const [progress, setProgress] = useState<number>(0);
+  /** Tiến độ XỬ LÝ phía máy chủ (khác tiến độ tải lên). */
+  const [xuLyPhanTram, setXuLyPhanTram] = useState<number>(0);
+  /** Số video khác đang xếp hàng trước video này. */
+  const [dangCho, setDangCho] = useState<number>(0);
   const [uploadError, setUploadError] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -28,13 +32,19 @@ export default function VideoUpload({ value, onChange }: VideoUploadProps) {
       const result = await uploadVideo(file, (p) => setProgress(p.percent));
       onChange(result.url ?? result.path);
       setUploading(false);
-      // Transcode chạy nền → poll tới khi video sẵn sàng rồi mới hiện preview.
+      // Máy chủ xử lý nền → hỏi trạng thái tới khi xong, và HIỆN tiến độ ra
+      // thay vì để một vòng quay câm (xem waitForVideoReady để biết vì sao).
       if (result.status === "processing") {
         setProcessing(true);
-        const ready = await waitForVideoReady(resolveAssetUrl(result.url ?? result.path));
-        if (!ready) {
-          setUploadError("Video đang xử lý lâu hơn dự kiến — sẽ tự hiển thị khi hoàn tất.");
-        }
+        setXuLyPhanTram(0);
+        setDangCho(0);
+        const ketQua = await waitForVideoReady(resolveAssetUrl(result.url ?? result.path), {
+          onTrangThai: (t) => {
+            setXuLyPhanTram(t.phanTram);
+            setDangCho(t.trangThai === "cho" ? t.dangCho : 0);
+          },
+        });
+        if (!ketQua.san) setUploadError(ketQua.loi ?? "Xử lý video thất bại.");
       }
     } catch (e) {
       setUploadError((e as Error).message);
@@ -91,18 +101,22 @@ export default function VideoUpload({ value, onChange }: VideoUploadProps) {
             {uploading
               ? `Đang tải lên… ${progress}%`
               : processing
-                ? "Đang xử lý video…"
+                ? dangCho > 0
+                  ? `Đang xếp hàng — còn ${dangCho} video trước`
+                  : xuLyPhanTram > 0
+                    ? `Máy chủ đang xử lý… ${xuLyPhanTram}%`
+                    : "Máy chủ đang xử lý…"
                 : "Click or drag to upload"}
           </p>
           <p className="mt-0.5 text-[10px] text-foreground/25">
             {processing
-              ? "Có thể tiếp tục thao tác — video sẽ tự hiển thị khi xử lý xong."
-              : "MP4, WebM, MOV, M4V · tối đa 5 GB"}
+              ? "Có thể tiếp tục thao tác — video sẽ tự hiện khi xong. ĐỪNG tải lại file này, tải lại chỉ làm chậm gấp đôi."
+              : "MP4, WebM, MOV, M4V · tối đa 5 GB · xuất sẵn 1080p thì xong trong vài giây"}
           </p>
           {/* Tải xong 100% thì server còn ghép mảnh + transcode → thanh chạy vô định. */}
           {(uploading || processing) && (
             <UploadProgressBar
-              percent={progress}
+              percent={processing ? xuLyPhanTram : progress}
               phase={processing || progress >= 100 ? "processing" : "uploading"}
             />
           )}

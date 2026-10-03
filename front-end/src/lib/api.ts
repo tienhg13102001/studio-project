@@ -332,28 +332,76 @@ export async function uploadImageChunked(
   return res.data.data;
 }
 
+export type TrangThaiXuLyVideo = {
+  trangThai: "cho" | "dang-xu-ly" | "xong" | "loi" | "khong-ro";
+  phanTram: number;
+  loi?: string;
+  /** Số video khác đang xếp hàng trước. */
+  dangCho: number;
+};
+
+/** Hỏi máy chủ xem video đang ở bước nào. Không dùng bộ nhớ đệm: số phải tươi. */
+export async function layTrangThaiVideo(ten: string): Promise<TrangThaiXuLyVideo | null> {
+  try {
+    const r = await apiClient.get<{ success: boolean; data?: TrangThaiXuLyVideo }>(
+      `/api/upload/video/status?name=${encodeURIComponent(ten)}`,
+      { timeout: 15_000 },
+    );
+    return r.data.success ? (r.data.data ?? null) : null;
+  } catch {
+    return null;
+  }
+}
+
 /**
- * Poll một URL video (HEAD) tới khi server trả 200 (transcode nền đã xong).
- * Trả về true nếu sẵn sàng trong thời hạn, false nếu quá lâu / bị huỷ.
+ * Chờ máy chủ xử lý xong video.
+ *
+ * VÌ SAO KHÔNG CHỈ GỌI HEAD NHƯ TRƯỚC: hàm cũ chỉ hỏi "có file chưa", nên suốt
+ * lúc máy chủ đang mã hoá thì giao diện không có gì để hiện ngoài một vòng quay,
+ * và nếu mã hoá chết thì nó quay cho tới khi hết giờ rồi báo một câu mơ hồ.
+ * Ngày 03/10/2026 Hoàn tưởng web hỏng nên gửi lại file 1 GB lần nữa, làm hai
+ * tiến trình ffmpeg giành nhau 2 nhân CPU — cả hai cùng chậm đi hơn một nửa.
+ *
+ * Hạn mặc định 90 phút: một file 4K dài vài phút mã hoá trên máy 2 nhân có thể
+ * mất cả tiếng. Hạn cũ 5 phút gần như luôn hết giờ trước khi máy chủ xong.
  */
 export async function waitForVideoReady(
   url: string,
-  opts: { intervalMs?: number; timeoutMs?: number; signal?: AbortSignal } = {},
-): Promise<boolean> {
+  opts: {
+    intervalMs?: number;
+    timeoutMs?: number;
+    signal?: AbortSignal;
+    onTrangThai?: (t: TrangThaiXuLyVideo) => void;
+  } = {},
+): Promise<{ san: boolean; loi?: string }> {
   const intervalMs = opts.intervalMs ?? 3000;
-  const timeoutMs = opts.timeoutMs ?? 5 * 60 * 1000; // 5 phút
+  const timeoutMs = opts.timeoutMs ?? 90 * 60 * 1000;
+  const ten = url.split("?")[0]!.split("/").pop() ?? "";
   const start = Date.now();
+
   while (Date.now() - start < timeoutMs) {
-    if (opts.signal?.aborted) return false;
+    if (opts.signal?.aborted) return { san: false, loi: "Đã huỷ." };
+
+    // File có mặt là xong, bất kể bảng trạng thái nói gì (máy chủ có thể vừa
+    // khởi động lại và mất bảng, trong khi file vẫn nằm đó từ trước).
     try {
       const r = await fetch(url, { method: "HEAD", cache: "no-store", signal: opts.signal });
-      if (r.ok) return true;
+      if (r.ok) return { san: true };
     } catch {
-      // bỏ qua lỗi mạng tạm thời, thử lại ở vòng sau
+      // lỗi mạng tạm thời — thử lại ở vòng sau
     }
+
+    const t = await layTrangThaiVideo(ten);
+    if (t) {
+      opts.onTrangThai?.(t);
+      if (t.trangThai === "loi") {
+        return { san: false, loi: t.loi ?? "Máy chủ xử lý video thất bại." };
+      }
+    }
+
     await new Promise((res) => setTimeout(res, intervalMs));
   }
-  return false;
+  return { san: false, loi: "Xử lý lâu hơn dự kiến — video sẽ tự hiện khi xong." };
 }
 
 export default apiClient;

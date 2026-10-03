@@ -2,7 +2,7 @@ import { Router, type Request, type Response, type NextFunction } from "express"
 import multer from "multer";
 import sharp from "sharp";
 import ffmpeg from "fluent-ffmpeg";
-import { mkdir, unlink, rename, appendFile, stat, statfs } from "fs/promises";
+import { mkdir, unlink, rename, appendFile, stat, statfs, readdir } from "fs/promises";
 import { tmpdir } from "os";
 import { join, extname, basename, dirname } from "path";
 import { fileURLToPath } from "url";
@@ -90,7 +90,11 @@ const VIDEO_CRF = 28;
  * Dùng H.264 preset ultrafast để encode nhanh nhất (nhanh hơn VP9 ~10x),
  * phù hợp khi cần phản hồi upload nhanh trên server CPU yếu.
  */
-function transcodeToMp4(input: string, output: string): Promise<void> {
+function transcodeToMp4(
+  input: string,
+  output: string,
+  baoTienDo?: (phanTram: number) => void,
+): Promise<void> {
   return new Promise((resolve, reject) => {
     ffmpeg(input)
       .videoCodec("libx264")
@@ -114,11 +118,152 @@ function transcodeToMp4(input: string, output: string): Promise<void> {
         "0",
       ])
       .format("mp4")
+      .on("progress", (p: { percent?: number }) => {
+        if (baoTienDo && typeof p.percent === "number" && Number.isFinite(p.percent)) {
+          baoTienDo(Math.max(0, Math.min(99, Math.round(p.percent))));
+        }
+      })
       .on("end", () => resolve())
       .on("error", (err) => reject(err))
       .save(output);
   });
 }
+
+/**
+ * ĐÓNG GÓI LẠI, KHÔNG MÃ HOÁ LẠI — nhanh gấp hàng trăm lần.
+ *
+ * `-c copy` giữ nguyên luồng hình và tiếng, chỉ dựng lại vỏ MP4 rồi đẩy moov
+ * atom lên đầu để phát được ngay khi tải. Dùng khi video gửi lên vốn đã sẵn
+ * sàng cho web — mã hoá lại chỉ tốn thời gian và làm hình xấu thêm một lần nữa.
+ */
+function dongGoiLai(input: string, output: string): Promise<void> {
+  return new Promise((resolve, reject) => {
+    ffmpeg(input)
+      .outputOptions(["-c", "copy", "-movflags", "+faststart"])
+      .format("mp4")
+      .on("end", () => resolve())
+      .on("error", (err) => reject(err))
+      .save(output);
+  });
+}
+
+/** Rộng tối đa mà vẫn cho đóng gói lại thay vì mã hoá — đúng khổ 1080p. */
+const DONG_GOI_RONG_TOI_DA = 1920;
+/** Trên mức này thì file quá nặng cho web, vẫn phải mã hoá lại dù đúng khổ. */
+const DONG_GOI_BITRATE_TOI_DA = 12_000_000;
+
+/** Đọc thông số video. Lỗi thì trả null — chỗ gọi tự lùi về mã hoá lại. */
+function doVideo(duongDan: string): Promise<{
+  codec: string;
+  rong: number;
+  bitrate: number;
+  dinhDang: string;
+} | null> {
+  return new Promise((resolve) => {
+    ffmpeg.ffprobe(duongDan, (err, data) => {
+      if (err || !data) {
+        resolve(null);
+        return;
+      }
+      const hinh = data.streams?.find((x) => x.codec_type === "video");
+      if (!hinh) {
+        resolve(null);
+        return;
+      }
+      resolve({
+        codec: String(hinh.codec_name ?? ""),
+        rong: Number(hinh.width ?? 0),
+        bitrate: Number(data.format?.bit_rate ?? 0),
+        dinhDang: String(data.format?.format_name ?? ""),
+      });
+    });
+  });
+}
+
+/**
+ * Quyết định: mã hoá lại hay chỉ đóng gói lại.
+ *
+ * VÌ SAO CÓ BƯỚC NÀY — đo ngày 03/10/2026: Hoàn gửi lên một file 4K 48 Mbps,
+ * 1,08 GB cho 3 phút. Máy chủ chỉ có 2 nhân nên ffmpeg bò mất gần một tiếng,
+ * còn giao diện thì quay vòng câm làm Hoàn tưởng web hỏng và gửi lại lần nữa —
+ * hai tiến trình giành nhau 2 nhân, mỗi cái chậm đi hơn một nửa.
+ *
+ * Phần lớn video xuất cho web vốn đã là H.264 khổ 1080p. Với chúng, mã hoá lại
+ * vừa tốn hàng chục phút vừa làm hình xấu thêm một lần nữa mà chẳng được gì.
+ */
+async function quyetDinhXuLy(
+  duongDan: string,
+): Promise<{ chiDongGoi: boolean; viSao: string }> {
+  const t = await doVideo(duongDan);
+  if (!t) return { chiDongGoi: false, viSao: "không đọc được thông số" };
+  if (t.codec !== "h264") return { chiDongGoi: false, viSao: `mã hình ${t.codec}` };
+  if (!t.dinhDang.includes("mp4")) return { chiDongGoi: false, viSao: `vỏ ${t.dinhDang}` };
+  if (t.rong > DONG_GOI_RONG_TOI_DA) return { chiDongGoi: false, viSao: `rộng ${t.rong}px` };
+  if (t.bitrate > DONG_GOI_BITRATE_TOI_DA)
+    return { chiDongGoi: false, viSao: `${Math.round(t.bitrate / 1e6)} Mbps` };
+  return { chiDongGoi: true, viSao: `H.264 ${t.rong}px, đã sẵn sàng cho web` };
+}
+
+// ─── Hàng đợi chuyển mã + bảng trạng thái ───────────────────────────────────
+//
+// MỖI LÚC CHỈ MỘT VIỆC. Máy chủ có 2 nhân; chạy hai ffmpeg song song không làm
+// xong nhanh hơn, chỉ làm cả hai cùng chậm. Đo 03/10/2026: giết một việc thì
+// việc còn lại nhảy từ 39 KB/s lên 225 KB/s — nhanh gần 6 lần, hơn cả gấp đôi
+// vì hết cảnh tranh nhau bộ nhớ đệm.
+
+type TrangThaiVideo = {
+  trangThai: "cho" | "dang-xu-ly" | "xong" | "loi";
+  phanTram: number;
+  loi?: string;
+  luc: number;
+};
+
+/** Giữ trong bộ nhớ là đủ: giao diện chỉ hỏi trong lúc còn mở trang. */
+const trangThaiVideo = new Map<string, TrangThaiVideo>();
+const TRANG_THAI_SONG_MS = 6 * 60 * 60 * 1000;
+
+function datTrangThai(ten: string, moi: Partial<TrangThaiVideo>): void {
+  const cu = trangThaiVideo.get(ten) ?? {
+    trangThai: "cho" as const,
+    phanTram: 0,
+    luc: Date.now(),
+  };
+  trangThaiVideo.set(ten, { ...cu, ...moi, luc: Date.now() });
+  if (trangThaiVideo.size > 200) {
+    const han = Date.now() - TRANG_THAI_SONG_MS;
+    for (const [k, v] of trangThaiVideo) if (v.luc < han) trangThaiVideo.delete(k);
+  }
+}
+
+let hangDoi: Promise<unknown> = Promise.resolve();
+
+/** Nối việc vào cuối hàng. Việc trước hỏng cũng không chặn việc sau. */
+function xepHang<T>(viec: () => Promise<T>): Promise<T> {
+  const ketQua = hangDoi.then(viec, viec);
+  hangDoi = ketQua.catch(() => {});
+  return ketQua;
+}
+
+/**
+ * Dọn file dở dang còn sót của những lần chuyển mã chết giữa chừng.
+ *
+ * Ngày 03/10/2026 tìm thấy 9 file `.processing-*` nằm từ tháng 7, tổng 403 MB —
+ * tiến trình chết thì không ai xoá hộ. Chạy một lần lúc khởi động là đủ: lúc đó
+ * chắc chắn chưa có việc nào đang chạy.
+ */
+async function donRacDoDang(): Promise<void> {
+  try {
+    const ds = await readdir(VIDEO_DIR);
+    for (const ten of ds) {
+      if (!ten.startsWith(".processing-")) continue;
+      await unlink(join(VIDEO_DIR, ten)).catch(() => {});
+      console.log(`[video] dọn file dở dang: ${ten}`);
+    }
+  } catch {
+    // Thư mục chưa tồn tại — không sao, nó được tạo khi có video đầu tiên.
+  }
+}
+void donRacDoDang();
 
 // File gốc được lưu tạm ở thư mục temp, transcode xong sẽ xóa.
 const videoStorage = multer.diskStorage({
@@ -247,14 +392,36 @@ async function startVideoTranscodeJob(
     status: "processing",
   });
 
-  transcodeToMp4(rawPath, tmpOut)
-    .then(() => rename(tmpOut, outPath)) // atomic: file chỉ xuất hiện khi đã hoàn chỉnh
-    .then(() => console.log(`[video] transcode done: ${outName}`))
-    .catch(async (err) => {
-      console.error(`[video] transcode FAILED for ${outName}:`, err);
+  datTrangThai(outName, { trangThai: "cho", phanTram: 0 });
+
+  void xepHang(async () => {
+    datTrangThai(outName, { trangThai: "dang-xu-ly", phanTram: 0 });
+    try {
+      const quyet = await quyetDinhXuLy(rawPath);
+      if (quyet.chiDongGoi) {
+        console.log(`[video] đóng gói lại (${quyet.viSao}): ${outName}`);
+        await dongGoiLai(rawPath, tmpOut);
+      } else {
+        console.log(`[video] mã hoá lại (${quyet.viSao}): ${outName}`);
+        await transcodeToMp4(rawPath, tmpOut, (phanTram) =>
+          datTrangThai(outName, { phanTram }),
+        );
+      }
+      // Đổi tên nguyên tử: file chỉ xuất hiện khi đã hoàn chỉnh.
+      await rename(tmpOut, outPath);
+      datTrangThai(outName, { trangThai: "xong", phanTram: 100 });
+      console.log(`[video] xong: ${outName}`);
+    } catch (err) {
+      console.error(`[video] HỎNG ${outName}:`, err);
+      datTrangThai(outName, {
+        trangThai: "loi",
+        loi: (err as Error).message.slice(0, 200),
+      });
       await unlink(tmpOut).catch(() => {});
-    })
-    .finally(() => void unlink(rawPath).catch(() => {}));
+    } finally {
+      await unlink(rawPath).catch(() => {});
+    }
+  });
 }
 
 const router = Router();
@@ -298,6 +465,31 @@ router.post("/video", videoUpload.single("video"), async (req, res, next) => {
     return;
   }
   await startVideoTranscodeJob(req.file.path, req.file.originalname, req, res, next);
+});
+
+/**
+ * GET /api/upload/video/status?name=<tên file> — giao diện hỏi tiến độ xử lý.
+ *
+ * VÌ SAO CẦN: trước đây giao diện chỉ gọi HEAD lên địa chỉ video tới khi thấy
+ * file, nên suốt lúc máy chủ đang mã hoá nó không có gì để hiện ngoài một vòng
+ * quay — mà việc đó có thể kéo cả tiếng. Tệ hơn, chuyển mã hỏng thì vòng quay
+ * vẫn quay, không ai biết là đã chết.
+ */
+router.get("/video/status", (req, res) => {
+  const ten = basename(String(req.query.name ?? ""));
+  const t = trangThaiVideo.get(ten);
+  if (!t) {
+    // Không có trong bảng: hoặc máy chủ vừa khởi động lại, hoặc xong đã lâu.
+    sendSuccess(res, { trangThai: "khong-ro", phanTram: 0, dangCho: 0 });
+    return;
+  }
+  const dangCho = [...trangThaiVideo.values()].filter((x) => x.trangThai === "cho").length;
+  sendSuccess(res, {
+    trangThai: t.trangThai,
+    phanTram: t.phanTram,
+    ...(t.loi ? { loi: t.loi } : {}),
+    dangCho,
+  });
 });
 
 /** POST /api/upload/video/chunk — nhận 1 mảnh, append vào file tạm theo uploadId. */
