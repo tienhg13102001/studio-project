@@ -481,6 +481,10 @@ router.get("/video/status", (req, res) => {
   // 06/10/2026: 678 lần trả 304 so với 103 lần trả 200, tức là giao diện gần
   // như luôn đọc trạng thái cũ, không bao giờ thấy "xong".
   res.set("Cache-Control", "no-store");
+  // Thắt thêm một lớp: ETag mới mỗi lần thì lời hỏi kèm If-None-Match của lần
+  // trước không bao giờ khớp, nên 304 là không thể xảy ra dù có thứ gì đó ở giữa
+  // (proxy, tiện ích trình duyệt) bỏ qua `no-store`.
+  res.set("ETag", `"${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}"`);
   const ten = basename(String(req.query.name ?? ""));
   const t = trangThaiVideo.get(ten);
   if (!t) {
