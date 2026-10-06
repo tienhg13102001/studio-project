@@ -15,9 +15,32 @@ app.set("trust proxy", true);
 
 // ─── Middleware ───────────────────────────────────────────────────────────────
 app.use(express.json());
+/**
+ * CHO PHÉP CẢ `www` LẪN KHÔNG `www` — đây là chỗ đã làm hỏng việc gửi video.
+ *
+ * Đo ngày 06/10/2026: trang chạy ở `https://www.beezvn.com`, nhưng backend khai
+ * `PUBLIC_URL=https://beezvn.com` nên địa chỉ video trả về KHÔNG có `www`. Với
+ * trình duyệt, hai tên miền đó là hai nguồn khác nhau; máy chủ lại chỉ gửi
+ * `Access-Control-Allow-Origin: https://beezvn.com`, không khớp nguồn đang hỏi.
+ *
+ * Hậu quả: nginx trả 200 (log ghi 556 lần), còn trình duyệt CHẶN không cho đọc
+ * câu trả lời, nên giao diện không bao giờ biết video đã xong và quay vòng mãi.
+ * Hoàn tưởng web hỏng, gửi lại file 1 GB thêm nhiều lần.
+ *
+ * Cho cả hai dạng vào danh sách là hết hẳn lớp lỗi này, không phụ thuộc việc ai
+ * đó đặt biến môi trường có `www` hay không.
+ */
+const nguonChoPhep = (() => {
+  const goc = process.env.FRONTEND_URL ?? "http://localhost:5173";
+  const ds = new Set([goc]);
+  if (goc.includes("://www.")) ds.add(goc.replace("://www.", "://"));
+  else ds.add(goc.replace("://", "://www."));
+  return [...ds];
+})();
+
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL ?? "http://localhost:5173",
+    origin: nguonChoPhep,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
   })
 );

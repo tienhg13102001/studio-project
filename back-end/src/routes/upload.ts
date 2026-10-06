@@ -476,6 +476,11 @@ router.post("/video", videoUpload.single("video"), async (req, res, next) => {
  * vẫn quay, không ai biết là đã chết.
  */
 router.get("/video/status", (req, res) => {
+  // CẤM NHỚ ĐỆM. Express tự gắn ETag cho JSON, nên lần hỏi thứ hai trình duyệt
+  // gửi kèm If-None-Match và nhận 304 — rồi dùng lại câu trả lời CŨ. Đo ngày
+  // 06/10/2026: 678 lần trả 304 so với 103 lần trả 200, tức là giao diện gần
+  // như luôn đọc trạng thái cũ, không bao giờ thấy "xong".
+  res.set("Cache-Control", "no-store");
   const ten = basename(String(req.query.name ?? ""));
   const t = trangThaiVideo.get(ten);
   if (!t) {

@@ -379,13 +379,33 @@ export async function waitForVideoReady(
   const ten = url.split("?")[0]!.split("/").pop() ?? "";
   const start = Date.now();
 
+  /**
+   * HỎI BẰNG ĐƯỜNG DẪN TƯƠNG ĐỐI, KHÔNG DÙNG ĐỊA CHỈ ĐẦY ĐỦ MÁY CHỦ TRẢ VỀ.
+   *
+   * Máy chủ dựng địa chỉ từ biến `PUBLIC_URL`, mà biến đó đang là
+   * `https://beezvn.com` trong khi trang chạy ở `https://www.beezvn.com`. Hai
+   * tên miền đó là hai NGUỒN khác nhau với trình duyệt, nên mọi lần hỏi đều bị
+   * chặn vì nguồn chéo — máy chủ trả 200 mà giao diện không đọc nổi, cứ thế
+   * quay vòng (đo 06/10/2026: 556 lần trả 200 vẫn không dừng).
+   *
+   * Cắt về đường dẫn tương đối thì lời hỏi luôn đi cùng nguồn với trang đang
+   * mở, không còn cửa cho lớp lỗi này — kể cả sau này ai đổi biến môi trường.
+   */
+  const duongDanDoiTuong = url.startsWith("http")
+    ? new URL(url).pathname + new URL(url).search
+    : url;
+
   while (Date.now() - start < timeoutMs) {
     if (opts.signal?.aborted) return { san: false, loi: "Đã huỷ." };
 
     // File có mặt là xong, bất kể bảng trạng thái nói gì (máy chủ có thể vừa
     // khởi động lại và mất bảng, trong khi file vẫn nằm đó từ trước).
     try {
-      const r = await fetch(url, { method: "HEAD", cache: "no-store", signal: opts.signal });
+      const r = await fetch(duongDanDoiTuong, {
+        method: "HEAD",
+        cache: "no-store",
+        signal: opts.signal,
+      });
       if (r.ok) return { san: true };
     } catch {
       // lỗi mạng tạm thời — thử lại ở vòng sau
