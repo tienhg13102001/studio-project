@@ -197,6 +197,8 @@ function nhanDuongDan(key: string): string {
     "/portfolio": "Portfolio",
     "/team": "Đội ngũ",
     "/contact": "Liên hệ",
+    "/bang-gia": "Bảng giá sản xuất",
+    "/bang-gia-psc": "Bảng giá cưới",
     khac: "Trang khác",
   };
   if (co[key]) return co[key];

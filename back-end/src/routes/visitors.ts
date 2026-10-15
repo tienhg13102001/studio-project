@@ -79,7 +79,12 @@ function parsePath(raw?: unknown): string | null {
    */
   if (/\/[a-f0-9]{24}(\/|$)/.test(p)) return null;
 
-  if (["/", "/service", "/portfolio", "/team", "/contact"].includes(p)) return p;
+  // Hai bảng giá là trang tĩnh nằm ngoài ứng dụng, tự báo về qua khối đếm chèn
+  // trong chính file HTML. Không khai ở đây thì chúng rơi hết vào ô "khac".
+  if (
+    ["/", "/service", "/portfolio", "/team", "/contact", "/bang-gia", "/bang-gia-psc"].includes(p)
+  )
+    return p;
 
   // Dạng có tham số: giữ nguyên vì số lượng bị chặn bởi dữ liệu thật.
   if (/^\/service\/[a-z0-9][a-z0-9-]{0,80}$/.test(p)) return p;

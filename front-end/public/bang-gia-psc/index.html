@@ -1410,5 +1410,30 @@ html.anim .hero-light .num .v::after{transform:scaleX(1)}
 })();
 </script>
 
+<script>
+/* Đếm lượt xem trang này. Lỗi thì im lặng — không bao giờ ảnh hưởng nội dung. */
+(function () {
+  try {
+    var duong = location.pathname.replace(/\/+$/, "") || "/";
+    var thamSo = new URLSearchParams(location.search);
+    var kieu = { "Content-Type": "application/json" };
+    fetch("/api/team-content", { cache: "no-store" })
+      .catch(function () {})
+      .then(function () {
+        fetch("/api/visitors", {
+          method: "POST", headers: kieu, keepalive: true,
+          body: JSON.stringify({
+            referrer: document.referrer || undefined,
+            utm: thamSo.get("utm_source") || undefined
+          })
+        }).catch(function () {});
+        fetch("/api/visitors/page", {
+          method: "POST", headers: kieu, keepalive: true,
+          body: JSON.stringify({ path: duong })
+        }).catch(function () {});
+      });
+  } catch (e) {}
+})();
+</script>
 </body>
 </html>
