@@ -477,13 +477,41 @@ const ProjectDetail: FC<Props> = ({ project, onClose }) => {
             <div className="relative flex h-full w-full items-center justify-center md:h-full">
               {project.photos.map((image, index) => {
                 const overlayOpacity = Math.min(Math.max(index - currentIndex, 0) * 0.3, 0.85);
+                // Chỉ thẻ đang thấy (vừa qua, đang xem, 3 thẻ xoè phía sau) mới cần nền mờ.
+                // Thẻ ở xa đã ẩn hẳn (opacity 0) — dựng filter làm mờ cho chúng chỉ tốn GPU
+                // mà không ai nhìn thấy, và một dự án có thể có hàng chục ảnh.
+                const canNenMo = index - currentIndex >= -1 && index - currentIndex <= 3;
                 return (
                   <div
                     key={index}
                     className="bg-muted absolute top-0 left-0 h-full w-full origin-center overflow-hidden rounded-2xl shadow-2xl transition-all duration-700 ease-[cubic-bezier(0.25,1,0.5,1)]"
                     style={getCardStyle(index)}
                   >
-                    <img src={image} alt={image} className="h-full w-full object-cover" />
+                    {/*
+                      ẢNH HIỆN NGUYÊN VẸN, KHÔNG CẮT.
+
+                      Khung thẻ cố định (cao 600px, rộng 1/3 màn hình) nên trước đây
+                      `object-cover` ép mọi ảnh vào đó và cắt bỏ phần thừa — ảnh ngang
+                      mất hai bên, ảnh dọc mất đầu và chân. Giờ dùng `object-contain`
+                      để thấy trọn bức ảnh.
+
+                      Phần khung thừa quanh ảnh được lấp bằng CHÍNH bức ảnh đó, phóng to
+                      và làm mờ, để không hiện hai dải trống khó coi. Dùng cùng một địa
+                      chỉ nên trình duyệt chỉ tải một lần.
+                    */}
+                    {canNenMo && (
+                      <img
+                        src={image}
+                        alt=""
+                        aria-hidden="true"
+                        className="absolute inset-0 h-full w-full scale-125 object-cover opacity-60 blur-2xl"
+                      />
+                    )}
+                    <img
+                      src={image}
+                      alt={`${project.title} — ảnh ${index + 1}`}
+                      className="relative h-full w-full object-contain"
+                    />
 
                     {/* Gradient để dễ đọc text trên ảnh - giữ đen vì luôn nằm trên ảnh */}
                     <div className="absolute inset-0 bg-linear-to-t from-black/80 via-transparent to-black/20"></div>
