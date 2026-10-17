@@ -52,6 +52,9 @@ const ProjectDetail: FC<Props> = ({ project, onClose }) => {
   const dragStart = useRef<{ y: number; h: number } | null>(null);
   const isSheetExpanded = sheetHeight > SHEET_PEEK + 4;
   const totalImages = project?.photos?.length || 0;
+  // Dự án CHỈ có ảnh (không video): slider ảnh được chiếm 2/3 chiều rộng thay vì 1/3.
+  // Có cả video lẫn ảnh thì vẫn chia ba cột đều nhau như cũ.
+  const chiCoAnh = totalImages > 0 && !project?.video;
   // Ảnh đang phóng to (lightbox). null = đóng.
   const [lightboxSrc, setLightboxSrc] = useState<string | null>(null);
 
@@ -386,7 +389,18 @@ const ProjectDetail: FC<Props> = ({ project, onClose }) => {
         {/* CỘT GIỮA: THÔNG TIN (Info Column) */}
         <div
           style={{ animationDelay: "120ms", animationFillMode: "backwards" }}
-          className="border-border animate-in fade-in slide-in-from-bottom-[100vh] relative z-30 flex h-fit w-full flex-col justify-center space-y-8 rounded-3xl border px-10 py-20 backdrop-blur-sm duration-700 ease-out lg:w-1/3"
+          // CHỮ DÀI THÌ CUỘN RIÊNG TRONG Ô, không để cả trang tràn.
+          //
+          // Dự án có case study có phần chữ cao hơn màn hình. Khung ngoài căn giữa theo
+          // chiều dọc (`items-center`) nên phần tràn bị chia đều lên và xuống — phần tràn
+          // phía TRÊN không cuộn tới được, mất thẻ phân loại và tên dự án (đo trên web
+          // thật: Masterise, Quỳnh Trang - Trịnh Tiến…). Giới hạn chiều cao ô ở 88% màn
+          // hình thì hàng không bao giờ cao hơn màn hình, căn giữa luôn đúng, và video đứng
+          // yên trong lúc đọc chữ.
+          //
+          // Bỏ `justify-center`: ô vốn `h-fit` nên không có chỗ trống để căn, nhưng khi
+          // bị chặn chiều cao thì `justify-center` lại cắt mất phần đầu của chính ô đó.
+          className="border-border animate-in fade-in slide-in-from-bottom-[100vh] relative z-30 flex h-fit w-full flex-col space-y-8 rounded-3xl border px-10 py-20 backdrop-blur-sm duration-700 ease-out lg:max-h-[88dvh] lg:w-1/3 lg:overflow-y-auto"
         >
           {/* Copy link button — top-right corner */}
           <button
@@ -471,7 +485,13 @@ const ProjectDetail: FC<Props> = ({ project, onClose }) => {
         {project.photos && totalImages > 0 && (
           <div
             style={{ animationDelay: "240ms", animationFillMode: "backwards" }}
-            className="animate-in fade-in slide-in-from-right-[100vw] relative flex h-100 w-full items-center duration-700 ease-out lg:h-150 lg:w-1/3"
+            className={cn(
+              "animate-in fade-in slide-in-from-right-[100vw] relative flex h-100 w-full items-center duration-700 ease-out lg:h-150",
+              // Chiếm 2/3 khi chỉ có ảnh. `lg:pr-28` chừa chỗ cho các thẻ xoè phía sau
+              // (xoay tới 21° nên nhô ra khỏi mép phải ~110px) — không chừa thì bị
+              // mép màn hình cắt cụt.
+              chiCoAnh ? "lg:w-2/3 lg:pr-28" : "lg:w-1/3",
+            )}
           >
             {/* Khu vực chứa các thẻ ảnh */}
             <div className="relative flex h-full w-full items-center justify-center md:h-full">
@@ -547,7 +567,13 @@ const ProjectDetail: FC<Props> = ({ project, onClose }) => {
             </div>
 
             {/* Navigation Controls */}
-            <div className="absolute bottom-0 left-0 z-40 flex w-full flex-col items-center gap-4 translate-y-[200%]">
+            <div
+              className={cn(
+                "absolute bottom-0 left-0 z-40 flex w-full flex-col items-center gap-4 translate-y-[200%]",
+                // Cùng phần chừa bên phải với cột ảnh để nút luôn nằm giữa thẻ ảnh.
+                chiCoAnh && "lg:pr-28",
+              )}
+            >
               <div className="flex items-center gap-6">
                 <button
                   onClick={handlePrev}
