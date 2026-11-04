@@ -12,7 +12,7 @@ import type { ApiContact } from "#lib/apiTypes";
  */
 
 export const SITE_URL = "https://www.beezvn.com";
-const SITE_NAME = "BeeZ Production";
+const SITE_NAME = "Bee Z Production";
 
 /** Bỏ các khoá rỗng để JSON-LD không chứa trường trống. */
 function compact<T extends Record<string, unknown>>(obj: T): T {

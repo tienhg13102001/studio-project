@@ -107,7 +107,7 @@ const ContactPage: React.FC = () => {
     <div className="min-h-screen">
       <Seo
         title="Liên hệ"
-        description="Liên hệ BeeZ Production để bắt đầu dự án video tiếp theo của bạn — TVC, phim quảng cáo, brand film. Đội ngũ tại Hà Nội luôn sẵn sàng tư vấn."
+        description="Liên hệ Bee Z Production để bắt đầu dự án video tiếp theo của bạn — TVC, phim quảng cáo, brand film. Đội ngũ tại Hà Nội luôn sẵn sàng tư vấn."
         path="/contact"
       />
       <PageHero

@@ -42,7 +42,7 @@ function main(): Promise<void> {
   console.log(`Đang gửi email thử tới: ${to} …`);
   return sendMail({
     to,
-    subject: "[BeeZ] Email thử — cấu hình SMTP hoạt động",
+    subject: "[Bee Z] Email thử — cấu hình SMTP hoạt động",
     html: `
       <div style="font:15px/1.7 Arial,sans-serif;color:#222">
         <p>Nếu bạn đọc được email này thì cấu hình SMTP của website <b>beezvn.com</b> đã hoạt động.</p>

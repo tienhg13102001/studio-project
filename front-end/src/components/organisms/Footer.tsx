@@ -40,7 +40,7 @@ const Footer: React.FC = () => {
         <div className="space-y-4">
           <Link to="/" className="inline-flex items-center gap-2">
             <LogoYellow className="text-foreground h-8 w-8" />
-            <span className="text-xl font-bold">BeeZ Production</span>
+            <span className="text-xl font-bold">Bee Z Production</span>
           </Link>
           <p className="text-muted-foreground text-sm leading-relaxed">{t.footer.tagline}</p>
         </div>

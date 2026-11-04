@@ -57,7 +57,7 @@ export default function PortalSidebar({ user, onLogout, onClose, inquiryBadge = 
       <div className="flex items-center gap-2.5 border-b border-foreground/8 px-5 py-5">
         <LogoYellow className="text-primary h-7 w-7 shrink-0" />
         <div className="min-w-0 flex-1">
-          <p className="truncate text-sm leading-tight font-bold text-foreground">BeeZ Portal</p>
+          <p className="truncate text-sm leading-tight font-bold text-foreground">Bee Z Portal</p>
           <p className="text-[10px] leading-tight text-foreground/30">Bảng điều khiển</p>
         </div>
         {/* Close button — mobile drawer only */}

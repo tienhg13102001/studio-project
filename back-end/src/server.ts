@@ -31,7 +31,7 @@ connectDB()
   .then(dienTenDuongDan)
   .then(() => {
     app.listen(PORT, () => {
-      console.log(`🚀 BeeZ API running on http://localhost:${PORT}`);
+      console.log(`🚀 Bee Z API running on http://localhost:${PORT}`);
       console.log(`   GET /api/health`);
       console.log(`   GET /api/landing`);
       console.log(`   GET /api/services`);

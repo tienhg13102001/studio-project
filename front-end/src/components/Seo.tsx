@@ -3,11 +3,11 @@ import { useEffect, type FC } from "react";
 import { Helmet } from "react-helmet-async";
 
 const SITE_URL = "https://www.beezvn.com";
-const SITE_NAME = "BeeZ Production";
+const SITE_NAME = "Bee Z Production";
 const DEFAULT_OG_IMAGE = `${SITE_URL}/og-image.jpg`;
 
 type Props = {
-  /** Page title — final tag becomes "<title> — BeeZ Production" unless titleTemplate is false. */
+  /** Page title — final tag becomes "<title> — Bee Z Production" unless titleTemplate is false. */
   title: string;
   description: string;
   /** Path beginning with "/" — used for canonical + og:url. Defaults to current location. */
@@ -16,7 +16,7 @@ type Props = {
   image?: string;
   /** "website" (default) or "article". */
   type?: "website" | "article";
-  /** Set false to use `title` verbatim without the " — BeeZ Production" suffix. */
+  /** Set false to use `title` verbatim without the " — Bee Z Production" suffix. */
   titleTemplate?: boolean;
   /** Discourage indexing (e.g. 404, private pages). */
   noindex?: boolean;
@@ -87,7 +87,7 @@ const Seo: FC<Props> = ({
       {/* Zalo/Facebook đọc chắc hơn khi biết trước kích thước ảnh. */}
       <meta property="og:image:width" content="1200" />
       <meta property="og:image:height" content="630" />
-      <meta property="og:image:alt" content="BeeZ Production — sản xuất TVC và phim quảng cáo tại Hà Nội" />
+      <meta property="og:image:alt" content="Bee Z Production — sản xuất TVC và phim quảng cáo tại Hà Nội" />
 
       {/* Twitter */}
       <meta name="twitter:card" content="summary_large_image" />

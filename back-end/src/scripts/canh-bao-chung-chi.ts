@@ -124,7 +124,7 @@ async function chay(): Promise<void> {
   // Không kết nối được cũng là tin đáng báo — có thể web đang sập.
   if (!kq.ok) {
     await bao(
-      `[BeeZ] KHÔNG kiểm được chứng chỉ HTTPS của ${TEN_MIEN}`,
+      `[Bee Z] KHÔNG kiểm được chứng chỉ HTTPS của ${TEN_MIEN}`,
       `<p>Không đọc được chứng chỉ của <b>${TEN_MIEN}</b>.</p>
        <p>Lý do: <code>${kq.loi}</code></p>
        <p>Có thể web đang sập, hoặc máy chủ không ra được Internet. Nên kiểm tay ngay.</p>`,
@@ -139,7 +139,7 @@ async function chay(): Promise<void> {
 
   if (conLai < 0) {
     await bao(
-      `[BeeZ] 🔴 CHỨNG CHỈ HTTPS ĐÃ HẾT HẠN — khách đang thấy cảnh báo đỏ`,
+      `[Bee Z] 🔴 CHỨNG CHỈ HTTPS ĐÃ HẾT HẠN — khách đang thấy cảnh báo đỏ`,
       `<p>Chứng chỉ của <b>${TEN_MIEN}</b> đã hết hạn ${-conLai} ngày trước
        (${hetHan.toISOString()}).</p>
        <p><b>Mọi khách vào web đều đang gặp màn cảnh báo "Kết nối của bạn không phải
@@ -152,7 +152,7 @@ async function chay(): Promise<void> {
 
   if (MOC_BAO.includes(conLai)) {
     await bao(
-      `[BeeZ] Chứng chỉ HTTPS còn ${conLai} ngày`,
+      `[Bee Z] Chứng chỉ HTTPS còn ${conLai} ngày`,
       `<p>Chứng chỉ của <b>${TEN_MIEN}</b> còn <b>${conLai} ngày</b>
        (hết hạn ${hetHan.toISOString()}).</p>
        <p>Bình thường nó tự gia hạn khi còn 30 ngày. Email này nghĩa là

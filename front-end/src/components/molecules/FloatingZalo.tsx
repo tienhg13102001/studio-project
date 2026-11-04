@@ -19,7 +19,7 @@ export default function FloatingZalo() {
       href={zalo}
       target="_blank"
       rel="noopener noreferrer"
-      aria-label="Chat Zalo với BeeZ Production"
+      aria-label="Chat Zalo với Bee Z Production"
       className="group focus-visible:ring-primary fixed right-5 bottom-5 z-30 flex h-13 w-13 items-center justify-center rounded-full shadow-lg transition-transform hover:scale-110 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none motion-reduce:transition-none motion-reduce:hover:scale-100 md:right-6 md:bottom-6"
     >
       {/* Vòng sáng lan toả — chỉ để hút mắt, tắt khi người dùng giảm chuyển động. */}

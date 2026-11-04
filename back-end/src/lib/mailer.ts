@@ -13,7 +13,7 @@ const USER = process.env.SMTP_USER;
 const PASS = process.env.SMTP_PASS;
 
 /** Địa chỉ hiện ở ô "From". Mặc định lấy chính tài khoản SMTP. */
-const FROM = process.env.MAIL_FROM ?? (USER ? `BeeZ Production <${USER}>` : "");
+const FROM = process.env.MAIL_FROM ?? (USER ? `Bee Z Production <${USER}>` : "");
 
 /** Nơi nhận thông báo có khách mới; nhiều địa chỉ cách nhau bằng dấu phẩy. */
 export const LEAD_NOTIFY_TO = process.env.LEAD_NOTIFY_TO ?? USER ?? "";

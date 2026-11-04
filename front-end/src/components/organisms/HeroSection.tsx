@@ -15,7 +15,7 @@ const HeroSection = () => {
   // Use mock as fallback while API loads to avoid layout shift
   const content = data ?? {
     heroLine1: lang === "en" ? "Welcome to" : "Chào mừng đến với",
-    heroLine2: "BeeZ Production",
+    heroLine2: "Bee Z Production",
     subheading:
       lang === "en"
         ? "Your one-stop creative studio for stunning visuals and unforgettable stories"

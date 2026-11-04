@@ -78,7 +78,7 @@ const StatsAndBrands: React.FC = () => {
                 >
                   <img
                     src={resolveAssetUrl(brand.logo)}
-                    alt={`Logo ${brand.name} — khách hàng của BeeZ Production`}
+                    alt={`Logo ${brand.name} — khách hàng của Bee Z Production`}
                     loading="lazy"
                     decoding="async"
                     width={120}
@@ -99,7 +99,7 @@ const StatsAndBrands: React.FC = () => {
                 >
                   <img
                     src={resolveAssetUrl(brand.logo)}
-                    alt={`Logo ${brand.name} — khách hàng của BeeZ Production`}
+                    alt={`Logo ${brand.name} — khách hàng của Bee Z Production`}
                     loading="lazy"
                     decoding="async"
                     width={120}

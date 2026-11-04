@@ -48,7 +48,7 @@ const WhoWeAre: React.FC = () => {
             <div className="overflow-hidden rounded-2xl shadow-2xl aspect-5/6">
               <img
                 src={aboutImageSrc}
-                alt="Đội ngũ BeeZ Production tại phim trường"
+                alt="Đội ngũ Bee Z Production tại phim trường"
                 loading="lazy"
                 decoding="async"
                 width={600}
@@ -99,7 +99,7 @@ const WhoWeAre: React.FC = () => {
               <div key={i} className="shrink-0 h-48 w-72 overflow-hidden rounded-xl shadow-md">
                 <img
                   src={src}
-                  alt={`Hậu trường sản xuất của BeeZ Production ${i + 1}`}
+                  alt={`Hậu trường sản xuất của Bee Z Production ${i + 1}`}
                   loading="lazy"
                   decoding="async"
                   width={288}

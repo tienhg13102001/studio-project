@@ -37,7 +37,7 @@ const PortfolioPage = () => {
     <div className="min-h-screen pt-17">
       <Seo
         title="Portfolio"
-        description="Hồ sơ năng lực và toàn bộ dự án đã thực hiện của BeeZ Production — TVC, sự kiện, F&B, lookbook, nội dung mạng xã hội. Lọc theo mảng việc, xem video từng dự án."
+        description="Hồ sơ năng lực và toàn bộ dự án đã thực hiện của Bee Z Production — TVC, sự kiện, F&B, lookbook, nội dung mạng xã hội. Lọc theo mảng việc, xem video từng dự án."
         path="/portfolio"
       />
 

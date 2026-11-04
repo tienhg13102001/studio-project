@@ -67,10 +67,10 @@ async function seed() {
   await PageContent.create({
     pageType: "landing",
     heroLine1: { en: "We Are", vi: "Chúng Tôi Là" },
-    heroLine2: { en: "BeeZ Production", vi: "BeeZ Production" },
+    heroLine2: { en: "Bee Z Production", vi: "Bee Z Production" },
     subheading: {
-      en: "BeeZ Production - Hanoi's premier video production agency crafting unforgettable content for brands that dare to be different",
-      vi: "BeeZ Production - Agency sản xuất video hàng đầu Hà Nội, kiến tạo nội dung đáng nhớ cho những thương hiệu dám khác biệt",
+      en: "Bee Z Production - Hanoi's premier video production agency crafting unforgettable content for brands that dare to be different",
+      vi: "Bee Z Production - Agency sản xuất video hàng đầu Hà Nội, kiến tạo nội dung đáng nhớ cho những thương hiệu dám khác biệt",
     },
     videoBackground: "/videos/video-bg.webm",
     contactId: contact._id,
@@ -527,12 +527,12 @@ async function seed() {
       role: { en: "Creative Director", vi: "Giám Đốc Sáng Tạo" },
       photo: "/images/user1.webp",
       quote: {
-        en: "Every frame is a chance to tell a story that moves people. At BeeZ, we don't just make videos – we create experiences that resonate.",
-        vi: "Mỗi khung hình là cơ hội kể một câu chuyện chạm đến lòng người. Tại BeeZ, chúng tôi không chỉ làm video – chúng tôi tạo ra những trải nghiệm khó quên.",
+        en: "Every frame is a chance to tell a story that moves people. At Bee Z, we don't just make videos – we create experiences that resonate.",
+        vi: "Mỗi khung hình là cơ hội kể một câu chuyện chạm đến lòng người. Tại Bee Z, chúng tôi không chỉ làm video – chúng tôi tạo ra những trải nghiệm khó quên.",
       },
       bio: {
-        en: "With over five years of experience in video production, Hoan approaches each project with a deep passion for visual storytelling and a strong commitment to detail. His work at BeeZ Agency reflects a careful balance between cinematic craft and modern digital sensibility, resulting in content that resonates with audiences and has collectively reached over one billion views across platforms.",
-        vi: "Với hơn năm năm kinh nghiệm sản xuất video, Hoan tiếp cận mỗi dự án với niềm đam mê sâu sắc về kể chuyện bằng hình ảnh và cam kết chặt chẽ với từng chi tiết. Công việc của anh tại BeeZ phản ánh sự cân bằng tinh tế giữa kỹ thuật điện ảnh và cảm quan kỹ thuật số hiện đại.",
+        en: "With over five years of experience in video production, Hoan approaches each project with a deep passion for visual storytelling and a strong commitment to detail. His work at Bee Z Agency reflects a careful balance between cinematic craft and modern digital sensibility, resulting in content that resonates with audiences and has collectively reached over one billion views across platforms.",
+        vi: "Với hơn năm năm kinh nghiệm sản xuất video, Hoan tiếp cận mỗi dự án với niềm đam mê sâu sắc về kể chuyện bằng hình ảnh và cam kết chặt chẽ với từng chi tiết. Công việc của anh tại Bee Z phản ánh sự cân bằng tinh tế giữa kỹ thuật điện ảnh và cảm quan kỹ thuật số hiện đại.",
       },
       skills: ["Cinematic Direction", "Brand Storytelling", "Commercial Production"],
       featured: true,

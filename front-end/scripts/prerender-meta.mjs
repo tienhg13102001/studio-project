@@ -22,7 +22,7 @@ import { khoiLienKet, khoiNoiDung } from "./lien-ket-noi-bo.mjs";
 
 const SITE = "https://www.beezvn.com";
 const DIST = path.resolve(process.cwd(), "dist");
-const SUFFIX = " — BeeZ Production";
+const SUFFIX = " — Bee Z Production";
 
 /**
  * Nguồn dữ liệu cho các trang chi tiết (dịch vụ, dự án).
@@ -39,28 +39,28 @@ const ROUTES = [
     path: "/service",
     title: "Dịch vụ sản xuất video & TVC",
     description:
-      "Các dịch vụ của BeeZ Production: sản xuất TVC, phim quảng cáo, phim doanh nghiệp, brand film và nội dung mạng xã hội — trọn gói từ ý tưởng tới hậu kỳ.",
+      "Các dịch vụ của Bee Z Production: sản xuất TVC, phim quảng cáo, phim doanh nghiệp, brand film và nội dung mạng xã hội — trọn gói từ ý tưởng tới hậu kỳ.",
      loai: "tinh",
   },
   {
     path: "/portfolio",
     title: "Portfolio — dự án đã thực hiện",
     description:
-      "Tuyển tập TVC, phim doanh nghiệp và hình ảnh hậu trường do BeeZ Production thực hiện cho các thương hiệu tại Việt Nam.",
+      "Tuyển tập TVC, phim doanh nghiệp và hình ảnh hậu trường do Bee Z Production thực hiện cho các thương hiệu tại Việt Nam.",
      loai: "tinh",
   },
   {
     path: "/team",
     title: "Đội ngũ",
     description:
-      "Những người trực tiếp làm nên mỗi dự án của BeeZ Production — đạo diễn, quay phim, dựng phim và sản xuất.",
+      "Những người trực tiếp làm nên mỗi dự án của Bee Z Production — đạo diễn, quay phim, dựng phim và sản xuất.",
      loai: "tinh",
   },
   {
     path: "/contact",
     title: "Liên hệ",
     description:
-      "Liên hệ BeeZ Production để nhận tư vấn và báo giá sản xuất TVC, phim doanh nghiệp, brand film tại Hà Nội.",
+      "Liên hệ Bee Z Production để nhận tư vấn và báo giá sản xuất TVC, phim doanh nghiệp, brand film tại Hà Nội.",
      loai: "tinh",
   },
 ];
@@ -133,7 +133,7 @@ function trim(text, max = 158) {
  * Gắn `data-tra-truoc` để lúc React chạy còn biết đường gỡ bản này ra, tránh
  * một trang có hai khối giống hệt nhau (xem `src/components/Seo.tsx`).
  */
-const SITE_NAME_LD = "BeeZ Production";
+const SITE_NAME_LD = "Bee Z Production";
 
 function duLieuCoCauTruc(route) {
   const khoi = [];

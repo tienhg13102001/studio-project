@@ -81,7 +81,7 @@ const GalleryImage: FC<{
       */}
       <img
         src={src}
-        alt={`${groupLabel} — BeeZ Production`}
+        alt={`${groupLabel} — Bee Z Production`}
         loading="lazy"
         decoding="async"
         onLoad={(e) => {
@@ -249,7 +249,7 @@ const ProductGallery: FC = () => {
           </button>
           <img
             src={lightboxSrc}
-            alt={`${localized(active.title, lang) || active.tag} — BeeZ Production`}
+            alt={`${localized(active.title, lang) || active.tag} — Bee Z Production`}
             onClick={(e) => e.stopPropagation()}
             className="max-h-[90vh] max-w-[95vw] rounded-lg object-contain shadow-2xl"
           />

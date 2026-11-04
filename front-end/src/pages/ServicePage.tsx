@@ -302,7 +302,7 @@ const ServicePage: React.FC = () => {
            đã soạn riêng trong Portal; chưa có thì lùi về tên dịch vụ. */
         title={selectedProject ? selectedProject.title : tieuDeSeo || title}
         /* Tiêu đề SEO đã tự mang tên thương hiệu nên bỏ phần đuôi tự thêm, tránh
-           thành "… | Bee Z — BeeZ Production". */
+           thành "… | Bee Z — Bee Z Production". */
         titleTemplate={!selectedProject && !!tieuDeSeo ? false : true}
         description={
           selectedProject

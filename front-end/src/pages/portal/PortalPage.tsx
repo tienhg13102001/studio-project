@@ -184,7 +184,7 @@ const PortalPage = () => {
                 </div>
                 <div className="min-w-0 flex-1">
                   <p className="text-foreground text-sm font-semibold">Admin Portal</p>
-                  <p className="text-foreground/40 mt-0.5 text-xs">Access for BeeZ team members</p>
+                  <p className="text-foreground/40 mt-0.5 text-xs">Access for Bee Z team members</p>
                 </div>
                 <ArrowRightIcon
                   size={16}
@@ -305,7 +305,7 @@ const PortalPage = () => {
 
           {/* Footer */}
           <p className="text-foreground/20 mt-8 text-center text-[11px]">
-            BeeZ Production © {new Date().getFullYear()}
+            Bee Z Production © {new Date().getFullYear()}
           </p>
         </div>
       </div>
