@@ -1,0 +1,12 @@
+:root{
+  --space-1:4px;--space-2:8px;--space-3:12px;--space-4:16px;--space-5:20px;--space-6:24px;
+  --space-8:32px;--space-10:40px;--space-12:48px;--space-16:64px;--space-20:80px;--space-24:96px;--space-32:128px;
+  --container-max:1280px;
+  --container-pad:clamp(20px,4vw,56px);
+  --section-gap:clamp(72px,10vw,144px);
+  --nav-height:76px;
+
+  --radius-xs:2px;--radius-s:6px;--radius-m:12px;--radius-l:20px;--radius-pill:999px;
+  --radius-card:var(--radius-m);
+  --radius-media:var(--radius-xs);
+}

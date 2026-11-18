@@ -1,0 +1,411 @@
+/*
+ * Điện thoại và máy tính bảng nhỏ (nạp SAU design.css).
+ * Mốc chính: 720px (điện thoại) và 1259px (khung "Gói của bạn" gọn xuống thanh dưới cùng, đã có sẵn).
+ * Mục tiêu: không cuộn ngang, chạm đủ lớn (từ 44px), chữ nhỏ gọn để mỗi khối vừa một màn hình, mỗi khối một cột.
+ */
+
+/* ---------- Phần dùng chung mọi cỡ màn hình ---------- */
+html, body { overflow-x: clip; }
+
+/* Câu giới thiệu có liên kết ở đầu trang chủ ("Tiết kiệm đến 15%…") */
+.lead-link { color: var(--action); font-weight: 600; text-decoration: none; border-bottom: 1px solid var(--action-line); padding-bottom: 1px; }
+.lead-link::after { content: " →"; }
+.lead-link:hover { border-bottom-color: var(--action); }
+
+/* Gợi ý "Đặt combo để tiết kiệm đến 15%": cả khối là một liên kết */
+a.nudge { text-decoration: none; color: inherit; }
+a.nudge svg { width: 18px; height: 18px; flex: none; color: var(--action); }
+
+/* Nút gấp/mở: máy tính luôn hiện đủ nên ẩn nút ở thẻ combo, ở điều khoản chỉ còn là tiêu đề thường */
+.combo .more-btn, .xmore { display: none; }
+.xrest { display: contents; }
+.terms h3 { margin: 0 0 12px; }
+.terms .more-btn { display: block; background: none; border: 0; padding: 0; font: inherit; color: inherit; text-align: left; cursor: default; }
+.terms .more-btn i { display: none; }
+
+/* Bảng đặt lẻ thu gọn (chỉ hiện trên điện thoại) */
+.solo-cards { display: none; }
+
+@media screen and (max-width: 720px) {
+  :root { --header-h: 60px; }
+  body { font-size: 14px; }
+  .wrap, .wrap-wide { padding-inline: 16px; }
+  .sec { padding-block: 34px; }
+  .sec-head { margin-bottom: 18px; }
+  .sec-head h2 { font-size: 1.55rem; line-height: 1.25; }
+  .sec-head p, .page-head p, .lead, .step > .sub { font-size: 14px; line-height: 1.55; }
+  .kicker { font-size: 11px; letter-spacing: .16em; }
+  /* Câu liền nhau chạy tiếp trên cùng một dòng, không xuống dòng khi hết câu; không cân dòng để khỏi chừa trống bên phải */
+  p .ln, .dd .ln, .founder-band p .ln, .step > .sub .ln { display: inline; text-wrap: pretty; }
+  .site-footer p .ln { display: block; }
+  .site-footer p .ln + .ln { margin-left: 0; }
+  p .ln + .ln, .dd .ln + .ln { margin-left: .3em; }
+  .sec-head p, .page-head p, .lead, .founder-band .fb-title { text-wrap: pretty; }
+
+  /* Đầu trang */
+  .hdr { gap: 8px; }
+  .logo-t { font-size: 1.15rem; }
+  .hdr-cta { display: none; }
+  .lang button { min-height: 44px; min-width: 40px; display: inline-flex; align-items: center; justify-content: center; }
+  .site-footer a { display: inline-block; padding-block: 11px; }
+  .pdf .link, #print-btn { padding-block: 12px; }
+  .icon-btn { width: 44px; height: 44px; }
+
+  /* Trang chủ: mở đầu */
+  .hero { padding-block: 20px 30px; }
+  .hero-grid { gap: 20px; }
+  .hero-copy { gap: 10px; padding-top: 0; }
+  .hero h1 { font-size: clamp(1.45rem, 7.2vw, 1.75rem); line-height: 1.25; margin-block: 8px 10px; }
+  html[lang="vi"] .hero h1 .ln { white-space: nowrap; }
+  .hero p.lead { font-size: 14.5px; margin: 0; }
+  .hero .actions { flex-direction: column; align-items: stretch; gap: 10px; margin-top: 16px; }
+  .hero .actions .btn { width: 100%; min-height: 48px; }
+  /* Ba ảnh nhỏ: cột trái cao bằng đúng hai ảnh bên phải cộng lại */
+  .hero-media { gap: 8px; }
+  /* Ảnh đầu trang giữ đúng tỉ lệ gốc 3:2, không cắt */
+  .hero-media .photo, .hero-media .photo.film { min-height: 0; height: auto; aspect-ratio: 3 / 2; }
+  .hero .actions .btn-secondary { border-color: transparent; background: transparent; min-height: 44px; color: var(--charcoal-900); text-decoration: underline; text-underline-offset: 4px; text-decoration-color: var(--action-line); }
+
+  /* Ba lịch quay chụp: thẻ ngang gọn, ba thẻ vừa một màn hình */
+  /* Ba thẻ cao bằng nhau (bằng thẻ nhiều chữ nhất) */
+  .cards3 { gap: 10px; grid-auto-rows: 1fr; }
+  .jcard { display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 12px; padding: 10px; align-items: stretch; }
+  /* Ảnh phủ kín chiều cao thẻ; vì ba thẻ cao bằng nhau nên ba ảnh cũng bằng nhau */
+  .jcard .photo { width: 64px; height: auto; min-height: 0; border-radius: 8px; }
+  .jcard .photo.has-m { background-image: var(--img-m); }
+  .jcard .body { position: relative; padding: 0; gap: 2px; }
+  #hanh-trinh .sec-head p { display: none; }
+  .jcard .meta { font-size: 11px; letter-spacing: .08em; }
+  .jcard h3 { font-size: 1.25rem; line-height: 1.2; }
+  .jcard p { font-size: 12px; line-height: 1.45; }
+  /* Dòng giá luôn nằm ở đáy thẻ, ba thẻ thẳng hàng */
+  .jcard .from { font-size: 12px; margin-top: auto; padding-top: 4px; }
+  .jcard .from b { font-size: 1.3rem; }
+  .jcard .go { position: absolute; right: 0; bottom: 2px; padding: 0; margin: 0; border: 0; }
+  .jcard .go span:first-child { display: none; }
+
+  /* Sản phẩm bạn nhận về: lưới 2 × 2 */
+  .figs { grid-template-columns: repeat(2, minmax(0, 1fr)); border-bottom: 0; }
+  .fig, .fig:first-child { border-left: 0; border-top: 1px solid var(--cream-400); padding: 14px 12px 14px 0; }
+  .fig:nth-child(even) { border-left: 1px solid var(--cream-400); padding: 14px 0 14px 14px; }
+  .fig:nth-child(-n+2) { border-top: 0; }
+  .fig .cap { font-size: 11px; letter-spacing: .06em; line-height: 1.4; min-height: 0; }
+  .fig .big { font-size: 2.1rem; }
+  .fig .d { font-size: 12px; line-height: 1.5; }
+
+  /* Đặt riêng chụp hoặc quay */
+  h2[data-i18n="solo.h2"] { font-size: clamp(1.2rem, 6vw, 1.55rem); }
+  html[lang="vi"] h2[data-i18n="solo.h2"] { white-space: nowrap; }
+  html[lang="en"] .solo-mini { grid-template-columns: 92px repeat(3, minmax(0, 1fr)); }
+  .nudge { flex-direction: row; align-items: center; padding: 12px 14px; margin-bottom: 12px; font-size: 14px; }
+  .tbl { display: none; }
+  .solo-cards { display: block; }
+  .solo-mini { display: grid; grid-template-columns: 80px repeat(3, minmax(0, 1fr)); background: var(--cream-100); border: 1px solid var(--cream-400); border-radius: 12px; overflow: hidden; }
+  .solo-mini > div { display: flex; flex-direction: column; justify-content: center; padding: 10px 3px; border-top: 1px solid var(--cream-400); min-width: 0; }
+  .solo-mini > .sm-h { border-top: 0; align-items: center; text-align: center; padding-block: 12px; }
+  .solo-mini .sm-h b { font: 600 1.05rem/1.2 var(--serif); }
+  .solo-mini small { font: 500 11px/1.3 var(--sans); color: #4a3f34; margin-top: 2px; }
+  .solo-mini .sm-l { padding-left: 10px; align-items: flex-start; }
+  .solo-mini .sm-l b { font: 600 11px/1.3 var(--sans); color: #4a3f34; }
+  .solo-mini .sm-p { align-items: center; text-align: center; font: 500 .8rem/1.2 var(--serif); }
+  .solo-mini .sm-p s { font: 500 11px/1.3 var(--sans); color: #4a3f34; margin-top: 2px; }
+  .solo-mini .sm-c { background: var(--action-tint); }
+  .solo-mini .sm-p.sm-c { font-size: .86rem; font-weight: 700; }
+  .solo-legend { margin: 8px 2px 0; font-size: 12px; color: #4a3f34; }
+
+  /* Vì sao chọn Bee Z: bốn ý gọn, vừa một màn hình */
+  .promise-band { padding: 18px 16px; }
+  .promise-band .sec-head { margin-bottom: 0; }
+  .promise-band .sec-head h2 { margin-bottom: 0; }
+  .promises { gap: 14px; }
+  .promise { display: grid; grid-template-columns: 24px minmax(0, 1fr); gap: 2px 10px; align-items: start; }
+  .promise .tick { width: 24px; height: 24px; grid-row: 1 / span 2; margin: 1px 0 0; }
+  .promise .tick svg { width: 13px; height: 13px; }
+  .promise h3 { font-size: 1.08rem; line-height: 1.3; margin: 0; }
+  .promise p { font-size: 12px; line-height: 1.55; margin: 0; }
+  .founder { gap: 18px; margin-top: 28px; }
+  /* Ảnh dọc bị cắt thành ngang: giữ phần mặt ở phía trên */
+  .founder .photo { aspect-ratio: 3 / 2; background-position: center top, 0 0; }
+  .founder p.muted { font-size: 14px; line-height: 1.6; }
+  .badge { font-size: 11px; }
+
+  /* Câu hỏi thường gặp: ô gọn, chữ chạy hết bề ngang */
+  .faq3 { gap: 20px; }
+  .fch { margin-bottom: 8px; padding-bottom: 8px; }
+  .fch b { font-size: 1.2rem; }
+  .fico { width: 32px; height: 32px; }
+  .faq3 details { margin-top: 8px; }
+  .faq3 summary { min-height: 0; padding: 11px 12px 11px 14px; font-size: 14px; line-height: 1.4; }
+  .faq3 summary, .faq3 summary span { text-wrap: pretty; }
+  .faq3 summary i { width: 26px; height: 26px; }
+  .faq3 .ans { font-size: 12px; line-height: 1.6; padding: 0 14px 14px; }
+  .cta2 h2 { font-size: 1.5rem; line-height: 1.25; }
+  .cta2 h2 .ln { display: block; }
+  .cta2 p { max-width: none; font-size: 14px; }
+  .cta2 .actions { flex-direction: column; align-items: stretch; }
+  .cta2 .actions .btn { width: 100%; }
+
+  /* Chân trang */
+  .site-footer { padding: 36px 0 100px; }
+  .ftr { grid-template-columns: 1fr; gap: 24px; }
+
+  /* Thanh bước: chỉ bước đang xem hiện chữ, các bước khác chỉ hiện số */
+  .stepper ol { padding-inline: 8px; grid-template-columns: repeat(5, auto); justify-content: space-between; }
+  .stepper a { flex-direction: row; justify-content: center; gap: 6px; padding: 10px 7px; font-size: 11px; letter-spacing: .04em; min-height: 48px; }
+  .stepper a:not(.on) span:last-child { display: none; }
+  .stepper a.on { grid-column: span 2; }
+  .stepper a .n { min-width: 26px; height: 26px; }
+
+  /* Trang tính giá: đầu trang cuộn đi, chỉ thanh bước và thanh tổng tiền dính */
+  body.has-bar #site-header { position: static; }
+  body.has-bar .stepper { top: 0; }
+  html { scroll-padding-top: 74px; }
+  .page-head { padding-top: 18px; padding-bottom: 4px; }
+  .page-head h1 { font-size: 1.65rem; line-height: 1.2; margin: 8px 0 6px; }
+  .page-head p { max-width: none; }
+  .builder { padding-top: 8px; padding-bottom: 100px; gap: 8px; }
+  .step { margin-bottom: 30px; }
+  .step > h2, .step > h2 .no { font-size: 1.25rem; }
+  .step > .sub { padding-left: 0; margin-bottom: 12px; }
+
+  /* Bước 01: ba lịch gọn */
+  .opts { grid-template-columns: 1fr; gap: 10px; }
+  .opt, .opt.on { padding: 12px 14px; gap: 2px; }
+  .opt .t { font-size: 1.2rem; padding-right: 30px; line-height: 1.25; }
+  .opt .d { font-size: 12px; line-height: 1.5; }
+  .opt .f { margin-top: 2px; font-size: 12px; }
+  .opt .f b { font-size: 1.15rem; }
+  .opt .tick { top: 12px; right: 12px; width: 20px; height: 20px; }
+  .variant-row { margin-left: 0; justify-content: flex-start; }
+  .variant-row .seg { flex-wrap: nowrap; gap: 8px; }
+  .variant-row .seg label { flex: 1 1 0; min-width: 0; }
+  .variant-row .seg span { min-height: 46px; padding: 4px 8px; font-size: 12px; line-height: 1.25; text-align: center; white-space: normal; }
+
+  /* Bước 02: thẻ combo, phần sản phẩm gấp lại, bấm dấu để mở */
+  .combos, .combos.two { grid-template-columns: 1fr; width: 100%; gap: 24px; }
+  .combo, .combo.on { padding: 20px 16px 14px; }
+  .combo .tag { min-height: 0; font-size: 12px; }
+  .combo h3 { font-size: 1.4rem; }
+  .combo .ppl, .combo .was { font-size: 12.5px; }
+  .combo .ppl { display: flex; flex-wrap: nowrap; align-items: baseline; gap: 0 4px; font-size: 12px; white-space: nowrap; }
+  .combo .ppl b::after { content: ":"; }
+  .combo .ppl b, .combo .ppl span { display: inline; margin: 0; }
+  .combo .price { font-size: 2rem; }
+  .combo .more-btn { display: flex; align-items: center; justify-content: space-between; gap: 10px; width: 100%; min-height: 44px; margin: 8px 0 0; padding: 0; background: none; border: 0; border-top: 1px solid var(--cream-400); font: 600 13px/1.3 var(--sans); color: var(--charcoal-900); text-align: left; cursor: pointer; }
+  .combo ul { display: none; margin: 4px 0 12px; padding-top: 10px; border-top: 0; font-size: 12px; }
+  .combo.more-open ul { display: grid; }
+  .combo .btn, .combo .ask { display: none; }
+  .combo { cursor: pointer; }
+  .combo:not(.on)::after { content: ''; position: absolute; top: 18px; right: 16px; width: 22px; height: 22px; border-radius: 50%; border: 1.5px solid var(--cream-500); background: var(--surface-card); }
+  .combo:focus-visible { outline: 3px solid var(--action); outline-offset: 2px; }
+  .ask-all { display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; margin: 4px 0 0; font: 600 13px/1.3 var(--sans); color: var(--charcoal-900); text-decoration: none; }
+  .ask-all svg { width: 16px; height: 16px; color: var(--gold-700); }
+  .founder-band { flex-direction: column; align-items: stretch; padding: 14px; gap: 12px; }
+  .founder-band .fb-title { font-size: 1.2rem; margin-bottom: 2px; }
+  .founder-band p, .founder-band .fb-price { font-size: 12px; line-height: 1.5; }
+  .founder-band .fb-price .cl { display: inline; }
+  .founder-band .btn { width: 100%; }
+
+  /* Dấu cộng/trừ tròn cho nút gấp mở (thẻ combo và điều khoản) */
+  .more-btn i { position: relative; flex: none; width: 26px; height: 26px; border-radius: 50%; border: 1px solid var(--cream-500); background: var(--surface-card); display: block; }
+  .more-btn i::before, .more-btn i::after { content: ""; position: absolute; left: 50%; top: 50%; width: 10px; height: 1.6px; background: var(--charcoal-900); transform: translate(-50%, -50%); }
+  .more-btn i::after { transform: translate(-50%, -50%) rotate(90deg); }
+  .more-open > .more-btn i::after, .more-open > h3 .more-btn i::after { opacity: 0; }
+
+  /* Bước 03: dịch vụ thêm, giá xuống dòng dưới chữ, mô tả chạy liền */
+  .xrow { grid-template-columns: 26px minmax(0, 1fr); gap: 8px 12px; padding: 12px; }
+  .xrow .box { grid-column: 1; grid-row: 1; }
+  .xrow > span:not(.box):not(.ico40):not(.pp) { grid-column: 2; grid-row: 1; }
+  .xrow .pp { grid-column: 2; grid-row: 2; text-align: left; display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 10px; font-size: 1.15rem; }
+  .xrow .pp s, .xrow .pp small { display: inline; }
+  /* Khối chữ của dịch vụ: cỡ và giãn dòng đặt ở khối cha để các dòng mô tả không bị giãn theo cỡ 14px của tiêu đề */
+  .xrow > span:not(.box):not(.ico40):not(.pp) { font-size: 12px; line-height: 1.5; }
+  .xrow .tt { display: block; font-size: 14px; line-height: 1.4; margin-bottom: 2px; }
+  .xrow .dd { display: inline; font-size: inherit; line-height: inherit; }
+  .xrow .dd + .dd { margin-left: .3em; }
+  .xrow.sub { margin-left: 0; }
+  .xsub { margin-left: 0; padding: 12px; }
+  .where .note { font-size: 12px; line-height: 1.5; }
+  .seg { width: 100%; }
+  .seg label { flex: 1 1 100%; }
+  .seg span { width: 100%; min-height: 46px; justify-content: center; gap: 10px; }
+  .xsub .seg label:not(:has(.off10)) { flex: 1 1 100%; }
+  .xsub .seg label:has(.off10) { flex: 1 1 100%; }
+  .where .seg label { flex: 1 1 calc(50% - 8px); }
+  .where .seg span { justify-content: center; }
+
+  /* Bước 04: ước tính, điều khoản gấp lại */
+  .receipt { padding: 16px; }
+  .rl { gap: 10px; }
+  .rl .r { font-size: 1.1rem; }
+  .rl .l b { font-size: 15px; }
+  .rtotal .r { font-size: 1.8rem; }
+  .terms { padding: 6px 16px; }
+  .terms h3 { margin: 0; }
+  .terms .more-btn { display: flex; align-items: center; justify-content: space-between; gap: 10px; width: 100%; min-height: 48px; font: 500 1.2rem/1.2 var(--serif); cursor: pointer; }
+  .terms .more-btn i { display: block; }
+  .terms-body { display: none; padding: 4px 0 12px; }
+  .terms.more-open .terms-body { display: block; }
+  .terms ul { font-size: 12px; }
+  .estimate-extra .note, .rnote { font-size: 12px; line-height: 1.5; padding: 10px 14px; }
+
+  /* Bước 05: form gọn, vừa một màn hình */
+  #s5 > .sub { display: none; }
+  .form { padding: 14px 14px 16px; gap: 12px; }
+  .field { gap: 5px; }
+  .field label { font-size: 12px; font-weight: 600; letter-spacing: 0; text-transform: none; color: #4a3f34; line-height: 1.3; }
+  .field label.chk { min-height: 34px; font-size: 13px; }
+  .field input[type="text"], .field input[type="email"], .field input[type="tel"], .field input[type="date"] { height: 40px; min-height: 40px; padding: 0 14px; font-size: 16px; }
+  .field input::placeholder { font-size: 14px; }
+  .field textarea::placeholder { font-size: 13px; }
+  .field textarea { min-height: 54px; height: 54px; resize: none; padding: 8px 14px; line-height: 1.4; font-size: 16px; }
+  .form .priv, .priv { font-size: 12px; margin: 0; }
+  .trust { font-size: 12px; margin-top: 4px; }
+  .trust-link { padding: 4px 0 2px; font-size: 12.5px; }
+  .submit { gap: 6px; }
+
+  /* Thanh tổng tiền dưới cùng (ẩn khi đang ở form gửi) */
+  .bar { padding-inline: 16px; transition: transform .2s ease; align-items: center; }
+  .bar .bl { flex: 1 1 auto; min-width: 0; }
+  .bar .l { white-space: normal; line-height: 1.3; letter-spacing: .02em; }
+  .bar .bn { font-size: 11px; line-height: 1.3; color: var(--gold-text); }
+  .bar .btn { flex: none; white-space: nowrap; padding-inline: 16px; }
+  body.in-form .bar { transform: translateY(110%); }
+  .bar .btn { min-height: 46px; }
+
+  /* Hộp thoại */
+  .dialog { padding: 22px 18px; border-radius: 16px; }
+  .confirm { padding: 32px 16px 48px; }
+}
+
+/* Điện thoại rất nhỏ */
+@media screen and (max-width: 380px) {
+  .where .seg label { flex: 1 1 100%; }
+  .combo .ppl { flex-wrap: wrap; white-space: normal; }
+  .solo-mini { grid-template-columns: 70px repeat(3, minmax(0, 1fr)); }
+  .solo-mini .sm-p { font-size: .76rem; }
+  .solo-mini .sm-p.sm-c { font-size: .8rem; }
+}
+
+/* Máy tính bảng dọc (721px đến 1023px): các lưới ba cột chuyển hai cột cho đủ rộng */
+@media (min-width: 721px) and (max-width: 1023px) {
+  .cards3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .figs { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .fig { border-top: 1px solid var(--cream-400); }
+  .fig:nth-child(-n+2) { border-top: 0; }
+  .fig:nth-child(odd) { border-left: 0; padding-left: 0; }
+  .faq3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .combos { grid-template-columns: 1fr; }
+}
+
+/* Khi các thẻ combo xếp một cột (dưới 1260px) không cần chừa chỗ tiêu ngữ */
+@media (max-width: 1259px) { .combo .tag { min-height: 0; } }
+
+/* Một cột: cột lưới không được rộng hơn màn hình vì chữ dài (bản tiếng Anh) */
+@media (max-width: 1259px) { .builder { grid-template-columns: minmax(0, 1fr); } .steps { min-width: 0; } }
+
+/*
+ * Thang cỡ chữ điện thoại (Hằng duyệt 30/10/2026).
+ * Sans: 11 (nhãn hoa) / 12 (chữ phụ và mô tả, giãn dòng 1,5–1,55) / 13 (chữ gấp lại, nút, nhãn và lỗi form) / 14 (thân, câu hỏi, tên dịch vụ) / 16 (ô nhập, để iPhone không phóng to).
+ * Serif: 18 (giá trong dòng) / 20 (tên thẻ lịch, tên dịch vụ nổi) / 22 (tên combo) / 24 (tiêu đề bước và khối) / 26 (tiêu đề trang, hero, tổng) / 32 (giá combo, số lớn).
+ */
+@media screen and (max-width: 720px) {
+  /* ----- Mô tả: giữ 12px, chỉ chỉnh giãn dòng ----- */
+  .jcard p, .opt .d, .fig .d, .promise p, .faq3 .ans, .terms ul, .combo ul, .founder-band p, .founder-band .fb-price, .estimate-extra .note, .rnote, .where .note, .where .muted { line-height: 1.5; }
+  .combo ul, .faq3 .ans, .terms ul { line-height: 1.55; }
+  .xrow > span:not(.box):not(.ico40):not(.pp) { line-height: 1.5; }
+  .xrow .tt { font-size: 14px; line-height: 1.4; }
+  .rl .l small, .sline .sub { line-height: 1.45; }
+
+  /* ----- Nút, nhãn và lỗi form, lời trấn an ----- */
+  .btn { font-size: 13px; }
+  .seg span, .variant-row .seg span { font-size: 13px; }
+  .field label { font-size: 13px; line-height: 1.4; }
+  .field .err { font-size: 13px; line-height: 1.4; font-weight: 500; }
+  .trust, .form .priv, .priv { font-size: 13px; line-height: 1.5; font-weight: 500; }
+  .trust-link { font-size: 13px; }
+  .field input[type="text"], .field input[type="email"], .field input[type="tel"], .field input[type="date"] { height: 44px; min-height: 44px; }
+  .form { gap: 14px; }
+
+  /* ----- Chữ phụ và nhãn ----- */
+  .combo .was, .combo .tag, .combo .ppl, .pill { font-size: 12px; }
+  .badge { font-size: 11px; }
+  .stepper a.on { font-size: 12px; }
+
+  /* ----- Serif: tiêu đề và giá ----- */
+  .step > h2, .step > h2 .no { font-size: 24px; line-height: 1.2; }
+  .sec-head h2 { font-size: 24px; line-height: 1.25; }
+  .page-head h1 { font-size: 26px; line-height: 1.2; }
+  .cta2 h2 { font-size: 24px; }
+  .hero h1 { font-size: clamp(1.4rem, 6.9vw, 1.625rem); }
+  .opt .t, .jcard h3, .founder-band .fb-title, .terms .more-btn, .where h3 { font-size: 20px; line-height: 1.25; }
+  .combo h3 { font-size: 22px; line-height: 1.25; }
+  .jcard .from b, .opt .f b { font-size: 20px; line-height: 1.25; }
+  .xrow .pp { font-size: 18px; line-height: 1.25; }
+  .fig .big { font-size: 32px; }
+  .founder h3 { font-size: 26px; line-height: 1.2; }
+  .founder .stat b { font-size: 32px; line-height: 1.15; }
+
+  /* ----- Thanh dưới cùng ----- */
+  .bar .l { font-size: 12px; font-weight: 600; letter-spacing: 0; text-transform: none; line-height: 1.3; }
+  .bar .r { font-size: 24px; line-height: 1.15; }
+  .bar .bn { font-size: 12px; font-weight: 500; }
+
+  /* ----- Bảng đặt lẻ: tiêu đề cột nhỏ lại ----- */
+  .solo-mini .sm-h b { font-size: 14px; line-height: 1.25; }
+
+  /* ----- Trang cảm ơn ----- */
+  .confirm h1 { font-size: 26px; line-height: 1.25; }
+  .next h2 { font-size: 26px; line-height: 1.25; }
+  .recap .tot .r { font-size: 32px; line-height: 1.15; }
+  .recap .rr { font-size: 14px; line-height: 1.5; padding: 12px 0; }
+  .next .s .n { font-size: 26px; line-height: 1.1; }
+  .next .s p { font-size: 13px; line-height: 1.5; }
+}
+@media screen and (max-width: 380px) {
+  html[lang="en"] .solo-mini { grid-template-columns: 76px repeat(3, minmax(0, 1fr)); }
+  .bar .r { font-size: 22px; }
+  .bar .btn { padding-inline: 12px; font-size: 12px; letter-spacing: .03em; }
+}
+@media screen and (max-width: 720px) {
+  /* Nhãn thanh dưới: một dòng, tên gói nhỏ hơn */
+  .bar .l { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .bar .l .bt { font-size: 11px; font-weight: 500; }
+}
+@media screen and (max-width: 380px) {
+  .bar .l { font-size: 11px; }
+  .bar .l .bt { font-size: 11px; }
+}
+
+@media screen and (max-width: 720px) {
+  /* Dịch vụ thêm: hiện câu đầu, phần còn lại ẩn sau nút "Chi tiết" */
+  .xrest { display: none; }
+  .xtxt.more-open .xrest { display: block; margin-top: 4px; }
+  .xrow .xmore { display: inline-flex; align-items: center; gap: 8px; min-height: 40px; margin: -2px 0 -12px; padding: 0; background: none; border: 0; font: 600 12px/1.3 var(--sans); color: var(--gold-text); cursor: pointer; }
+  .xrow .xmore i { width: 22px; height: 22px; }
+  .xrow .xmore i::before, .xrow .xmore i::after { width: 9px; }
+  .xtxt.more-open > .more-btn i::after { opacity: 0; }
+}
+@media screen and (max-width: 720px) {
+  /* Phần đầu trang chủ căn giữa (Hằng duyệt 02/11/2026), khớp với các nút bên dưới */
+  .hero-copy { text-align: center; align-items: center; }
+  .hero p.lead { text-align: center; }
+  .hero .actions { align-items: stretch; width: 100%; }
+}
+
+/* Bước 03: khoảng cách (công tác phí) nằm trên danh sách dịch vụ thêm */
+.where { margin-top: 0; margin-bottom: 28px; }
+
+/* Nhãn nhỏ của khối "Sản phẩm bạn nhận về": cân dòng, chừa đủ hai dòng để số lớn thẳng hàng */
+@media screen and (max-width: 720px) {
+  .fig .cap { text-wrap: balance; min-height: 2.8em; }
+}
+
+/* Cỡ chữ hệ thống lớn: thanh tổng tiền tự xuống hai hàng (tiền một hàng, nút một hàng) thay vì vỡ nút.
+   Nhãn không góp vào độ rộng tự nhiên của khối, nên ở cỡ chữ thường vẫn nằm một hàng. */
+@media screen and (max-width: 720px) {
+  .bar { flex-wrap: wrap; gap: 6px 10px; }
+  .bar .l { width: 0; min-width: 100%; }
+  .bar .btn { margin-left: auto; }
+  .combo .ppl { flex-wrap: wrap; }
+}

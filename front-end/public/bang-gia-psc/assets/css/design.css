@@ -1,0 +1,670 @@
+/*
+ * Lớp giao diện theo "Bee Z Wedding Film Design System" (Quiet Luxury, Candid Emotions, Cinematic Storytelling).
+ * Nạp SAU style.css và assets/ds/*.css, ghi đè màu, chữ, bo góc, nút và các thẻ theo hệ thiết kế.
+ * Luật chính của hệ thiết kế:
+ *  - Vàng champagne (--gold-700) là màu nhấn: eyebrow, chữ nghiêng nhấn, số thứ tự, trạng thái đã chọn.
+ *  - Vàng Bee Z (--beez-yellow) CHỈ dành cho huy hiệu (logo, "Được chọn nhiều nhất", chữ chọn). Không làm nền nút hay vùng lớn.
+ *  - Nút chính màu than (charcoal), nút phụ viền than. Không gradient, không viền trái nhấn màu.
+ *  - Thẻ: nền trắng kem hoặc trong suốt, viền 1px be ấm. Đã chọn = viền than 1px + bóng nhẹ.
+ *  - Bo góc: ảnh 2px, ô nhập 6px, thẻ 12px, khung tóm tắt và hộp thoại 20px, nút và huy hiệu bo tròn hẳn.
+ *  - Chữ: Cormorant Garamond cho tiêu đề và giá, Montserrat cho chữ thường.
+ * Ghi chú: Vietnamese-friendly nên giữ line-height tiêu đề từ 1,2 trở lên (bản gốc của hệ thiết kế để 1,04–1,1).
+ */
+:root {
+  --bg: var(--cream-200);
+  --surface: var(--cream-300);
+  --card: var(--cream-100);
+  --text: var(--charcoal-900);
+  --muted: var(--slate-600);
+  --gold: var(--gold-700);
+  --gold-dark: var(--gold-600);
+  --bee: var(--beez-yellow);
+  --line: var(--cream-400);
+  --hair: var(--cream-400);
+  --serif: var(--font-serif);
+  --sans: var(--font-sans);
+  --r: var(--radius-m);
+  --shadow: var(--shadow-soft);
+  --shadow-lift: 0 2px 4px rgba(30, 24, 16, .04), 0 24px 48px -24px rgba(30, 24, 16, .18);
+  --header-h: 72px;
+}
+
+body { font-size: 15px; line-height: 1.7; font-variant-numeric: lining-nums; -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+::selection { background: var(--beez-yellow); color: var(--charcoal-900); }
+h1, h2, h3, h4 { font-weight: 500; line-height: 1.2; font-variant-numeric: lining-nums; }
+:focus-visible { outline: none; box-shadow: var(--shadow-focus); border-radius: 6px; }
+.opt:has(input:focus-visible), .xrow:has(input:focus-visible), .srow:has(input:focus-visible) { outline: none; box-shadow: var(--shadow-focus); }
+.seg input:focus-visible + span { outline: none; box-shadow: var(--shadow-focus); }
+
+/* ---------- Chữ ---------- */
+.kicker { font-size: 11px; font-weight: 600; letter-spacing: .22em; line-height: 1.4; color: var(--gold-text); }
+.sec { padding-block: clamp(64px, 8vw, 120px); }
+.sec-head { max-width: 680px; margin-bottom: clamp(32px, 4vw, 56px); }
+.sec-head h2 { font-size: clamp(2rem, 3.2vw, 2.9rem); margin: 14px 0 12px; }
+.sec-head p, .page-head p, .cta2 p { font-size: 16px; color: var(--slate-600); }
+.band { background: var(--surface-subtle); }
+.link { border-bottom-color: var(--gold-700); }
+
+/* ---------- Nút: than là nút chính, viền than là nút phụ ---------- */
+.btn { min-height: 48px; padding: 0 26px; border: 1px solid transparent; font-size: 13px; font-weight: 600; letter-spacing: .06em;
+  transition: background var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out), transform var(--dur-fast) var(--ease-out); }
+.btn:active { transform: scale(.98); }
+.btn-primary, .btn-dark, .btn-bee { background: var(--charcoal-900); border-color: var(--charcoal-900); color: var(--cream-200); }
+.btn-primary:hover, .btn-dark:hover, .btn-bee:hover { background: var(--charcoal-800); border-color: var(--charcoal-800); }
+.btn-secondary { background: transparent; border-color: var(--charcoal-900); color: var(--charcoal-900); }
+.btn-secondary:hover { background: var(--charcoal-900); color: var(--cream-200); }
+.btn-sm { min-height: 38px; padding: 0 18px; font-size: 12px; }
+.btn-lg { min-height: 56px; padding: 0 32px; font-size: 14px; }
+.btn svg { transition: transform var(--dur-base) var(--ease-out); }
+.btn:hover svg { transform: translateX(2px); }
+
+/* ---------- Đầu trang và logo ---------- */
+.site-header { background: rgba(250, 245, 236, .86); backdrop-filter: blur(14px); border-bottom: 1px solid var(--cream-400); }
+.hdr { gap: 24px; }
+.chip { background: var(--beez-yellow); color: var(--charcoal-900); font-weight: 700; font-size: 12px; letter-spacing: .14em; padding: 6px 8px; line-height: 1; border-radius: 3px; }
+.logo { gap: 10px; }
+.logo-t { font-size: 1.5rem; font-weight: 500; line-height: 1; letter-spacing: 0; }
+.nav { gap: 36px; }
+.nav a { font-size: 13px; font-weight: 500; letter-spacing: 0; text-transform: none; color: var(--slate-600); border-bottom: 0; padding: 6px 0;
+  background: linear-gradient(var(--gold-700), var(--gold-700)) 0 100% / 0 1px no-repeat; transition: color var(--dur-fast) var(--ease-out), background-size var(--dur-base) var(--ease-out); }
+.nav a:hover, .nav a[aria-current] { color: var(--charcoal-900); background-size: 100% 1px; }
+.lang { border: 0; border-radius: 0; gap: 6px; align-items: center; }
+.lang button { padding: 0; font-size: 11px; font-weight: 600; letter-spacing: .12em; color: var(--faint-text); background: none; }
+.lang button + button::before { content: '|'; margin-right: 6px; color: var(--faint-text); font-weight: 400; }
+.lang button[aria-pressed="true"] { background: none; color: var(--charcoal-900); }
+.icon-btn { border-color: var(--cream-400); }
+
+/* ---------- Chân trang: một dải than ---------- */
+.site-footer { background: var(--charcoal-900); color: var(--cream-200); padding: 88px 0 48px; margin-top: 0; }
+.site-footer .logo-t { color: var(--cream-200); }
+.site-footer .muted, .site-footer p { color: rgba(250, 245, 236, .78); }
+.ftr { grid-template-columns: 1.4fr 1fr 1fr; gap: 48px; }
+.ftr h4 { font-family: var(--sans); font-size: 11px; letter-spacing: .22em; color: var(--beez-yellow); margin-bottom: 16px; }
+.ftr li { margin: 8px 0; }
+.ftr a { color: rgba(250, 245, 236, .78); border-bottom: 0; }
+.ftr a:hover { color: var(--cream-100); }
+.site-footer .logo { margin-bottom: 20px; }
+.site-footer .ftr > div:first-child p { font-family: var(--serif); font-style: italic; font-size: 1.4rem; line-height: 1.4; max-width: 340px; color: rgba(250, 245, 236, .85); }
+
+/* ---------- Trang chủ: mở đầu bất đối xứng, khung phim 2,39:1 ---------- */
+.hero { padding-block: clamp(40px, 6vw, 80px) clamp(56px, 8vw, 112px); }
+.hero-grid { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: clamp(32px, 5vw, 72px); align-items: center; }
+.hero-copy { display: flex; flex-direction: column; gap: 26px; }
+.hero h1 { font-size: clamp(2rem, 3.4vw, 3.05rem); line-height: 1.2; letter-spacing: -.01em; margin: 0; }
+.hero h1 .ln:last-child { color: var(--gold-700); font-style: italic; }
+.hero p.lead { margin: 0; font-size: 17px; color: var(--slate-600); max-width: 460px; }
+.hero .actions { margin: 6px 0 0; gap: 12px; }
+.hero-media { display: flex; flex-direction: column; gap: 12px; }
+.hero-media .photo { border-radius: var(--radius-xs); min-height: 120px; }
+.hero-media .photo.film { aspect-ratio: 3 / 2; }
+.hero-media .play { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 56px; height: 56px; border-radius: 50%; display: grid; place-items: center; color: var(--charcoal-900); background: rgba(255, 253, 249, .78); backdrop-filter: blur(8px); z-index: 1; }
+.hero-media .play svg { width: 22px; height: 22px; }
+.photo { border-radius: var(--radius-xs); background: var(--img, none) center / cover no-repeat, repeating-linear-gradient(135deg, #efe2cc 0 10px, #f3e8d6 10px 20px); }
+.photo::after { color: rgba(30, 24, 16, .5); font-size: 11px; }
+.photo.has::after { content: none; }
+/* Lớp hạt chỉ cho khung giữ chỗ; ảnh thật để sạch */
+.photo.has::before { content: none; }
+.photo::before { content: ''; position: absolute; inset: 0; opacity: var(--grain-opacity); background-image: radial-gradient(rgba(30, 24, 16, .9) .5px, transparent .6px); background-size: 4px 4px; pointer-events: none; }
+
+/* ---------- Ba lịch quay chụp ---------- */
+.cards3 { gap: 16px; }
+.jcard { background: var(--surface-card); border: 1px solid var(--cream-400); border-radius: var(--radius-m); box-shadow: none; padding: 12px; transition: border-color var(--dur-base) var(--ease-out), background var(--dur-base) var(--ease-out); }
+.jcard:hover { box-shadow: none; transform: none; border-color: var(--cream-500); background: #fff; }
+.jcard .photo { height: 200px; border-radius: var(--radius-xs); }
+.jcard .body { padding: 22px 12px 12px; gap: 12px; }
+.jcard h3 { font-size: 1.9rem; font-weight: 600; }
+.jcard .meta { letter-spacing: .12em; color: var(--gold-text); }
+.jcard .from b { font-size: 2rem; font-weight: 600; }
+.jcard .go { border-top: 1px solid var(--cream-400); }
+
+/* ---------- Bốn điều nhận được và ba điều yên tâm: cột có kẻ than phía trên ---------- */
+.inc-grid, .why { gap: 32px; counter-reset: pillar; }
+.inc, .why .item { counter-increment: pillar; position: relative; display: grid; grid-template-columns: 1fr auto; align-content: start; gap: 16px 12px; background: none; border: 0; border-top: 1px solid var(--charcoal-900); border-radius: 0; padding: 22px 0 0; }
+.inc::before, .why .item::before { content: counter(pillar, decimal-leading-zero); font-family: var(--serif); font-style: italic; font-weight: 500; font-size: 1.4rem; line-height: 1; color: var(--gold-700); }
+.inc .ico, .why .ico { width: auto; height: auto; margin: 0; background: none; border-radius: 0; color: var(--slate-600); justify-self: end; }
+.inc .ico svg, .why .ico svg { width: 22px; height: 22px; }
+.inc h3, .why h3 { grid-column: 1 / -1; font-size: 1.4rem; font-weight: 600; line-height: 1.25; margin: 0; text-wrap: balance; }
+.inc p, .why p { grid-column: 1 / -1; font-size: 14px; line-height: 1.65; color: var(--slate-600); }
+
+/* ---------- Bảng đặt lẻ ---------- */
+.tbl { background: var(--surface-card); border: 1px solid var(--cream-400); border-radius: var(--radius-m); }
+.tbl thead th { background: var(--surface-subtle); letter-spacing: .12em; color: var(--slate-600); }
+.tbl th, .tbl td { border-bottom: 1px solid var(--cream-400); }
+.tbl td.pr { font-weight: 600; }
+.tbl .combo-row td { background: var(--accent-tint); font-weight: 600; }
+.tbl .combo-row td.pr { color: var(--charcoal-900); }
+.nudge, .nudge-card { background: var(--accent-tint); border: 1px solid rgba(138, 106, 0, .35); border-left-width: 1px; border-radius: var(--radius-m); }
+
+/* ---------- Founder: lưới 5/7, ảnh dọc 4:5 ---------- */
+.founder { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: clamp(32px, 6vw, 72px); background: none; border: 0; border-radius: 0; padding: 0; margin-top: clamp(56px, 8vw, 104px); }
+.founder .photo { height: auto; aspect-ratio: 4 / 5; }
+.founder h3 { font-size: clamp(2rem, 3.4vw, 3rem); font-style: italic; font-weight: 500; margin: 14px 0 16px; }
+.founder p { font-size: 15px; color: var(--slate-600); max-width: 520px; }
+.founder .stat { margin: 28px 0 24px; padding-top: 24px; border-top: 1px solid var(--cream-400); align-items: baseline; }
+.founder .stat b { font-size: 2.75rem; font-weight: 500; color: var(--charcoal-900); line-height: 1; }
+
+/* ---------- Câu hỏi thường gặp: dạng accordion kẻ ngang, nút cộng tròn ---------- */
+.faq { display: block; max-width: 820px; border-top: 1px solid var(--cream-500); }
+.faq details { background: none; border: 0; border-bottom: 1px solid var(--cream-500); border-radius: 0; }
+.faq summary { padding: 24px 0; gap: 24px; font-family: var(--serif); font-size: 1.4rem; font-weight: 500; line-height: 1.3; }
+.faq summary > span:last-child { position: relative; flex: none; width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--cream-500); display: block;
+  transition: background var(--dur-base) var(--ease-out), border-color var(--dur-base) var(--ease-out); }
+.faq summary > span:last-child svg { display: none; }
+.faq summary > span:last-child::before, .faq summary > span:last-child::after { content: ''; position: absolute; left: 50%; top: 50%; width: 14px; height: 1.5px; background: var(--charcoal-900); transform: translate(-50%, -50%); transition: transform var(--dur-base) var(--ease-out), background var(--dur-base) var(--ease-out); }
+.faq summary > span:last-child::after { transform: translate(-50%, -50%) rotate(90deg); }
+.faq details[open] summary > span:last-child { background: var(--charcoal-900); border-color: var(--charcoal-900); }
+.faq details[open] summary > span:last-child::before, .faq details[open] summary > span:last-child::after { background: var(--cream-200); }
+.faq details[open] summary > span:last-child::after { transform: translate(-50%, -50%) rotate(0deg); }
+.faq .ans { padding: 0 60px 26px 0; font-size: 15px; line-height: 1.75; color: var(--slate-600); max-width: 720px; }
+
+/* ---------- Trang báo giá: tiêu đề, thanh bước, bước ---------- */
+.page-head { padding-top: clamp(32px, 4vw, 56px); padding-bottom: 8px; }
+.page-head h1 { font-size: clamp(2.2rem, 4vw, 3.4rem); margin: 14px 0 10px; }
+.stepper { background: rgba(250, 245, 236, .86); backdrop-filter: blur(14px); border-bottom: 1px solid var(--cream-400); top: var(--header-h); }
+.stepper a { font-size: 12px; font-weight: 600; letter-spacing: .1em; color: var(--slate-600); border-bottom: 1px solid transparent; transition: color var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out); }
+.stepper a .n { width: auto; height: auto; border: 0; background: none; font-family: var(--serif); font-style: italic; font-weight: 500; font-size: 1.2rem; line-height: 1; color: var(--gold-700); }
+.stepper a.on { color: var(--charcoal-900); border-color: var(--charcoal-900); }
+.stepper a.on .n { background: none; color: var(--gold-700); }
+
+.builder { gap: clamp(32px, 4vw, 48px); grid-template-columns: minmax(0, 1fr) 340px; }
+.step { margin-bottom: 56px; }
+.step > h2 { align-items: baseline; gap: 16px; font-size: 1.75rem; font-weight: 600; line-height: 1.25; margin-bottom: 2px; }
+.step > h2 .no { min-width: 32px; font-style: italic; font-weight: 500; font-size: 1.75rem; line-height: 1; color: var(--gold-700); }
+.step > .sub { margin: 0 0 22px; padding: 0 0 14px 48px; font-size: 13px; line-height: 1.5; color: var(--slate-600); border-bottom: 1px solid var(--cream-400); }
+.step#s4 > h2 { padding-bottom: 14px; margin-bottom: 22px; border-bottom: 1px solid var(--cream-400); }
+
+/* ---------- Chọn lịch quay chụp: thẻ chọn một, chấm tròn bên trái ---------- */
+.opts { gap: 12px; }
+.opt { background: transparent; border: 1px solid var(--cream-400); border-radius: var(--radius-m); padding: 22px 52px 22px 22px; gap: 6px;
+  transition: border-color var(--dur-fast) var(--ease-out), background var(--dur-fast) var(--ease-out), box-shadow var(--dur-base) var(--ease-out); }
+.opt:hover { background: var(--surface-card); border-color: var(--cream-500); }
+.opt .t { font-size: 1.35rem; font-weight: 600; line-height: 1.25; }
+.opt .tick { top: 22px; right: 20px; left: auto; width: 18px; height: 18px; border: 1px solid var(--cream-500); background: none; color: transparent; }
+.opt .tick svg { display: none; }
+.opt .tick::after { content: ''; width: 8px; height: 8px; border-radius: 50%; background: var(--charcoal-900); transform: scale(0); transition: transform var(--dur-fast) var(--ease-out); }
+.opt.on { border: 1px solid var(--charcoal-900); padding: 22px 52px 22px 22px; background: var(--surface-card); box-shadow: var(--shadow-soft); }
+.opt.on .tick { background: none; border-color: var(--charcoal-900); }
+.opt.on .tick::after { transform: scale(1); }
+.opt .f b { font-weight: 600; }
+
+/* Chọn buổi, chọn ngày: ô nhỏ, đã chọn là nền vàng nhạt viền vàng */
+.seg span { border: 1px solid var(--cream-400); border-radius: var(--radius-m); background: transparent; font-weight: 500; transition: background var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out); }
+.seg label:hover span { background: var(--surface-card); border-color: var(--cream-500); }
+.seg input:checked + span { background: var(--accent-tint); border-color: var(--gold-700); color: var(--charcoal-900); font-weight: 600; }
+.seg .off10 { background: var(--beez-yellow); color: var(--charcoal-900); }
+
+/* ---------- Thẻ combo ---------- */
+.combos { gap: 12px; }
+.combo { background: transparent; border: 1px solid var(--cream-400); border-radius: var(--radius-m); padding: 30px 24px 24px;
+  transition: border-color var(--dur-fast) var(--ease-out), background var(--dur-fast) var(--ease-out), box-shadow var(--dur-base) var(--ease-out); }
+.combo:hover { background: var(--surface-card); border-color: var(--cream-500); }
+.combo.on { background: var(--surface-card); border: 1px solid var(--charcoal-900); padding: 30px 24px 24px; box-shadow: var(--shadow-soft); }
+.combo .badge { background: var(--beez-yellow); color: var(--charcoal-900); font-weight: 600; letter-spacing: .06em; }
+.combo h3 { font-size: 1.9rem; font-weight: 600; }
+.combo .tag { font-size: 12.5px; font-weight: 500; letter-spacing: .02em; color: var(--gold-text); }
+.combo .ppl { margin-top: 8px; }
+.combo .price { font-weight: 600; letter-spacing: 0; line-height: 1.2; }
+.combo .was s { color: var(--faint-text); }
+.pill { background: var(--accent-tint); color: var(--gold-700); font-weight: 600; font-size: 11.5px; letter-spacing: .02em; padding: 5px 11px; line-height: 1.2; }
+.combo ul { border-top: 1px solid var(--cream-400); }
+.combo li svg { color: var(--gold-700); }
+.combo .ask svg { color: var(--gold-700); }
+.more, .terms { background: var(--surface-card); border: 1px solid var(--cream-400); border-radius: var(--radius-m); }
+
+/* Dải mời thêm Founder: nền vàng nhạt, viền vàng mảnh, không có viền trái nhấn */
+.founder-band { background: var(--accent-tint); border: 1px solid rgba(138, 106, 0, .35); border-left: 1px solid rgba(138, 106, 0, .35); border-radius: var(--radius-m); }
+.founder-band.on { background: var(--accent-tint); border-color: var(--gold-700); }
+.founder-band .fb-title { font-weight: 600; }
+.founder-band .fb-price { color: var(--charcoal-900); }
+
+/* ---------- Dịch vụ thêm: biểu tượng tròn, ô vuông nhỏ bên phải ---------- */
+.xrows { gap: 12px; }
+.xrow { grid-template-columns: 40px minmax(0, 1fr) auto 20px; align-items: center; gap: 16px; background: transparent; border: 1px solid var(--cream-400); border-radius: var(--radius-m); padding: 16px 18px;
+  transition: background var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out); }
+.xrow:hover { background: var(--surface-card); }
+.xrow .ico40 { order: 1; flex: none; width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; background: var(--surface-subtle); color: var(--gold-700); }
+.xrow .ico40 svg { width: 18px; height: 18px; }
+.xrow > span:not(.box):not(.ico40):not(.pp) { order: 2; }
+.xrow .pp { order: 3; font-weight: 600; font-size: 1.2rem; color: var(--charcoal-900); }
+.xrow .box { order: 4; width: 20px; height: 20px; margin: 0; border-radius: 4px; border: 1px solid var(--cream-500); }
+.xrow .tt { font-weight: 600; font-size: 14px; }
+.xrow .dd { font-size: 12.5px; line-height: 1.55; color: var(--slate-600); }
+.xrow.on { background: var(--accent-tint); border-color: var(--gold-700); }
+.xrow.on .ico40 { background: var(--surface-card); }
+.xrow.on .pp { color: var(--gold-700); }
+.xrow.on .box { background: var(--gold-700); border-color: var(--gold-700); color: var(--cream-100); }
+.xrow.sub { grid-template-columns: minmax(0, 1fr) auto 20px; }
+.xrow.sub .ico40 { display: none; }
+.xrow .pp s { color: var(--faint-text); }
+.xsub { background: var(--surface-subtle); border: 1px solid var(--cream-400); border-radius: var(--radius-m); }
+.where .note { background: var(--surface-subtle); border-radius: var(--radius-m); }
+.where h3 { font-weight: 600; font-size: 1.6rem; }
+
+/* ---------- Ước tính chi tiết ---------- */
+.receipt { background: var(--surface-card); border: 1px solid var(--cream-400); border-radius: var(--radius-m); padding: 28px; }
+.rl { border-bottom: 1px solid var(--cream-400); padding: 16px 0; }
+.rl .r { font-weight: 600; color: var(--charcoal-900); }
+.rtotal { margin-top: 4px; padding-top: 20px; border-top: 1px solid var(--charcoal-900); }
+.rtotal .l { font-size: 13px; font-weight: 500; letter-spacing: 0; text-transform: none; color: var(--slate-600); }
+.rtotal .r { font-size: 2.75rem; font-weight: 600; color: var(--charcoal-900); }
+.warn { color: var(--gold-text); }
+.estimate-extra .note { background: var(--surface-subtle); border-radius: var(--radius-m); }
+
+/* ---------- Form ---------- */
+.form { background: var(--surface-card); border: 1px solid var(--cream-400); border-radius: var(--radius-m); padding: 28px; }
+.field label { letter-spacing: .1em; color: var(--slate-600); }
+.field input, .field textarea { border: 1px solid var(--cream-400); border-radius: var(--radius-s); background: var(--surface-card); transition: border-color var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out); }
+.field input:hover, .field textarea:hover { border-color: var(--cream-500); }
+.field input:focus, .field textarea:focus { border-color: var(--gold-700); box-shadow: var(--shadow-focus); }
+
+/* ---------- Khung tóm tắt: thẻ nổi duy nhất, không viền ---------- */
+.summary { border: 0; border-radius: var(--radius-l); box-shadow: var(--shadow-lift); padding: 32px; background: var(--surface-card); }
+.summary h2 { font-size: 1.6rem; font-weight: 600; margin-bottom: 10px; }
+.sline { border-bottom: 1px solid var(--cream-400); }
+.stotal { margin-top: 18px; padding: 20px 0 8px; border-top: 1px solid var(--charcoal-900); }
+.stotal .l { font-size: 13px; font-weight: 500; letter-spacing: 0; text-transform: none; color: var(--slate-600); }
+.stotal .r { font-size: 2.75rem; font-weight: 600; color: var(--charcoal-900); line-height: 1.1; margin-bottom: 14px; }
+.summary .help { border-top: 1px solid var(--cream-400); }
+.summary .help a { border-bottom-color: var(--gold-700); }
+
+/* ---------- Thanh tổng tiền trên điện thoại ---------- */
+.bar .r { color: var(--charcoal-900); font-weight: 600; }
+
+/* ---------- Hộp thoại và trang xác nhận ---------- */
+.modal { background: var(--overlay-scrim); backdrop-filter: blur(4px); }
+.dialog { border: 0; border-radius: var(--radius-l); box-shadow: var(--shadow-lift); }
+.confirm .ok { background: var(--accent-tint); color: var(--gold-700); }
+
+/* ---------- Màn hình hẹp ---------- */
+@media (max-width: 900px) {
+  .hero-grid, .founder { grid-template-columns: 1fr; }
+  .hero-media { order: 2; }
+}
+@media (max-width: 720px) {
+  .stepper a { letter-spacing: .02em; }
+  .stepper a .n { font-size: 1rem; }
+  .step > .sub { padding-left: 0; }
+  .xrow { grid-template-columns: 40px minmax(0, 1fr) 20px; }
+  .xrow .pp { grid-column: 2 / 3; grid-row: 2; order: 5; text-align: left; }
+  .xrow .box { grid-column: 3; grid-row: 1; }
+  .xrow .ico40 { grid-column: 1; grid-row: 1; }
+  .hero h1 { font-size: clamp(2rem, 8vw, 2.6rem); }
+}
+@media (max-width: 1259px) { .builder { grid-template-columns: 1fr; } }
+
+.xsub .seg { flex-wrap: wrap; }
+.xsub .seg span { white-space: nowrap; }
+
+/* =====================================================================
+ * Bản 2 (bản lai): giữ nền Design, thêm những điểm khách mô phỏng khen ở bản Gốc.
+ * Chỉ đụng giao diện máy tính. Điện thoại và lỗi nhỏ để sau.
+ * ===================================================================== */
+
+/* 1. Trạng thái "đã chọn" phải nhìn ra ngay */
+.opt.on { border: 1px solid var(--charcoal-900); box-shadow: inset 0 0 0 1px var(--charcoal-900), var(--shadow-soft); background: #fff; }
+.opt.on .tick { border-color: var(--charcoal-900); background: var(--charcoal-900); }
+.opt.on .tick::after { background: var(--cream-100); }
+.combo.on { border: 1px solid var(--charcoal-900); box-shadow: inset 0 0 0 1px var(--charcoal-900), var(--shadow-lift); background: #fff; }
+.combo.on::after { content: ''; position: absolute; top: 14px; right: 14px; width: 24px; height: 24px; border-radius: 50%; background: var(--charcoal-900) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M6 12.5l4 4 8-9' fill='none' stroke='%23fffdf9' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / 14px no-repeat; }
+.seg input:checked + span { background: var(--gold-700); border-color: var(--gold-700); color: var(--cream-100); font-weight: 600; }
+.seg input:checked + span .off10 { background: var(--beez-yellow); color: var(--charcoal-900); }
+.xrow.on { border-width: 1px; box-shadow: inset 0 0 0 1px var(--gold-700); }
+.founder-band.on { box-shadow: inset 0 0 0 1px var(--gold-700); }
+
+/* 2. Thanh bước: vòng số tô vàng ở bước đang xem */
+.stepper a.on { border-bottom: 2px solid var(--charcoal-900); }
+.stepper a .n { display: inline-flex; align-items: center; justify-content: center; min-width: 28px; height: 28px; border-radius: 50%; border: 1px solid transparent; transition: background var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out); }
+.stepper a.on .n { background: var(--gold-700); color: var(--cream-100); font-style: normal; font-family: var(--sans); font-size: 12px; font-weight: 600; letter-spacing: 0; }
+
+/* 3. Chữ phụ đậm và lớn hơn một nấc để dễ đọc */
+:root { --slate-600: #5a4d41; --muted: #5a4d41; --text-secondary: #5a4d41; }
+.small, .opt .d, .opt .f, .xrow .dd, .rl .l small, .sline, .sline .sub, .combo .ppl, .step > .sub, .where .note, .estimate-extra .note, .field .err, .rnote, .priv, .form .priv, .rl .r small { font-size: 13.5px; }
+.combo ul, .combo .was, .combo .tag { font-size: 13.5px; }
+.sec-head p, .page-head p, .cta2 p, .lead { color: var(--slate-600); }
+body { font-weight: 400; }
+.opt .d, .xrow .dd, .combo ul, .inc p, .why p, .jcard p { font-weight: 500; color: var(--slate-600); }
+
+/* 4. Ô ảnh chưa có ảnh thật: không lộ tên file, không có nút play giả */
+.photo:not(.has)::after { content: none; }
+.hero-media .play { display: none; }
+.hero-media .film.has .play { display: grid; }
+
+/* =====================================================================
+ * Bản 2, vòng sửa theo ghi chú của Hằng (30/10/2026)
+ *  - Màu chủ đạo tươi tắn, lãng mạn thay cho màu than ở nút và trạng thái đã chọn.
+ *  - Chữ trong thẻ lịch chảy liền như bản Gốc; dịch vụ thêm có ô tích bên trái, không biểu tượng, giá đậm.
+ *  - Giá ba thẻ combo thẳng hàng; chân trang bỏ thông tin công ty; đầu trang đặc hơn; khung ảnh căn đỉnh.
+ * Đổi một dòng --action bên dưới là đổi cả màu chủ đạo.
+ * ===================================================================== */
+:root { --action: #fcd125; --action-ink: #1e1810; --action-dark: #e9bb0c; --action-edge: #c9a000; --action-tint: #fff4c2; --action-line: #ecd56a; }
+
+/* Nút: vàng Bee Z, chữ nâu đen đậm */
+.btn-primary, .btn-dark, .btn-bee { background: var(--action); border-color: var(--action-edge); color: var(--action-ink); }
+.btn-primary:hover, .btn-dark:hover, .btn-bee:hover { background: var(--action-dark); border-color: var(--action-edge); }
+.btn-secondary { border-color: var(--action-edge); color: var(--action-ink); }
+.btn-secondary:hover { background: var(--action); color: var(--action-ink); }
+.copy-btn, .bar .btn-primary { background: var(--action); }
+
+/* Trạng thái đã chọn cùng một tông */
+.opt.on { border-color: var(--action-edge); box-shadow: inset 0 0 0 1px var(--action-edge), var(--shadow-soft); background: #fff; }
+.opt.on .tick { border-color: var(--action-edge); background: var(--action); }
+.opt .tick::after, .opt.on .tick::after { background: var(--action-ink); }
+.combo.on { border-color: var(--action-edge); box-shadow: inset 0 0 0 1px var(--action-edge), var(--shadow-lift); background: #fff; }
+.combo.on::after { background-color: var(--action); border: 1px solid var(--action-edge); }
+.seg input:checked + span { background: var(--action); border-color: var(--action-edge); color: var(--action-ink); }
+.seg label:hover span { border-color: var(--action-line); background: var(--action-tint); }
+.xrow.on { background: var(--action-tint); border-color: var(--action-edge); box-shadow: inset 0 0 0 1px var(--action-edge); }
+.xrow.on .box { background: var(--action); border-color: var(--action-edge); color: var(--action-ink); }
+.xrow.on .pp { color: var(--charcoal-900); }
+.founder-band { background: var(--action-tint); border-color: var(--action-line); }
+.founder-band.on { border-color: var(--action-edge); box-shadow: inset 0 0 0 1px var(--action-edge); }
+.stepper a.on { border-bottom-color: var(--action-edge); }
+.stepper a.on .n { background: var(--action); color: var(--action-ink); border: 1px solid var(--action-edge); }
+.opt:hover, .combo:hover { border-color: var(--action-line); }
+.nudge, .nudge-card { background: var(--action-tint); border-color: var(--action-line); }
+.tbl .combo-row td { background: var(--action-tint); }
+.pill { background: var(--action-tint); color: #6b5200; }
+.rtotal, .stotal { border-top-color: var(--action-edge); }
+
+/* Bước 1: mô tả chảy liền cả bề rộng thẻ (chấm chọn chỉ chiếm hàng tên) */
+.opt, .opt.on { padding: 22px; }
+.opt .t { padding-right: 30px; }
+.opt .tick { top: 22px; right: 20px; }
+
+/* Bước 3: ô tích bên trái, bỏ biểu tượng tròn, giá đậm, chữ gọn như bản Gốc */
+.xrow { grid-template-columns: 26px minmax(0, 1fr) auto; align-items: start; gap: 14px; }
+.xrow .ico40 { display: none; }
+.xrow .box { order: 0; width: 22px; height: 22px; margin-top: 2px; border-radius: 6px; border: 1.5px solid #b9a88e; }
+.xrow > span:not(.box):not(.ico40):not(.pp) { order: 0; }
+.xrow .pp { order: 0; font-weight: 700; color: var(--charcoal-900); }
+.xrow.sub { grid-template-columns: 26px minmax(0, 1fr) auto; }
+.xrow .tt { font-size: 14.5px; }
+
+/* Bước 2: giá, "Đặt lẻ", nút của ba thẻ combo cùng hàng (khối tiêu ngữ luôn cao bằng 3 dòng) */
+.combos { align-items: stretch; }
+.combo { padding: 26px 22px 22px; }
+.combo .tag { min-height: 4.8em; }
+.combo ul { margin: 14px 0 16px; }
+.combo .btn { margin-top: auto; }
+.combo .ask { margin-top: 10px; }
+.xrow .box { border-color: #b9a88e; }
+
+/* Chân trang chỉ còn liên hệ */
+.ftr { grid-template-columns: 1.4fr 1fr; }
+.ftr a { white-space: nowrap; }
+
+/* Đầu trang đặc hơn để không lờ mờ nội dung phía sau */
+.site-header, .stepper { background: rgba(250, 245, 236, .96); }
+
+/* Trang chủ: khung ảnh căn đỉnh với dòng đề mục */
+.hero-grid { align-items: start; }
+.hero-copy { padding-top: 8px; }
+
+/* Mục địa điểm có nhãn bước riêng */
+.where .kicker { margin-bottom: 6px; }
+
+/* Phông tiêu đề và giá: EB Garamond (như bản Gốc) thay cho Cormorant Garamond, vì Cormorant quá mảnh nên khó đọc ở cỡ vừa và nhỏ.
+   Muốn quay lại Cormorant: đổi hai dòng dưới và dòng link phông trong 3 file HTML. */
+:root { --font-serif: "EB Garamond", Georgia, "Times New Roman", serif; --serif: "EB Garamond", Georgia, "Times New Roman", serif; }
+h1, h2, h3, h4 { font-weight: 500; }
+.step > h2, .jcard h3, .combo h3, .opt .t, .inc h3, .why h3, .faq summary { font-weight: 600; }
+.combo .price, .jcard .from b, .rl .r, .xrow .pp, .rtotal .r, .stotal .r { font-weight: 600; }
+
+/* =====================================================================
+ * Vòng sửa 3: màu nâu champagne như bản Gốc, chữ nhỏ và nhẹ hơn cho sang
+ * ===================================================================== */
+:root { --action: #8a6a00; --action-ink: #ffffff; --action-dark: #755900; --action-edge: #755900; --action-tint: #f7edc9; --action-line: #d9c27a; }
+.btn-secondary { color: var(--action-edge); }
+.btn-secondary:hover { color: #fff; }
+.pill { color: #6b5200; }
+
+/* Cỡ chữ: nhỏ lại khoảng 10%, nét serif nhẹ hơn */
+body { font-weight: 400; }
+.btn { font-size: 12.5px; letter-spacing: .06em; }
+.btn-lg { font-size: 13px; }
+.hero h1 { font-size: clamp(1.9rem, 3vw, 2.7rem); }
+.hero p.lead { font-size: 16px; }
+.sec-head h2 { font-size: clamp(1.8rem, 2.8vw, 2.5rem); }
+.page-head h1 { font-size: clamp(2rem, 3.4vw, 2.9rem); }
+.step > h2, .step > h2 .no { font-size: 1.5rem; }
+.step > h2 { font-weight: 500; }
+.step > .sub { font-size: 13px; }
+.jcard h3 { font-size: 1.65rem; font-weight: 500; }
+.jcard .from b { font-size: 1.7rem; font-weight: 500; }
+.combo h3 { font-size: 1.65rem; font-weight: 500; }
+.combo .price { font-size: 1.7rem; font-weight: 500; }
+.combo .tag, .combo .ppl, .combo .was, .combo ul { font-size: 13px; }
+.opt .t { font-size: 1.3rem; font-weight: 500; }
+.opt .d, .opt .f { font-size: 13px; font-weight: 400; }
+.xrow .tt { font-size: 14px; }
+.xrow .dd { font-size: 13px; font-weight: 400; }
+.xrow .pp { font-size: 1.1rem; }
+.opt .d, .xrow .dd, .combo ul, .inc p, .why p, .jcard p { font-weight: 400; }
+.small, .sline, .sline .sub, .rl .l small, .where .note, .estimate-extra .note, .rnote, .rl .r small, .step > .sub { font-size: 13px; }
+.rl .r { font-size: 1.1rem; font-weight: 500; }
+.rtotal .r, .stotal .r { font-size: 2.3rem; font-weight: 500; }
+.summary h2 { font-size: 1.4rem; font-weight: 500; }
+.inc h3, .why h3 { font-size: 1.25rem; font-weight: 500; }
+.faq summary { font-size: 1.2rem; font-weight: 500; }
+.founder h3 { font-size: clamp(1.8rem, 2.8vw, 2.5rem); }
+.founder .stat b { font-size: 2.3rem; }
+.logo-t { font-size: 1.35rem; }
+
+/* =====================================================================
+ * Vòng sửa 4: bớt đường kẻ ngang, dấu tích tròn, giá lớn hơn, chữ phụ đọc rõ hơn
+ * ===================================================================== */
+/* Bỏ các đường kẻ ngang mảnh; chỉ giữ vạch đậm phía trên tổng tiền */
+.step > .sub { border-bottom: 0; padding-bottom: 0; margin-bottom: 20px; }
+.step#s4 > h2 { border-bottom: 0; padding-bottom: 0; margin-bottom: 16px; }
+.sline, .sline:last-of-type { border-bottom: 0; }
+.summary .help { border-top: 0; }
+.rl:has(+ .rtotal) { border-bottom: 0; }
+.rtotal, .stotal { border-top: 2px solid var(--action-edge); }
+
+/* Dấu chọn dạng vòng tròn có dấu tích (như thẻ combo) cũng dùng cho thẻ lịch quay chụp */
+.opt .tick { width: 22px; height: 22px; top: 20px; right: 18px; }
+.opt.on .tick { background: var(--action); border-color: var(--action-edge); }
+.opt.on .tick::after { width: 12px; height: 12px; border-radius: 0; transform: none; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7' fill='none' stroke='%23ffffff' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / contain no-repeat; }
+.opt .tick::after { transform: scale(0); }
+.opt.on .tick::after { transform: scale(1); }
+
+/* Giá lớn hơn một chút */
+.xrow .pp { font-size: 1.35rem; font-weight: 600; }
+.xrow .pp small, .xrow .pp s { font-size: 12px; }
+.rl .r { font-size: 1.25rem; }
+.sline .amt { font-size: 14.5px; }
+
+/* Chữ phụ nét vừa, màu đậm hơn để đọc rõ */
+.estimate-extra .note, .where .note, .step > .sub, .rl .l small, .sline .sub, .rnote, .xrow .dd, .opt .d, .small, .combo ul, .combo .ppl, .combo .was, .inc p, .why p, .jcard p, .sec-head p, .lead, .priv, .form .priv, .field label, .rl .r small, .xrow .pp small { font-weight: 500; }
+.estimate-extra .note, .where .note, .step > .sub, .rl .l small, .sline .sub, .rnote, .xrow .dd, .opt .d { color: #4a3f34; }
+.estimate-extra .note, .where .note { font-size: 14px; }
+
+/* Thẻ lịch quay chụp: tên và giá lớn hơn 1–2 cỡ */
+.opt .t { font-size: 1.65rem; line-height: 1.2; }
+.opt .f b { font-size: 1.65rem; font-weight: 600; }
+.opt .f { font-size: 13px; }
+.opt .tick { top: 24px; }
+.opt .t { padding-right: 34px; }
+
+/* Thẻ lịch quay chụp: tên bằng tên combo bên dưới, giá nhỏ hơn giá combo */
+.opt .t, .combo h3 { font-size: 1.6rem; font-weight: 500; }
+.opt .f b { font-size: 1.35rem; font-weight: 600; }
+.combo .price { font-size: 1.7rem; }
+
+/* Khung "Gói của bạn": đường kẻ ngang mảnh dưới mỗi dòng, giống ảnh Hằng gửi (kể cả dưới dòng Công tác phí), vạch đậm của tổng tiền nằm bên dưới */
+.sline, .sline:last-of-type { border-bottom: 1px solid var(--cream-400); }
+.stotal { margin-top: 18px; }
+
+/* Vòng sửa 5: tên thẻ nhỏ lại một nấc (thẻ lịch và tên combo cùng cỡ); mọi đường kẻ ngang đều mảnh như nhau, không còn vạch đậm */
+.opt .t, .combo h3 { font-size: 1.45rem; }
+.sline, .sline:last-of-type { border-bottom: 1px solid var(--cream-400); }
+.stotal { margin-top: 0; border-top: 0; padding-top: 20px; }
+.rl:has(+ .rtotal) { border-bottom: 1px solid var(--cream-400); }
+.rtotal { margin-top: 0; border-top: 0; padding-top: 20px; }
+
+/* Vòng sửa 6 */
+/* Chỉ một buổi: hai nút Ăn hỏi / Tiệc cưới nằm ngay dưới thẻ "Chỉ một buổi", cùng mép trái với thẻ */
+.variant-row { margin-top: 12px; margin-left: calc((100% - 24px) / 3 * 2 + 24px); }
+.variant-row .seg { flex-direction: column; align-items: flex-start; flex-wrap: nowrap; }
+@media (max-width: 1259px) { .variant-row { margin-left: calc((100% - 24px) / 3 * 2 + 24px); } }
+@media (max-width: 720px) { .variant-row { margin-left: 0; } }
+
+/* Nâu champagne sáng hơn một chút để nút và ô đã chọn không bị chìm */
+:root { --gold-text: #7a5c00; --faint-text: #6F6154; --action: #94730a; --action-dark: #7d5f06; --action-edge: #7d5f06; }
+
+/* Thẻ combo: khối tiêu ngữ chỉ chừa chỗ khi cần (3 thẻ: 2 dòng; 2 thẻ: không chừa) */
+.combo .tag { min-height: 3.3em; }
+.combos.two .combo .tag { min-height: 0; }
+
+/* Tạm tính: số tiền thẳng hàng bên phải với các số tiền phía trên */
+.stotal { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.stotal .l { font-size: 13px; }
+.stotal .r { margin-bottom: 14px; text-align: right; margin-left: auto; }
+.summary .btn { margin-top: 4px; }
+
+/* Vòng sửa 7 */
+/* Chỉ một buổi: hai nút cùng một dòng, căn phải theo mép thẻ "Chỉ một buổi" (dịch sang trái từ mép đó) */
+.variant-row, .variant-row { margin-left: 0; }
+.variant-row { display: flex; justify-content: flex-end; }
+.variant-row .seg { flex-direction: row; flex-wrap: nowrap; align-items: center; }
+@media (max-width: 720px) { .variant-row { justify-content: flex-start; } .variant-row .seg { flex-wrap: wrap; } }
+
+/* Các nút chọn trong khối tuỳ chọn: những nút không có thẻ -10% cùng độ dài */
+.xsub .seg { flex-wrap: wrap; }
+.xsub .seg label:not(:has(.off10)) { flex: 0 0 216px; }
+.xsub .seg label:not(:has(.off10)) span { width: 100%; justify-content: center; padding: 0 12px; }
+.xsub .seg span { font-size: 13px; }
+
+/* Mô tả dịch vụ thêm: mỗi câu một dòng đã có sẵn; chữ viết hoa đầu dòng */
+
+/* Bảng Ước tính: giá và thẻ tiết kiệm lớn hơn một chút nhưng vẫn nhỏ hơn tên mục */
+.rl .l b { font-size: 16.5px; }
+.rl .r { font-size: 1.3rem; }
+.rl .pill { font-size: 12.5px; padding: 5px 12px; }
+.rl .l small { font-size: 13.5px; }
+
+/* Số trên thanh bước: tất cả đều chữ nghiêng, kể cả bước đang xem */
+.stepper a.on .n { font-family: var(--serif); font-style: italic; font-weight: 500; font-size: 1.1rem; letter-spacing: 0; }
+.stepper a .n { font-size: 1.1rem; }
+
+/* Vòng sửa 8: chân trang sáng (kem cát) thay cho dải than; tiêu đề tiếng Anh chia vế như tiếng Việt */
+.site-footer { background: var(--cream-300); color: var(--charcoal-900); border-top: 1px solid var(--cream-400); padding: 64px 0 48px; }
+.site-footer .logo-t { color: var(--charcoal-900); }
+.site-footer .muted, .site-footer p { color: var(--slate-600); }
+.site-footer .ftr > div:first-child p { color: #4a3f34; }
+.ftr h4 { color: var(--gold-text); }
+.ftr a { color: var(--charcoal-900); }
+.ftr a:hover { color: var(--action-edge); }
+.hero h1 .ln { text-wrap: balance; }
+
+/* =====================================================================
+ * Trang chủ: hai khối thiết kế lại theo lựa chọn của Hằng
+ *  - "Sản phẩm bạn nhận về": hướng C (con số nổi bật)
+ *  - "Ba điều giúp bạn yên tâm": hướng B (dải màu cát, dấu tích tròn)
+ * ===================================================================== */
+.figs { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-top: 2px solid var(--charcoal-900); border-bottom: 1px solid var(--cream-400); }
+.fig { padding: 28px 24px 30px; display: grid; gap: 10px; align-content: start; border-left: 1px solid var(--cream-400); }
+.fig:first-child { border-left: 0; padding-left: 0; }
+.fig .cap { font: 700 12px/1.5 var(--sans); letter-spacing: .1em; text-transform: uppercase; color: #7a5c00; }
+.fig .big { font-family: var(--serif); font-size: clamp(2.6rem, 4.6vw, 3.6rem); font-weight: 500; line-height: 1; color: var(--charcoal-900); }
+.fig .big i { color: var(--action); font-style: italic; }
+.fig .d { font-size: 14.5px; line-height: 1.7; color: #4a3f34; font-weight: 500; }
+.promise-band { background: var(--cream-300); border-radius: var(--radius-m); padding: clamp(28px, 4vw, 48px); display: grid; gap: 28px; }
+.promise-band .sec-head { margin: 0; }
+.promises { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 28px; }
+.promise { display: grid; grid-template-columns: 40px minmax(0, 1fr); gap: 6px 14px; align-items: start; }
+.promise .tick { width: 40px; height: 40px; border-radius: 50%; background: var(--action); color: #fff; display: grid; place-items: center; grid-row: span 2; }
+.promise .tick svg { width: 20px; height: 20px; }
+.promise h3 { font-size: 1.3rem; font-weight: 500; line-height: 1.25; }
+.promise p { font-size: 14.5px; line-height: 1.7; color: #4a3f34; font-weight: 500; }
+.founder { margin-top: clamp(40px, 6vw, 72px); }
+@media (max-width: 900px) {
+  .figs { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .fig { border-left: 0; padding-left: 0; border-top: 1px solid var(--cream-400); }
+  .fig:nth-child(-n+2) { border-top: 0; }
+  .promises { grid-template-columns: 1fr; }
+}
+@media (max-width: 520px) { .figs { grid-template-columns: 1fr; } .fig:nth-child(2) { border-top: 1px solid var(--cream-400); } }
+
+/* Bốn điều giúp bạn yên tâm: lưới 2 x 2 */
+.promises { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px 40px; }
+
+/* Câu hỏi thường gặp: ba cột chủ đề, 9 câu, thấy hết không cần chuyển */
+.faq3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; align-items: start; }
+.fcol { display: grid; gap: 10px; align-content: start; }
+.fch { display: grid; grid-template-columns: 40px minmax(0, 1fr); gap: 12px; align-items: center; padding: 0 4px 12px; border-bottom: 2px solid var(--charcoal-900); margin-bottom: 4px; }
+.fico { width: 40px; height: 40px; border-radius: 50%; background: var(--action-tint); color: var(--action-edge); display: grid; place-items: center; }
+.fico svg { width: 20px; height: 20px; }
+.fch b { font: 500 1.4rem/1.2 var(--serif); }
+.faq3 details { background: var(--cream-100); border: 1px solid var(--cream-400); border-radius: var(--radius-m); }
+.faq3 summary { list-style: none; cursor: pointer; padding: 16px 18px; display: flex; justify-content: space-between; gap: 12px; align-items: center; font: 600 14.5px/1.45 var(--sans); }
+.faq3 summary::-webkit-details-marker { display: none; }
+.faq3 summary i { flex: none; width: 28px; height: 28px; border-radius: 50%; border: 1.5px solid var(--cream-500); position: relative; transition: background var(--dur-base) var(--ease-out); }
+.faq3 summary i::before, .faq3 summary i::after { content: ''; position: absolute; left: 50%; top: 50%; width: 11px; height: 1.8px; background: var(--charcoal-900); transform: translate(-50%, -50%); }
+.faq3 summary i::after { transform: translate(-50%, -50%) rotate(90deg); transition: transform var(--dur-base) var(--ease-out); }
+.faq3 details[open] summary i { background: var(--action); border-color: var(--action-edge); }
+.faq3 details[open] summary i::before, .faq3 details[open] summary i::after { background: #fff; }
+.faq3 details[open] summary i::after { transform: translate(-50%, -50%) rotate(0); }
+.faq3 .ans { padding: 0 18px 18px; font-size: 14.5px; line-height: 1.75; color: #4a3f34; font-weight: 500; }
+@media (max-width: 900px) { .faq3 { grid-template-columns: 1fr; } .promises { grid-template-columns: 1fr; } }
+
+/* FAQ ba cột: các ô đóng cao bằng nhau (vừa cho câu hỏi hai dòng) */
+.faq3 summary { min-height: 78px; }
+.faq3 details[open] summary { min-height: 0; }
+
+/* Câu hỏi FAQ: cân dòng, không để chữ lẻ ("nào?") rơi xuống dòng riêng */
+.faq3 summary, .faq3 summary span { text-wrap: balance; }
+
+/* Gạch đầu dòng trong thẻ combo: cân dòng, tránh chữ lẻ cuối dòng */
+.combo ul li span { text-wrap: pretty; }
+
+/* Thẻ đang chọn dùng cùng phần đệm với thẻ thường, nội dung các thẻ thẳng hàng */
+.combo.on { padding: 26px 22px 22px; }
+.combo li { gap: 6px; }
+/* Thẻ lịch trang chủ: hàng giá luôn nằm sát đáy, ba thẻ thẳng hàng dù mô tả dài ngắn khác nhau */
+.jcard .from { margin-top: auto; }
+/* Bản tiếng Anh: chú thích dài có thể xuống hai dòng, giữ số lớn thẳng hàng */
+html[lang="en"] .fig .cap { min-height: 3em; }
+/* Trang xác nhận: cân dòng tiêu đề và dòng phụ */
+.confirm h1, .confirm .sub { text-wrap: balance; }
+.jcard .go { margin-top: 12px; }
+.combo .tag { line-height: 1.6; min-height: 3.2em; }
+.combos.two .combo .tag { min-height: 0; }
+.fb-title { text-wrap: balance; }
+.summary { top: calc(var(--header-h) + 80px); }
+.receipt > .rl:first-child { padding-top: 0; }
+button.link { padding-left: 0; padding-right: 0; }
+
+/* Gợi ý nhỏ (ví dụ "Chọn 02 ngày để tiết kiệm…"): đậm hơn để dễ đọc trên nền be */
+.hint, .xsub .tt .hint { color: #4a3f34; font-weight: 500; }
+
+/* Ô chọn số nhân sự: cùng kiểu với các ô nhập, bỏ mũi tên mặc định của máy */
+.scount select { appearance: none; -webkit-appearance: none; height: 44px; padding: 0 38px 0 14px; border: 1px solid var(--cream-400); border-radius: var(--radius-s); background: var(--surface-card) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%237a5c00' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") no-repeat right 14px center; font-weight: 500; cursor: pointer; transition: border-color var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out); }
+.scount select:hover { border-color: var(--cream-500); }
+.scount select:focus { outline: none; border-color: var(--gold-700); box-shadow: var(--shadow-focus); }
+
+/* Các ô nhập cùng một chiều cao, kể cả ô ngày */
+.field input[type="text"], .field input[type="email"], .field input[type="tel"], .field input[type="date"] { height: 50px; }
+.field input[type="date"] { color: var(--text); }
+
+/* Thẻ chọn lịch: tên thẻ màu đậm, mô tả màu vàng champagne để hai lớp chữ khác nhau (giống tiêu ngữ của thẻ combo) */
+.opt .d { color: var(--gold-text); }
+
+/* Ô ngày chưa chọn: chữ xám như các ô gợi ý khác, không trông như đã điền */
+.field input[type="date"]:not(.has-value):not(:focus) { color: #757575; }
+/* Ô tích "Chưa chốt ngày" */
+.field label.chk { display: flex; align-items: center; gap: 10px; min-height: 44px; font-size: 14px; font-weight: 500; letter-spacing: 0; text-transform: none; color: var(--slate-600); cursor: pointer; }
+.field .chk input { width: 20px; height: 20px; min-height: 0; padding: 0; flex: none; accent-color: var(--action); }
+/* Lời trấn an dưới nút gửi */
+.trust { margin: 10px 0 0; font-size: 13px; line-height: 1.55; color: var(--slate-600); text-align: center; }
+.trust-link { display: block; text-align: center; padding: 10px 0; font-size: 13px; font-weight: 600; color: var(--charcoal-900); text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--action-line); }
+/* Thẻ Zalo chung dưới ba thẻ combo: chỉ dùng trên điện thoại */
+.ask-all { display: none; }
+@media (min-width: 721px) { .ask-all { display: none; } }
+/* Thanh dưới cùng */
+.bar .bl { min-width: 0; }
+.bar .btn { white-space: nowrap; }
+
+/* Dòng tóm tắt lỗi trên nút gửi */
+.form-summary { display: none; background: var(--error-tint, #f6d8d1); color: var(--error); border-radius: 8px; padding: 10px 14px; font-weight: 600; font-size: 13px; line-height: 1.45; margin-bottom: 10px; }
+.form-summary.on { display: block; }

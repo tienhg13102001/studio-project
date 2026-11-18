@@ -1,0 +1,36 @@
+:root{
+  /* Base palette */
+  --cream-100:#FFFDF9;   /* pure card surface */
+  --cream-200:#FAF5EC;   /* warm cream background */
+  --cream-300:#F2E8D9;   /* secondary surface */
+  --cream-400:#E6D9C4;   /* hairline / divider */
+  --cream-500:#D6C5AB;   /* strong border */
+  --charcoal-900:#1E1810;/* deep charcoal text */
+  --charcoal-800:#2E261B;/* hover of dark */
+  --slate-600:#6F6154;   /* warm muted slate */
+  --slate-400:#A39383;   /* placeholder / disabled ink */
+  --gold-700:#8A6A00;    /* champagne/gold accent */
+  --gold-600:#A07D0C;
+  --gold-100:#F5EBC8;    /* gold tint */
+  --beez-yellow:#FCD125; /* signature yellow — badges only */
+  --success-700:#4F6B3A;
+  --danger-700:#9A3B2A;
+
+  /* Semantic */
+  --bg-page:var(--cream-200);
+  --surface-subtle:var(--cream-300);
+  --surface-card:var(--cream-100);
+  --surface-inverse:var(--charcoal-900);
+  --text-primary:var(--charcoal-900);
+  --text-secondary:var(--slate-600);
+  --text-muted:var(--slate-400);
+  --text-inverse:var(--cream-200);
+  --text-accent:var(--gold-700);
+  --border-hairline:var(--cream-400);
+  --border-strong:var(--cream-500);
+  --border-focus:var(--gold-700);
+  --accent:var(--gold-700);
+  --accent-tint:var(--gold-100);
+  --badge-signature:var(--beez-yellow);
+  --overlay-scrim:rgba(30,24,16,.48);
+}

@@ -135,10 +135,12 @@ export default function InquiriesTab({ data, loading }: TabProps) {
                   <TableCell className="text-foreground text-xs font-medium">{c.name}</TableCell>
                   <TableCell className="text-foreground/60 text-xs">
                     <div className="flex flex-col gap-0.5">
-                      <span className="inline-flex items-center gap-1">
-                        <EnvelopeSimpleIcon size={11} className="shrink-0" />
-                        {c.email}
-                      </span>
+                      {c.email && (
+                        <span className="inline-flex items-center gap-1">
+                          <EnvelopeSimpleIcon size={11} className="shrink-0" />
+                          {c.email}
+                        </span>
+                      )}
                       {c.phone && (
                         <span className="inline-flex items-center gap-1">
                           <PhoneIcon size={11} className="shrink-0" />
@@ -204,11 +206,13 @@ export default function InquiriesTab({ data, loading }: TabProps) {
             </div>
 
             <div className="flex max-h-[70vh] flex-col gap-4 overflow-y-auto px-5 py-5 text-sm">
-              <Field label="Email">
-                <a href={`mailto:${viewing.email}`} className="text-primary hover:underline">
-                  {viewing.email}
-                </a>
-              </Field>
+              {viewing.email && (
+                <Field label="Email">
+                  <a href={`mailto:${viewing.email}`} className="text-primary hover:underline">
+                    {viewing.email}
+                  </a>
+                </Field>
+              )}
               {viewing.phone && (
                 <Field label="Điện thoại">
                   <a href={`tel:${viewing.phone}`} className="text-primary hover:underline">
@@ -237,8 +241,13 @@ export default function InquiriesTab({ data, loading }: TabProps) {
                 <TrashIcon size={13} />
                 Xoá
               </Button>
+              {/* Không có email (khách từ bảng giá cưới) thì nút gọi điện thay cho nút trả lời mail. */}
               <Button asChild className="bg-primary text-black hover:opacity-80">
-                <a href={`mailto:${viewing.email}`}>Trả lời qua email</a>
+                {viewing.email ? (
+                  <a href={`mailto:${viewing.email}`}>Trả lời qua email</a>
+                ) : (
+                  <a href={`tel:${viewing.phone ?? ""}`}>Gọi khách</a>
+                )}
               </Button>
             </div>
           </div>
@@ -320,8 +329,8 @@ export function InquiriesPreview({
               </TableCell>
               <TableCell className="text-foreground/60 text-xs">
                 <span className="inline-flex items-center gap-1">
-                  <EnvelopeSimpleIcon size={11} className="shrink-0" />
-                  {c.email}
+                  {c.email ? <EnvelopeSimpleIcon size={11} className="shrink-0" /> : <PhoneIcon size={11} className="shrink-0" />}
+                  {c.email || c.phone}
                 </span>
               </TableCell>
               <TableCell>

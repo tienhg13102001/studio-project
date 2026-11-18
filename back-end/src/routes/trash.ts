@@ -148,7 +148,7 @@ const SOURCES: Record<string, TrashEntry> = {
         typeLabel: LABELS.inquiries,
         id: String(c._id),
         title: c.name,
-        subtitle: c.email,
+        subtitle: c.email || c.phone || "",
         image: "",
         deletedAt: c.deletedAt.toISOString(),
         purgeAt: purgeAt(c.deletedAt),

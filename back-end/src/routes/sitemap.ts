@@ -35,12 +35,12 @@ const STATIC: Entry[] = [
   // thẳng — React không có route nào cho chúng. Vẫn phải khai ở đây vì sitemap
   // sinh từ backend chứ không đọc thư mục, nên trang tĩnh không tự vào được.
   //
-  // /bang-gia-psc là bảng giá cưới của Bee Z Wedding Film, khai thêm ngày
-  // 21/08/2026. Bản thân trang đó khai `robots: index,follow`, nên khai ở đây
-  // là nhất quán với chính nó: sitemap mời vào mà trang lại chặn thì Google
-  // ghi nhận mâu thuẫn rồi bỏ qua cả hai lời khai.
+  // /bang-gia-psc (bảng giá cưới Bee Z Wedding Film) KHÔNG khai ở đây nữa: từ
+  // 18/11/2026 trang mới tự khai `noindex` — chủ ý, link chỉ gửi cho khách khi
+  // khách nhắn hỏi. Sitemap mời vào mà trang lại chặn thì Google ghi nhận mâu
+  // thuẫn ("Đã gửi URL nhưng bị đánh dấu noindex"). Muốn lên Google lại thì bỏ
+  // thẻ noindex ở cả 3 file HTML trong public/bang-gia-psc/ rồi thêm dòng này.
   { loc: "/bang-gia", changefreq: "monthly", priority: "0.8" },
-  { loc: "/bang-gia-psc", changefreq: "monthly", priority: "0.8" },
   { loc: "/contact", changefreq: "monthly", priority: "0.7" },
 ];
 

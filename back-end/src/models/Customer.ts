@@ -3,7 +3,7 @@ import { softDeletePlugin, type SoftDeleteModel } from "../lib/softDelete.ts";
 
 export interface ICustomer extends Document {
   name:      string;
-  email:     string;
+  email?:    string;
   phone?:    string;
   service?:  string;
   message:   string;
@@ -13,7 +13,11 @@ export interface ICustomer extends Document {
 const customerSchema = new Schema<ICustomer>(
   {
     name:    { type: String, required: true, trim: true },
-    email:   { type: String, required: true, trim: true, lowercase: true },
+    // Bắt buộc khi KHÔNG có số điện thoại: form bảng giá cưới chỉ đòi điện thoại/Zalo.
+    email:   {
+      type: String, trim: true, lowercase: true,
+      required: function (this: ICustomer) { return !this.phone; },
+    },
     phone:   { type: String, trim: true },
     service: { type: String },
     message: { type: String, required: true, trim: true },

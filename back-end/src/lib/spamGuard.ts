@@ -86,8 +86,10 @@ export function inspectContent(input: LeadInput): SpamVerdict {
     return { blocked: true, reason: "điền vào ô bẫy dành cho máy" };
   }
 
-  if (!EMAIL_RE.test(email)) {
-    return { blocked: true, reason: "email không đúng định dạng" };
+  // Có email thì phải đúng dạng. Không có email (form bảng giá cưới cho phép) thì
+  // bắt buộc có số điện thoại trông như số thật: ít nhất 8 chữ số.
+  if (email ? !EMAIL_RE.test(email) : ((input.phone ?? "").replace(/\D/g, "").length < 8)) {
+    return { blocked: true, reason: email ? "email không đúng định dạng" : "không có email và số điện thoại không hợp lệ" };
   }
 
   // Bot hay nhồi cả bài quảng cáo; khách thật hiếm khi viết quá dài trong form.

@@ -11,7 +11,7 @@ const router = Router();
 
 type LeadInput = {
   name: string;
-  email: string;
+  email?: string;
   phone?: string;
   serviceName?: string;
   message: string;
@@ -29,25 +29,30 @@ async function notifyNewLead(lead: LeadInput): Promise<void> {
   const row = (label: string, value: string) =>
     `<tr><td style="padding:6px 12px 6px 0;color:#666">${label}</td><td style="padding:6px 0"><b>${escapeHtml(value)}</b></td></tr>`;
 
-  await Promise.all([
+  const thu = [
     sendMail({
       to: LEAD_NOTIFY_TO,
-      replyTo: lead.email,
+      // Không có email thì "Trả lời" về chính hộp thư Bee Z — vô hại, và trong
+      // thư đã có số điện thoại để gọi lại.
+      ...(lead.email ? { replyTo: lead.email } : {}),
       subject: `[Lead mới] ${lead.name}${lead.serviceName ? ` — ${lead.serviceName}` : ""}`,
       html: `
         <h2 style="margin:0 0 12px">Có khách mới gửi yêu cầu</h2>
         <table style="border-collapse:collapse;font:14px/1.6 Arial,sans-serif">
           ${row("Tên", lead.name)}
-          ${row("Email", lead.email)}
+          ${row("Email", lead.email || "(không có — liên hệ qua điện thoại/Zalo)")}
           ${lead.phone ? row("Điện thoại", lead.phone) : ""}
           ${lead.serviceName ? row("Dịch vụ", lead.serviceName) : ""}
           ${row("Thời gian", at)}
         </table>
         <p style="font:14px/1.6 Arial,sans-serif;margin:16px 0 6px;color:#666">Nội dung:</p>
         <div style="font:14px/1.6 Arial,sans-serif;white-space:pre-wrap;border-left:3px solid #f0c034;padding:8px 12px;background:#fafafa">${escapeHtml(lead.message)}</div>
-        <p style="font:13px/1.6 Arial,sans-serif;color:#888;margin-top:18px">Bấm "Trả lời" để phản hồi trực tiếp cho khách.</p>
+        <p style="font:13px/1.6 Arial,sans-serif;color:#888;margin-top:18px">${lead.email ? 'Bấm "Trả lời" để phản hồi trực tiếp cho khách.' : "Khách không để lại email — gọi hoặc nhắn Zalo theo số ở trên."}</p>
       `,
     }),
+  ];
+  // Thư cảm ơn chỉ gửi khi khách có để lại email.
+  if (lead.email) thu.push(
     sendMail({
       to: lead.email,
       subject: "Bee Z Production đã nhận được yêu cầu của bạn",
@@ -63,7 +68,8 @@ async function notifyNewLead(lead: LeadInput): Promise<void> {
         </div>
       `,
     }),
-  ]);
+  );
+  await Promise.all(thu);
 }
 
 router.get("/", async (_req, res, next) => {
@@ -125,8 +131,10 @@ function clientIp(req: { headers: Record<string, unknown>; ip?: string }): strin
 router.post("/inquiry", async (req, res, next) => {
   try {
     const { name, email, phone, service, message, website } = req.body as Record<string, string>;
-    if (!name?.trim() || !email?.trim() || !message?.trim()) {
-      sendError(res, "name, email and message are required", 422);
+    // Cần tên + tin nhắn + ÍT NHẤT một cách liên lạc. Form trang Liên hệ luôn đòi
+    // email; form bảng giá cưới (/bang-gia-psc/) chỉ đòi số điện thoại/Zalo.
+    if (!name?.trim() || !message?.trim() || (!email?.trim() && !phone?.trim())) {
+      sendError(res, "name, message and email or phone are required", 422);
       return;
     }
 
@@ -146,7 +154,7 @@ router.post("/inquiry", async (req, res, next) => {
       return;
     }
 
-    const customer = await Customer.create({ name, email, phone, service, message });
+    const customer = await Customer.create({ name, email: email?.trim() || undefined, phone, service, message });
     sendSuccess(res, { id: customer.id }, 201);
 
     // Tên dịch vụ chỉ để cho dễ đọc trong email — thiếu thì vẫn gửi bình thường.
