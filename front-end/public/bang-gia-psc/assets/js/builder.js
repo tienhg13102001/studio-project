@@ -333,13 +333,14 @@
   function renderSummary() {
     var r = BZ.calc(state);
     var pl = peopleLine(r.combo, state.journey);
-    var names = r.extrasLines.map(function (l) { return t('x.' + l.id + '.t'); });
+    // Mỗi tên dịch vụ thêm một thẻ riêng có mã, để hiệu ứng (motion.js) biết dòng nào vừa thêm.
+    var names = r.extrasLines.map(function (l) { return '<span class="xn" data-x="' + esc(l.id) + '">' + esc(t('x.' + l.id + '.t')) + '</span>'; });
     var travel = r.travelRow ? fmt(r.travelTotal) : t('sum.none');
     var h = '<h2>' + t('sum.title') + '</h2>' +
       '<div class="sline"><span class="k">' + t('sum.journey') + '</span><span class="v">' + (state.journey === 'single' ? t('v.' + state.variant) : journeyName()) + '</span></div>' +
       '<div class="sline stack"><div class="row"><span class="k">' + t(isSolo() ? 'sum.soloLabel' : 'sum.combo') + '</span><span class="v">' + tierLabel() + '</span></div>' +
       '<div class="sub">' + pl.head + ': ' + pl.mix + '</div><div class="amt">' + fmt(r.comboPrice) + '</div></div>' +
-      '<div class="sline"><span class="k">' + t('sum.extras') + '</span><span class="v">' + (names.length ? names.map(esc).join('<br>') : t('sum.none')) + (r.extrasTotal ? '<span class="amt">' + fmt(r.extrasTotal) + '</span>' : '') + '</span></div>' +
+      '<div class="sline"><span class="k">' + t('sum.extras') + '</span><span class="v">' + (names.length ? names.join('<br>') : t('sum.none')) + (r.extrasTotal ? '<span class="amt">' + fmt(r.extrasTotal) + '</span>' : '') + '</span></div>' +
       '<div class="sline"><span class="k">' + t('sum.travel') + '</span><span class="v">' + (r.travelRow ? '<span class="amt">' + travel + '</span>' : travel) + '</span></div>' +
       '<div class="stotal"><div class="l">' + t('total.label') + '</div><div class="r">' + fmt(r.total) + '</div></div>' +
       '<a class="btn btn-primary" href="#s5">' + t('sum.send') + '</a>' +
@@ -350,6 +351,8 @@
       (r.travelRow ? '' : '<div class="bn">' + t('bar.noTravel') + '</div>') + '</div>' +
       '<a class="btn btn-primary" href="#s2" data-bar-next>' + t('bar.next') + '</a>';
     updateBar();
+    // Báo cho motion.js: tổng mới + các dịch vụ thêm đang chọn (để chạy số, trượt dòng mới vào).
+    document.dispatchEvent(new CustomEvent('bz:summary', { detail: { total: r.total, extras: r.extrasLines.map(function (l) { return l.id; }) } }));
   }
 
   function renderAll() {
@@ -493,6 +496,7 @@
     if (!C.endpoint) { goConfirm(payload, true); return; } // chạy thử, chưa nối Google Sheet
     var btn = document.getElementById('submit-btn');
     btn.disabled = true;
+    btn.classList.add('is-sending');
     btn.firstChild.textContent = t('form.sending');
     var ctrl = typeof AbortController !== 'undefined' ? new AbortController() : null;
     var timer = setTimeout(function () { if (ctrl) ctrl.abort(); }, 20000);
@@ -513,10 +517,14 @@
     }).then(function (res) {
       if (!res.ok) throw new Error('HTTP ' + res.status);
       clearTimeout(timer);
-      goConfirm(payload, false);
+      // Đã nhận: hiện dấu tích trên nút một nhịp rồi mới sang trang cảm ơn (không có hiệu ứng thì sang ngay).
+      btn.classList.remove('is-sending');
+      btn.classList.add('is-done');
+      setTimeout(function () { goConfirm(payload, false); }, document.documentElement.classList.contains('mo') ? 650 : 0);
     }).catch(function () {
       clearTimeout(timer);
       btn.disabled = false;
+      btn.classList.remove('is-sending');
       btn.firstChild.textContent = t('form.submit');
       document.getElementById('sent-err').classList.add('show');
     });

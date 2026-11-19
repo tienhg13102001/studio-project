@@ -82,14 +82,19 @@
     cloud: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 18a4 4 0 01-.5-8 5.5 5.5 0 0110.7 1A3.5 3.5 0 0117 18z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>',
     shield: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7 3v5c0 5-3 8.5-7 10-4-1.5-7-5-7-10V6z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M9 12l2.2 2.2L15.5 10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>',
     map: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s7-5.6 7-11a7 7 0 10-14 0c0 5.4 7 11 7 11z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><circle cx="12" cy="10" r="2.5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>',
-    info: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 11v5M12 7.8v.4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>'
+    info: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 11v5M12 7.8v.4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
+    // Con ong: cùng hình với logo.svg / favicon của web chính beezvn.com.
+    bee: '<svg viewBox="0 0 377.38 383.63" aria-hidden="true"><path fill="currentColor" d="M372.85,169.9l-113.99,40.79-3.73,1.35-1.64.59c-.29-4.49-.74-8.94-1.45-13.35-2.45-15.49-7.46-30.53-14.8-44.55-5.57-10.65-12.69-19.84-20.94-27.47,17.27-16.19,81.4-80.98,45.58-118.15-41.01-42.56-147.15,75.62-178.31,120.57.68-1.16,2.64-4.41,5.46-9.11,8.33-13.96,17.37-27.55,27.09-40.58,19.25-25.89,40.46-54.83,39.7-55.78-.65-.82-5.25-2.4-11.11-2.89C16.02,133.92,13.82,221.47,15.15,240.84v.1c.61,4.57,1.37,9.04,2.24,13.41,5.06,16.68,19.04,5.82,26.4-7.76,7.38-13.58,27.96-58.23,39.23-66.41,2.07-.89,4.15,14.65,38.58,5.33,2.55-.7,5.25-1.54,8.07-2.49.04-.04.1-.06.13-.08,17.39-8.23,32.77-17.13,45.4-25.2,2.68-1.71,6.14-.71,7.7,2.07.01.02.02.04.03.05,9.85,17.62,15.69,37.08,17.16,56.92.38,4.95.44,9.91.25,14.86l-11.36,4.07-48.45,17.35c-2.99,1.07-6.03-1.46-5.38-4.49l3.86-18.93c.93-4.55-4.07-8.05-8.18-5.71-7.48,4.2-18.36,10.48-30.95,17.81l-1.08.63c-.06.04-.11.08-.19.11-19.86,11.55-43.81,25.57-65.35,38.22-1.18.7-2.34,1.37-3.5,2.07-2.57,1.5-5.12,2.99-7.59,4.47-7.5,4.39-14.5,8.52-20.74,12.19-3.04,1.79-.78,6.32,2.57,5.1l16.15-5.92.4-.13c-.44,2.15-.84,4.32-1.18,6.51-1.33,9.07-1.62,18.53-.72,28.34,2.13,23.48,16.89,41.72,39.85,47.22,26.18,6.24,53.89,2.87,79.02-8.66,45.66-20.98,96.92-66.62,111.48-115.53,1.1-3.67,2-7.36,2.64-11.05,1.07-.55,2.13-1.08,3.21-1.64.86-.46,1.73-.89,2.59-1.35,43.98-22.71,87.85-46.72,118.42-66.66,3.29-2.13.68-7.08-3.02-5.76ZM186.32,286.26c-.08.15-.15.3-.23.46h-.02c-20.39,40.03-68.18,85.4-112.24,85.36-16.89-.02-29.37-11.91-30.44-28.54-.3-4.89,0-9.44.86-13.7l.04-.02s.02-.19.08-.55c.04-.15.06-.32.1-.53.98-5.49,6.62-30.35,30.41-39.8,1.54-.61,3.16.18,3.6,1.78v.03c.98,3.65,1.45,7.93.83,12.75-.06.44-.11.88-.19,1.29-.95,5.46-3.33,11.53-8.03,18.05-18.74,25.99,25.11-1.73,25.11-1.73,0,0,41.59-19.16,94.81-45.35h.02s.04-.02.06-.04c-1.41,3.56-3.01,7.08-4.76,10.54ZM179.57,111.59c-18.24,15.6-63.8,48.15-84.77,57.28,0,0,40.41-62.68,56.82-78.49,16.46-15.86,49.18-51.52,63.67-38.31,14.5,13.18-26.04,51.23-35.73,59.52Z"/></svg>'
   };
   BZ.icon = function (name) { return ICONS[name] || ''; };
+
+  // Logo: con ong + "Bee Z" (bỏ ô nền vàng). Dấu cách không ngắt để "Bee Z" không bị tách hai dòng.
+  var LOGO = '<span class="bee">' + ICONS.bee + '</span><span class="bz">Bee Z</span><span class="sep" aria-hidden="true"></span>';
 
   function headerHtml() {
     var onBuilder = /bao-gia\.html$/.test(location.pathname);
     return '<header class="site-header"><div class="hdr wrap-wide">' +
-      '<a class="logo" href="index.html" aria-label="Bee Z Wedding Film"><span class="chip">BEE Z</span><span class="logo-t" data-i18n="brand.tag">Wedding Film</span></a>' +
+      '<a class="logo" href="index.html" aria-label="Bee Z Wedding Film">' + LOGO + '<span class="logo-t" data-i18n="brand.tag">Wedding Film</span></a>' +
       '<nav class="nav" aria-label="Menu">' +
       '<a href="bao-gia.html"' + (onBuilder ? ' aria-current="page"' : '') + ' data-i18n="nav.pricing"></a>' +
       '<a href="' + BZ.esc(C.portfolioUrl) + '" target="_blank" rel="noopener" data-i18n="nav.products"></a>' +
@@ -103,7 +108,7 @@
 
   function footerHtml() {
     return '<footer class="site-footer" id="lien-he"><div class="wrap-wide ftr">' +
-      '<div><div class="logo"><span class="chip">BEE Z</span><span class="logo-t">Wedding Film</span></div>' +
+      '<div><div class="logo">' + LOGO + '<span class="logo-t">Wedding Film</span></div>' +
       '<p class="muted" data-i18n="footer.blurb"></p></div>' +
       '<div><h4 data-i18n="footer.contact"></h4><ul class="plain">' +
       '<li><a href="' + BZ.esc(C.phoneHref) + '">' + BZ.esc(C.phone) + '</a> · <a href="' + BZ.esc(C.zalo) + '" target="_blank" rel="noopener" data-i18n="footer.zalo"></a></li>' +

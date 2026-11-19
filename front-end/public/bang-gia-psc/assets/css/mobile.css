@@ -8,13 +8,13 @@
 html, body { overflow-x: clip; }
 
 /* Câu giới thiệu có liên kết ở đầu trang chủ ("Tiết kiệm đến 15%…") */
-.lead-link { color: var(--action); font-weight: 600; text-decoration: none; border-bottom: 1px solid var(--action-line); padding-bottom: 1px; }
+.lead-link { color: var(--gold-text); font-weight: 600; text-decoration: none; border-bottom: 1px solid var(--action-line); padding-bottom: 1px; }
 .lead-link::after { content: " →"; }
 .lead-link:hover { border-bottom-color: var(--action); }
 
 /* Gợi ý "Đặt combo để tiết kiệm đến 15%": cả khối là một liên kết */
 a.nudge { text-decoration: none; color: inherit; }
-a.nudge svg { width: 18px; height: 18px; flex: none; color: var(--action); }
+a.nudge svg { width: 18px; height: 18px; flex: none; color: var(--gold-text); }
 
 /* Nút gấp/mở: máy tính luôn hiện đủ nên ẩn nút ở thẻ combo, ở điều khoản chỉ còn là tiêu đề thường */
 .combo .more-btn, .xmore { display: none; }

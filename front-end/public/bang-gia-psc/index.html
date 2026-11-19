@@ -20,7 +20,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Montserrat:wght@400;500;600&display=swap&subset=vietnamese" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Lora:ital,wght@1,500&family=Montserrat:wght@400;500;600&display=swap&subset=vietnamese" rel="stylesheet">
 <link rel="stylesheet" href="assets/css/style.css">
 <link rel="stylesheet" href="assets/ds/colors.css">
 <link rel="stylesheet" href="assets/ds/typography.css">
@@ -28,6 +28,8 @@
 <link rel="stylesheet" href="assets/ds/effects.css">
 <link rel="stylesheet" href="assets/css/design.css">
 <link rel="stylesheet" href="assets/css/mobile.css">
+<link rel="stylesheet" href="assets/css/motion.css">
+<script>/* Bật hiệu ứng chuyển động (assets/css/motion.css), trừ khi máy bật "giảm chuyển động". */if (!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches)) document.documentElement.classList.add('mo');</script>
 </head>
 <body>
 <div id="site-header"></div>
@@ -204,6 +206,7 @@
 <script src="assets/js/data.js"></script>
 <script src="assets/js/common.js"></script>
 <script src="assets/js/home.js"></script>
+<script src="assets/js/motion.js"></script>
 <script>
 /* Đếm lượt xem trang này. Lỗi thì im lặng — không bao giờ ảnh hưởng nội dung. */
 (function () {
