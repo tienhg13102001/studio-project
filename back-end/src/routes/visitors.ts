@@ -10,9 +10,21 @@ import { layIpKhach } from "../lib/ip-khach.ts";
 const router = Router();
 
 
-/** Ngày hiện tại (UTC) dạng YYYY-MM-DD — dùng thống nhất cho mọi bộ đếm. */
-function todayUTC(): string {
-  return new Date().toISOString().slice(0, 10);
+/**
+ * Ngày hiện tại THEO GIỜ VIỆT NAM, dạng YYYY-MM-DD — dùng thống nhất cho mọi bộ đếm.
+ *
+ * Trước 21/11/2026 dùng ngày quốc tế (UTC), tức một "ngày" chạy từ 7h sáng hôm đó
+ * tới 7h sáng hôm sau giờ VN: khách vào lúc 6h sáng ngày 21 bị ghi vào cột ngày 20.
+ * Việt Nam không đổi giờ mùa hè nên cộng cứng 7 tiếng là đúng quanh năm, khỏi phụ
+ * thuộc bảng múi giờ cài trên máy chủ. Hôm đổi, hai cột quanh lúc đổi dài/ngắn lệch
+ * vài tiếng; không lượt nào mất hay bị đếm hai lần.
+ *
+ * Trang Analytics (`AnalyticsTab.tsx`, hàm `fillDays`) tính ngày cùng kiểu — sửa
+ * chỗ này thì sửa cả chỗ đó.
+ */
+const LECH_GIO_VN_MS = 7 * 3_600_000;
+function homNayVN(): string {
+  return new Date(Date.now() + LECH_GIO_VN_MS).toISOString().slice(0, 10);
 }
 
 /** Khoá chống trùng: hash(IP) + ngày → mỗi khách tính 1 lần/ngày. */
@@ -81,8 +93,20 @@ function parsePath(raw?: unknown): string | null {
 
   // Hai bảng giá là trang tĩnh nằm ngoài ứng dụng, tự báo về qua khối đếm chèn
   // trong chính file HTML. Không khai ở đây thì chúng rơi hết vào ô "khac".
+  // Bảng giá cưới có 3 trang: trang đầu, trang tính giá, trang cảm ơn (khối đếm
+  // tự bỏ đuôi .html) — tách riêng để thấy bao nhiêu người đi tới bước tính giá.
   if (
-    ["/", "/service", "/portfolio", "/team", "/contact", "/bang-gia", "/bang-gia-psc"].includes(p)
+    [
+      "/",
+      "/service",
+      "/portfolio",
+      "/team",
+      "/contact",
+      "/bang-gia",
+      "/bang-gia-psc",
+      "/bang-gia-psc/bao-gia",
+      "/bang-gia-psc/xac-nhan",
+    ].includes(p)
   )
     return p;
 
@@ -110,9 +134,9 @@ async function getTotal(): Promise<number> {
   return stat?.total ?? 0;
 }
 
-/** Mốc YYYY-MM-DD của `days` ngày trước (bao gồm hôm nay) để lọc theo khoảng. */
+/** Mốc YYYY-MM-DD (giờ VN) của `days` ngày trước (bao gồm hôm nay) để lọc theo khoảng. */
 function cutoffDay(days: number): string {
-  return new Date(Date.now() - (days - 1) * 86_400_000).toISOString().slice(0, 10);
+  return new Date(Date.now() + LECH_GIO_VN_MS - (days - 1) * 86_400_000).toISOString().slice(0, 10);
 }
 
 /** Chuẩn hoá tham số ?days= về [1, 365], mặc định 30. */
@@ -175,7 +199,7 @@ router.get("/breakdown", requireAuth, async (req, res, next) => {
  */
 router.post("/", async (req, res, next) => {
   try {
-    const day = todayUTC();
+    const day = homNayVN();
     const ip = layIpKhach(req);
 
     /**
@@ -289,7 +313,7 @@ router.post("/page", async (req, res, next) => {
     }
 
     await VisitorAgg.updateOne(
-      { day: todayUTC(), dim: "path", key: path },
+      { day: homNayVN(), dim: "path", key: path },
       { $inc: { count: 1 } },
       { upsert: true },
     );

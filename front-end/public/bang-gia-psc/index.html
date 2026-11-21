@@ -211,7 +211,8 @@
 /* Đếm lượt xem trang này. Lỗi thì im lặng — không bao giờ ảnh hưởng nội dung. */
 (function () {
   try {
-    var duong = location.pathname.replace(/\/+$/, "") || "/";
+    // Bỏ đuôi .html để mỗi trang thành một khoá gọn: /bang-gia-psc, /bang-gia-psc/bao-gia...
+    var duong = location.pathname.replace(/\/index\.html$/, "").replace(/\.html$/, "").replace(/\/+$/, "") || "/";
     var thamSo = new URLSearchParams(location.search);
     var kieu = { "Content-Type": "application/json" };
     fetch("/api/team-content", { cache: "no-store" })

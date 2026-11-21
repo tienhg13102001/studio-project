@@ -30,12 +30,19 @@ const dayLabel = (iso: string) => {
   return `${d}/${m}`;
 };
 
+/**
+ * Máy chủ ghi ngày theo giờ Việt Nam (UTC+7, không đổi giờ mùa hè) — xem `homNayVN`
+ * trong back-end/src/routes/visitors.ts. Ở đây phải tính y hệt, nếu không thì từ 0h
+ * tới 7h sáng cột "hôm nay" sẽ trống và ô "Hôm nay" hiện số của hôm qua.
+ */
+const LECH_GIO_VN_MS = 7 * 3_600_000;
+
 /** Lấp các ngày không có lượt (backend chỉ trả ngày > 0) thành 0 để biểu đồ liền mạch. */
 function fillDays(data: DailyPoint[] | null, days: number): DailyPoint[] {
   const map = new Map((data ?? []).map((d) => [d.day, d.count]));
   const out: DailyPoint[] = [];
   for (let i = days - 1; i >= 0; i--) {
-    const iso = new Date(Date.now() - i * 86_400_000).toISOString().slice(0, 10);
+    const iso = new Date(Date.now() + LECH_GIO_VN_MS - i * 86_400_000).toISOString().slice(0, 10);
     out.push({ day: iso, count: map.get(iso) ?? 0 });
   }
   return out;
@@ -74,7 +81,7 @@ export default function AnalyticsTab() {
         <div>
           <h1 className="text-foreground text-lg font-bold">Analytics — Lượt truy cập</h1>
           <p className="text-foreground/40 text-xs">
-            Khách duy nhất theo IP mỗi ngày (chưa lọc bot).
+            Khách duy nhất theo IP mỗi ngày (ngày tính từ 0h giờ Việt Nam), đã lọc bot.
           </p>
         </div>
         <div className="border-foreground/10 flex gap-0.5 rounded-lg border p-0.5">
@@ -124,37 +131,44 @@ export default function AnalyticsTab() {
           </div>
         ) : (
           <div className="relative h-52 pl-8">
-            {/* Gridlines + y labels */}
-            {[0, 1, 2, 3, 4].map((i) => (
-              <div
-                key={i}
-                className="border-foreground/8 absolute right-0 left-8 border-t"
-                style={{ top: `${i * 25}%` }}
-              >
-                <span className="text-foreground/30 absolute -top-2 -left-8 w-7 pr-1.5 text-right text-[10px] tabular-nums">
-                  {fmt(Math.round((niceMax / 4) * (4 - i)))}
-                </span>
-              </div>
-            ))}
-            {/* Bars — mỗi cột là 1 flex-col cao hết khung (items-stretch) để chiều
-                cao % của thanh có mốc xác định; justify-end đẩy thanh xuống đáy. */}
-            <div className="absolute inset-0 left-8 flex items-stretch gap-[2px] pb-5">
-              {series.map((pt) => (
-                <div key={pt.day} className="group/bar flex flex-1 flex-col justify-end">
-                  <div
-                    className="bg-primary/85 hover:bg-primary relative min-h-[2px] w-full rounded-t transition-colors"
-                    style={{ height: `${(pt.count / niceMax) * 100}%` }}
-                  >
-                    {/* Tooltip on hover — neo ngay trên đỉnh thanh */}
-                    <div className="bg-card border-foreground/15 pointer-events-none absolute bottom-full left-1/2 z-10 mb-1 hidden -translate-x-1/2 rounded-md border px-2 py-1 text-center whitespace-nowrap shadow-lg group-hover/bar:block">
-                      <span className="text-foreground/50 block text-[10px]">{dayLabel(pt.day)}</span>
-                      <span className="text-primary text-xs font-semibold tabular-nums">
-                        {fmt(pt.count)} lượt
-                      </span>
-                    </div>
-                  </div>
+            {/* Vạch kẻ và cột PHẢI chung một khung vẽ (chừa hàng ngày tháng ở dưới).
+                Trước đây vạch kẻ trải cả hàng ngày tháng còn cột thì không, nên cột
+                nào cũng trông cao hơn số thật — cột 13 lượt chạm đúng vạch "18". */}
+            <div className="absolute top-0 right-0 bottom-5 left-8">
+              {/* Gridlines + y labels */}
+              {[0, 1, 2, 3, 4].map((i) => (
+                <div
+                  key={i}
+                  className="border-foreground/8 absolute inset-x-0 border-t"
+                  style={{ top: `${i * 25}%` }}
+                >
+                  <span className="text-foreground/30 absolute -top-2 -left-8 w-7 pr-1.5 text-right text-[10px] tabular-nums">
+                    {fmt(Math.round((niceMax / 4) * (4 - i)))}
+                  </span>
                 </div>
               ))}
+              {/* Bars — mỗi cột là 1 flex-col cao hết khung (items-stretch) để chiều
+                  cao % của thanh có mốc xác định; justify-end đẩy thanh xuống đáy. */}
+              <div className="absolute inset-0 flex items-stretch gap-[2px]">
+                {series.map((pt) => (
+                  <div key={pt.day} className="group/bar flex flex-1 flex-col justify-end">
+                    <div
+                      className="bg-primary/85 hover:bg-primary relative min-h-[2px] w-full rounded-t transition-colors"
+                      style={{ height: `${(pt.count / niceMax) * 100}%` }}
+                    >
+                      {/* Tooltip on hover — neo ngay trên đỉnh thanh */}
+                      <div className="bg-card border-foreground/15 pointer-events-none absolute bottom-full left-1/2 z-10 mb-1 hidden -translate-x-1/2 rounded-md border px-2 py-1 text-center whitespace-nowrap shadow-lg group-hover/bar:block">
+                        <span className="text-foreground/50 block text-[10px]">
+                          {dayLabel(pt.day)}
+                        </span>
+                        <span className="text-primary text-xs font-semibold tabular-nums">
+                          {fmt(pt.count)} lượt
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
             {/* X axis: đầu / giữa / cuối */}
             <div className="text-foreground/30 absolute right-0 bottom-0 left-8 flex justify-between text-[10px] tabular-nums">
@@ -199,6 +213,8 @@ function nhanDuongDan(key: string): string {
     "/contact": "Liên hệ",
     "/bang-gia": "Bảng giá sản xuất",
     "/bang-gia-psc": "Bảng giá cưới",
+    "/bang-gia-psc/bao-gia": "Bảng giá cưới · trang tính giá",
+    "/bang-gia-psc/xac-nhan": "Bảng giá cưới · trang cảm ơn",
     khac: "Trang khác",
   };
   if (co[key]) return co[key];
