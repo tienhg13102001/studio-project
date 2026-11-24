@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { UserIcon, ListIcon, ArrowLeftIcon, PhoneIcon } from "@phosphor-icons/react";
+import { ListIcon, PhoneIcon } from "@phosphor-icons/react";
 import { useLanding } from "#hooks/useLanding";
 import LogoYellow from "../../assets/icons/LogoYellow";
 import { Button } from "#components/ui/button";
@@ -38,8 +38,10 @@ const Navbar: React.FC<Props> = () => {
         sang trái. Lưới với hai cột biên bằng nhau (1fr) thì cột giữa luôn nằm
         đúng tâm, bất kể hai bên rộng bao nhiêu.
 
-        Trên điện thoại cụm menu bị ẩn (`lg:flex`) nên cột giữa co về 0 — logo
-        vẫn sát trái, nhóm nút vẫn sát phải, không đổi gì.
+        Trên điện thoại cụm menu bị ẩn (`hidden lg:flex`), mà phần tử
+        `display: none` thì KHÔNG chiếm ô lưới nào — nhóm nút bên phải tự rơi vào
+        cột giữa và nằm lửng ở tâm màn hình, bên phải trống ~120px (đo 23/11/2026).
+        Nên nhóm nút được ghim cứng vào cột 3 bằng `col-start-3`.
       */}
       <nav
         className={`fixed top-0 left-0 z-20 grid w-full grid-cols-[1fr_auto_1fr] items-center px-6 py-4 transition-all duration-700 md:px-12 ${scrolled && pathname === "/" ? "bg-background/50 shadow-sm backdrop-blur-sm" : pathname !== "/" ? "bg-background/50 shadow-sm backdrop-blur-sm" : "bg-transparent"}`}
@@ -71,13 +73,13 @@ const Navbar: React.FC<Props> = () => {
         <NavLinks scrolled={scrolled} />
 
         {/* Right Actions */}
-        <div className="flex items-center gap-2 justify-self-end">
+        <div className="col-start-3 flex items-center gap-2 justify-self-end">
           {/* Hotline — khách gọi trực tiếp, 1 chạm. Chỗ hẹp trên mobile nên chỉ
               hiện từ desktop; bản mobile nằm trong menu trượt. */}
           {landing?.phone && (
             <a
               href={`tel:${landing.phone}`}
-              className="text-foreground hover:text-primary focus-visible:ring-primary mr-1 hidden items-center gap-1.5 rounded-md px-1 text-sm font-semibold transition-colors focus-visible:ring-2 focus-visible:outline-none lg:inline-flex"
+              className="text-foreground hover:text-primary focus-visible:ring-primary mr-1 ml-4 hidden items-center gap-1.5 rounded-md px-1 text-sm font-semibold transition-colors focus-visible:ring-2 focus-visible:outline-none lg:inline-flex"
             >
               <PhoneIcon size={16} weight="fill" className="text-primary" />
               {landing.phone}
@@ -85,7 +87,12 @@ const Navbar: React.FC<Props> = () => {
           )}
 
           {/* Language */}
-          <Button variant="outline" onClick={() => setLang(lang === "en" ? "vi" : "en")}>
+          <Button
+            variant="outline"
+            className="h-11 lg:h-9"
+            aria-label={lang === "en" ? "Chuyển sang tiếng Việt" : "Switch to English"}
+            onClick={() => setLang(lang === "en" ? "vi" : "en")}
+          >
             {lang === "en" ? (
               <>
                 <UKFlag /> EN
@@ -97,10 +104,9 @@ const Navbar: React.FC<Props> = () => {
             )}
           </Button>
 
-          {/* User Login */}
-          <Button variant="outline" onClick={() => navigate("/portal")}>
-            <UserIcon />
-          </Button>
+          {/* Nút đăng nhập nội bộ đã chuyển xuống chân trang (24/11/2026): khách
+              không cần nó, mà trên điện thoại nó chiếm chỗ của nút menu. Team
+              vào thẳng /portal hoặc bấm "Đăng nhập nội bộ" ở cuối trang. */}
 
           {/* Let's Talk CTA */}
           <Button
@@ -115,7 +121,9 @@ const Navbar: React.FC<Props> = () => {
           <Button
             variant="outline"
             size="icon-lg"
-            className="lg:hidden"
+            className="h-11 w-11 lg:hidden"
+            aria-label="Mở menu"
+            aria-expanded={mobileOpen}
             onClick={() => setMobileOpen(true)}
           >
             <ListIcon size={20} />
@@ -126,14 +134,9 @@ const Navbar: React.FC<Props> = () => {
         <MobileMenu open={mobileOpen} onClose={() => setMobileOpen(false)} />
       </nav>
 
-      {pathname !== "/" && (
-        <button
-          onClick={() => navigate("/")}
-          className="bg-background/60 text-foreground hover:bg-background/80 border-border fixed top-20 left-3 z-20 flex items-center gap-2 rounded-full border p-2 text-sm font-medium backdrop-blur-sm transition-colors md:left-6 md:p-3"
-        >
-          <ArrowLeftIcon size={25} />
-        </button>
-      )}
+      {/* Nút "quay lại" nổi cố định đã bỏ (24/11/2026): trên điện thoại nó đè
+          lên chữ, thẻ video và ô nhập ở mọi trang con, mà việc nó làm (về trang
+          chủ) logo bên trái đã làm, còn "quay lại" thì trình duyệt sẵn có. */}
     </>
   );
 };

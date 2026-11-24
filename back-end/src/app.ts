@@ -46,7 +46,20 @@ app.use(
 );
 
 // ─── Static files ─────────────────────────────────────────────────────────────
-app.use("/api/public", express.static(join(__dirname, "../public")));
+// Ảnh tải lên được nhớ đệm 30 ngày (24/11/2026). Trước đó trả `max-age=0` nên mỗi
+// lần khách quay lại là tải lại toàn bộ ảnh. AN TOÀN vì tên tệp ảnh luôn mới
+// (buildFilename gắn ngày giờ tải lên): thay ảnh trong Portal là ra tên mới, không
+// có chuyện khách kẹt ảnh cũ. Chỉ áp cho thư mục uploads/, phần còn lại giữ nguyên.
+app.use(
+  "/api/public",
+  express.static(join(__dirname, "../public"), {
+    setHeaders: (res, filePath) => {
+      if (/[\/]uploads[\/]/.test(filePath)) {
+        res.setHeader("Cache-Control", "public, max-age=2592000, immutable");
+      }
+    },
+  }),
+);
 
 // Dedicated video endpoint: express.static supports HTTP Range natively (seek/scrub),
 // and we apply a long immutable cache because filenames are unique (UUID-based).

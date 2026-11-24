@@ -80,7 +80,11 @@ const IMAGE_CHUNK_SIZE = 50 * 1024 * 1024;
  */
 export function resolveAssetUrl(path: string | undefined | null): string {
   if (!path) return "";
-  if (path.startsWith("http")) return path;
+  // Ảnh lưu trong cơ sở dữ liệu nhiều cái mang địa chỉ KHÔNG có www (tải lên lúc
+  // vào Portal bằng beezvn.com). Trình duyệt coi đó là máy chủ khác nên phải mở
+  // thêm một kết nối mã hoá, mất ~300 ms trước tấm ảnh đầu tiên (đo 23/11/2026).
+  // Đưa về www ngay lúc hiển thị — dữ liệu gốc giữ nguyên, không phải sửa DB.
+  if (path.startsWith("http")) return path.replace(/^https?:\/\/(www\.)?beezvn\.com/i, "https://www.beezvn.com");
   // Legacy: /images/x.jpg → /api/public/images/x.jpg
   const normalized = path.startsWith("/api") ? path : `/api/public${path}`;
   return `${API_BASE}${normalized}`;
@@ -425,3 +429,19 @@ export async function waitForVideoReady(
 }
 
 export default apiClient;
+
+/**
+ * Ảnh vừa cỡ chỗ hiện (24/11/2026, mục N4).
+ *
+ * Ảnh tải lên lưu một bản tới 1920px, mà thẻ trên trang chỉ rộng 200–600px.
+ * `srcSetAnh` cho trình duyệt danh sách bản thu nhỏ do máy chủ cắt sẵn
+ * (back-end/routes/anh.ts) để nó tự chọn bản vừa đủ nét với màn hình đang xem.
+ * Chỉ áp cho ảnh nằm trong /api/public/uploads; ảnh khác trả undefined (giữ
+ * nguyên ảnh gốc). Đường dẫn TƯƠNG ĐỐI để luôn đi cùng tên miền với trang.
+ */
+const CO_ANH = [320, 640, 960, 1280] as const;
+export function srcSetAnh(url: string | undefined | null): string | undefined {
+  const m = url?.match(/\/api\/public\/uploads\/([^/?#]+\.(?:webp|jpe?g|png))$/i);
+  if (!m) return undefined;
+  return CO_ANH.map((w) => `/api/anh/${w}/${m[1]} ${w}w`).join(", ");
+}

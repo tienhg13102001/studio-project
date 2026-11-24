@@ -27,9 +27,10 @@ const NAV_ITEMS: {
   // { key: "blog",   to: "/blog" },
   { key: "team", to: "/team" },
   { key: "portfolio", to: "/portfolio" },
-  // KHÔNG hiện "Bảng giá" trong menu — Hoàn chốt: chỉ gửi link tận tay cho
-  // khách khi cần. Trang /bang-gia vẫn sống, chỉ là không có nút dẫn tới.
-  // Muốn bật lại: { key: "pricing", to: "/bang-gia", ngoaiReact: true }
+  // Hiện lại "Bảng giá" (Hoàn chốt 24/11/2026). Mô tả của web trên Google hứa
+  // "giá khởi điểm công khai", mà trước đó không trang nào dẫn tới /bang-gia —
+  // trong khi đó lại là trang máy tìm kiếm và trợ lý AI đọc được nhiều nhất.
+  { key: "pricing", to: "/bang-gia", ngoaiReact: true },
   { key: "contact", to: "/contact" },
 ];
 
@@ -71,7 +72,9 @@ const NavLinks: React.FC<Props> = ({ scrolled }) => {
   };
 
   return (
-    <nav className="hidden items-center gap-8 text-sm font-medium lg:flex">
+    // Khoảng cách co theo bề ngang: thêm mục "Bảng giá" (24/11/2026) thì ở 1280px
+    // chữ "Liên hệ" dính sát số điện thoại nếu vẫn giữ gap-8.
+    <nav className="hidden items-center gap-5 text-sm font-medium lg:flex 2xl:gap-8">
       {NAV_ITEMS.map((item) => (
         <div
           key={item.key}

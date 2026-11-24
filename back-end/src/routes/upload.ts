@@ -238,7 +238,9 @@ function datTrangThai(ten: string, moi: Partial<TrangThaiVideo>): void {
 let hangDoi: Promise<unknown> = Promise.resolve();
 
 /** Nối việc vào cuối hàng. Việc trước hỏng cũng không chặn việc sau. */
-function xepHang<T>(viec: () => Promise<T>): Promise<T> {
+// export: routes/xem-truoc.ts dùng CHUNG hàng này để không bao giờ có hai ffmpeg
+// chạy song song trên máy 2 nhân (24/11/2026).
+export function xepHang<T>(viec: () => Promise<T>): Promise<T> {
   const ketQua = hangDoi.then(viec, viec);
   hangDoi = ketQua.catch(() => {});
   return ketQua;

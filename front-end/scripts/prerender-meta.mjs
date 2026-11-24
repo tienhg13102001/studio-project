@@ -18,7 +18,7 @@ import path from "node:path";
  * được cả nội dung là chuyển sang dựng tĩnh khi xuất bản.
  */
 
-import { khoiLienKet, khoiNoiDung } from "./lien-ket-noi-bo.mjs";
+import { CHAN_TRANG, khoiLienKet, khoiNoiDung, khoiTrang } from "./lien-ket-noi-bo.mjs";
 
 const SITE = "https://www.beezvn.com";
 const DIST = path.resolve(process.cwd(), "dist");
@@ -34,36 +34,19 @@ const API = process.env.PRERENDER_API_URL ?? `${SITE}/api`;
 /** Chờ tối đa ngần này rồi bỏ cuộc — không để bản dựng treo vì API chậm. */
 const API_TIMEOUT_MS = Number(process.env.PRERENDER_TIMEOUT_MS ?? 20000);
 
-const ROUTES = [
-  {
-    path: "/service",
-    title: "Dịch vụ sản xuất video & TVC",
-    description:
-      "Các dịch vụ của Bee Z Production: sản xuất TVC, phim quảng cáo, phim doanh nghiệp, brand film và nội dung mạng xã hội — trọn gói từ ý tưởng tới hậu kỳ.",
-     loai: "tinh",
-  },
-  {
-    path: "/portfolio",
-    title: "Portfolio — dự án đã thực hiện",
-    description:
-      "Tuyển tập TVC, phim doanh nghiệp và hình ảnh hậu trường do Bee Z Production thực hiện cho các thương hiệu tại Việt Nam.",
-     loai: "tinh",
-  },
-  {
-    path: "/team",
-    title: "Đội ngũ",
-    description:
-      "Những người trực tiếp làm nên mỗi dự án của Bee Z Production — đạo diễn, quay phim, dựng phim và sản xuất.",
-     loai: "tinh",
-  },
-  {
-    path: "/contact",
-    title: "Liên hệ",
-    description:
-      "Liên hệ Bee Z Production để nhận tư vấn và báo giá sản xuất TVC, phim doanh nghiệp, brand film tại Hà Nội.",
-     loai: "tinh",
-  },
-];
+/**
+ * Tiêu đề + mô tả các trang tĩnh lấy từ src/data/seo-trang-tinh.json — cùng tệp
+ * mà component Seo dùng lúc chạy JavaScript, nên hai bản không còn lệch nhau.
+ */
+const SEO_TINH = JSON.parse(
+  fs.readFileSync(path.resolve(process.cwd(), "src/data/seo-trang-tinh.json"), "utf8"),
+);
+const ROUTES = ["/service", "/portfolio", "/team", "/contact", "/chinh-sach-bao-mat"].map((p) => ({
+  path: p,
+  title: SEO_TINH[p].title,
+  description: SEO_TINH[p].description,
+  loai: "tinh",
+}));
 
 /** Thoát ký tự đặc biệt để nội dung không phá cấu trúc HTML. */
 const esc = (s) =>
@@ -186,7 +169,7 @@ function duLieuCoCauTruc(route) {
     khoi.push({
       "@context": "https://schema.org",
       "@type": "CreativeWork",
-      name: route.title,
+      name: route.tenThat ?? route.title,
       description: route.description,
       url,
       ...(absUrl(route.image) ? { image: absUrl(route.image) } : {}),
@@ -204,10 +187,33 @@ function duLieuCoCauTruc(route) {
       "@type": "BreadcrumbList",
       itemListElement: [
         { "@type": "ListItem", position: 1, name: "Trang chủ", item: SITE + "/" },
-        { "@type": "ListItem", position: 2, name: "Portfolio", item: SITE + "/portfolio" },
-        { "@type": "ListItem", position: 3, name: route.title, item: url },
+        // Cấp 2 là MẢNG của dự án (khớp đường dẫn hiện trên ProjectPage).
+        route.tenMang
+          ? { "@type": "ListItem", position: 2, name: route.tenMang, item: SITE + route.dichVuPath }
+          : { "@type": "ListItem", position: 2, name: "Portfolio", item: SITE + "/portfolio" },
+        { "@type": "ListItem", position: 3, name: route.tenThat ?? route.title, item: url },
       ],
     });
+    /*
+     * Khai video cho Google (mục Video, kết quả có ảnh video). Ngày đăng đọc từ
+     * TÊN TỆP (máy chủ đặt tên theo lúc tải lên: …-20260612_111328.mp4), chỉ
+     * lấy ngày. Không đọc được thì không khai — không bịa ngày. Giống hệt
+     * ngayDangVideo() trong src/lib/seoTrangTinh.ts.
+     */
+    const ngay = String(route.video ?? "").match(/(20\d{2})(\d{2})(\d{2})_\d{6}/);
+    if (route.video && ngay) {
+      khoi.push({
+        "@context": "https://schema.org",
+        "@type": "VideoObject",
+        name: route.tenThat ?? route.title,
+        description: route.description,
+        ...(absUrl(route.image) ? { thumbnailUrl: absUrl(route.image) } : {}),
+        uploadDate: `${ngay[1]}-${ngay[2]}-${ngay[3]}`,
+        contentUrl: absUrl(route.video),
+        url,
+        publisher: { "@id": `${SITE}/#organization` },
+      });
+    }
   }
 
   if (route.loai === "tinh") {
@@ -304,8 +310,15 @@ function renderPage(route, dsDichVu = [], dsDuAn = []) {
     // trong thẻ meta, trang tĩnh thì nội dung nằm trong mã nguồn giao diện.
     noiDung:
       route.loai === "du-an"
-        ? khoiNoiDung({ ten: route.tenThat ?? route.title, caseStudy: route.caseStudy })
-        : "",
+        ? khoiNoiDung({ ten: route.tenThat ?? route.title, caseStudy: route.caseStudy }) + CHAN_TRANG
+        : route.loai === "dich-vu"
+          ? khoiTrang({
+              h1: route.tenThat,
+              doan: [route.moTaDay],
+              muc: route.noiBat,
+              hoiDap: (route.faqs ?? []).map((f) => ({ q: f.question?.vi, a: f.answer?.vi })),
+            })
+          : khoiTrangTinh(route.path, dsDichVu),
   });
   if (lienKet) {
     // Khớp cả khi #root ĐÃ có link — bước trang chủ ghi đè lên chính file gốc,
@@ -376,6 +389,9 @@ async function detailRoutes() {
       loai: "dich-vu",
       tenThat: s.title?.vi || s.title?.en || "Dịch vụ",
       faqs: s.faqs ?? [],
+      // Cho khối chữ thật trong HTML thô (khoiTrang): đúng chữ trang hiện ra.
+      moTaDay: s.description?.vi || "",
+      noiBat: (s.highlights ?? []).map((h) => ({ h: h.title?.vi || "", p: h.desc?.vi || "" })),
     });
 
     /**
@@ -514,9 +530,14 @@ async function detailRoutes() {
       ". Xem phim, hình ảnh và thông tin dự án tại beezvn.com.",
     ].join("");
 
+    // Nhãn mảng gắn vào tiêu đề ("MSI · Quay chụp sự kiện") — cùng nguồn với
+    // ProjectPage.tsx (src/data/seo-trang-tinh.json, khoá _nhanMang).
+    const nhan = SEO_TINH._nhanMang?.[serviceSlug] ?? "";
     routes.push({
       path: p.slug ? `/du-an/${p.slug}` : `/service/${serviceSlug || serviceId}/${p.id}`,
-      title: tieuDe,
+      title: nhan ? `${tieuDe} · ${nhan}` : tieuDe,
+      tenMang,
+      video: p.video,
       // Tên thật (chưa gắn tháng) dùng cho JSON-LD và cho khối link nội bộ.
       tenThat: tenGoc,
       description: trim(phuDeThat || moTaGhep),
@@ -530,6 +551,14 @@ async function detailRoutes() {
   }
 
   return routes;
+}
+
+// Dòng chữ màn đầu trang chủ (Portal → Trang chủ) cho khối chữ thật của trang chủ.
+let landing = null;
+try {
+  landing = await fetchJson(`${API}/landing?lang=vi`);
+} catch (e) {
+  console.warn(`  ! Không lấy được /landing (${e.message}) — trang chủ chỉ có link + chân trang.`);
 }
 
 let details = [];
@@ -553,8 +582,31 @@ try {
  * API hỏng thì `details` rỗng: trang tĩnh vẫn dựng, chỉ là không có link dự án.
  */
 const dsDichVu = details
-  .filter((r) => r.loai === "dich-vu")
-  .map((r) => ({ path: r.path, title: r.tenThat ?? r.title }));
+  // Bỏ các bản trùng theo mã máy (/service/6a1e…): chúng có `canonicalTo` trỏ về
+  // địa chỉ tên thật. Thiếu điều kiện này thì 85/86 trang mang 12 link dịch vụ
+  // thay vì 6 — một nửa trỏ vào địa chỉ mã máy (đo 23/11/2026).
+  .filter((r) => r.loai === "dich-vu" && !r.canonicalTo)
+  .map((r) => ({ path: r.path, title: r.tenThat ?? r.title, moTa: r.moTaDay }));
+
+/**
+ * Chữ thật cho các trang tĩnh trong HTML thô — chỉ thứ trang thật hiện ra:
+ * tiêu đề lớn, dòng phụ, danh sách mảng (trang /service hiện thẻ có mô tả), và
+ * chân trang. (Mục N2, 24/11/2026.)
+ */
+function khoiTrangTinh(duong, dsDV) {
+  if (duong === "/service")
+    return khoiTrang({
+      h1: "Lĩnh vực hoạt động",
+      doan: ["Từ TVC truyền hình đến video ngắn cho mạng xã hội"],
+      muc: dsDV.map((d) => ({ h: d.title, p: d.moTa })),
+    });
+  if (duong === "/portfolio") return khoiTrang({ h1: "Portfolio", doan: ["Vài dự án và hình ảnh tiêu biểu."] });
+  if (duong === "/team") return khoiTrang({ h1: "Đội ngũ" });
+  if (duong === "/contact")
+    return khoiTrang({ h1: "Liên hệ", doan: ["Cần hỏi về dịch vụ, báo giá hay bất cứ điều gì, cứ nhắn. Bee Z trả lời."] });
+  if (duong === "/chinh-sach-bao-mat") return khoiTrang({ h1: "Chính sách bảo mật" });
+  return CHAN_TRANG;
+}
 const dsDuAn = details
   .filter((r) => r.loai === "du-an")
   .map((r) => ({ path: r.path, title: r.tenThat ?? r.title, dichVuPath: r.dichVuPath }));
@@ -590,6 +642,11 @@ const lienKetTrangChu = khoiLienKet({
   duAn: dsDuAn,
   duongDanHienTai: "/",
   loai: "tinh",
+  noiDung: khoiTrang({
+    h1: [landing?.heroLine1?.vi, landing?.heroLine2?.vi].filter(Boolean).join(" ") || "Bee Z Production",
+    doan: [landing?.subheading?.vi],
+    muc: dsDichVu.map((d) => ({ h: d.title, p: d.moTa })),
+  }),
 });
 if (lienKetTrangChu) {
   const goc = fs.readFileSync(indexPath, "utf8");

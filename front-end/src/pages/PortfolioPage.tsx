@@ -1,4 +1,5 @@
 import Seo from "#components/Seo";
+import { seoTrangTinh } from "#lib/seoTrangTinh";
 import PageHero from "#components/organisms/PageHero";
 import ProfileStrip from "#components/organisms/ProfileStrip";
 import WorkLibrary from "#components/organisms/WorkLibrary";
@@ -35,26 +36,12 @@ const PortfolioPage = () => {
 
   return (
     <div className="min-h-screen pt-17">
-      <Seo
-        title="Portfolio"
-        description="Hồ sơ năng lực và toàn bộ dự án đã thực hiện của Bee Z Production — TVC, sự kiện, F&B, lookbook, nội dung mạng xã hội. Lọc theo mảng việc, xem video từng dự án."
-        path="/portfolio"
-      />
+      <Seo {...seoTrangTinh("/portfolio")} path="/portfolio" />
 
       <PageHero title="Portfolio" subtitle={t.portfolio.subtitle} />
 
-      {dangTaiHoSo ? (
-        <div className="flex gap-4 px-6 pb-4">
-          {Array.from({ length: 4 }).map((_, i) => (
-            <div
-              key={i}
-              className="border-border/60 bg-foreground/5 h-[300px] w-[220px] shrink-0 animate-pulse rounded-xl border md:h-[420px] md:w-[320px]"
-            />
-          ))}
-        </div>
-      ) : (
-        <ProfileStrip items={hoSo ?? []} />
-      )}
+      {/* Khung chờ nằm TRONG ProfileStrip để có cả phần tiêu đề — hết giật bố cục. */}
+      <ProfileStrip items={hoSo ?? []} dangTai={dangTaiHoSo} />
 
       {dangTaiDuAn ? (
         <div className="mx-auto grid max-w-7xl grid-cols-2 gap-4 px-6 py-12 md:grid-cols-4">

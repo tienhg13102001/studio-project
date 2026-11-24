@@ -21,6 +21,8 @@ import trashRouter from "./trash.ts";
 import uploadRouter from "./upload.ts";
 import usersRouter from "./users.ts";
 import visitorsRouter from "./visitors.ts";
+import anhRouter from "./anh.ts";
+import xemTruocRouter from "./xem-truoc.ts";
 
 /**
  * Gom toàn bộ route của API vào một chỗ. `app.ts` chỉ việc mount router này
@@ -235,6 +237,10 @@ router.use("/brands", brandsRouter);
 router.use("/portfolio", portfolioRouter);
 router.use("/auth", authRouter);
 router.use("/upload", uploadRouter);
+// Ảnh thu nhỏ theo cỡ (chỉ GET, công khai) — xem routes/anh.ts.
+router.use("/anh", anhRouter);
+// Đoạn video xem trước khi rê chuột (chỉ GET, công khai) — xem routes/xem-truoc.ts.
+router.use("/xem-truoc", xemTruocRouter);
 router.use("/team-content", teamContentRouter);
 router.use("/testimonials", testimonialsRouter);
 router.use("/settings", settingsRouter);

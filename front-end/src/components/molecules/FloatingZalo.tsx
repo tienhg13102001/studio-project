@@ -20,10 +20,14 @@ export default function FloatingZalo() {
       target="_blank"
       rel="noopener noreferrer"
       aria-label="Chat Zalo với Bee Z Production"
-      className="group focus-visible:ring-primary fixed right-5 bottom-5 z-30 flex h-13 w-13 items-center justify-center rounded-full shadow-lg transition-transform hover:scale-110 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none motion-reduce:transition-none motion-reduce:hover:scale-100 md:right-6 md:bottom-6"
+      className="group focus-visible:ring-primary fixed right-5 bottom-5 z-30 hidden h-13 w-13 md:flex items-center justify-center rounded-full shadow-lg transition-transform hover:scale-110 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none motion-reduce:transition-none motion-reduce:hover:scale-100 md:right-6 md:bottom-6"
     >
-      {/* Vòng sáng lan toả — chỉ để hút mắt, tắt khi người dùng giảm chuyển động. */}
-      <span className="absolute inset-0 animate-ping rounded-full bg-[#0068FF]/40 motion-reduce:hidden" />
+      {/* Vòng sáng lan toả: nháy 3 lần lúc vào trang rồi thôi (24/11/2026). Lặp
+          mãi thì nó tranh mắt với video ở màn đầu. Tắt hẳn khi giảm chuyển động. */}
+      <span
+        className="absolute inset-0 animate-ping rounded-full bg-[#0068FF]/40 motion-reduce:hidden"
+        style={{ animationIterationCount: 3 }}
+      />
       <LogoZalo className="relative h-full w-full rounded-full" />
       {/* Nhãn chỉ hiện khi trỏ chuột trên máy tính. */}
       <span className="bg-card text-foreground border-border pointer-events-none absolute right-full mr-3 hidden rounded-lg border px-3 py-1.5 text-sm whitespace-nowrap opacity-0 shadow-md transition-opacity group-hover:opacity-100 lg:block">

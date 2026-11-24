@@ -176,3 +176,53 @@ export function khoiNoiDung({ ten, caseStudy }) {
     `</article>`
   );
 }
+
+/**
+ * Thông tin chân trang — CÓ HIỆN trên mọi trang (Footer.tsx), nên đưa vào HTML
+ * thô là đúng chữ khách thấy. Trước 24/11/2026 bot không chạy JavaScript (ChatGPT,
+ * Claude, Perplexity) đọc trang chủ và /contact mà KHÔNG thấy địa chỉ hay số điện
+ * thoại nào, trong khi llms.txt lại bảo chúng vào /contact để lấy.
+ * Đổi thông tin thì sửa cùng lúc ở: index.html (JSON-LD), public/llms.txt, đây.
+ */
+export const CHAN_TRANG =
+  "<footer>" +
+  "<p>Bee Z Production · CÔNG TY TNHH TRUYỀN THÔNG BEE Z PRODUCTION · MST 0110989139</p>" +
+  "<p>Địa chỉ: Số 54, Ngõ 250 Khương Trung, Khương Đình, Hà Nội</p>" +
+  "<p>Điện thoại / Zalo: 0967 33 55 77 · Email: BeeZ.fw@gmail.com</p>" +
+  "<p>Giờ làm việc: Thứ 2 – Thứ 6 9:00–18:00 · Thứ 7 10:00–16:00 · Chủ nhật nghỉ</p>" +
+  "</footer>";
+
+/**
+ * Chữ THẬT của trang dịch vụ / trang chủ / trang tĩnh cho HTML thô (24/11/2026,
+ * mục N2). Cùng lập luận với khoiNoiDung(): chỉ những chữ trang thật sự hiện ra
+ * sau khi chạy (tên, mô tả, các điểm nổi bật, hỏi-đáp), React thay nguyên khối
+ * ngay khi khởi động. Đo 23/11: bot không chạy JS thấy trang chủ 59 chữ trên
+ * 2.619 (~2%), trang TVC 129 trên 2.176.
+ *
+ * KHÔNG dùng <div> (xem chú thích khoiNoiDung).
+ *
+ * @param {object} p
+ * @param {string} p.h1
+ * @param {string[]} [p.doan]    các đoạn mở đầu
+ * @param {{h:string,p:string}[]} [p.muc]   các mục có tiêu đề nhỏ
+ * @param {{q:string,a:string}[]} [p.hoiDap]
+ */
+export function khoiTrang({ h1, doan = [], muc = [], hoiDap = [] }) {
+  if (!h1) return CHAN_TRANG;
+  const ps = (s) =>
+    String(s ?? "")
+      .split(/\n{2,}/)
+      .map((x) => x.trim())
+      .filter(Boolean)
+      .map((x) => `<p>${esc(x)}</p>`)
+      .join("");
+  const phanMuc = muc
+    .filter((m) => m.h?.trim())
+    .map((m) => `<h2>${esc(m.h.trim())}</h2>${ps(m.p)}`)
+    .join("");
+  const hd = hoiDap.filter((x) => x.q?.trim() && x.a?.trim());
+  const phanHd = hd.length
+    ? "<h2>Câu hỏi thường gặp</h2>" + hd.map((x) => `<h3>${esc(x.q.trim())}</h3>${ps(x.a)}`).join("")
+    : "";
+  return `<article><h1>${esc(h1)}</h1>${doan.map(ps).join("")}${phanMuc}${phanHd}</article>${CHAN_TRANG}`;
+}

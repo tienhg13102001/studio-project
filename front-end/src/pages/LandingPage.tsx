@@ -7,9 +7,7 @@ import ProductGallery from "#components/organisms/ProductGallery";
 import ServiceSection from "#components/organisms/ServiceSection";
 import StatsAndBrands from "#components/organisms/StatsAndBrands";
 import TestimonialSection from "#components/organisms/TestimonialSection";
-import { useContact } from "#hooks/useContact";
-import { useLanguage } from "#i18n";
-import { organizationSchema, websiteSchema } from "#lib/structuredData";
+import { websiteSchema } from "#lib/structuredData";
 
 /**
  * ĐÃ BỎ MÀN HÌNH CHỜ — Hoàn chốt ngày 21/08/2026.
@@ -31,10 +29,10 @@ import { organizationSchema, websiteSchema } from "#lib/structuredData";
  * và không tốn một đồng SEO nào.
  */
 const LandingPage = () => {
-  const { lang } = useLanguage();
-  // Dùng thông tin liên hệ thật đã nhập trong phần Cài đặt web để khai báo với
-  // Google/trợ lý AI — không hardcode để khỏi lệch khi đổi số điện thoại/địa chỉ.
-  const { data: contact } = useContact();
+  // Thông tin doanh nghiệp (ProfessionalService, "@id" #organization) nay nằm
+  // tĩnh trong index.html — một nguồn duy nhất, bot không chạy JS cũng đọc được.
+  // Trước 24/11/2026 trang này dựng thêm một khối LocalBusiness thứ hai từ Portal,
+  // lệch email và link mạng xã hội với khối kia.
 
   return (
     <>
@@ -47,7 +45,7 @@ const LandingPage = () => {
         titleTemplate={false}
         description="Bee Z Production sản xuất TVC, phim quảng cáo, video sự kiện và nội dung mạng xã hội tại Hà Nội và TP.HCM. Giá khởi điểm công khai từ 50 triệu."
         path="/"
-        jsonLd={[organizationSchema(contact, lang), websiteSchema()]}
+        jsonLd={websiteSchema()}
       />
       <div className="selection:text-primary relative flex w-full flex-col font-sans text-white antialiased">
         <HeroSection />

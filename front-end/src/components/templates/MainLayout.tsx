@@ -4,6 +4,7 @@ import Footer from "../organisms/Footer";
 import Navbar from "../organisms/Navbar";
 import ScrollToTop from "../atoms/ScrollToTop";
 import FloatingZalo from "#components/molecules/FloatingZalo";
+import ThanhLienHeDiDong from "#components/molecules/ThanhLienHeDiDong";
 import { useSettings } from "#hooks/useSettings";
 import { usePageView } from "#hooks/usePageView";
 
@@ -39,7 +40,11 @@ const MainLayout: React.FC<Props> = () => {
         <Outlet />
       </div>
       <Footer />
+      {/* Chừa chỗ cho thanh liên hệ đáy màn hình trên điện thoại, để nó không
+          che dòng cuối của chân trang. */}
+      <div aria-hidden="true" className="h-20 md:hidden" />
       <FloatingZalo />
+      <ThanhLienHeDiDong />
 
       {/*
         Ảnh nền chung cho mọi trang khách, lấy từ mục Cài đặt trong portal.

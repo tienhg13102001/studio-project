@@ -1,4 +1,5 @@
 import Seo from "#components/Seo";
+import { seoTrangTinh } from "#lib/seoTrangTinh";
 import PageHero from "#components/organisms/PageHero";
 import ServiceCard from "#components/molecules/ServiceCard";
 import Reveal from "#components/Reveal";
@@ -12,11 +13,7 @@ const ServicesPage = () => {
 
   return (
     <div className="min-h-screen">
-      <Seo
-        title={t.services.sectionTitle}
-        description={t.services.sectionSubtitle}
-        path="/service"
-      />
+      <Seo {...seoTrangTinh("/service")} path="/service" />
       <PageHero title={t.services.sectionTitle} subtitle={t.services.sectionSubtitle} />
 
       <section className="mx-auto max-w-7xl px-4 pb-24 sm:px-6 lg:px-8">
@@ -34,7 +31,7 @@ const ServicesPage = () => {
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
             {services?.map((service, i) => (
               <Reveal key={service.id} delay={i * 80} className="h-full">
-                <ServiceCard service={service} />
+                <ServiceCard service={service} uuTien={i < 3} />
               </Reveal>
             ))}
           </div>

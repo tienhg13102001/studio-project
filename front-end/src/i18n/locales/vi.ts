@@ -18,7 +18,7 @@ const vi = {
     portfolio: "Portfolio",
     pricing: "Bảng giá",
     contact: "Liên hệ",
-    letsTalk: "Kết Nối",
+    letsTalk: "Nhận báo giá",
   },
   portfolio: {
     subtitle: "Vài dự án và hình ảnh tiêu biểu.",
@@ -37,7 +37,7 @@ const vi = {
     nextPage: "Trang sau",
   },
   cta: {
-    contactBeez: "Liên hệ Bee Z",
+    contactBeez: "Nhận báo giá",
     viewMyWorkss: "Xem dịch vụ",
   },
   services: {
@@ -139,6 +139,10 @@ const vi = {
     followUs: "Theo dõi",
     rights: "Bản quyền © {year} Bee Z Production.",
     visitors: "Lượt truy cập",
+    legal: "CÔNG TY TNHH TRUYỀN THÔNG BEE Z PRODUCTION · MST 0110989139",
+    profile: "Hồ sơ năng lực (PDF)",
+    privacy: "Chính sách bảo mật",
+    internal: "Đăng nhập nội bộ",
   },
   contact: {
     title: "Liên hệ",
@@ -192,15 +196,28 @@ const vi = {
     } as Record<string, string>,
     heroTagline:
       "Talking head, motion graphics, meme và video bắt trend, làm cho mọi ngành hàng.",
-    startProject: "Bắt đầu dự án",
+    startProject: "Nhận báo giá",
+    xemBangGia: "Xem bảng giá công khai",
     viewWork: "Xem dự án",
     faqTitle: "Câu hỏi thường gặp",
     showcaseTitle: "Thư viện video",
-    showcaseSubtitle: "Một số dự án nội dung dạng ngắn của chúng tôi",
+    showcaseSubtitle: "Một số dự án Bee Z đã làm",
+    // {ten} = tên mảng dịch vụ viết thường, ví dụ "sản xuất tvc".
+    showcaseSubtitleOf: "Một số dự án {ten} Bee Z đã làm",
     featuredBadge: "Nổi bật",
-    ctaTitle: "Bắt đầu làm nội dung ngắn?",
-    ctaSubtitle: "Nhắn cho Bee Z để bàn hướng làm",
-    ctaButton: "Bắt đầu ngay",
+    ctaTitle: "Có dự án cần làm?",
+    ctaSubtitle: "Gửi brief cho Bee Z, nhận đề xuất và báo giá trong 2–3 ngày làm việc.",
+    ctaButton: "Nhận báo giá",
+    // Lời kêu gọi riêng từng mảng, khoá theo slug. Trước đây mọi trang (kể cả
+    // TVC, cưới) đều kết bằng câu của trang nội dung ngắn vì dùng chung một khoá.
+    ctaTitleBySlug: {
+      "san-xuat-tvc": "Có TVC cần sản xuất?",
+      "do-an-thuc-uong-f-b": "Cần ảnh và video cho món ăn, sản phẩm?",
+      "lookbook-thoi-trang": "Sắp ra bộ sưu tập mới?",
+      "noi-dung-dang-ngan": "Bắt đầu làm nội dung ngắn?",
+      "quay-phim-chup-anh-su-kien": "Sắp có sự kiện cần ghi hình?",
+      "quay-phim-chup-anh-cuoi": "Sắp tổ chức đám cưới?",
+    } as Record<string, string>,
     highlights: [
       {
         title: "Talking Head",

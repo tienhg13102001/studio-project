@@ -8,7 +8,7 @@ import {
   RocketLaunchIcon,
   StarIcon,
 } from "@phosphor-icons/react";
-import { apiFetch, resolveAssetUrl } from "#lib/api";
+import { apiFetch, resolveAssetUrl, srcSetAnh } from "#lib/api";
 import CountUp from "#components/molecules/CountUp";
 import HighlightIcon from "#components/HighlightIcon";
 import { useLanguage, useTranslation, type Lang } from "#i18n";
@@ -346,6 +346,24 @@ const ServicePage: React.FC = () => {
 
       {/* ── Hero ─────────────────────────────────────────────────────────── */}
       <section className="relative overflow-hidden px-6 pt-36 pb-20 text-center md:pb-28">
+        {/* Ảnh của mảng làm nền màn đầu (24/11/2026, mục G10): trước đó màn đầu
+            toàn chữ, trên điện thoại là 7 dòng chữ — trang TVC là trang ra tiền
+            mà không có một khung hình nào. Ảnh mờ phía sau, phủ tối dần về đáy
+            để chữ vẫn đọc rõ; cỡ ảnh theo màn hình qua srcset. */}
+        {imageUrl && (
+          <>
+            <img
+              src={imageUrl}
+              srcSet={srcSetAnh(imageUrl)}
+              sizes="100vw"
+              alt=""
+              aria-hidden="true"
+              fetchPriority="high"
+              className="pointer-events-none absolute inset-0 h-full w-full object-cover opacity-35"
+            />
+            <div className="from-background/50 via-background/75 to-background pointer-events-none absolute inset-0 bg-linear-to-b" />
+          </>
+        )}
         {/* Base wash — fades to transparent at the bottom so the global page
             background flows continuously into the FAQ (no hard seam). */}
         <div className="from-primary/15 via-background pointer-events-none absolute inset-0 bg-linear-to-b to-transparent" />
@@ -393,12 +411,13 @@ const ServicePage: React.FC = () => {
           </TieuDeMang>
 
           <p
-            className={`text-muted-foreground mx-auto mt-6 max-w-2xl text-base leading-relaxed md:text-lg ${reveal("delay-200")}`}
+            /* Trên điện thoại gọn 3 dòng (trước là 7 dòng chữ chiếm cả màn đầu). */
+            className={`text-muted-foreground mx-auto mt-6 line-clamp-3 max-w-2xl text-base leading-relaxed md:line-clamp-none md:text-lg ${reveal("delay-200")}`}
           >
             {description}
           </p>
           <p
-            className={`text-muted-foreground/70 mx-auto mt-3 max-w-2xl text-sm leading-relaxed ${reveal("delay-300")}`}
+            className={`text-muted-foreground/70 mx-auto mt-3 hidden max-w-2xl text-sm leading-relaxed md:block ${reveal("delay-300")}`}
           >
             {heroTagline}
           </p>
@@ -424,6 +443,15 @@ const ServicePage: React.FC = () => {
               </a>
             </Button>
           </div>
+          {/* Link thẳng tới bảng giá công khai (24/11/2026). Thẻ <a> thường vì
+              /bang-gia là trang tĩnh ngoài React. Khách hỏi giá là câu đầu tiên,
+              và đây cũng là đường để máy tìm kiếm thấy trang giá từ trang dịch vụ. */}
+          <a
+            href="/bang-gia"
+            className={`text-muted-foreground hover:text-primary mt-5 inline-block text-sm underline underline-offset-4 transition-colors ${reveal("delay-500")}`}
+          >
+            {t.service.xemBangGia}
+          </a>
         </div>
       </section>
 
@@ -433,7 +461,19 @@ const ServicePage: React.FC = () => {
           <Reveal>
             <div className="mb-10 text-center">
               <h2 className="text-foreground text-3xl font-bold">{t.service.showcaseTitle}</h2>
-              <p className="text-muted-foreground mt-2 text-sm">{t.service.showcaseSubtitle}</p>
+              <p className="text-muted-foreground mt-2 text-sm">
+                {title
+                  ? t.service.showcaseSubtitleOf.replace(
+                      "{ten}",
+                      // Viết thường để vào giữa câu, nhưng GIỮ chữ viết tắt
+                      // ("Sản Xuất TVC" → "sản xuất TVC", không thành "tvc").
+                      title
+                        .split(" ")
+                        .map((w) => (w.length > 1 && w === w.toLocaleUpperCase(lang) ? w : w.toLocaleLowerCase(lang)))
+                        .join(" "),
+                    )
+                  : t.service.showcaseSubtitle}
+              </p>
             </div>
           </Reveal>
 
@@ -447,6 +487,8 @@ const ServicePage: React.FC = () => {
                 >
                   <img
                     src={resolveAssetUrl(f.thumbnailImage)}
+                    srcSet={srcSetAnh(resolveAssetUrl(f.thumbnailImage))}
+                    sizes="(min-width: 1024px) 20vw, (min-width: 640px) 33vw, 50vw"
                     alt={f.title}
                     className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                   
@@ -463,7 +505,10 @@ const ServicePage: React.FC = () => {
                   </span>
 
                   {/* Featured badge */}
-                  {f.prominent && (
+                  {/* Chỉ 4 dự án nổi bật đầu tiên mang nhãn: trong Portal gần như
+                      dự án nào cũng được đánh dấu nổi bật, nhãn trên mọi thẻ thì
+                      không còn nghĩa là "nổi bật" nữa. */}
+                  {f.prominent && projects.filter((p) => p.prominent).indexOf(f) < 4 && (
                     <span className="bg-primary text-primary-foreground absolute top-3 left-3 flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold">
                       <StarIcon size={11} weight="fill" />
                       {t.service.featuredBadge}
@@ -472,7 +517,8 @@ const ServicePage: React.FC = () => {
 
                   <div className="absolute right-0 bottom-0 left-0 p-3">
                     <p className="line-clamp-2 text-sm font-semibold text-white">{f.title}</p>
-                    <p className="text-xs text-white/70">{localized(f.subtitle, lang)}</p>
+                    {/* Một dòng thôi: trên điện thoại mô tả dài từng phủ kín cả ảnh. */}
+                    <p className="line-clamp-1 text-xs text-white/70">{localized(f.subtitle, lang)}</p>
                   </div>
                 </button>
               </Reveal>
@@ -574,7 +620,7 @@ const ServicePage: React.FC = () => {
       )}
 
       {/* ── CTA ──────────────────────────────────────────────────────────── */}
-      <CTASection />
+      <CTASection title={service.slug ? t.service.ctaTitleBySlug[service.slug] : undefined} />
 
       {selectedProject && (
         <ProjectDetail project={toProjectDisplay(selectedProject, lang)} onClose={closeProject} />

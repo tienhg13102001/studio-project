@@ -6,6 +6,16 @@
 // HighlightIcon.tsx. The admin picker uses iconRegistry directly to offer all
 // icons. Stored values are canonical phosphor names (e.g. "MicrophoneStageIcon").
 import {
+  ArrowsClockwiseIcon,
+  AtomIcon,
+  BriefcaseIcon,
+  ClockCountdownIcon,
+  CrownSimpleIcon,
+  DeviceMobileCameraIcon,
+  FolderOpenIcon,
+  HeartIcon,
+  ReceiptIcon,
+  SmileyIcon,
   CameraIcon,
   DeviceMobileIcon,
   FilmSlateIcon,
@@ -43,6 +53,19 @@ export const COMMON_ICONS: Record<string, Icon> = {
   LightningIcon,
   MegaphoneIcon,
   UsersThreeIcon,
+  // Thêm 24/11/2026: đúng những biểu tượng 6 trang dịch vụ đang dùng (đọc từ
+  // /api/services). Thiếu chúng thì 5/6 trang dịch vụ kéo nguyên gói 4,48 MB
+  // (iconRegistry) chỉ để vẽ khoảng 10 biểu tượng. Mỗi cái chỉ vài trăm byte.
+  ArrowsClockwiseIcon,
+  AtomIcon,
+  BriefcaseIcon,
+  ClockCountdownIcon,
+  CrownSimpleIcon,
+  DeviceMobileCameraIcon,
+  FolderOpenIcon,
+  HeartIcon,
+  ReceiptIcon,
+  SmileyIcon,
 };
 
 /** Back-compat: earlier data/seeds stored short alias keys → canonical names. */

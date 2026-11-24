@@ -1,4 +1,5 @@
 import Seo from "#components/Seo";
+import { seoTrangTinh } from "#lib/seoTrangTinh";
 import PageHero from "#components/organisms/PageHero";
 import WhoWeAre from "#components/organisms/WhoWeAre";
 import MeetOurTeam from "#components/organisms/MeetOurTeam";
@@ -9,11 +10,7 @@ const TeamPage = () => {
 
   return (
     <div className="min-h-screen">
-      <Seo
-        title="Đội ngũ"
-        description="Gặp gỡ đội ngũ sáng tạo của Bee Z Production — những con người đam mê đứng sau mỗi TVC, phim quảng cáo và brand film."
-        path="/team"
-      />
+      <Seo {...seoTrangTinh("/team")} path="/team" />
       <PageHero
         title={
           <>

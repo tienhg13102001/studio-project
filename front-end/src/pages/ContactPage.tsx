@@ -1,6 +1,7 @@
 import PageHero from "#components/organisms/PageHero";
 import Reveal from "#components/Reveal";
 import Seo from "#components/Seo";
+import { seoTrangTinh } from "#lib/seoTrangTinh";
 import { Button } from "#components/ui/button";
 import { Input } from "#components/ui/input";
 import { Label } from "#components/ui/label";
@@ -105,11 +106,7 @@ const ContactPage: React.FC = () => {
 
   return (
     <div className="min-h-screen">
-      <Seo
-        title="Liên hệ"
-        description="Liên hệ Bee Z Production để bắt đầu dự án video tiếp theo của bạn — TVC, phim quảng cáo, brand film. Đội ngũ tại Hà Nội luôn sẵn sàng tư vấn."
-        path="/contact"
-      />
+      <Seo {...seoTrangTinh("/contact")} path="/contact" />
       <PageHero
         title={localized(contact.heading, lang)}
         subtitle={localized(contact.subheading, lang)}
@@ -246,13 +243,15 @@ const ContactPage: React.FC = () => {
                     <Label className="text-foreground mb-1 text-xs">
                       {t.contact.nameLabel} <span className="text-primary">*</span>
                     </Label>
+                    {/* Ô nhập chữ 16px, cao 44px trên điện thoại (24/11/2026): chữ nhỏ
+                        hơn 16px thì iPhone tự phóng to cả trang khi chạm vào ô. */}
                     <Input
                       type="text"
                       required
                       placeholder={t.contact.namePlaceholder}
                       value={form.name}
                       onChange={set("name")}
-                      className="border-border bg-background/60 text-foreground placeholder:text-muted-foreground focus:border-primary"
+                      className="border-border bg-background/60 text-foreground placeholder:text-muted-foreground focus:border-primary h-11 text-base md:h-9 md:text-sm"
                     />
                   </div>
 
@@ -266,7 +265,7 @@ const ContactPage: React.FC = () => {
                       placeholder="email@example.com"
                       value={form.email}
                       onChange={set("email")}
-                      className="border-border bg-background/60 text-foreground placeholder:text-muted-foreground focus:border-primary"
+                      className="border-border bg-background/60 text-foreground placeholder:text-muted-foreground focus:border-primary h-11 text-base md:h-9 md:text-sm"
                     />
                   </div>
 
@@ -279,7 +278,7 @@ const ContactPage: React.FC = () => {
                       placeholder="+84 xxx xxx xxx"
                       value={form.phone}
                       onChange={set("phone")}
-                      className="border-border bg-background/60 text-foreground placeholder:text-muted-foreground focus:border-primary"
+                      className="border-border bg-background/60 text-foreground placeholder:text-muted-foreground focus:border-primary h-11 text-base md:h-9 md:text-sm"
                     />
                   </div>
 
@@ -289,7 +288,7 @@ const ContactPage: React.FC = () => {
                       value={form.service}
                       onValueChange={(v) => setForm((prev) => ({ ...prev, service: v }))}
                     >
-                      <SelectTrigger className="border-border bg-background/60 text-foreground focus:border-primary focus:ring-primary w-full rounded-lg border px-4 py-2.5 text-sm transition-colors focus:ring-1 focus:outline-none">
+                      <SelectTrigger className="border-border bg-background/60 text-foreground focus:border-primary focus:ring-primary h-11 w-full rounded-lg border px-4 py-2.5 text-base transition-colors focus:ring-1 focus:outline-none md:h-auto md:text-sm">
                         <SelectValue placeholder={t.contact.servicePlaceholder} />
                       </SelectTrigger>
                       <SelectContent>
@@ -312,7 +311,7 @@ const ContactPage: React.FC = () => {
                       placeholder={t.contact.messagePlaceholder}
                       value={form.message}
                       onChange={set("message")}
-                      className="border-border bg-background/60 text-foreground placeholder:text-muted-foreground focus:border-primary min-h-25"
+                      className="border-border bg-background/60 text-foreground placeholder:text-muted-foreground focus:border-primary min-h-25 text-base md:text-sm"
                     />
                   </div>
 

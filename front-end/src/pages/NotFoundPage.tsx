@@ -7,7 +7,7 @@ import {
   PlayCircleIcon,
 } from "@phosphor-icons/react";
 import type { CSSProperties } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import LogoYellow from "../assets/icons/LogoYellow";
 
 /** Decorative film icons that drift around the background. */
@@ -22,7 +22,7 @@ const NotFoundPage = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="text-foreground relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-[#0a0a0a] px-6 font-sans">
+    <div className="text-foreground relative flex min-h-[85vh] flex-col items-center justify-center overflow-hidden bg-[#0a0a0a] px-6 pt-24 pb-16 font-sans">
       <Seo title="404 — Không tìm thấy trang" description="Trang bạn tìm không tồn tại." noindex />
 
       {/* ── Drifting brand-tinted glow blobs ── */}
@@ -57,19 +57,17 @@ const NotFoundPage = () => {
         <div className="mb-2 flex items-center gap-3">
           <div className="bg-primary h-px w-10" />
           <span className="text-primary text-xs font-medium tracking-[0.3em] uppercase">
-            Page not found
+            Không tìm thấy trang
           </span>
           <div className="bg-primary h-px w-10" />
         </div>
 
         <h1 className="animate-nf-glitch text-5xl leading-none font-bold text-white md:text-7xl">
-          Lost in frame
+          Lạc khỏi khung hình
         </h1>
 
         <p className="text-muted-foreground mt-2 max-w-sm text-sm leading-relaxed md:text-base">
-          Trang bạn tìm không tồn tại hoặc đã bị xoá.
-          <br />
-          Hãy quay lại trang chủ.
+          Trang bạn tìm không tồn tại hoặc đã được chuyển đi chỗ khác.
         </p>
 
         <button
@@ -78,6 +76,14 @@ const NotFoundPage = () => {
         >
           Về trang chủ
         </button>
+
+        {/* Lối đi tiếp cho người lạc đường — và cho máy quét đang dò link. */}
+        <nav aria-label="Trang chính" className="text-muted-foreground mt-4 flex flex-wrap justify-center gap-x-5 gap-y-2 text-sm">
+          <Link to="/service" className="hover:text-primary transition-colors">Dịch vụ</Link>
+          <Link to="/portfolio" className="hover:text-primary transition-colors">Portfolio</Link>
+          <a href="/bang-gia" className="hover:text-primary transition-colors">Bảng giá</a>
+          <Link to="/contact" className="hover:text-primary transition-colors">Liên hệ</Link>
+        </nav>
       </Reveal>
 
       {/* Đường kẻ trang trí góc dưới */}

@@ -2,10 +2,11 @@ import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { PlayIcon } from "@phosphor-icons/react";
 import { useLanguage, useTranslation } from "#i18n";
-import { resolveAssetUrl } from "#lib/api";
+import { resolveAssetUrl, srcSetAnh } from "#lib/api";
 import { localized } from "#lib/localized";
 import { duongDanDuAn } from "#lib/urls";
 import type { ApiProject } from "#lib/apiTypes";
+import XemTruocVideo from "#components/molecules/XemTruocVideo";
 
 /**
  * Thư viện dự án — thứ khách thật sự tới trang Portfolio để xem.
@@ -32,6 +33,8 @@ const WorkLibrary = ({ projects }: Props) => {
   const t = useTranslation();
   const { lang } = useLanguage();
   const [locTheo, setLocTheo] = useState<string>("*");
+  // Thẻ đang được rê chuột — để phát đoạn video xem trước (mục G8).
+  const [dangRe, setDangRe] = useState<string | null>(null);
 
   /**
    * Danh sách mảng việc dựng TỪ CHÍNH dự án đang có, không phải từ danh sách
@@ -111,7 +114,7 @@ const WorkLibrary = ({ projects }: Props) => {
           {hienThi.map((p) => {
             const dv = typeof p.service === "object" ? p.service : null;
             return (
-              <li key={p.id}>
+              <li key={p.id} onMouseEnter={() => setDangRe(p.id)} onMouseLeave={() => setDangRe(null)}>
                 <Link
                   to={duongDanDuAn(p, dv ?? { id: "" })}
                   /* Cờ để nút X trong trang dự án biết đường lùi về đây. */
@@ -126,11 +129,14 @@ const WorkLibrary = ({ projects }: Props) => {
                   <div className="bg-muted relative aspect-[4/3] overflow-hidden">
                     <img
                       src={resolveAssetUrl(p.thumbnailImage)}
+                      srcSet={srcSetAnh(resolveAssetUrl(p.thumbnailImage))}
+                      sizes="(min-width: 1024px) 25vw, 50vw"
                       alt={p.title}
                       loading="lazy"
                       decoding="async"
                       className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                     />
+                    <XemTruocVideo video={p.video ? resolveAssetUrl(p.video) : undefined} dangRe={dangRe === p.id} />
                     {p.video && (
                       <span className="absolute right-2 bottom-2 flex items-center gap-1 rounded-md bg-black/65 px-1.5 py-0.5 text-[10px] font-semibold text-white backdrop-blur-sm">
                         <PlayIcon size={10} weight="fill" /> VIDEO

@@ -57,6 +57,11 @@ const Seo: FC<Props> = ({
     document
       .querySelectorAll('script[type="application/ld+json"][data-tra-truoc]')
       .forEach((el) => el.remove());
+
+    // Thẻ mô tả tĩnh đã gỡ ở main.tsx trước khi React vẽ; còn <title> tĩnh
+    // (đánh dấu `data-tinh`) thì gỡ ở đây, vì trang này đã có tiêu đề của Seo.
+    // Hai <title> cùng có mặt thì trình duyệt lấy cái ĐẦU — tức bản tĩnh cũ.
+    document.querySelectorAll("title[data-tinh]").forEach((el) => el.remove());
   }, []);
 
 
@@ -95,11 +100,10 @@ const Seo: FC<Props> = ({
       <meta name="twitter:description" content={description} />
       <meta name="twitter:image" content={ogImage} />
 
-      {/* Cùng một URL phục vụ cả tiếng Việt lẫn tiếng Anh (đổi bằng nút trên
-          trang), nên khai báo để Google biết đây là trang song ngữ. */}
-      <link rel="alternate" hrefLang="vi" href={canonical} />
-      <link rel="alternate" hrefLang="en" href={canonical} />
-      <link rel="alternate" hrefLang="x-default" href={canonical} />
+      {/* KHÔNG khai hreflang (bỏ 24/11/2026): tiếng Anh chỉ đổi chữ trong trình
+          duyệt, cùng một địa chỉ, Google không bao giờ thấy bản tiếng Anh. Khai
+          vi/en cùng trỏ về một URL là khai vô nghĩa. Khi nào có /en riêng thì
+          khai lại cho đúng. */}
 
       {jsonLd && <script type="application/ld+json">{JSON.stringify(jsonLd)}</script>}
     </Helmet>

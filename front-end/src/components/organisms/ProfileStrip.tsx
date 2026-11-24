@@ -25,9 +25,11 @@ import type { ApiPortfolioItem } from "#lib/apiTypes";
  */
 type Props = {
   items: ApiPortfolioItem[];
+  /** Đang tải: vẽ sẵn phần tiêu đề + khung slide giữ chỗ cùng cỡ (xem dưới). */
+  dangTai?: boolean;
 };
 
-const ProfileStrip = ({ items }: Props) => {
+const ProfileStrip = ({ items, dangTai = false }: Props) => {
   const t = useTranslation();
   const [dangDoc, setDangDoc] = useState<number | null>(null);
 
@@ -61,7 +63,13 @@ const ProfileStrip = ({ items }: Props) => {
     };
   }, [dangDoc]);
 
-  if (items.length === 0) return null;
+  /*
+   * Đang tải vẫn vẽ phần tiêu đề (chữ tĩnh, biết trước) và khung slide giữ chỗ
+   * đúng chiều cao. Trước 24/11/2026 khung chờ nằm ngoài component và THIẾU phần
+   * tiêu đề, nên lúc dữ liệu về cả trang bị đẩy xuống — Lighthouse đo Portfolio
+   * giật bố cục 0,196 (ngưỡng tốt 0,1).
+   */
+  if (items.length === 0 && !dangTai) return null;
 
   return (
     <section className="py-4">
@@ -102,12 +110,23 @@ const ProfileStrip = ({ items }: Props) => {
         `snap-x` để mỗi lần kéo dừng đúng đầu một trang thay vì dừng lưng chừng.
       */}
       <div className="dai-ngang flex snap-x snap-mandatory gap-4 overflow-x-auto px-6 pb-4">
+        {dangTai &&
+          Array.from({ length: 4 }).map((_, i) => (
+            <div
+              key={`cho-${i}`}
+              aria-hidden="true"
+              className="border-border/60 bg-foreground/5 h-[300px] w-[220px] shrink-0 animate-pulse rounded-xl border md:h-[420px] md:w-[320px]"
+            />
+          ))}
         {items.map((p, i) => (
           <button
             key={p.id}
             type="button"
             onClick={() => setDangDoc(i)}
             aria-label={`${t.portfolio.profilePage} ${i + 1}${p.title ? ` — ${p.title}` : ""}`}
+            // Biết trước tỉ lệ ảnh thì giữ đúng bề ngang ngay từ đầu — slide không
+            // nở ra lúc ảnh về, cả dải không bị đẩy (giật bố cục ~0,19 trước đây).
+            style={p.rong && p.cao ? { aspectRatio: `${p.rong} / ${p.cao}` } : undefined}
             className="border-border/60 bg-card group relative h-[300px] shrink-0 snap-start overflow-hidden rounded-xl border transition-transform duration-200 hover:-translate-y-1 md:h-[420px]"
           >
             {/*

@@ -1,5 +1,3 @@
-import type { ApiContact } from "#lib/apiTypes";
-
 /**
  * Sinh dữ liệu có cấu trúc (JSON-LD) cho các trang public.
  *
@@ -21,41 +19,11 @@ function compact<T extends Record<string, unknown>>(obj: T): T {
   ) as T;
 }
 
-/** Danh sách link mạng xã hội có thật (dùng cho trường sameAs). */
-function socialLinks(contact?: ApiContact | null): string[] {
-  if (!contact?.socials) return [];
-  return Object.values(contact.socials).filter(
-    (url): url is string => typeof url === "string" && url.startsWith("http"),
-  );
-}
-
-/**
- * Bee Z là ai — khối quan trọng nhất, đặt ở trang chủ.
- * Dùng LocalBusiness (thay vì Organization) vì có địa chỉ thật và khách hay tìm
- * theo khu vực ("production house Hà Nội").
+/*
+ * Khối "Bee Z là ai" (ProfessionalService, "@id": `${SITE_URL}/#organization`)
+ * KHÔNG dựng ở đây nữa: nó nằm tĩnh trong front-end/index.html từ 24/11/2026 để
+ * có một nguồn duy nhất, có sẵn trong HTML thô. Các khối dưới chỉ trỏ tới nó.
  */
-export function organizationSchema(contact?: ApiContact | null, lang: "vi" | "en" = "vi") {
-  const address = contact?.address?.[lang] || contact?.address?.vi;
-  return compact({
-    "@context": "https://schema.org",
-    "@type": "LocalBusiness",
-    "@id": `${SITE_URL}/#organization`,
-    name: SITE_NAME,
-    url: SITE_URL,
-    image: `${SITE_URL}/og-image.jpg`,
-    description:
-      lang === "vi"
-        ? "Hãng sản xuất phim quảng cáo tại Hà Nội: TVC, phim doanh nghiệp, brand film và nội dung mạng xã hội."
-        : "Video production house in Hanoi: TVC, corporate films, brand films and social content.",
-    telephone: contact?.phone,
-    email: contact?.email,
-    address: address
-      ? { "@type": "PostalAddress", streetAddress: address, addressLocality: "Hà Nội", addressCountry: "VN" }
-      : undefined,
-    sameAs: socialLinks(contact).length ? socialLinks(contact) : undefined,
-    areaServed: { "@type": "Country", name: "Vietnam" },
-  });
-}
 
 /** Ô tìm kiếm của site trong kết quả Google (chỉ khai ở trang chủ). */
 export function websiteSchema() {

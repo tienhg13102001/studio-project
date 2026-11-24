@@ -1,105 +1,141 @@
 import SectionHeader from "#components/molecules/SectionHeader";
-import { useTranslation } from "#i18n";
+import { useProjects } from "#hooks/useProjects";
+import { useLanguage, useTranslation } from "#i18n";
+import { resolveAssetUrl, srcSetAnh } from "#lib/api";
+import { useEffect, useRef, useState } from "react";
 
 /**
  * Quy trình làm việc — năm bước từ cuộc gọi đầu tới lúc giao file.
  *
- * VÌ SAO CÓ KHỐI NÀY: trang chủ trước đó đi thẳng từ hình ảnh sản phẩm sang
- * lời mời liên hệ, không chỗ nào trả lời câu hỏi mà khách lần đầu luôn hỏi —
- * làm việc với Bee Z thì diễn ra thế nào, mất bao lâu, mình cần chuẩn bị gì.
+ * VÌ SAO CÓ KHỐI NÀY: trang chủ trước đó đi thẳng từ hình ảnh sản phẩm sang lời
+ * mời liên hệ, không chỗ nào trả lời câu khách lần đầu luôn hỏi — làm việc với
+ * Bee Z diễn ra thế nào, mất bao lâu.
  *
- * VÌ SAO CHỒNG THẺ THAY VÌ XẾP LƯỚI: xếp lưới năm ô cạnh nhau thì khách lướt
- * qua trong một giây và không đọc chữ nào. Cho mỗi bước tự chiếm lấy màn hình
- * rồi bị bước sau trượt lên đè, khách buộc phải đi qua từng bước một.
- *
- * Toàn bộ chuyển động do `position: sticky` lo, KHÔNG một dòng JavaScript nào
- * và không tải thêm byte nào. Mỗi thẻ dính ở một độ cao lệch nhau vài pixel
- * nên thẻ trước vẫn ló mép ra, nhìn thành một chồng bài.
- *
- * Đánh số 01–05 ở đây là thật, không phải trang trí: đây là chuỗi có thứ tự,
- * bước sau phụ thuộc bước trước.
+ * BỐ CỤC MỚI (24/11/2026, mục G7 — Hoàn duyệt): bản chồng thẻ cũ dài 3,7 màn
+ * (34% chiều dài trang chủ) cho 5 bước mỗi bước hai dòng, nửa màn trống. Giờ:
+ *   · Máy tính: khung ẢNH THẬT đứng yên bên trái, đổi ảnh theo bước đang đọc bên
+ *     phải — chính là ý "hình chạy theo thanh cuộn" Hoàn duyệt từ tháng 7, dùng
+ *     ảnh hậu trường thật vì không có video hậu trường. Cả khối ~2,3 màn.
+ *   · Điện thoại: mỗi bước một ảnh ngay trên chữ, xếp dọc, không dính.
+ *   · Giảm chuyển động: ảnh đổi tức thì, không mờ dần.
  */
+
+/**
+ * Ảnh cho từng bước — ảnh thật trong dữ liệu dự án (Portal), chọn tay 24/11/2026:
+ * bốn bước đầu là hậu trường Techcombank Summit 2026, bước cuối là thành phẩm.
+ * Lấy lúc chạy theo tên dự án + số thứ tự ảnh, không chép cứng địa chỉ ảnh: dự
+ * án đổi ảnh vẫn chạy; dự án bị xoá thì lùi về ảnh bìa các dự án khác.
+ */
+const ANH_BUOC: { slug: string; anh: number }[] = [
+  { slug: "bts-su-kien-techcombank-summit-2026", anh: 1 }, // team bàn việc ở bàn điều khiển
+  { slug: "bts-su-kien-techcombank-summit-2026", anh: 4 }, // khảo sát sân khấu
+  { slug: "bts-su-kien-techcombank-summit-2026", anh: 5 }, // dựng máy trước giờ chạy
+  { slug: "bts-su-kien-techcombank-summit-2026", anh: 2 }, // đang quay gimbal
+  { slug: "parasola-cosmetics-radiant-sun-protection", anh: 4 }, // thành phẩm
+];
+
 const ProcessSection = () => {
   const t = useTranslation();
+  const { lang } = useLanguage();
   const steps = t.process.steps;
+  const { raw } = useProjects(lang);
+  const [dangXem, setDangXem] = useState(0);
+  const refs = useRef<(HTMLLIElement | null)[]>([]);
+
+  const tatCa = [...(raw?.verticalCards ?? []), ...(raw?.horizontalCards ?? [])];
+  const anh = ANH_BUOC.map((a, i) => {
+    const p = tatCa.find((x) => x.slug === a.slug);
+    const url = p?.photos?.[a.anh] ?? tatCa[i]?.thumbnailImage;
+    return url ? resolveAssetUrl(url) : "";
+  });
+
+  // Bước nằm giữa màn hình là bước "đang xem" → khung ảnh bên trái đổi theo.
+  useEffect(() => {
+    const ob = new IntersectionObserver(
+      (es) => es.forEach((e) => {
+        if (e.isIntersecting) setDangXem(Number((e.target as HTMLElement).dataset.buoc));
+      }),
+      { rootMargin: "-45% 0px -45% 0px" },
+    );
+    refs.current.forEach((el) => el && ob.observe(el));
+    return () => ob.disconnect();
+  }, [steps.length]);
 
   return (
-    <section className="px-6 pt-20 pb-8 md:pt-28 md:pb-10">
-      <div className="mx-auto max-w-4xl">
+    <section className="px-6 pt-20 pb-12 md:pt-28 md:pb-16">
+      <div className="mx-auto max-w-6xl">
         <SectionHeader title={t.process.sectionTitle} subtitle={t.process.sectionSubtitle} />
 
-        {/*
-          `flow-root` ở đây KHÔNG phải cho đẹp. Không có nó, lề dưới của thẻ cuối
-          bị gộp xuyên qua đáy `ol` nên không nới thêm được chỗ nào — mà thẻ dính
-          chỉ dính trong lòng khối cha, nên thẻ 05 không kịp trôi lên đè thẻ 04 và
-          chồng bài đứt ở bước 4. `flow-root` giữ lề đó lại bên trong.
-        */}
-        <ol className="flow-root">
-          {steps.map((step, i) => (
-            /*
-              CHÍNH `li` phải là thẻ dính, không phải thẻ con bên trong.
+        <div className="mt-10 grid gap-10 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] md:gap-14">
+          {/* Khung ảnh đứng yên — chỉ máy tính. */}
+          <div className="hidden md:block">
+            <div className="border-border/60 bg-card sticky top-[15vh] aspect-4/5 max-h-[70vh] w-full overflow-hidden rounded-2xl border">
+              {anh.map((src, i) =>
+                src ? (
+                  <img
+                    key={i}
+                    src={src}
+                    srcSet={srcSetAnh(src)}
+                    sizes="(min-width: 1152px) 560px, 45vw"
+                    alt={steps[i]?.title ?? ""}
+                    loading="lazy"
+                    decoding="async"
+                    className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-700 motion-reduce:transition-none ${
+                      i === dangXem ? "opacity-100" : "opacity-0"
+                    }`}
+                  />
+                ) : null,
+              )}
+              <div className="from-background/70 pointer-events-none absolute inset-x-0 bottom-0 h-1/3 bg-linear-to-t to-transparent" />
+              <span className="text-primary absolute bottom-5 left-6 text-6xl leading-none font-bold tabular-nums">
+                {String(dangXem + 1).padStart(2, "0")}
+              </span>
+            </div>
+          </div>
 
-              Nếu để mỗi thẻ dính bên trong `li` của riêng nó thì hết `li` là nó
-              rời đi — thẻ trước trượt lên chui sau thanh menu thay vì nằm yên
-              làm nền cho thẻ sau. Cho cả năm `li` dính chung trong `ol` thì thẻ
-              nào đã dừng sẽ ở yên đó tới hết khối, đúng kiểu chồng bài.
-
-              `marginBottom` mới là quãng cuộn giữa hai bước: ngắn quá thì thẻ
-              chưa kịp dừng đã bị đè, dài quá thì khách cuộn mỏi tay.
-
-              BƯỚC CUỐI CŨNG PHẢI CÓ quãng này, và KHÔNG rút ngắn tuỳ ý được.
-
-              Đo trên trình duyệt thật ở bốn cỡ màn (1440x700, 1440x900,
-              1920x1080, 390x844): dưới 30vh là thẻ 05 KHÔNG kịp lên tới đỉnh
-              trong lúc bốn thẻ kia còn dính — chồng bài đứt ở bước 4. 26vh vẫn
-              đứt riêng ở màn 1920x1080. 34vh là mức thấp nhất chạy được cả bốn,
-              và còn giữ được 80–120px cuộn để khách kịp nhìn trọn năm thẻ.
-
-              ĐỪNG hạ xuống nữa mà không đo lại. Ngày 19/08 đã hạ xuống 14vh cho
-              đỡ trống và làm đứt hiệu ứng trên web thật — nhìn bằng mắt không
-              phát hiện ra, phải cuộn từng nấc 10px mới thấy.
-
-              Ai bật giảm chuyển động trong hệ điều hành thì trở lại thành danh
-              sách xếp dọc bình thường.
-            */
-            <li
-              key={step.title}
-              className="sticky motion-reduce:static"
-              style={{
-                // Lệch dần để mép thẻ trước vẫn ló ra sau khi bị đè.
-                top: `calc(13vh + ${i * 16}px)`,
-                marginBottom: i === steps.length - 1 ? "34vh" : "42vh",
-              }}
-            >
-              <article
-                className="border-border/60 bg-card rounded-2xl border p-7 shadow-2xl md:p-10"
+          <ol className="flex flex-col">
+            {steps.map((step, i) => (
+              <li
+                key={step.title}
+                ref={(el) => { refs.current[i] = el; }}
+                data-buoc={i}
+                className="flex flex-col justify-center py-6 md:min-h-[46vh] md:py-0"
               >
-                <div className="flex flex-col gap-5 md:flex-row md:items-start md:gap-9">
-                  <div className="flex shrink-0 items-baseline gap-3 md:w-32 md:flex-col md:gap-1">
-                    <span className="text-primary/80 text-xs font-bold tracking-[0.16em]">
-                      {t.process.stepLabel}
-                    </span>
-                    <span className="text-primary text-5xl leading-none font-bold tabular-nums md:text-6xl">
+                {/* Ảnh của bước — chỉ điện thoại (máy tính đã có khung bên trái). */}
+                {anh[i] && (
+                  <img
+                    src={anh[i]}
+                    srcSet={srcSetAnh(anh[i])}
+                    sizes="100vw"
+                    alt={step.title}
+                    loading="lazy"
+                    decoding="async"
+                    className="border-border/60 mb-5 aspect-video w-full rounded-2xl border object-cover md:hidden"
+                  />
+                )}
+                <div
+                  // Tên lớp phải viết ĐỦ ("md:opacity-40"): Tailwind chỉ sinh lớp có
+                  // nguyên văn trong mã, ghép chuỗi "md:" + "opacity-40" là mất.
+                  className={`transition-opacity duration-500 motion-reduce:transition-none ${
+                    i === dangXem ? "md:opacity-100" : "md:opacity-40"
+                  }`}
+                >
+                  <div className="flex items-baseline gap-3">
+                    <span className="text-primary/80 text-xs font-bold tracking-[0.16em]">{t.process.stepLabel}</span>
+                    <span className="text-primary text-4xl leading-none font-bold tabular-nums md:text-5xl">
                       {String(i + 1).padStart(2, "0")}
                     </span>
                   </div>
-
-                  <div className="flex flex-col gap-3">
-                    <h3 className="text-foreground text-2xl font-semibold md:text-3xl">
-                      {step.title}
-                    </h3>
-                    <p className="text-muted-foreground max-w-xl leading-relaxed md:text-lg">
-                      {step.desc}
-                    </p>
-                    <span className="border-primary/25 text-primary mt-1 w-fit rounded-full border px-3 py-1 text-xs font-medium">
-                      {step.when}
-                    </span>
-                  </div>
+                  <h3 className="text-foreground mt-3 text-2xl font-semibold md:text-3xl">{step.title}</h3>
+                  <p className="text-muted-foreground mt-3 max-w-xl leading-relaxed md:text-lg">{step.desc}</p>
+                  <span className="border-primary/25 text-primary mt-4 inline-block w-fit rounded-full border px-3 py-1 text-xs font-medium">
+                    {step.when}
+                  </span>
                 </div>
-              </article>
-            </li>
-          ))}
-        </ol>
+              </li>
+            ))}
+          </ol>
+        </div>
       </div>
     </section>
   );

@@ -1,10 +1,9 @@
 import HeroCTA from "#components/molecules/HeroCTA";
-import ShinyText from "#components/molecules/ShinyText";
 import { useLanguage } from "#i18n";
 import { useLanding } from "#hooks/useLanding";
 import { useSettings } from "#hooks/useSettings";
 import { ArrowDownIcon } from "@phosphor-icons/react";
-import LogoTiaDien from "#components/molecules/LogoTiaDien";
+import LogoYellow from "../../assets/icons/LogoYellow";
 import VideoBackground from "./VideoBackground";
 
 const HeroSection = () => {
@@ -28,25 +27,32 @@ const HeroSection = () => {
 
   return (
     <section className="relative z-10 flex min-h-screen grow flex-col items-center justify-center px-4 pt-20 text-center lg:pb-24">
-      {/* Logo có tia điện chạy dọc viền. `opacity-90` bỏ đi: làm mờ cả khối thì
-          quầng sáng của tia cũng mờ theo, mà chính quầng đó mới ra chất điện. */}
+      {/* MÀN ĐẦU CHỈ MỘT ĐIỂM NHẤN — video nền (Hoàn chốt 24/11/2026).
+          Trước đó 5 thứ lặp mãi cùng lúc: video, chữ quét sáng, tia điện quanh
+          logo, mũi tên nảy, vòng sáng nút Zalo. Logo giờ đứng yên (bỏ tia điện
+          theo ý Hoàn), chữ vàng đứng yên. `LogoTiaDien` và `ShinyText` vẫn giữ
+          trong mã nguồn nếu sau này muốn dùng chỗ khác. */}
       <div className="mb-6">
-        <LogoTiaDien className="h-16 w-16 md:h-20 md:w-20 lg:h-24 lg:w-24" />
+        <LogoYellow className="h-16 w-16 md:h-20 md:w-20 lg:h-24 lg:w-24" />
       </div>
       <h1 className="mb-4 text-4xl leading-tight font-bold tracking-tight md:text-6xl lg:text-7xl">
         <span className="block text-white">{content.heroLine1}</span>
-        <ShinyText className="block">{content.heroLine2}</ShinyText>
+        <span className="text-primary block">{content.heroLine2}</span>
       </h1>
       <p className="mx-auto mb-5 max-w-2xl text-sm leading-relaxed font-light text-gray-300 md:mb-10 md:text-base">
         {content.subheading}
       </p>
       <HeroCTA />
-      <div
-        className="absolute bottom-8 left-1/2 z-10 -translate-x-1/2 animate-bounce cursor-pointer"
+      {/* Mũi tên đứng yên (thôi nảy). Là <button> thật để bàn phím và trình đọc
+          màn hình dùng được. */}
+      <button
+        type="button"
+        aria-label="Cuộn xuống phần tiếp theo"
+        className="focus-visible:ring-primary absolute bottom-8 left-1/2 z-10 -translate-x-1/2 cursor-pointer rounded-full p-1 focus-visible:ring-2 focus-visible:outline-none"
         onClick={handleScrollDown}
       >
         <ArrowDownIcon size={32} className="text-primary" />
-      </div>
+      </button>
       {/* Ảnh nền cấu hình trong portal được dùng làm ảnh chờ cho video, và thay
           hẳn video trên điện thoại. */}
       <VideoBackground src={data?.videoBackground} poster={backgroundImage || undefined} />

@@ -8,7 +8,7 @@ const en = {
     portfolio: "Portfolio",
     pricing: "Pricing",
     contact: "Contact",
-    letsTalk: "Let's Talk",
+    letsTalk: "Get a Quote",
   },
   portfolio: {
     subtitle: "A few projects and images worth showing.",
@@ -27,7 +27,7 @@ const en = {
     nextPage: "Next page",
   },
   cta: {
-    contactBeez: "Contact Bee Z",
+    contactBeez: "Get a Quote",
     viewMyWorkss: "View My Works",
   },
   services: {
@@ -128,6 +128,10 @@ const en = {
     followUs: "Follow Us",
     rights: "© {year} Bee Z Production.",
     visitors: "Visitors",
+    legal: "CÔNG TY TNHH TRUYỀN THÔNG BEE Z PRODUCTION · Tax code 0110989139",
+    profile: "Company profile (PDF)",
+    privacy: "Privacy policy",
+    internal: "Staff login",
   },
   contact: {
     title: "Contact",
@@ -179,15 +183,25 @@ const en = {
     } as Record<string, string>,
     heroTagline:
       "Talking head, motion graphics, memes and trend-based video, for any industry.",
-    startProject: "Let's Talk",
+    startProject: "Get a Quote",
+    xemBangGia: "See our public price list",
     viewWork: "View Work",
     faqTitle: "Frequently Asked Questions",
     showcaseTitle: "Video Showcase",
-    showcaseSubtitle: "Sample work from our shortform content production",
+    showcaseSubtitle: "Selected Bee Z projects",
+    showcaseSubtitleOf: "Selected {ten} projects by Bee Z",
     featuredBadge: "Featured",
-    ctaTitle: "Start making short-form?",
-    ctaSubtitle: "Write to Bee Z and we will map out the approach",
-    ctaButton: "Start Creating",
+    ctaTitle: "Have a project in mind?",
+    ctaSubtitle: "Send Bee Z your brief and get a proposal and quote within 2–3 working days.",
+    ctaButton: "Get a Quote",
+    ctaTitleBySlug: {
+      "san-xuat-tvc": "Have a TVC to produce?",
+      "do-an-thuc-uong-f-b": "Need photos and video for food or products?",
+      "lookbook-thoi-trang": "Launching a new collection?",
+      "noi-dung-dang-ngan": "Ready to start short-form?",
+      "quay-phim-chup-anh-su-kien": "Have an event to cover?",
+      "quay-phim-chup-anh-cuoi": "Planning your wedding?",
+    } as Record<string, string>,
     highlights: [
       {
         title: "Talking Head Videos",

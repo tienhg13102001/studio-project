@@ -5,7 +5,13 @@ import { useTranslation } from "#i18n";
 import { ArrowRightIcon, ChartLineUpIcon } from "@phosphor-icons/react";
 import { useNavigate } from "react-router-dom";
 
-const CTASection = () => {
+type Props = {
+  /** Câu kêu gọi riêng của trang; bỏ trống thì dùng câu chung. */
+  title?: string;
+  subtitle?: string;
+};
+
+const CTASection = ({ title, subtitle }: Props) => {
   const t = useTranslation();
   const navigate = useNavigate();
   return (
@@ -14,9 +20,9 @@ const CTASection = () => {
       <div className="relative mx-auto max-w-2xl">
         <Reveal>
           <h2 className="text-foreground text-3xl font-bold md:text-4xl">
-            <SplitText>{t.service.ctaTitle}</SplitText>
+            <SplitText>{title || t.service.ctaTitle}</SplitText>
           </h2>
-          <p className="text-muted-foreground mt-3 text-base">{t.service.ctaSubtitle}</p>
+          <p className="text-muted-foreground mt-3 text-base">{subtitle || t.service.ctaSubtitle}</p>
           <Button
             onClick={() => navigate("/contact")}
             className="bg-primary text-primary-foreground hover:bg-primary/90 mt-8 h-auto gap-2 rounded-full px-8 py-3 text-sm font-semibold"

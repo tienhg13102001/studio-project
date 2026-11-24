@@ -1,3 +1,4 @@
+import { srcSetAnh } from "#lib/api";
 import type { ServiceDisplay } from "#hooks/useServices";
 import { useRef, useState, type PointerEvent } from "react";
 import { Link } from "react-router-dom";
@@ -5,6 +6,12 @@ import { duongDanDichVu } from "#lib/urls";
 
 type Props = {
   service: ServiceDisplay;
+  /**
+   * Thẻ nằm ngay màn đầu (3 thẻ đầu trang /service): tải ảnh NGAY, ưu tiên cao.
+   * Để tải lười thì chính tấm ảnh lớn nhất màn đầu bị hoãn — Lighthouse đo nó là
+   * phần tử LCP của trang /service (23/11/2026).
+   */
+  uuTien?: boolean;
 };
 
 // Tilt only where it helps: a real mouse, and not when the user asked for less
@@ -14,10 +21,13 @@ const canTilt = () =>
   window.matchMedia("(pointer: fine)").matches &&
   !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-const ServiceCard: React.FC<Props> = ({ service }) => {
+const ServiceCard: React.FC<Props> = ({ service, uuTien = false }) => {
   // Fall back to a branded gradient when the thumbnail is missing/broken so the
   // card never shows a broken-image icon + alt text.
   const [imgOk, setImgOk] = useState(true);
+  // Ảnh thu nhỏ (srcset) lỗi — ví dụ vài giây máy chủ khởi động lại lúc đẩy web —
+  // thì thử lại bằng ảnh gốc trước, chỉ khi ảnh gốc cũng lỗi mới ẩn ảnh.
+  const [dungAnhNho, setDungAnhNho] = useState(true);
   const rootRef = useRef<HTMLAnchorElement>(null);
   const spotRef = useRef<HTMLDivElement>(null);
 
@@ -52,9 +62,12 @@ const ServiceCard: React.FC<Props> = ({ service }) => {
       {imgOk && (
         <img
           src={service.thumbnailImage}
+          srcSet={dungAnhNho ? srcSetAnh(service.thumbnailImage) : undefined}
+          sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
           alt={service.title}
-          loading="lazy"
-          onError={() => setImgOk(false)}
+          loading={uuTien ? "eager" : "lazy"}
+          fetchPriority={uuTien ? "high" : "auto"}
+          onError={() => (dungAnhNho && srcSetAnh(service.thumbnailImage) ? setDungAnhNho(false) : setImgOk(false))}
           className="absolute inset-0 h-full w-full object-cover opacity-60 transition-transform duration-700 ease-in-out group-hover:scale-110 group-hover:opacity-80"
         />
       )}

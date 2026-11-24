@@ -195,6 +195,9 @@ export type ApiPortfolioItem = {
   image: string;
   title: string; // optional caption / alt text
   order: number;
+  /** Kích thước ảnh, máy chủ đọc sẵn (24/11/2026) để giữ chỗ slide — có thể thiếu. */
+  rong?: number;
+  cao?: number;
 };
 
 export type ApiTeamContent = {

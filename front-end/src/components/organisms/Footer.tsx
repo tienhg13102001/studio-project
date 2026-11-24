@@ -16,6 +16,9 @@ import LogoYellow from "../../assets/icons/LogoYellow";
 const NAV_ITEMS = [
   { key: "home", to: "/" },
   { key: "services", to: "/service" },
+  { key: "portfolio", to: "/portfolio" },
+  // Trang tĩnh ngoài React (nginx phục vụ) nên phải là thẻ <a> thường.
+  { key: "pricing", to: "/bang-gia", ngoaiReact: true },
   { key: "team", to: "/team" },
   { key: "contact", to: "/contact" },
 ] as const;
@@ -25,7 +28,10 @@ const Footer: React.FC = () => {
   const { lang } = useLanguage();
   const { data: contact } = useContact();
   const { data: landing } = useLanding(lang);
-  const visitorCount = useVisitorCount();
+  // GIỮ lời gọi này dù không còn hiện số: chính nó gửi lượt đếm khách của mọi
+  // trang React. Bỏ đi là bộ đếm ngừng đếm. Số tổng chỉ còn xem trong Portal →
+  // Analytics (24/11/2026: khách không cần thấy, và số nhỏ làm web trông vắng).
+  useVisitorCount();
   const year = new Date().getFullYear();
   const hasSocials = !!(
     landing?.socials.facebook ||
@@ -70,6 +76,17 @@ const Footer: React.FC = () => {
                 )}
               </li>
             ))}
+            <li>
+              {/* Tệp tĩnh trong public/ — thẻ <a> thường, mở tab mới. */}
+              <a
+                href="/ho-so-nang-luc-beez-production.pdf"
+                target="_blank"
+                rel="noopener"
+                className="text-muted-foreground hover:text-primary text-sm transition-colors"
+              >
+                {t.footer.profile}
+              </a>
+            </li>
           </ul>
         </div>
 
@@ -144,18 +161,22 @@ const Footer: React.FC = () => {
 
       {/* Bottom bar */}
       <div className="border-border border-t">
-        <div className="mx-auto flex w-full max-w-7xl flex-col items-center gap-2 px-6 py-4 sm:flex-row sm:justify-between">
-          <p className="text-muted-foreground text-center text-xs">
-            {t.footer.rights.replace("{year}", String(year))}
-          </p>
-          {visitorCount !== null && (
-            <p className="text-muted-foreground text-center text-xs">
-              {t.footer.visitors}:{" "}
-              <span className="text-foreground font-semibold">
-                {visitorCount.toLocaleString()}
-              </span>
-            </p>
-          )}
+        {/* `md:pr-24`: chừa chỗ cho nút Zalo nổi góc phải, kẻo nó che link cuối hàng. */}
+        <div className="mx-auto flex w-full max-w-7xl flex-col items-center gap-2 px-6 py-4 sm:flex-row sm:justify-between md:pr-24">
+          <div className="text-muted-foreground space-y-1 text-center text-xs sm:text-left">
+            <p>{t.footer.rights.replace("{year}", String(year))}</p>
+            {/* Tên pháp lý + mã số thuế: khách doanh nghiệp hay soi trước khi
+                ký hợp đồng, và Google đối chiếu với hồ sơ đăng ký kinh doanh. */}
+            <p>{t.footer.legal}</p>
+          </div>
+          <div className="text-muted-foreground flex items-center gap-4 text-xs">
+            <Link to="/chinh-sach-bao-mat" className="hover:text-foreground transition-colors">
+              {t.footer.privacy}
+            </Link>
+            <Link to="/portal" rel="nofollow" className="hover:text-foreground transition-colors">
+              {t.footer.internal}
+            </Link>
+          </div>
         </div>
       </div>
     </footer>

@@ -12,6 +12,7 @@ import ProjectDetail from "./ProjectDetail";
 const PROJECT_PARAM = "project";
 // Số card tối đa render trong mỗi hàng marquee. Marquee lặp vô hạn nên không cần
 // nhiều hơn; giữ con số này có chủ đích để phần tử không quá rộng làm vỡ render iOS.
+// (24/11/2026 thử cho đứng yên, Hoàn chấm: giữ tự trôi như cũ.)
 const MARQUEE_MAX = 12;
 
 type Props = {};

@@ -1,0 +1,32 @@
+{
+  "_ghi_chu": "Tiêu đề + mô tả của các trang tĩnh — NGUỒN DUY NHẤT cho cả bản dựng sẵn (scripts/prerender-meta.mjs) lẫn bản chạy JavaScript (component Seo). Trước 24/11/2026 hai bên viết riêng nên lệch nhau: /service dựng sẵn là 'Dịch vụ sản xuất video & TVC' nhưng chạy JS thành 'Lĩnh vực hoạt động'. Đuôi ' — Bee Z Production' do hai bên tự thêm.",
+  "/service": {
+    "title": "Dịch vụ sản xuất video & TVC",
+    "description": "Các dịch vụ của Bee Z Production: sản xuất TVC, phim quảng cáo, phim doanh nghiệp, brand film và nội dung mạng xã hội — trọn gói từ ý tưởng tới hậu kỳ."
+  },
+  "/portfolio": {
+    "title": "Portfolio — dự án đã thực hiện",
+    "description": "Hồ sơ năng lực và các dự án Bee Z Production đã làm: TVC, sự kiện, F&B, lookbook, nội dung mạng xã hội. Lọc theo mảng việc, xem video từng dự án."
+  },
+  "/team": {
+    "title": "Đội ngũ",
+    "description": "Những người trực tiếp làm nên mỗi dự án của Bee Z Production — đạo diễn, quay phim, dựng phim và sản xuất."
+  },
+  "/contact": {
+    "title": "Liên hệ",
+    "description": "Liên hệ Bee Z Production để nhận tư vấn và báo giá sản xuất TVC, phim doanh nghiệp, brand film tại Hà Nội và TP.HCM."
+  },
+  "/chinh-sach-bao-mat": {
+    "title": "Chính sách bảo mật",
+    "description": "Cách Bee Z Production thu thập, sử dụng và bảo vệ thông tin cá nhân khi bạn xem web beezvn.com hoặc gửi yêu cầu báo giá."
+  },
+  "_nhanMang": {
+    "_ghi_chu": "Nhãn ngắn của từng mảng, gắn vào tiêu đề trang dự án ('MSI · Quay sự kiện — Bee Z Production') để tiêu đề nói rõ đó là việc gì. Khoá = slug dịch vụ.",
+    "san-xuat-tvc": "Sản xuất TVC",
+    "do-an-thuc-uong-f-b": "Ảnh & video sản phẩm",
+    "lookbook-thoi-trang": "Lookbook thời trang",
+    "noi-dung-dang-ngan": "Video ngắn",
+    "quay-phim-chup-anh-su-kien": "Quay chụp sự kiện",
+    "quay-phim-chup-anh-cuoi": "Phim cưới"
+  }
+}
