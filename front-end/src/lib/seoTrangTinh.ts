@@ -6,7 +6,13 @@ import duLieu from "../data/seo-trang-tinh.json";
  * nên chữ máy tìm kiếm thấy ở lượt quét đầu khớp với chữ sau khi JavaScript chạy.
  */
 type Muc = { title: string; description: string };
-export type DuongDanTinh = "/service" | "/portfolio" | "/team" | "/contact" | "/chinh-sach-bao-mat";
+export type DuongDanTinh =
+  | "/service"
+  | "/portfolio"
+  | "/team"
+  | "/contact"
+  | "/chinh-sach-bao-mat"
+  | "/bai-viet";
 
 export function seoTrangTinh(path: DuongDanTinh): Muc {
   return (duLieu as unknown as Record<DuongDanTinh, Muc>)[path];

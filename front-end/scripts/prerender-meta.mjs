@@ -18,6 +18,7 @@ import path from "node:path";
  * được cả nội dung là chuyển sang dựng tĩnh khi xuất bản.
  */
 
+import { Marked } from "marked";
 import { CHAN_TRANG, khoiLienKet, khoiNoiDung, khoiTrang } from "./lien-ket-noi-bo.mjs";
 
 const SITE = "https://www.beezvn.com";
@@ -53,6 +54,26 @@ const esc = (s) =>
   s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 
 let warnings = 0;
+
+/**
+ * Markdown → HTML cho bài viết. GIỐNG HỆT src/lib/baiViet.ts (chặn HTML thô,
+ * bỏ link javascript:, bỏ chú thích <!-- -->). Sửa một chỗ thì sửa cả hai.
+ */
+const md = new Marked({
+  gfm: true,
+  renderer: {
+    html({ text }) {
+      return esc(text);
+    },
+    link({ href, title, tokens }) {
+      const chu = this.parser.parseInline(tokens);
+      if (!/^(https?:|mailto:|tel:|\/|#)/i.test(href)) return chu;
+      const ngoai = /^https?:/i.test(href) && !/^https?:\/\/(www\.)?beezvn\.com/i.test(href);
+      return `<a href="${esc(href)}"${title ? ` title="${esc(title)}"` : ""}${ngoai ? ' target="_blank" rel="noopener"' : ""}>${chu}</a>`;
+    },
+  },
+});
+const markdownSangHtml = (s) => md.parse(String(s ?? "").replace(/<!--[\s\S]*?-->/g, ""), { async: false });
 
 /**
  * Thay giá trị của một thẻ meta.
@@ -216,6 +237,32 @@ function duLieuCoCauTruc(route) {
     }
   }
 
+  if (route.loai === "bai-viet") {
+    khoi.push({
+      "@context": "https://schema.org",
+      "@type": "BlogPosting",
+      headline: route.title,
+      description: route.description,
+      url,
+      mainEntityOfPage: url,
+      ...(absUrl(route.image) ? { image: absUrl(route.image) } : {}),
+      ...(route.ngayDang ? { datePublished: route.ngayDang } : {}),
+      ...(route.ngaySua ? { dateModified: route.ngaySua } : {}),
+      inLanguage: "vi",
+      author: { "@id": `${SITE}/#organization` },
+      publisher: { "@id": `${SITE}/#organization` },
+    });
+    khoi.push({
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        { "@type": "ListItem", position: 1, name: "Trang chủ", item: SITE + "/" },
+        { "@type": "ListItem", position: 2, name: "Bài viết", item: SITE + "/bai-viet" },
+        { "@type": "ListItem", position: 3, name: route.title, item: url },
+      ],
+    });
+  }
+
   if (route.loai === "tinh") {
     khoi.push({
       "@context": "https://schema.org",
@@ -292,6 +339,11 @@ function renderPage(route, dsDichVu = [], dsDuAn = []) {
     html = replaceMeta(html, "name", "twitter:image", image, "twitter:image");
   }
 
+  // Trang danh sách bài viết khi chưa có bài: không cho Google lập chỉ mục
+  // một trang trống (bản chạy JS cũng đặt noindex y như vậy).
+  if (route.noindex) html = replaceMeta(html, "name", "robots", "noindex, follow", "robots");
+  if (route.loai === "bai-viet") html = replaceMeta(html, "property", "og:type", "article", "og:type");
+
   html = nhetJsonLd(html, duLieuCoCauTruc(route));
 
   /**
@@ -309,7 +361,9 @@ function renderPage(route, dsDichVu = [], dsDuAn = []) {
     // Chỉ trang dự án mới có bài để nhét. Trang dịch vụ đã có mô tả dài sẵn
     // trong thẻ meta, trang tĩnh thì nội dung nằm trong mã nguồn giao diện.
     noiDung:
-      route.loai === "du-an"
+      route.noiDungHtml
+        ? route.noiDungHtml + CHAN_TRANG
+        : route.loai === "du-an"
         ? khoiNoiDung({ ten: route.tenThat ?? route.title, caseStudy: route.caseStudy }) + CHAN_TRANG
         : route.loai === "dich-vu"
           ? khoiTrang({
@@ -611,7 +665,64 @@ const dsDuAn = details
   .filter((r) => r.loai === "du-an")
   .map((r) => ({ path: r.path, title: r.tenThat ?? r.title, dichVuPath: r.dichVuPath }));
 
+/**
+ * BÀI VIẾT (/bai-viet). Lấy danh sách bài đã đăng rồi từng bài một. API chưa có
+ * đường này (máy chủ cũ) hay lỗi thì coi như chưa có bài, bản dựng vẫn chạy.
+ *
+ * LƯU Ý: bài đăng SAU lần dựng này chỉ có bản dựng sẵn ở lần đẩy kế tiếp. Trong
+ * lúc chờ, trang vẫn chạy bằng JavaScript (Google đọc được, chỉ chậm hơn).
+ */
+let dsBai = [];
+try {
+  const ds = await fetchJson(`${API}/bai-viet`);
+  for (const b of Array.isArray(ds) ? ds : []) {
+    try {
+      dsBai.push(await fetchJson(`${API}/bai-viet/${encodeURIComponent(b.slug)}`));
+    } catch (e) {
+      console.warn(`  ! Bỏ qua bài ${b.slug}: ${e.message}`);
+      warnings++;
+    }
+  }
+} catch (e) {
+  console.log(`  (chưa lấy được bài viết: ${e.message} — coi như chưa có bài)`);
+}
+const ngayVi = (iso) => {
+  const d = new Date(iso);
+  return Number.isNaN(d.getTime()) ? "" : `${d.getDate()} tháng ${d.getMonth() + 1}, ${d.getFullYear()}`;
+};
+const routeBaiViet = dsBai.map((b) => ({
+  path: `/bai-viet/${b.slug}`,
+  title: b.tieuDe,
+  description: trim(b.moTa || b.tieuDe),
+  image: b.anhBia || undefined,
+  loai: "bai-viet",
+  ngayDang: b.ngayDang || undefined,
+  ngaySua: b.updatedAt || undefined,
+  noiDungHtml:
+    `<article><h1>${esc(b.tieuDe)}</h1>` +
+    (b.ngayDang ? `<p>${esc(ngayVi(b.ngayDang))} · Bee Z Production</p>` : "") +
+    markdownSangHtml(b.noiDung) +
+    `</article>`,
+}));
+ROUTES.push({
+  path: "/bai-viet",
+  title: SEO_TINH["/bai-viet"].title,
+  description: SEO_TINH["/bai-viet"].description,
+  loai: "tinh",
+  noindex: dsBai.length === 0,
+  noiDungHtml:
+    `<article><h1>Sản xuất video, nói bằng số thật</h1>` +
+    `<p>Chi phí, quy trình và cách chọn ekip, viết từ bảng giá và những dự án Bee Z đã làm.</p>` +
+    dsBai
+      .map((b) => `<h2><a href="/bai-viet/${esc(b.slug)}">${esc(b.tieuDe)}</a></h2>${b.moTa ? `<p>${esc(b.moTa)}</p>` : ""}`)
+      .join("") +
+    `</article>`,
+});
+
 for (const route of ROUTES) {
+  console.log(`✓ dist${route.path}/index.html — "${renderPage(route, dsDichVu, dsDuAn)}"`);
+}
+for (const route of routeBaiViet) {
   console.log(`✓ dist${route.path}/index.html — "${renderPage(route, dsDichVu, dsDuAn)}"`);
 }
 
@@ -665,7 +776,7 @@ if (lienKetTrangChu) {
   }
 }
 
-console.log(`\nĐã sinh ${ROUTES.length + details.length} trang có thẻ mô tả riêng.`);
+console.log(`\nĐã sinh ${ROUTES.length + routeBaiViet.length + details.length} trang có thẻ mô tả riêng.`);
 if (warnings > 0) {
   // Dòng này KHÔNG được đoán nguyên nhân. Trước đây nó khẳng định luôn "mẫu HTML
   // đã đổi", mà giờ cảnh báo còn đến từ chỗ khác (API chạy cũ hơn) — đoán sai

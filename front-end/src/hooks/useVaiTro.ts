@@ -40,6 +40,7 @@ export const DUONG_DAN_CHI_QUAN_TRI = [
   "/portal/services",
   "/portal/inquiries",
   "/portal/testimonials",
+  "/portal/bai-viet",
   "/portal/settings",
   "/portal/trash",
 ];

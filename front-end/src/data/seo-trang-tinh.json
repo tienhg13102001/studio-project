@@ -20,6 +20,10 @@
     "title": "Chính sách bảo mật",
     "description": "Cách Bee Z Production thu thập, sử dụng và bảo vệ thông tin cá nhân khi bạn xem web beezvn.com hoặc gửi yêu cầu báo giá."
   },
+  "/bai-viet": {
+    "title": "Bài viết về sản xuất TVC, video và hình ảnh",
+    "description": "Chi phí sản xuất TVC, quy trình làm phim, cách chọn số máy quay cho sự kiện: bài viết của Bee Z Production, số liệu lấy từ bảng giá và dự án thật."
+  },
   "_nhanMang": {
     "_ghi_chu": "Nhãn ngắn của từng mảng, gắn vào tiêu đề trang dự án ('MSI · Quay sự kiện — Bee Z Production') để tiêu đề nói rõ đó là việc gì. Khoá = slug dịch vụ.",
     "san-xuat-tvc": "Sản xuất TVC",

@@ -1,5 +1,6 @@
 import SocialLinks from "#components/molecules/SocialLinks";
 import { useContact } from "#hooks/useContact";
+import { useBaiViet } from "#hooks/useBaiViet";
 import { useLanding } from "#hooks/useLanding";
 import { useVisitorCount } from "#hooks/useVisitorCount";
 import { useLanguage, useTranslation } from "#i18n";
@@ -28,6 +29,7 @@ const Footer: React.FC = () => {
   const { lang } = useLanguage();
   const { data: contact } = useContact();
   const { data: landing } = useLanding(lang);
+  const { data: baiViet } = useBaiViet();
   // GIỮ lời gọi này dù không còn hiện số: chính nó gửi lượt đếm khách của mọi
   // trang React. Bỏ đi là bộ đếm ngừng đếm. Số tổng chỉ còn xem trong Portal →
   // Analytics (24/11/2026: khách không cần thấy, và số nhỏ làm web trông vắng).
@@ -76,6 +78,18 @@ const Footer: React.FC = () => {
                 )}
               </li>
             ))}
+            {/* Mục bài viết chỉ hiện khi đã có bài đăng — link tới một trang
+                "sắp có" trông như web làm dở. */}
+            {(baiViet?.length ?? 0) > 0 && (
+              <li>
+                <Link
+                  to="/bai-viet"
+                  className="text-muted-foreground hover:text-primary text-sm transition-colors"
+                >
+                  {t.nav.blog}
+                </Link>
+              </li>
+            )}
             <li>
               {/* Tệp tĩnh trong public/ — thẻ <a> thường, mở tab mới. */}
               <a

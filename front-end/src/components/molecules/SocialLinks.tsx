@@ -1,7 +1,7 @@
 import { useLanding } from "#hooks/useLanding";
 import { useLanguage } from "#i18n";
 import { cn } from "#lib/utils";
-import { FacebookLogoIcon, InstagramLogoIcon, PhoneIcon } from "@phosphor-icons/react";
+import { FacebookLogoIcon, InstagramLogoIcon, PhoneIcon, TiktokLogoIcon } from "@phosphor-icons/react";
 import LogoZalo from "../../assets/icons/LogoZalo";
 
 type Props = {
@@ -44,6 +44,14 @@ const SocialLinks = ({ size = "md", showPhone = true, className }: Props) => {
       label: "Facebook",
       bg: "bg-facebook-gradient",
       content: <FacebookLogoIcon className="h-2/3 w-2/3 text-white" />,
+    },
+    data?.socials.tiktok && {
+      key: "tiktok",
+      href: data.socials.tiktok,
+      external: true,
+      label: "TikTok",
+      bg: "bg-black ring-1 ring-white/15",
+      content: <TiktokLogoIcon className="h-3/5 w-3/5 text-white" weight="fill" />,
     },
     data?.socials.zalo && {
       key: "zalo",

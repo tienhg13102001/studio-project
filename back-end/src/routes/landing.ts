@@ -33,11 +33,13 @@ router.get("/", async (_req, res, next) => {
           zalo: contact.socials?.zalo,
           facebook: contact.socials?.facebook,
           instagram: contact.socials?.instagram,
+          tiktok: contact.socials?.tiktok,
         },
         socialQrs: {
           zalo: contact.socialQrs?.zalo,
           facebook: contact.socialQrs?.facebook,
           instagram: contact.socialQrs?.instagram,
+          tiktok: contact.socialQrs?.tiktok,
         },
       }),
     };

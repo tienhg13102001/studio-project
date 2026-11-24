@@ -16,7 +16,16 @@ const StatsAndBrands: React.FC = () => {
   const t = useTranslation();
   const { data: brands } = useBrands();
 
-  const row1 = brands ?? [];
+  // Hai dải chạy ngược chiều chia nhau danh sách (xen kẽ chẵn/lẻ để logo lớn
+  // không dồn một dải). Bản cũ cho CẢ HAI dải hiện đủ 30 logo, nên trên màn
+  // hình mỗi logo hiện 2 lần cùng lúc; người xem tưởng nhập trùng
+  // (VPBank "2 lần", soát 23/11/2026). Ít hơn 8 logo thì một dải là đủ.
+  // Không tự nhân đôi danh sách ở đây: MarqueeRow đã tự lặp đủ để cuộn vòng
+  // và gắn aria-hidden cho các bản lặp.
+  const ds = brands ?? [];
+  const haiDai = ds.length >= 8;
+  const row1 = haiDai ? ds.filter((_, i) => i % 2 === 0) : ds;
+  const row2 = haiDai ? ds.filter((_, i) => i % 2 === 1) : [];
 
   return (
     <section className="py-20">
@@ -71,9 +80,9 @@ const StatsAndBrands: React.FC = () => {
           {/* Row 1 — left */}
           <div className="border-border/50 bg-muted/30 overflow-hidden border-y">
             <MarqueeRow direction="left">
-              {[...row1, ...row1].map((brand, i) => (
+              {row1.map((brand) => (
                 <div
-                  key={`${brand.id}-${i}`}
+                  key={brand.id}
                   className="flex shrink-0 items-center justify-center px-4 py-6"
                 >
                   <img
@@ -90,26 +99,28 @@ const StatsAndBrands: React.FC = () => {
             </MarqueeRow>
           </div>
           {/* Row 2 — right */}
-          <div className="border-border/50 bg-muted/30 overflow-hidden border-y mt-10">
-            <MarqueeRow direction="right">
-              {[...row1, ...row1].map((brand, i) => (
-                <div
-                  key={`${brand.id}-${i}`}
-                  className="flex shrink-0 items-center justify-center px-4 py-6"
-                >
-                  <img
-                    src={resolveAssetUrl(brand.logo)}
-                    alt={`Logo ${brand.name} — khách hàng của Bee Z Production`}
-                    loading="lazy"
-                    decoding="async"
-                    width={120}
-                    height={48}
-                    className="h-12 max-w-30 object-contain transition-all duration-300"
-                  />
-                </div>
-              ))}
-            </MarqueeRow>
-          </div>
+          {row2.length > 0 && (
+            <div className="border-border/50 bg-muted/30 overflow-hidden border-y mt-10">
+              <MarqueeRow direction="right">
+                {row2.map((brand) => (
+                  <div
+                    key={brand.id}
+                    className="flex shrink-0 items-center justify-center px-4 py-6"
+                  >
+                    <img
+                      src={resolveAssetUrl(brand.logo)}
+                      alt={`Logo ${brand.name} — khách hàng của Bee Z Production`}
+                      loading="lazy"
+                      decoding="async"
+                      width={120}
+                      height={48}
+                      className="h-12 max-w-30 object-contain transition-all duration-300"
+                    />
+                  </div>
+                ))}
+              </MarqueeRow>
+            </div>
+          )}
         </div>
       )}
     </section>

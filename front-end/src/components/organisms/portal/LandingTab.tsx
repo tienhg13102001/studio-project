@@ -17,7 +17,7 @@ import {
 } from "@phosphor-icons/react";
 import { useEffect, useState } from "react";
 
-type SocialPlatform = "zalo" | "facebook" | "instagram";
+type SocialPlatform = "zalo" | "facebook" | "instagram" | "tiktok";
 
 type Form = {
   heroLine1: { en: string; vi: string };
@@ -31,17 +31,20 @@ type Form = {
     zalo: string;
     facebook: string;
     instagram: string;
+    tiktok: string;
   };
   socialQrs: {
     zalo: string;
     facebook: string;
     instagram: string;
+    tiktok: string;
   };
   /** The URL each stored QR was generated for — used to gate the "Tạo QR" button. */
   qrUrls: {
     zalo: string;
     facebook: string;
     instagram: string;
+    tiktok: string;
   };
 };
 
@@ -53,9 +56,9 @@ const EMPTY_FORM: Form = {
   phone: "",
   email: "",
   address: { en: "", vi: "" },
-  socials: { zalo: "", facebook: "", instagram: "" },
-  socialQrs: { zalo: "", facebook: "", instagram: "" },
-  qrUrls: { zalo: "", facebook: "", instagram: "" },
+  socials: { zalo: "", facebook: "", instagram: "", tiktok: "" },
+  socialQrs: { zalo: "", facebook: "", instagram: "", tiktok: "" },
+  qrUrls: { zalo: "", facebook: "", instagram: "", tiktok: "" },
 };
 
 function toForm(raw: ApiLanding): Form {
@@ -71,11 +74,13 @@ function toForm(raw: ApiLanding): Form {
       zalo: raw.socials?.zalo ?? "",
       facebook: raw.socials?.facebook ?? "",
       instagram: raw.socials?.instagram ?? "",
+      tiktok: raw.socials?.tiktok ?? "",
     },
     socialQrs: {
       zalo: raw.socialQrs?.zalo ?? "",
       facebook: raw.socialQrs?.facebook ?? "",
       instagram: raw.socialQrs?.instagram ?? "",
+      tiktok: raw.socialQrs?.tiktok ?? "",
     },
     // A stored QR was generated for the currently-saved URL → seed qrUrls so the
     // "Tạo QR" button stays disabled until the URL is edited.
@@ -83,6 +88,7 @@ function toForm(raw: ApiLanding): Form {
       zalo: raw.socialQrs?.zalo ? (raw.socials?.zalo ?? "") : "",
       facebook: raw.socialQrs?.facebook ? (raw.socials?.facebook ?? "") : "",
       instagram: raw.socialQrs?.instagram ? (raw.socials?.instagram ?? "") : "",
+      tiktok: raw.socialQrs?.tiktok ? (raw.socials?.tiktok ?? "") : "",
     },
   };
 }
@@ -206,13 +212,14 @@ const LandingTab = () => {
       {/* Socials */}
       <Section
         title="Mạng xã hội"
-        description="URL trang Zalo / Facebook / Instagram. Bấm “Tạo QR” để sinh và lưu mã QR vào DB, “Tải QR” để tải ảnh PNG."
+        description="URL trang Zalo / Facebook / Instagram / TikTok. Để trống ô nào thì web không hiện nút đó. Bấm “Tạo QR” để sinh và lưu mã QR vào DB, “Tải QR” để tải ảnh PNG."
       >
         {(
           [
             { platform: "zalo", label: "Zalo URL", placeholder: "https://zalo.me/..." },
             { platform: "facebook", label: "Facebook URL", placeholder: "https://facebook.com/..." },
             { platform: "instagram", label: "Instagram URL", placeholder: "https://instagram.com/..." },
+            { platform: "tiktok", label: "TikTok URL", placeholder: "https://www.tiktok.com/@..." },
           ] as const
         ).map(({ platform, label, placeholder }) => (
           <SocialField

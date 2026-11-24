@@ -16,6 +16,7 @@ export type LandingDisplay = {
     zalo: string;
     facebook: string;
     instagram: string;
+    tiktok: string;
   };
 };
 
@@ -57,6 +58,7 @@ export function useLanding(lang: Lang) {
           zalo: raw.socials?.zalo ?? "",
           facebook: raw.socials?.facebook ?? "",
           instagram: raw.socials?.instagram ?? "",
+          tiktok: raw.socials?.tiktok ?? "",
         },
       }
     : null;

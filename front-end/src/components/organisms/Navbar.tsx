@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { ListIcon, PhoneIcon } from "@phosphor-icons/react";
+import { ListIcon, PhoneIcon, UserIcon } from "@phosphor-icons/react";
 import { useLanding } from "#hooks/useLanding";
 import LogoYellow from "../../assets/icons/LogoYellow";
 import { Button } from "#components/ui/button";
@@ -104,9 +104,18 @@ const Navbar: React.FC<Props> = () => {
             )}
           </Button>
 
-          {/* Nút đăng nhập nội bộ đã chuyển xuống chân trang (24/11/2026): khách
-              không cần nó, mà trên điện thoại nó chiếm chỗ của nút menu. Team
-              vào thẳng /portal hoặc bấm "Đăng nhập nội bộ" ở cuối trang. */}
+          {/* Đăng nhập nội bộ: chỉ hiện từ màn máy tính (Hoàn hỏi lại 24/11/2026).
+              Trên điện thoại vẫn ẩn vì nó chiếm chỗ nút menu; team dùng
+              "Đăng nhập nội bộ" ở chân trang hoặc gõ thẳng /portal. */}
+          <Button
+            variant="outline"
+            className="hidden lg:inline-flex"
+            aria-label="Đăng nhập nội bộ"
+            title="Đăng nhập nội bộ"
+            onClick={() => navigate("/portal")}
+          >
+            <UserIcon />
+          </Button>
 
           {/* Let's Talk CTA */}
           <Button

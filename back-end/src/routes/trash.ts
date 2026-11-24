@@ -8,6 +8,7 @@ import { PortfolioItem } from "../models/Portfolio.ts";
 import { Project } from "../models/Project.ts";
 import { Service } from "../models/Service.ts";
 import { Testimonial } from "../models/Testimonial.ts";
+import { BaiViet } from "../models/BaiViet.ts";
 
 /**
  * Thùng rác dùng chung cho portal.
@@ -44,6 +45,7 @@ const LABELS = {
   portfolio: "Ảnh portfolio",
   inquiries: "Yêu cầu liên hệ",
   testimonials: "Nhận xét khách",
+  "bai-viet": "Bài viết",
 } as const;
 
 function purgeAt(deletedAt: Date): string {
@@ -120,6 +122,22 @@ const SOURCES: Record<string, TrashEntry> = {
       })),
     restore: async (id) => !!(await PortfolioItem.restoreById(id)),
     purge: async (id) => !!(await PortfolioItem.purgeById(id)),
+  },
+
+  "bai-viet": {
+    list: async () =>
+      (await BaiViet.findDeleted()).map((b) => ({
+        type: "bai-viet",
+        typeLabel: LABELS["bai-viet"],
+        id: String(b._id),
+        title: b.tieuDe,
+        subtitle: "/bai-viet/" + b.slug,
+        image: b.anhBia || "",
+        deletedAt: b.deletedAt.toISOString(),
+        purgeAt: purgeAt(b.deletedAt),
+      })),
+    restore: async (id) => !!(await BaiViet.restoreById(id)),
+    purge: async (id) => !!(await BaiViet.purgeById(id)),
   },
 
   testimonials: {

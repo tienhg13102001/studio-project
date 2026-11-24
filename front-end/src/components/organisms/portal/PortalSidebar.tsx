@@ -7,6 +7,7 @@ import {
   GearIcon,
   HouseIcon,
   ImageSquareIcon,
+  NewspaperIcon,
   SignOutIcon,
   SquaresFourIcon,
   StarIcon,
@@ -34,6 +35,7 @@ const NAV: NavItem[] = [
   { icon: <ImageSquareIcon size={18} weight="duotone" />, label: "Dự án",      to: "/portal/projects" },
   { icon: <EnvelopeIcon    size={18} weight="duotone" />, label: "Liên hệ",    to: "/portal/inquiries" },
   { icon: <ChatCircleTextIcon size={18} weight="duotone" />, label: "Nhận xét", to: "/portal/testimonials" },
+  { icon: <NewspaperIcon   size={18} weight="duotone" />, label: "Bài viết",   to: "/portal/bai-viet" },
   { icon: <GearIcon        size={18} weight="duotone" />, label: "Cài đặt",    to: "/portal/settings" },
   { icon: <TrashIcon       size={18} weight="duotone" />, label: "Thùng rác",  to: "/portal/trash" },
 ];

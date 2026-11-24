@@ -471,3 +471,104 @@
     text-align: left;
   }
 }
+
+/*
+  Thân bài viết (/bai-viet/<tên>) — HTML sinh từ Markdown nên không gắn được lớp
+  Tailwind vào từng thẻ; định kiểu theo thẻ con ở đây. Cỡ chữ 17px, dòng ~68
+  ký tự: bài dài 1.500 chữ, đọc trên điện thoại phải thoải mái.
+*/
+.bai-viet {
+  font-size: 1.0625rem;
+  line-height: 1.75;
+  color: color-mix(in oklab, var(--color-foreground) 86%, transparent);
+}
+.bai-viet > * + * {
+  margin-top: 1.1em;
+}
+.bai-viet h2 {
+  margin-top: 2.2em;
+  font-size: 1.5rem;
+  line-height: 1.3;
+  font-weight: 700;
+  color: var(--color-foreground);
+  text-wrap: balance;
+}
+.bai-viet h3 {
+  margin-top: 1.8em;
+  font-size: 1.2rem;
+  line-height: 1.35;
+  font-weight: 700;
+  color: var(--color-foreground);
+}
+.bai-viet strong {
+  color: var(--color-foreground);
+  font-weight: 650;
+}
+.bai-viet a {
+  color: var(--color-primary);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+}
+.bai-viet a:hover {
+  text-decoration-thickness: 2px;
+}
+.bai-viet ul,
+.bai-viet ol {
+  padding-left: 1.4em;
+}
+.bai-viet ul {
+  list-style: disc;
+}
+.bai-viet ol {
+  list-style: decimal;
+}
+.bai-viet li + li {
+  margin-top: 0.4em;
+}
+.bai-viet li::marker {
+  color: var(--color-primary);
+}
+.bai-viet blockquote {
+  border-left: 3px solid var(--color-primary);
+  padding: 0.2em 0 0.2em 1em;
+  color: var(--color-foreground);
+}
+/* Bảng rộng thì cuộn ngang trong khung riêng, không làm cả trang trượt ngang. */
+.bai-viet table {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  font-variant-numeric: tabular-nums;
+}
+.bai-viet th,
+.bai-viet td {
+  border: 1px solid var(--color-border);
+  padding: 0.55em 0.8em;
+  text-align: left;
+  vertical-align: top;
+  min-width: 8rem;
+}
+.bai-viet th {
+  color: var(--color-foreground);
+  background: color-mix(in oklab, var(--color-foreground) 6%, transparent);
+  font-weight: 650;
+}
+.bai-viet hr {
+  border-color: var(--color-border);
+  margin: 2.5em 0;
+}
+.bai-viet code {
+  font-size: 0.9em;
+  padding: 0.1em 0.35em;
+  border-radius: 4px;
+  background: color-mix(in oklab, var(--color-foreground) 8%, transparent);
+}
+.bai-viet img {
+  border-radius: var(--radius);
+  max-width: 100%;
+  height: auto;
+}

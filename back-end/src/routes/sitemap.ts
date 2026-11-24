@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { Service } from "../models/Service.ts";
 import { Project } from "../models/Project.ts";
+import { BaiViet } from "../models/BaiViet.ts";
 
 /**
  * Sinh sitemap.xml từ dữ liệu thật.
@@ -74,9 +75,14 @@ ${urls}
 
 router.get("/", async (_req, res, next) => {
   try {
-    const [services, projects] = await Promise.all([
+    const [services, projects, baiViet] = await Promise.all([
       Service.find().select("_id slug updatedAt").lean(),
       Project.find().select("slug service updatedAt").lean(),
+      // Chỉ bài đã đăng; bản nháp không bao giờ lộ ra sitemap.
+      BaiViet.find({ trangThai: "dang", ngayDang: { $ne: null, $lte: new Date() } })
+        .select("slug updatedAt")
+        .sort({ ngayDang: -1 })
+        .lean(),
     ]);
 
     // Ngày sửa gần nhất của bất kỳ dự án nào — dùng cho trang portfolio.
@@ -129,6 +135,24 @@ router.get("/", async (_req, res, next) => {
         lastmod: day((s as { updatedAt?: Date }).updatedAt),
       })),
       ...projectEntries,
+      // Mục bài viết chỉ khai khi đã có bài — khai một trang danh sách rỗng là
+      // mời Google lập chỉ mục một trang mỏng.
+      ...(baiViet.length
+        ? [
+            {
+              loc: "/bai-viet",
+              changefreq: "weekly",
+              priority: "0.6",
+              lastmod: day((baiViet[0] as { updatedAt?: Date }).updatedAt),
+            },
+            ...baiViet.map((b) => ({
+              loc: `/bai-viet/${(b as { slug: string }).slug}`,
+              changefreq: "monthly",
+              priority: "0.6",
+              lastmod: day((b as { updatedAt?: Date }).updatedAt),
+            })),
+          ]
+        : []),
     ];
 
     res.type("application/xml");

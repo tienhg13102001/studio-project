@@ -23,6 +23,7 @@ import usersRouter from "./users.ts";
 import visitorsRouter from "./visitors.ts";
 import anhRouter from "./anh.ts";
 import xemTruocRouter from "./xem-truoc.ts";
+import baiVietRouter from "./bai-viet.ts";
 
 /**
  * Gom toàn bộ route của API vào một chỗ. `app.ts` chỉ việc mount router này
@@ -50,6 +51,7 @@ const NHANH_NOI_DUNG = [
   "/team-content",
   "/testimonials",
   "/contact",
+  "/bai-viet",
 ];
 
 /**
@@ -128,6 +130,8 @@ const ADMIN_ONLY_READS = [
   // khách xin gỡ xuống — để lọt ra đường công khai thì tắt cũng như không.
   // Đường công khai `/testimonials` (chỉ bản đang bật) KHÔNG bị chặn.
   /^\/testimonials\/all$/,
+  // Danh sách bài viết gồm cả bản NHÁP chưa đăng.
+  /^\/bai-viet\/all$/,
 ];
 
 /**
@@ -243,6 +247,7 @@ router.use("/anh", anhRouter);
 router.use("/xem-truoc", xemTruocRouter);
 router.use("/team-content", teamContentRouter);
 router.use("/testimonials", testimonialsRouter);
+router.use("/bai-viet", baiVietRouter);
 router.use("/settings", settingsRouter);
 router.use("/visitors", visitorsRouter);
 router.use("/trash", trashRouter);

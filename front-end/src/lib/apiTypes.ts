@@ -16,12 +16,14 @@ export type ApiLanding = {
     zalo?: string;
     facebook?: string;
     instagram?: string;
+    tiktok?: string;
   };
   /** QR code PNG data-URLs generated per social URL (portal only). */
   socialQrs?: {
     zalo?: string;
     facebook?: string;
     instagram?: string;
+    tiktok?: string;
   };
 };
 
@@ -238,3 +240,18 @@ export type ApiTrashItem = {
 };
 
 export type ApiTrash = { items: ApiTrashItem[]; ttlDays: number };
+
+/** Bài viết (/bai-viet). Danh sách công khai không kèm `noiDung`. */
+export type ApiBaiViet = {
+  id: string;
+  slug: string;
+  tieuDe: string;
+  moTa: string;
+  noiDung?: string;
+  anhBia: string;
+  trangThai?: "nhap" | "dang";
+  ngayDang: string | null;
+  dichVu: string;
+  createdAt?: string;
+  updatedAt: string;
+};

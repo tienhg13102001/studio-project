@@ -13,7 +13,7 @@ const vi = {
     home: "Trang chủ",
     services: "Dịch vụ",
     rental: "Cho thuê",
-    blog: "Blog",
+    blog: "Bài viết",
     team: "Đội ngũ",
     portfolio: "Portfolio",
     pricing: "Bảng giá",

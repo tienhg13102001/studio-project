@@ -11,6 +11,8 @@ const TeamPage = lazy(() => import("../pages/TeamPage"));
 const PortfolioPage = lazy(() => import("../pages/PortfolioPage"));
 const NotFoundPage = lazy(() => import("../pages/NotFoundPage"));
 const PrivacyPage = lazy(() => import("../pages/PrivacyPage"));
+const BaiVietListPage = lazy(() => import("../pages/BaiVietListPage"));
+const BaiVietPage = lazy(() => import("../pages/BaiVietPage"));
 const ProjectPage = lazy(() => import("../pages/ProjectPage"));
 const PortalPage = lazy(() => import("../pages/portal/PortalPage"));
 
@@ -24,6 +26,7 @@ const PortalInquiriesPage = lazy(() => import("../pages/portal/InquiriesPage"));
 const PortalTestimonialsPage = lazy(() => import("../pages/portal/TestimonialsPage"));
 const PortalSettingsPage = lazy(() => import("../pages/portal/SettingsPage"));
 const PortalTrashPage = lazy(() => import("../pages/portal/TrashPage"));
+const PortalBaiVietPage = lazy(() => import("../pages/portal/BaiVietPage"));
 
 const PageFallback = () => (
   <div className="flex min-h-screen items-center justify-center">
@@ -56,6 +59,9 @@ export const router = createBrowserRouter([
       { path: "team", element: withSuspense(TeamPage) },
       { path: "portfolio", element: withSuspense(PortfolioPage) },
       { path: "chinh-sach-bao-mat", element: withSuspense(PrivacyPage) },
+      // Thêm route mới thì PHẢI thêm vào map $la_trang_spa trong nginx.conf.
+      { path: "bai-viet", element: withSuspense(BaiVietListPage) },
+      { path: "bai-viet/:slug", element: withSuspense(BaiVietPage) },
       // Trang 404 nằm TRONG khung chung để có menu và chân trang: người lạc
       // đường còn lối đi tiếp. nginx trả kèm mã 404 thật cho đường dẫn lạ.
       { path: "*", element: withSuspense(NotFoundPage) },
@@ -78,6 +84,7 @@ export const router = createBrowserRouter([
       { path: "/portal/projects", element: withSuspense(PortalProjectsPage) },
       { path: "/portal/inquiries", element: withSuspense(PortalInquiriesPage) },
       { path: "/portal/testimonials", element: withSuspense(PortalTestimonialsPage) },
+      { path: "/portal/bai-viet", element: withSuspense(PortalBaiVietPage) },
       { path: "/portal/settings", element: withSuspense(PortalSettingsPage) },
       { path: "/portal/trash", element: withSuspense(PortalTrashPage) },
       // Any unknown /portal/* (other than /portal itself) → dashboard
