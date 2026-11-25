@@ -1,7 +1,7 @@
 import MediaPlayer from "#components/molecules/MediaPlayer";
 import { Button } from "#components/ui/button";
 import type { ProjectDisplay } from "#hooks/useProjects";
-import { useTranslation } from "#i18n";
+import { useLanguage, useTranslation } from "#i18n";
 import { cn } from "#lib/utils";
 import {
   ArrowLeftIcon,
@@ -41,6 +41,7 @@ const maxSheetHeight = () =>
 
 const ProjectDetail: FC<Props> = ({ project, onClose }) => {
   const navigate = useNavigate();
+  const { dd } = useLanguage();
   const t = useTranslation();
 
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -475,7 +476,7 @@ const ProjectDetail: FC<Props> = ({ project, onClose }) => {
           {/* Action Button */}
           <button
             className="bg-primary text-primary-foreground hover:bg-primary/90 flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg py-3 font-semibold transition-colors"
-            onClick={() => navigate("/service")}
+            onClick={() => navigate(dd("/service"))}
           >
             {t.project.watchMore} <PlayCircleIcon size={20} />
           </button>

@@ -13,7 +13,7 @@ import VietNamFlag from "../../assets/icons/VietNamFlag";
 type Props = {};
 
 const Navbar: React.FC<Props> = () => {
-  const { lang, setLang } = useLanguage();
+  const { lang, setLang, dd } = useLanguage();
   const { pathname } = useLocation();
   const navigate = useNavigate();
   const t = useTranslation();
@@ -62,7 +62,7 @@ const Navbar: React.FC<Props> = () => {
           Chân trang đã dùng <Link to="/"> từ trước; nay thanh đầu làm giống.
         */}
         <Link
-          to="/"
+          to={dd("/")}
           aria-label="Về trang chủ Bee Z Production"
           className="focus-visible:ring-primary flex items-center justify-self-start rounded-md focus-visible:ring-2 focus-visible:outline-none"
         >
@@ -121,7 +121,7 @@ const Navbar: React.FC<Props> = () => {
           <Button
             variant="outline"
             className="hidden lg:inline-flex"
-            onClick={() => navigate("/contact")}
+            onClick={() => navigate(dd("/contact"))}
           >
             {t.nav.letsTalk}
           </Button>

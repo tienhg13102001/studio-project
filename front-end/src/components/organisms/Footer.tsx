@@ -26,7 +26,7 @@ const NAV_ITEMS = [
 
 const Footer: React.FC = () => {
   const t = useTranslation();
-  const { lang } = useLanguage();
+  const { lang, dd } = useLanguage();
   const { data: contact } = useContact();
   const { data: landing } = useLanding(lang);
   const { data: baiViet } = useBaiViet();
@@ -46,7 +46,7 @@ const Footer: React.FC = () => {
       <div className="mx-auto grid w-full max-w-7xl gap-10 px-6 py-12 md:grid-cols-2 lg:grid-cols-4">
         {/* Brand */}
         <div className="space-y-4">
-          <Link to="/" className="inline-flex items-center gap-2">
+          <Link to={dd("/")} className="inline-flex items-center gap-2">
             <LogoYellow className="text-foreground h-8 w-8" />
             <span className="text-xl font-bold">Bee Z Production</span>
           </Link>
@@ -70,7 +70,7 @@ const Footer: React.FC = () => {
                   </a>
                 ) : (
                   <Link
-                    to={item.to}
+                    to={dd(item.to)}
                     className="text-muted-foreground hover:text-primary text-sm transition-colors"
                   >
                     {t.nav[item.key]}
@@ -184,7 +184,7 @@ const Footer: React.FC = () => {
             <p>{t.footer.legal}</p>
           </div>
           <div className="text-muted-foreground flex items-center gap-4 text-xs">
-            <Link to="/chinh-sach-bao-mat" className="hover:text-foreground transition-colors">
+            <Link to={dd("/chinh-sach-bao-mat")} className="hover:text-foreground transition-colors">
               {t.footer.privacy}
             </Link>
             <Link to="/portal" rel="nofollow" className="hover:text-foreground transition-colors">

@@ -1,4 +1,4 @@
-import { useLanguage } from "#i18n";
+import { coBanTiengAnh, theoNgonNgu, useLanguage } from "#i18n";
 import { useEffect, type FC } from "react";
 import { Helmet } from "react-helmet-async";
 
@@ -10,7 +10,10 @@ type Props = {
   /** Page title — final tag becomes "<title> — Bee Z Production" unless titleTemplate is false. */
   title: string;
   description: string;
-  /** Path beginning with "/" — used for canonical + og:url. Defaults to current location. */
+  /**
+   * Đường dẫn TIẾNG VIỆT, bắt đầu bằng "/" (vd "/team"). Đang ở bản Anh thì
+   * component tự gắn /en cho canonical/og:url và khai cặp hreflang vi ↔ en.
+   */
   path?: string;
   /** Absolute or root-relative image URL for OG/Twitter cards. */
   image?: string;
@@ -66,7 +69,13 @@ const Seo: FC<Props> = ({
 
 
   const fullTitle = titleTemplate ? `${title} — ${SITE_NAME}` : title;
-  const canonical = path ? `${SITE_URL}${path}` : SITE_URL;
+  // Trang có bản Anh (đợt J, 25/11/2026): mỗi bản tự khai canonical về CHÍNH NÓ
+  // và cùng khai cặp hreflang trỏ sang nhau — đúng cách Google hướng dẫn. Bài
+  // viết chỉ có tiếng Việt nên không khai hreflang.
+  const haiBan = !!path && !noindex && coBanTiengAnh(path);
+  const urlVi = path ? `${SITE_URL}${path === "/" ? "/" : path}` : SITE_URL;
+  const urlEn = path ? `${SITE_URL}${theoNgonNgu(path, "en")}` : SITE_URL;
+  const canonical = haiBan && lang === "en" ? urlEn : urlVi;
   const ogImage = image
     ? image.startsWith("http")
       ? image
@@ -92,7 +101,10 @@ const Seo: FC<Props> = ({
       {/* Zalo/Facebook đọc chắc hơn khi biết trước kích thước ảnh. */}
       <meta property="og:image:width" content="1200" />
       <meta property="og:image:height" content="630" />
-      <meta property="og:image:alt" content="Bee Z Production — sản xuất TVC và phim quảng cáo tại Hà Nội" />
+      <meta
+        property="og:image:alt"
+        content={lang === "en" ? "Bee Z Production — TVC and commercial production in Hanoi" : "Bee Z Production — sản xuất TVC và phim quảng cáo tại Hà Nội"}
+      />
 
       {/* Twitter */}
       <meta name="twitter:card" content="summary_large_image" />
@@ -100,10 +112,12 @@ const Seo: FC<Props> = ({
       <meta name="twitter:description" content={description} />
       <meta name="twitter:image" content={ogImage} />
 
-      {/* KHÔNG khai hreflang (bỏ 24/11/2026): tiếng Anh chỉ đổi chữ trong trình
-          duyệt, cùng một địa chỉ, Google không bao giờ thấy bản tiếng Anh. Khai
-          vi/en cùng trỏ về một URL là khai vô nghĩa. Khi nào có /en riêng thì
-          khai lại cho đúng. */}
+      {/* hreflang: khai lại từ đợt J (25/11/2026) khi đã có /en riêng. x-default
+          là bản Việt — khách chính của Bee Z. PHẢI khớp bản dựng sẵn trong
+          scripts/prerender-meta.mjs (theHreflang). */}
+      {haiBan && <link rel="alternate" hrefLang="vi" href={urlVi} />}
+      {haiBan && <link rel="alternate" hrefLang="en" href={urlEn} />}
+      {haiBan && <link rel="alternate" hrefLang="x-default" href={urlVi} />}
 
       {jsonLd && <script type="application/ld+json">{JSON.stringify(jsonLd)}</script>}
     </Helmet>

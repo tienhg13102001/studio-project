@@ -106,7 +106,7 @@ const ContactPage: React.FC = () => {
 
   return (
     <div className="min-h-screen">
-      <Seo {...seoTrangTinh("/contact")} path="/contact" />
+      <Seo {...seoTrangTinh("/contact", lang)} path="/contact" />
       <PageHero
         title={t.contact.pageTitle}
         subtitle={localized(contact.subheading, lang)}

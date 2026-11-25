@@ -1,7 +1,7 @@
 import { useState, useRef } from "react";
 import { CaretDownIcon } from "@phosphor-icons/react";
 import { Link, useLocation } from "react-router-dom";
-import { useTranslation, useLanguage } from "#i18n";
+import { boTienToEn, useTranslation, useLanguage } from "#i18n";
 import type { Translations } from "#i18n";
 import { useServices } from "#hooks/useServices";
 import { duongDanDichVu } from "#lib/urls";
@@ -40,8 +40,9 @@ type Props = {
 
 const NavLinks: React.FC<Props> = ({ scrolled }) => {
   const t = useTranslation();
-  const { lang } = useLanguage();
-  const { pathname } = useLocation();
+  const { lang, dd } = useLanguage();
+  // So khớp mục đang mở theo đường dẫn ĐÃ BỎ /en, để bản Anh sáng đúng mục.
+  const pathname = boTienToEn(useLocation().pathname);
   const [openDropdown, setOpenDropdown] = useState<NavKey | null>(null);
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -83,7 +84,7 @@ const NavLinks: React.FC<Props> = ({ scrolled }) => {
           onMouseLeave={item.hasDropdown ? handleMouseLeave : undefined}
         >
           {item.hasDropdown ? (
-            <Link to={item.to} className={linkClass(item)}>
+            <Link to={dd(item.to)} className={linkClass(item)}>
               {t.nav[item.key]}
               <CaretDownIcon
                 size={11}
@@ -95,7 +96,7 @@ const NavLinks: React.FC<Props> = ({ scrolled }) => {
               {t.nav[item.key]}
             </a>
           ) : (
-            <Link to={item.to} className={linkClass(item)}>
+            <Link to={dd(item.to)} className={linkClass(item)}>
               {t.nav[item.key]}
             </Link>
           )}
@@ -115,7 +116,7 @@ const NavLinks: React.FC<Props> = ({ scrolled }) => {
                   return (
                     <Link
                       key={service.id}
-                      to={duongDanDichVu(service)}
+                      to={dd(duongDanDichVu(service))}
                       className="group hover:bg-muted flex items-start gap-3 rounded-lg p-3 transition-colors"
                     >
                       <div className="min-w-0">

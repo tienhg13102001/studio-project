@@ -3,6 +3,7 @@ import en from "./locales/en";
 import vi from "./locales/vi";
 export { LanguageProvider, useLanguage } from "./LanguageContext";
 export type { Lang } from "./LanguageContext";
+export { boTienToEn, coBanTiengAnh, ngonNguTuDuongDan, theoNgonNgu } from "./duongDan";
 
 const translations = { en, vi };
 

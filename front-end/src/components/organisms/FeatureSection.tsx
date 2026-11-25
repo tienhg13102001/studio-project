@@ -19,7 +19,7 @@ type Props = {};
 
 const FeatureSection: FC<Props> = () => {
   const t = useTranslation();
-  const { lang } = useLanguage();
+  const { lang, dd } = useLanguage();
   const { verticalCards, horizontalCards } = useProjects(lang);
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -48,7 +48,7 @@ const FeatureSection: FC<Props> = () => {
    */
   const openProject = (card: ProjectDisplay) => {
     if (card.slug) {
-      navigate(duongDanDuAn(card, { id: "" }), { state: { tuTrongWeb: true } });
+      navigate(dd(duongDanDuAn(card, { id: "" })), { state: { tuTrongWeb: true } });
       return;
     }
     setSearchParams(

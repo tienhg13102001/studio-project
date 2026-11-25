@@ -8,6 +8,7 @@ import {
 } from "@phosphor-icons/react";
 import type { CSSProperties } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useLanguage } from "#i18n";
 import LogoYellow from "../assets/icons/LogoYellow";
 
 /** Decorative film icons that drift around the background. */
@@ -20,10 +21,12 @@ const FLOATERS = [
 
 const NotFoundPage = () => {
   const navigate = useNavigate();
+  const { lang, dd } = useLanguage();
+  const en = lang === "en";
 
   return (
     <div className="text-foreground relative flex min-h-[85vh] flex-col items-center justify-center overflow-hidden bg-[#0a0a0a] px-6 pt-24 pb-16 font-sans">
-      <Seo title="404 — Không tìm thấy trang" description="Trang bạn tìm không tồn tại." noindex />
+      <Seo title={en ? "404 — Page not found" : "404 — Không tìm thấy trang"} description={en ? "The page you are looking for does not exist." : "Trang bạn tìm không tồn tại."} noindex />
 
       {/* ── Drifting brand-tinted glow blobs ── */}
       <div className="bg-primary/15 animate-nf-drift pointer-events-none absolute -top-20 -left-10 h-72 w-72 rounded-full blur-3xl" />
@@ -57,32 +60,32 @@ const NotFoundPage = () => {
         <div className="mb-2 flex items-center gap-3">
           <div className="bg-primary h-px w-10" />
           <span className="text-primary text-xs font-medium tracking-[0.3em] uppercase">
-            Không tìm thấy trang
+            {en ? "Page not found" : "Không tìm thấy trang"}
           </span>
           <div className="bg-primary h-px w-10" />
         </div>
 
         <h1 className="animate-nf-glitch text-5xl leading-none font-bold text-white md:text-7xl">
-          Lạc khỏi khung hình
+          {en ? "Out of frame" : "Lạc khỏi khung hình"}
         </h1>
 
         <p className="text-muted-foreground mt-2 max-w-sm text-sm leading-relaxed md:text-base">
-          Trang bạn tìm không tồn tại hoặc đã được chuyển đi chỗ khác.
+          {en ? "The page you are looking for does not exist or has moved." : "Trang bạn tìm không tồn tại hoặc đã được chuyển đi chỗ khác."}
         </p>
 
         <button
-          onClick={() => navigate("/")}
+          onClick={() => navigate(dd("/"))}
           className="bg-primary text-primary-foreground mt-6 rounded-full px-8 py-3 text-sm font-semibold tracking-wide transition-all hover:-translate-y-0.5 hover:brightness-110"
         >
-          Về trang chủ
+          {en ? "Back to home" : "Về trang chủ"}
         </button>
 
         {/* Lối đi tiếp cho người lạc đường — và cho máy quét đang dò link. */}
         <nav aria-label="Trang chính" className="text-muted-foreground mt-4 flex flex-wrap justify-center gap-x-5 gap-y-2 text-sm">
-          <Link to="/service" className="hover:text-primary transition-colors">Dịch vụ</Link>
-          <Link to="/portfolio" className="hover:text-primary transition-colors">Portfolio</Link>
-          <a href="/bang-gia" className="hover:text-primary transition-colors">Bảng giá</a>
-          <Link to="/contact" className="hover:text-primary transition-colors">Liên hệ</Link>
+          <Link to={dd("/service")} className="hover:text-primary transition-colors">{en ? "Services" : "Dịch vụ"}</Link>
+          <Link to={dd("/portfolio")} className="hover:text-primary transition-colors">Portfolio</Link>
+          <a href="/bang-gia" className="hover:text-primary transition-colors">{en ? "Pricing" : "Bảng giá"}</a>
+          <Link to={dd("/contact")} className="hover:text-primary transition-colors">{en ? "Contact" : "Liên hệ"}</Link>
         </nav>
       </Reveal>
 

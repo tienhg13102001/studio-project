@@ -3,6 +3,7 @@ import type { ServiceDisplay } from "#hooks/useServices";
 import { useRef, useState, type PointerEvent } from "react";
 import { Link } from "react-router-dom";
 import { duongDanDichVu } from "#lib/urls";
+import { useLanguage } from "#i18n";
 
 type Props = {
   service: ServiceDisplay;
@@ -24,6 +25,7 @@ const canTilt = () =>
 const ServiceCard: React.FC<Props> = ({ service, uuTien = false }) => {
   // Fall back to a branded gradient when the thumbnail is missing/broken so the
   // card never shows a broken-image icon + alt text.
+  const { dd } = useLanguage();
   const [imgOk, setImgOk] = useState(true);
   // Ảnh thu nhỏ (srcset) lỗi — ví dụ vài giây máy chủ khởi động lại lúc đẩy web —
   // thì thử lại bằng ảnh gốc trước, chỉ khi ảnh gốc cũng lỗi mới ẩn ảnh.
@@ -52,7 +54,7 @@ const ServiceCard: React.FC<Props> = ({ service, uuTien = false }) => {
     // chỉ đi theo liên kết thật, nên trước đây 6 trang dịch vụ — nội dung giá trị
     // nhất của web — gần như không có đường nào để Google vào.
     <Link
-      to={duongDanDichVu(service)}
+      to={dd(duongDanDichVu(service))}
       ref={rootRef}
       onPointerMove={handleMove}
       onPointerLeave={handleLeave}

@@ -14,13 +14,19 @@ export type DuongDanTinh =
   | "/chinh-sach-bao-mat"
   | "/bai-viet";
 
-export function seoTrangTinh(path: DuongDanTinh): Muc {
-  return (duLieu as unknown as Record<DuongDanTinh, Muc>)[path];
+/**
+ * Bản tiếng Anh (khoá "en" trong cùng tệp) dùng cho /en/… — đợt J, 25/11/2026.
+ * Trang nào không có bản Anh (bài viết) thì lùi về tiếng Việt.
+ */
+export function seoTrangTinh(path: DuongDanTinh | "/", lang: "vi" | "en" = "vi"): Muc {
+  const d = duLieu as unknown as Record<string, Muc> & { en: Record<string, Muc> };
+  return (lang === "en" && d.en[path]) || d[path];
 }
 
 /** Nhãn ngắn của mảng dịch vụ để gắn vào tiêu đề trang dự án. Không có thì trả "". */
-export function nhanMang(slugDichVu?: string): string {
-  const m = (duLieu as unknown as { _nhanMang: Record<string, string> })._nhanMang;
+export function nhanMang(slugDichVu?: string, lang: "vi" | "en" = "vi"): string {
+  const d = duLieu as unknown as { _nhanMang: Record<string, string>; _nhanMangEn: Record<string, string> };
+  const m = lang === "en" ? d._nhanMangEn : d._nhanMang;
   return (slugDichVu && m[slugDichVu]) || "";
 }
 

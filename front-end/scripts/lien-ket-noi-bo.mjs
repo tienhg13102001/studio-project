@@ -36,7 +36,42 @@ const a = (href, text) => `<a href="${esc(href)}">${esc(text)}</a>`;
  * @param {string} p.duongDanHienTai  đường dẫn của chính trang đang dựng
  * @param {"tinh"|"dich-vu"|"du-an"} p.loai
  */
-export function khoiLienKet({ dichVu, duAn, duongDanHienTai, loai, noiDung }) {
+/**
+ * Chữ cố định theo ngôn ngữ (đợt J, 25/11/2026). Bản /en dùng nhãn Anh và mọi
+ * link giữ tiền tố /en — danh sách dịch vụ/dự án truyền vào đã mang sẵn đường
+ * dẫn đúng ngôn ngữ.
+ */
+const CHU = {
+  vi: {
+    tien: "",
+    nav: ["Trang chủ", "Dịch vụ", "Portfolio", "Đội ngũ", "Liên hệ"],
+    nhanNav: "Trang chính",
+    nhanDv: "Các mảng dịch vụ",
+    nhanDaLam: "Dự án đã thực hiện",
+    nhanCuaMang: "Dự án thuộc mảng này",
+    nhanXemThem: "Xem thêm",
+    tatCaDuAn: "Xem tất cả dự án",
+    thuThach: "Thử thách",
+    cachLam: "Cách Bee Z làm",
+    hoiDap: "Câu hỏi thường gặp",
+  },
+  en: {
+    tien: "/en",
+    nav: ["Home", "Services", "Portfolio", "Team", "Contact"],
+    nhanNav: "Main pages",
+    nhanDv: "Services",
+    nhanDaLam: "Completed projects",
+    nhanCuaMang: "Projects in this service",
+    nhanXemThem: "See more",
+    tatCaDuAn: "View all projects",
+    thuThach: "The challenge",
+    cachLam: "How Bee Z did it",
+    hoiDap: "Frequently asked questions",
+  },
+};
+
+export function khoiLienKet({ dichVu, duAn, duongDanHienTai, loai, noiDung, lang = "vi" }) {
+  const C = CHU[lang];
   const phan = [];
 
   // Chữ thật của trang đi TRƯỚC danh sách link — xem chú thích khoiNoiDung().
@@ -46,14 +81,9 @@ export function khoiLienKet({ dichVu, duAn, duongDanHienTai, loai, noiDung }) {
   // nhau, thứ mà một web tĩnh bình thường có sẵn còn ứng dụng JavaScript thì
   // không.
   phan.push(
-    `<nav aria-label="Trang chính"><ul>` +
-      [
-        a("/", "Trang chủ"),
-        a("/service", "Dịch vụ"),
-        a("/portfolio", "Portfolio"),
-        a("/team", "Đội ngũ"),
-        a("/contact", "Liên hệ"),
-      ]
+    `<nav aria-label="${C.nhanNav}"><ul>` +
+      ["/", "/service", "/portfolio", "/team", "/contact"]
+        .map((p, i) => a(C.tien ? (p === "/" ? C.tien : C.tien + p) : p, C.nav[i]))
         .map((x) => `<li>${x}</li>`)
         .join("") +
       `</ul></nav>`,
@@ -64,7 +94,7 @@ export function khoiLienKet({ dichVu, duAn, duongDanHienTai, loai, noiDung }) {
     .filter((s) => s.path !== duongDanHienTai)
     .map((s) => `<li>${a(s.path, s.title)}</li>`)
     .join("");
-  if (dv) phan.push(`<nav aria-label="Các mảng dịch vụ"><ul>${dv}</ul></nav>`);
+  if (dv) phan.push(`<nav aria-label="${C.nhanDv}"><ul>${dv}</ul></nav>`);
 
   /**
    * Danh sách dự án CHỈ đặt ở trang portfolio và ở trang dịch vụ của chính nó.
@@ -73,15 +103,15 @@ export function khoiLienKet({ dichVu, duAn, duongDanHienTai, loai, noiDung }) {
    * Đặt đúng chỗ mà người thật cũng bấm tới thì vừa đúng cấu trúc web, vừa dồn
    * được sức mạnh vào đường dẫn ngắn nhất: Trang chủ → Portfolio → Dự án.
    */
-  if (loai === "tinh" && duongDanHienTai === "/portfolio") {
+  if (loai === "tinh" && duongDanHienTai === C.tien + "/portfolio") {
     const ds = duAn.map((p) => `<li>${a(p.path, p.title)}</li>`).join("");
-    if (ds) phan.push(`<nav aria-label="Dự án đã thực hiện"><ul>${ds}</ul></nav>`);
+    if (ds) phan.push(`<nav aria-label="${C.nhanDaLam}"><ul>${ds}</ul></nav>`);
   }
 
   if (loai === "dich-vu") {
     const cua = duAn.filter((p) => p.dichVuPath === duongDanHienTai);
     const ds = cua.map((p) => `<li>${a(p.path, p.title)}</li>`).join("");
-    if (ds) phan.push(`<nav aria-label="Dự án thuộc mảng này"><ul>${ds}</ul></nav>`);
+    if (ds) phan.push(`<nav aria-label="${C.nhanCuaMang}"><ul>${ds}</ul></nav>`);
   }
 
   // Trang dự án: đường quay lên mảng cha và về portfolio, để Google hiểu thứ bậc
@@ -89,10 +119,10 @@ export function khoiLienKet({ dichVu, duAn, duongDanHienTai, loai, noiDung }) {
   if (loai === "du-an") {
     const toi = duAn.find((p) => p.path === duongDanHienTai);
     const cha = toi?.dichVuPath ? dichVu.find((s) => s.path === toi.dichVuPath) : null;
-    const ds = [a("/portfolio", "Xem tất cả dự án")];
+    const ds = [a(C.tien + "/portfolio", C.tatCaDuAn)];
     if (cha) ds.push(a(cha.path, cha.title));
     phan.push(
-      `<nav aria-label="Xem thêm"><ul>${ds.map((x) => `<li>${x}</li>`).join("")}</ul></nav>`,
+      `<nav aria-label="${C.nhanXemThem}"><ul>${ds.map((x) => `<li>${x}</li>`).join("")}</ul></nav>`,
     );
   }
 
@@ -152,7 +182,8 @@ export function khoiLienKet({ dichVu, duAn, duongDanHienTai, loai, noiDung }) {
  * @param {string} p.ten        tên dự án, dựng thành <h1>
  * @param {object} [p.caseStudy]  { challenge:{vi}, approach:{vi} }
  */
-export function khoiNoiDung({ ten, caseStudy }) {
+export function khoiNoiDung({ ten, caseStudy, lang = "vi" }) {
+  const C = CHU[lang];
   // Bài viết ngăn đoạn bằng dòng trắng. Giữ đúng cách ngăn đó thành <p> để máy
   // tìm kiếm đọc ra văn xuôi nhiều đoạn, không phải một khối chữ dính liền.
   const doan = (s) =>
@@ -163,16 +194,17 @@ export function khoiNoiDung({ ten, caseStudy }) {
       .map((x) => `<p>${esc(x)}</p>`)
       .join("");
 
-  const thuThach = doan(caseStudy?.challenge?.vi);
-  const cachLam = doan(caseStudy?.approach?.vi);
+  // Bản Anh KHÔNG lùi về chữ Việt: thiếu thì bỏ đoạn, không trộn hai thứ tiếng.
+  const thuThach = doan(caseStudy?.challenge?.[lang]);
+  const cachLam = doan(caseStudy?.approach?.[lang]);
 
   // Chưa có bài thì chỉ dựng mỗi <h1>. Vẫn hơn không có thẻ tiêu đề nào.
   if (!ten) return "";
 
   return (
     `<article><h1>${esc(ten)}</h1>` +
-    (thuThach ? `<h2>Thử thách</h2>${thuThach}` : "") +
-    (cachLam ? `<h2>Cách Bee Z làm</h2>${cachLam}` : "") +
+    (thuThach ? `<h2>${C.thuThach}</h2>${thuThach}` : "") +
+    (cachLam ? `<h2>${C.cachLam}</h2>${cachLam}` : "") +
     `</article>`
   );
 }
@@ -184,6 +216,17 @@ export function khoiNoiDung({ ten, caseStudy }) {
  * thoại nào, trong khi llms.txt lại bảo chúng vào /contact để lấy.
  * Đổi thông tin thì sửa cùng lúc ở: index.html (JSON-LD), public/llms.txt, đây.
  */
+export const CHAN_TRANG_EN =
+  "<footer>" +
+  "<p>Bee Z Production · CÔNG TY TNHH TRUYỀN THÔNG BEE Z PRODUCTION · Tax code 0110989139</p>" +
+  "<p>Address: No. 54, Lane 250 Khuong Trung, Khuong Dinh, Hanoi, Vietnam</p>" +
+  "<p>Phone / Zalo: +84 967 33 55 77 · Email: BeeZ.fw@gmail.com</p>" +
+  "<p>Working hours: Mon – Fri 9:00–18:00 · Sat 10:00–16:00 · Sun closed</p>" +
+  "</footer>";
+
+/** Chân trang đúng ngôn ngữ. */
+export const chanTrang = (lang = "vi") => (lang === "en" ? CHAN_TRANG_EN : CHAN_TRANG);
+
 export const CHAN_TRANG =
   "<footer>" +
   "<p>Bee Z Production · CÔNG TY TNHH TRUYỀN THÔNG BEE Z PRODUCTION · MST 0110989139</p>" +
@@ -207,8 +250,8 @@ export const CHAN_TRANG =
  * @param {{h:string,p:string}[]} [p.muc]   các mục có tiêu đề nhỏ
  * @param {{q:string,a:string}[]} [p.hoiDap]
  */
-export function khoiTrang({ h1, doan = [], muc = [], hoiDap = [] }) {
-  if (!h1) return CHAN_TRANG;
+export function khoiTrang({ h1, doan = [], muc = [], hoiDap = [], lang = "vi" }) {
+  if (!h1) return chanTrang(lang);
   const ps = (s) =>
     String(s ?? "")
       .split(/\n{2,}/)
@@ -222,7 +265,7 @@ export function khoiTrang({ h1, doan = [], muc = [], hoiDap = [] }) {
     .join("");
   const hd = hoiDap.filter((x) => x.q?.trim() && x.a?.trim());
   const phanHd = hd.length
-    ? "<h2>Câu hỏi thường gặp</h2>" + hd.map((x) => `<h3>${esc(x.q.trim())}</h3>${ps(x.a)}`).join("")
+    ? `<h2>${CHU[lang].hoiDap}</h2>` + hd.map((x) => `<h3>${esc(x.q.trim())}</h3>${ps(x.a)}`).join("")
     : "";
-  return `<article><h1>${esc(h1)}</h1>${doan.map(ps).join("")}${phanMuc}${phanHd}</article>${CHAN_TRANG}`;
+  return `<article><h1>${esc(h1)}</h1>${doan.map(ps).join("")}${phanMuc}${phanHd}</article>${chanTrang(lang)}`;
 }

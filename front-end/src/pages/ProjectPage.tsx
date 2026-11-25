@@ -29,15 +29,19 @@ import NotFoundPage from "./NotFoundPage";
  * scripts/prerender-meta.mjs (cùng nhãn mảng, cùng cách lấy ngày đăng video).
  */
 
-function formatNgay(iso?: string): string {
+function formatNgay(iso: string | undefined, lang: "vi" | "en"): string {
   if (!iso) return "";
   const d = new Date(iso);
-  return Number.isNaN(d.getTime()) ? "" : `tháng ${d.getMonth() + 1}/${d.getFullYear()}`;
+  if (Number.isNaN(d.getTime())) return "";
+  return lang === "en"
+    ? d.toLocaleDateString("en-US", { month: "long", year: "numeric" })
+    : `tháng ${d.getMonth() + 1}/${d.getFullYear()}`;
 }
 
 const ProjectPage = () => {
   const { projectSlug } = useParams<{ projectSlug: string }>();
-  const { lang } = useLanguage();
+  const { lang, dd } = useLanguage();
+  const en = lang === "en";
   const t = useTranslation();
   const [service, setService] = useState<ApiService | null>(null);
   const [khongCo, setKhongCo] = useState(false);
@@ -72,16 +76,18 @@ const ProjectPage = () => {
   }
 
   const tenMang = localized(service.title, lang);
-  const nhan = nhanMang(service.slug);
+  const nhan = nhanMang(service.slug, lang);
   const phuDe = localized(duAn.subtitle, lang).trim();
   const anhBia = resolveAssetUrl(duAn.thumbnailImage);
   const video = duAn.video ? resolveAssetUrl(duAn.video) : undefined;
   const caseStudy = mapCaseStudy(duAn.caseStudy, lang);
   const duongDan = duongDanDuAn(duAn, service);
-  const ngayQuay = formatNgay(duAn.shootDate);
+  const ngayQuay = formatNgay(duAn.shootDate, lang);
   const moTa = (phuDe && phuDe.toLowerCase() !== duAn.title.trim().toLowerCase()
     ? phuDe
-    : `Dự án ${duAn.title.trim()} do Bee Z Production thực hiện — ${tenMang.toLocaleLowerCase(lang)}.`
+    : en
+      ? `${duAn.title.trim()}: a ${tenMang} project by Bee Z Production.`
+      : `Dự án ${duAn.title.trim()} do Bee Z Production thực hiện — ${tenMang.toLocaleLowerCase(lang)}.`
   ).slice(0, 160);
   const ngayDang = ngayDangVideo(video);
   const cungMang = service.projects.filter((p) => p.id !== duAn.id && p.slug).slice(0, 6);
@@ -93,16 +99,16 @@ const ProjectPage = () => {
       "@type": "CreativeWork",
       name: duAn.title.trim(),
       description: moTa,
-      url: SITE_URL + duongDan,
+      url: SITE_URL + dd(duongDan),
       image: anhBia,
       creator: { "@id": `${SITE_URL}/#organization` },
-      inLanguage: "vi",
+      inLanguage: lang,
       ...(caseStudy?.challenge ? { abstract: caseStudy.challenge } : {}),
     },
     breadcrumbSchema([
-      { name: "Trang chủ", path: "/" },
-      { name: tenMang, path: duongDanDichVu(service) },
-      { name: duAn.title.trim(), path: duongDan },
+      { name: en ? "Home" : "Trang chủ", path: dd("/") },
+      { name: tenMang, path: dd(duongDanDichVu(service)) },
+      { name: duAn.title.trim(), path: dd(duongDan) },
     ]),
   ];
   // Khai video cho Google chỉ khi có đủ ngày đăng thật (đọc từ tên tệp).
@@ -115,7 +121,7 @@ const ProjectPage = () => {
       thumbnailUrl: anhBia,
       uploadDate: ngayDang,
       contentUrl: video,
-      url: SITE_URL + duongDan,
+      url: SITE_URL + dd(duongDan),
       publisher: { "@id": `${SITE_URL}/#organization` },
     });
   }
@@ -132,10 +138,10 @@ const ProjectPage = () => {
       />
 
       <article className="mx-auto max-w-6xl px-6 pt-28 pb-16">
-        <nav aria-label="Đường dẫn" className="text-muted-foreground mb-6 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm">
-          <Link to="/" className="hover:text-primary transition-colors">Trang chủ</Link>
+        <nav aria-label={en ? "Breadcrumb" : "Đường dẫn"} className="text-muted-foreground mb-6 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm">
+          <Link to={dd("/")} className="hover:text-primary transition-colors">{en ? "Home" : "Trang chủ"}</Link>
           <span aria-hidden="true">/</span>
-          <Link to={duongDanDichVu(service)} className="hover:text-primary transition-colors">{tenMang}</Link>
+          <Link to={dd(duongDanDichVu(service))} className="hover:text-primary transition-colors">{tenMang}</Link>
           <span aria-hidden="true">/</span>
           <span className="text-foreground line-clamp-1">{duAn.title.trim()}</span>
         </nav>
@@ -190,7 +196,7 @@ const ProjectPage = () => {
             )}
             <div className="flex flex-col gap-2">
               <Link
-                to="/contact"
+                to={dd("/contact")}
                 className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-full px-6 py-3 text-center text-sm font-semibold transition-colors"
               >
                 {t.service.startProject}
@@ -212,7 +218,7 @@ const ProjectPage = () => {
                   src={resolveAssetUrl(p)}
                   srcSet={srcSetAnh(resolveAssetUrl(p))}
                   sizes="(min-width: 768px) 33vw, 50vw"
-                  alt={`${duAn.title.trim()} — ảnh ${i + 1}`}
+                  alt={`${duAn.title.trim()} — ${en ? "photo" : "ảnh"} ${i + 1}`}
                   loading="lazy"
                   decoding="async"
                   className="border-border aspect-4/3 w-full rounded-xl border object-cover"
@@ -225,13 +231,15 @@ const ProjectPage = () => {
         {cungMang.length > 0 && (
           <section className="mt-16">
             <div className="mb-6 flex flex-wrap items-baseline justify-between gap-2">
-              <h2 className="text-foreground text-xl font-bold">Dự án {tenMang.toLocaleLowerCase(lang)} khác</h2>
-              <Link to={duongDanDichVu(service)} className="text-primary text-sm hover:underline">Xem tất cả</Link>
+              <h2 className="text-foreground text-xl font-bold">
+                {en ? `More ${tenMang} projects` : `Dự án ${tenMang.toLocaleLowerCase(lang)} khác`}
+              </h2>
+              <Link to={dd(duongDanDichVu(service))} className="text-primary text-sm hover:underline">{en ? "View all" : "Xem tất cả"}</Link>
             </div>
             <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
               {cungMang.map((p, i) => (
                 <Reveal key={p.id} delay={i * 60}>
-                  <Link to={duongDanDuAn(p, service)} className="group border-border bg-card block overflow-hidden rounded-xl border">
+                  <Link to={dd(duongDanDuAn(p, service))} className="group border-border bg-card block overflow-hidden rounded-xl border">
                     <div className="relative aspect-video overflow-hidden">
                       <img
                         src={resolveAssetUrl(p.thumbnailImage)}

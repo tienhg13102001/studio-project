@@ -40,30 +40,49 @@ const withSuspense = (Component: LazyExoticComponent<ComponentType>) => (
   </Suspense>
 );
 
+/**
+ * Các trang khách có ở CẢ HAI ngôn ngữ: gắn ở "/" (tiếng Việt) và "/en" (tiếng
+ * Anh) — đợt J, 25/11/2026. Ngôn ngữ đọc từ đường dẫn (xem i18n/duongDan.ts),
+ * nên mọi trang dùng chung một mã. Thêm route mới thì PHẢI thêm vào map
+ * $la_trang_spa trong nginx.conf (cả nhánh /en).
+ */
+const trangHaiNgonNgu = () => [
+  { index: true, element: withSuspense(LandingPage) },
+  { path: "service", element: withSuspense(ServicesPage) },
+  { path: "service/:id", element: withSuspense(ServicePage) },
+  // Địa chỉ chính thức của một dự án: phẳng và đọc được — /du-an/vf9-teaser.
+  // Từ 24/11/2026 là TRANG RIÊNG (ProjectPage), không còn dựng trang dịch vụ
+  // rồi bật hộp nổi lên trên — xem chú thích đầu ProjectPage.tsx.
+  { path: "du-an/:projectSlug", element: withSuspense(ProjectPage) },
+  // Dạng cũ theo mã máy. GIỮ LẠI vĩnh viễn: link đã chia sẻ ra ngoài không
+  // được phép chết. Vào đây sẽ tự đổi sang địa chỉ mới ở trên.
+  { path: "service/:id/:projectId", element: withSuspense(ServicePage) },
+  { path: "contact", element: withSuspense(ContactPage) },
+  { path: "team", element: withSuspense(TeamPage) },
+  { path: "portfolio", element: withSuspense(PortfolioPage) },
+  { path: "chinh-sach-bao-mat", element: withSuspense(PrivacyPage) },
+];
+
 export const router = createBrowserRouter([
   {
     path: "/",
     element: <MainLayout />,
     children: [
-      { index: true, element: withSuspense(LandingPage) },
-      { path: "service", element: withSuspense(ServicesPage) },
-      { path: "service/:id", element: withSuspense(ServicePage) },
-      // Địa chỉ chính thức của một dự án: phẳng và đọc được — /du-an/vf9-teaser.
-      // Từ 24/11/2026 là TRANG RIÊNG (ProjectPage), không còn dựng trang dịch vụ
-      // rồi bật hộp nổi lên trên — xem chú thích đầu ProjectPage.tsx.
-      { path: "du-an/:projectSlug", element: withSuspense(ProjectPage) },
-      // Dạng cũ theo mã máy. GIỮ LẠI vĩnh viễn: link đã chia sẻ ra ngoài không
-      // được phép chết. Vào đây sẽ tự đổi sang địa chỉ mới ở trên.
-      { path: "service/:id/:projectId", element: withSuspense(ServicePage) },
-      { path: "contact", element: withSuspense(ContactPage) },
-      { path: "team", element: withSuspense(TeamPage) },
-      { path: "portfolio", element: withSuspense(PortfolioPage) },
-      { path: "chinh-sach-bao-mat", element: withSuspense(PrivacyPage) },
-      // Thêm route mới thì PHẢI thêm vào map $la_trang_spa trong nginx.conf.
+      ...trangHaiNgonNgu(),
+      // Bài viết CHỈ có tiếng Việt, nên không có dưới /en (nginx chuyển
+      // /en/bai-viet… về đây).
       { path: "bai-viet", element: withSuspense(BaiVietListPage) },
       { path: "bai-viet/:slug", element: withSuspense(BaiVietPage) },
       // Trang 404 nằm TRONG khung chung để có menu và chân trang: người lạc
       // đường còn lối đi tiếp. nginx trả kèm mã 404 thật cho đường dẫn lạ.
+      { path: "*", element: withSuspense(NotFoundPage) },
+    ],
+  },
+  {
+    path: "/en",
+    element: <MainLayout />,
+    children: [
+      ...trangHaiNgonNgu(),
       { path: "*", element: withSuspense(NotFoundPage) },
     ],
   },

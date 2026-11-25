@@ -11,7 +11,7 @@ import { useLanguage } from "#i18n";
  *   · Bộ đếm khách: chỉ lưu mã băm 16 ký tự của IP, tự xoá sau 2 ngày
  *     (models/Visitor.ts, TTL 172800s); số liệu theo ngày thì không gắn với ai.
  *   · Không cookie, không Google Analytics / Facebook Pixel; trình duyệt chỉ nhớ
- *     ngôn ngữ và giao diện sáng/tối (localStorage).
+ *     giao diện sáng/tối (localStorage). Ngôn ngữ nằm trong đường dẫn (/en), không lưu từ 25/11/2026.
  *
  * Đổi cách thu thập dữ liệu ở đâu thì PHẢI sửa trang này theo, kẻo trang tự nói sai
  * về chính nó.
@@ -52,7 +52,7 @@ const NOI_DUNG: Record<"vi" | "en", { title: string; updated: string; intro: str
         h: "Cookie và mã theo dõi",
         p: [
           "beezvn.com không dùng cookie quảng cáo và không gắn mã theo dõi của bên thứ ba như Google Analytics hay Facebook Pixel.",
-          "Trình duyệt của bạn chỉ nhớ hai lựa chọn: ngôn ngữ (Việt/Anh) và giao diện sáng/tối.",
+          "Trình duyệt của bạn chỉ nhớ một lựa chọn: giao diện sáng/tối. Ngôn ngữ nằm ngay trong địa chỉ trang (bản tiếng Anh bắt đầu bằng /en), không lưu lại.",
         ],
       },
       {
@@ -110,7 +110,7 @@ const NOI_DUNG: Record<"vi" | "en", { title: string; updated: string; intro: str
         h: "Cookies and tracking",
         p: [
           "beezvn.com uses no advertising cookies and no third-party trackers such as Google Analytics or the Facebook Pixel.",
-          "Your browser only remembers two choices: language (Vietnamese/English) and light/dark theme.",
+          "Your browser only remembers one choice: light/dark theme. The language is part of the page address (English pages start with /en) and is not stored.",
         ],
       },
       {
@@ -144,7 +144,7 @@ const PrivacyPage = () => {
 
   return (
     <div className="min-h-screen">
-      <Seo {...seoTrangTinh("/chinh-sach-bao-mat")} path="/chinh-sach-bao-mat" />
+      <Seo {...seoTrangTinh("/chinh-sach-bao-mat", lang)} path="/chinh-sach-bao-mat" />
       <PageHero title={nd.title} subtitle={nd.updated} />
       <article className="mx-auto max-w-3xl px-6 pb-24">
         <p className="text-foreground text-lg leading-relaxed">{nd.intro}</p>

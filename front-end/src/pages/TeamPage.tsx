@@ -3,14 +3,15 @@ import { seoTrangTinh } from "#lib/seoTrangTinh";
 import PageHero from "#components/organisms/PageHero";
 import WhoWeAre from "#components/organisms/WhoWeAre";
 import MeetOurTeam from "#components/organisms/MeetOurTeam";
-import { useTranslation } from "#i18n";
+import { useLanguage, useTranslation } from "#i18n";
 
 const TeamPage = () => {
   const t = useTranslation();
+  const { lang } = useLanguage();
 
   return (
     <div className="min-h-screen">
-      <Seo {...seoTrangTinh("/team")} path="/team" />
+      <Seo {...seoTrangTinh("/team", lang)} path="/team" />
       <PageHero
         title={
           <>

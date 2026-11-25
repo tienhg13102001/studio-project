@@ -8,6 +8,8 @@ import ServiceSection from "#components/organisms/ServiceSection";
 import StatsAndBrands from "#components/organisms/StatsAndBrands";
 import TestimonialSection from "#components/organisms/TestimonialSection";
 import { websiteSchema } from "#lib/structuredData";
+import { seoTrangTinh } from "#lib/seoTrangTinh";
+import { useLanguage } from "#i18n";
 
 /**
  * ĐÃ BỎ MÀN HÌNH CHỜ — Hoàn chốt ngày 21/08/2026.
@@ -33,6 +35,7 @@ const LandingPage = () => {
   // tĩnh trong index.html — một nguồn duy nhất, bot không chạy JS cũng đọc được.
   // Trước 24/11/2026 trang này dựng thêm một khối LocalBusiness thứ hai từ Portal,
   // lệch email và link mạng xã hội với khối kia.
+  const { lang } = useLanguage();
 
   return (
     <>
@@ -41,9 +44,13 @@ const LandingPage = () => {
           phải H1 trên trang. Xếp theo thứ khách gõ nhiều nhất: "sản xuất TVC",
           rồi tới địa danh. */}
       <Seo
-        title="Sản xuất TVC & video quảng cáo — Hà Nội & TP.HCM | Bee Z"
+        title={lang === "en" ? seoTrangTinh("/", "en").title : "Sản xuất TVC & video quảng cáo — Hà Nội & TP.HCM | Bee Z"}
         titleTemplate={false}
-        description="Bee Z Production sản xuất TVC, phim quảng cáo, video sự kiện và nội dung mạng xã hội tại Hà Nội và TP.HCM. Giá khởi điểm công khai từ 50 triệu."
+        description={
+          lang === "en"
+            ? seoTrangTinh("/", "en").description
+            : "Bee Z Production sản xuất TVC, phim quảng cáo, video sự kiện và nội dung mạng xã hội tại Hà Nội và TP.HCM. Giá khởi điểm công khai từ 50 triệu."
+        }
         path="/"
         jsonLd={websiteSchema()}
       />

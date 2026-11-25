@@ -36,7 +36,7 @@ const PortfolioPage = () => {
 
   return (
     <div className="min-h-screen pt-17">
-      <Seo {...seoTrangTinh("/portfolio")} path="/portfolio" />
+      <Seo {...seoTrangTinh("/portfolio", lang)} path="/portfolio" />
 
       <PageHero title={t.portfolio.pageTitle} subtitle={t.portfolio.subtitle} />
 

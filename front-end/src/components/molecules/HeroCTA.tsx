@@ -1,11 +1,12 @@
 import { Button } from "#components/ui/button";
 import SocialLinks from "#components/molecules/SocialLinks";
-import { useTranslation } from "#i18n";
+import { useLanguage, useTranslation } from "#i18n";
 import { useNavigate } from "react-router-dom";
 
 const HeroCTA = () => {
   const t = useTranslation();
   const navigate = useNavigate();
+  const { dd } = useLanguage();
 
   return (
     <div className="flex flex-col items-center gap-3 sm:flex-row sm:gap-6">
@@ -13,7 +14,7 @@ const HeroCTA = () => {
         <Button
           variant="default"
           className="min-h-10 rounded-full px-6 py-3 text-sm font-bold md:px-9 md:py-6 md:text-lg"
-          onClick={() => navigate("/contact")}
+          onClick={() => navigate(dd("/contact"))}
         >
           {t.cta.contactBeez}
         </Button>

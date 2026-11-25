@@ -3,7 +3,7 @@ import { createPortal } from "react-dom";
 import { XIcon, CaretDownIcon, PhoneIcon } from "@phosphor-icons/react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "#components/ui/button";
-import { useTranslation, useLanguage } from "#i18n";
+import { boTienToEn, useTranslation, useLanguage } from "#i18n";
 import type { Translations } from "#i18n";
 import { useServices } from "#hooks/useServices";
 import { useLanding } from "#hooks/useLanding";
@@ -37,8 +37,8 @@ type Props = {
 
 const MobileMenu: React.FC<Props> = ({ open, onClose }) => {
   const t = useTranslation();
-  const { lang, setLang } = useLanguage();
-  const { pathname } = useLocation();
+  const { lang, setLang, dd } = useLanguage();
+  const pathname = boTienToEn(useLocation().pathname);
   const navigate = useNavigate();
   const [servicesOpen, setServicesOpen] = useState(false);
   const { data: services } = useServices(lang);
@@ -121,7 +121,7 @@ const MobileMenu: React.FC<Props> = ({ open, onClose }) => {
                             <li key={service.id}>
                               <Link
                                 key={service.id}
-                                to={duongDanDichVu(service)}
+                                to={dd(duongDanDichVu(service))}
                                 onClick={onClose}
                                 className="group hover:bg-muted flex items-center gap-3 rounded-lg px-3 py-2.5 transition-colors"
                               >
@@ -147,7 +147,7 @@ const MobileMenu: React.FC<Props> = ({ open, onClose }) => {
                   </a>
                 ) : (
                   <Link
-                    to={item.to}
+                    to={dd(item.to)}
                     onClick={onClose}
                     className={`hover:bg-muted flex rounded-lg px-3 py-3 text-sm font-medium transition-colors ${
                       isActive(item) ? "text-primary bg-primary/5 font-semibold" : "text-foreground"
@@ -177,7 +177,7 @@ const MobileMenu: React.FC<Props> = ({ open, onClose }) => {
             className="w-full"
             onClick={() => {
               onClose();
-              navigate("/contact");
+              navigate(dd("/contact"));
             }}
           >
             {t.nav.letsTalk}

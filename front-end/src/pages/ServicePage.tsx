@@ -62,7 +62,7 @@ const ServicePage: React.FC = () => {
   } = useParams<{ id?: string; projectId?: string; projectSlug?: string }>();
   const navigate = useNavigate();
   const viTri = useLocation();
-  const { lang } = useLanguage();
+  const { lang, dd } = useLanguage();
   const t = useTranslation();
   const [searchParams] = useSearchParams();
 
@@ -86,7 +86,7 @@ const ServicePage: React.FC = () => {
    */
   const openProject = (project: ApiProject) => {
     if (!service) return;
-    navigate(duongDanDuAn(project, service), { state: { tuTrongWeb: true } });
+    navigate(dd(duongDanDuAn(project, service)), { state: { tuTrongWeb: true } });
   };
 
   /**
@@ -107,7 +107,7 @@ const ServicePage: React.FC = () => {
       return;
     }
     if (!service) return;
-    navigate(duongDanDichVu(service), { replace: true });
+    navigate(dd(duongDanDichVu(service)), { replace: true });
   };
 
   /**
@@ -171,16 +171,16 @@ const ServicePage: React.FC = () => {
 
     if (maDuAnCu) {
       const duAn = service.projects.find((f) => f.id === maDuAnCu);
-      if (duAn?.slug) navigate(`/du-an/${duAn.slug}`, { replace: true });
-      else if (!duAn) navigate(duongDanDichVu(service), { replace: true });
+      if (duAn?.slug) navigate(dd(`/du-an/${duAn.slug}`), { replace: true });
+      else if (!duAn) navigate(dd(duongDanDichVu(service)), { replace: true });
       // Có dự án nhưng chưa kịp có tên đường dẫn: ở lại địa chỉ cũ, vẫn mở đúng.
       return;
     }
 
     if (id && service.slug && id !== service.slug) {
-      navigate(duongDanDichVu(service), { replace: true });
+      navigate(dd(duongDanDichVu(service)), { replace: true });
     }
-  }, [service, maDuAnCu, projectSlug, id, navigate]);
+  }, [service, maDuAnCu, projectSlug, id, navigate, dd]);
 
   if (loading) {
     return (
@@ -322,20 +322,20 @@ const ServicePage: React.FC = () => {
             // PHẢI dựng từ `service`, không phải từ tham số địa chỉ: vào bằng
             // /du-an/<tên> thì không có tham số dịch vụ nào cả, ghép chuỗi thẳng
             // sẽ khai ra ".../service/undefined" cho máy tìm kiếm.
-            path: duongDanDichVu(service),
+            path: dd(duongDanDichVu(service)),
             image: imageUrl,
           }),
           breadcrumbSchema([
-            { name: t.nav.home, path: "/" },
-            { name: t.nav.services, path: "/service" },
-            { name: title, path: duongDanDichVu(service) },
+            { name: t.nav.home, path: dd("/") },
+            { name: t.nav.services, path: dd("/service") },
+            { name: title, path: dd(duongDanDichVu(service)) },
             // Dự án nay có địa chỉ riêng nên nó là một nấc thật trong đường dẫn,
             // không còn là một trạng thái của trang dịch vụ.
             ...(selectedProject
               ? [
                   {
                     name: selectedProject.title,
-                    path: duongDanDuAn(selectedProject, service),
+                    path: dd(duongDanDuAn(selectedProject, service)),
                   },
                 ]
               : []),
@@ -426,7 +426,7 @@ const ServicePage: React.FC = () => {
             className={`mt-9 flex flex-wrap items-center justify-center gap-3 ${reveal("delay-500")}`}
           >
             <Button
-              onClick={() => navigate("/contact")}
+              onClick={() => navigate(dd("/contact"))}
               className="bg-primary text-primary-foreground hover:bg-primary/90 h-auto gap-2 rounded-full px-6 py-3 text-sm font-semibold"
             >
               <RocketLaunchIcon size={18} weight="fill" />

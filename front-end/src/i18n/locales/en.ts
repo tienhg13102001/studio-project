@@ -11,7 +11,8 @@ const en = {
     letsTalk: "Get a Quote",
   },
   portfolio: {
-    pageTitle: "Portfolio",
+    // H1 of /en/portfolio (đợt J). The menu still says "Portfolio".
+    pageTitle: "TVC, event and photo projects by Bee Z",
     subtitle: "A few projects and images worth showing.",
     empty: "No images yet — check back soon.",
     profileHeading: "Company profile",
@@ -177,12 +178,15 @@ const en = {
      * than breaking the page.
      */
     heroAccentByTag: {
-      TVC: "Brand commercials",
-      "F&B": "Food & product on camera",
-      LOOKBOOK: "Fashion lookbooks & campaigns",
-      SHORT: "Short-form for social",
-      EVENT: "Events & concerts, multi-camera",
-      WEDDING: "Wedding photos and film",
+      // MUST match DONG_VANG_EN in scripts/prerender-meta.mjs character for
+      // character (including the \u00a0 no-break spaces). Location added in đợt J
+      // so the English H1 carries "Hanoi" like the Vietnamese one.
+      TVC: "Brand commercials in Hanoi\u00a0& HCMC",
+      "F&B": "Food & product on camera in Hanoi\u00a0& HCMC",
+      LOOKBOOK: "Fashion lookbooks & campaigns in Hanoi\u00a0& HCMC",
+      SHORT: "Short-form for social in Hanoi\u00a0& HCMC",
+      EVENT: "Events & concerts in Hanoi\u00a0& HCMC",
+      WEDDING: "Wedding photos and film in Hanoi\u00a0& HCMC",
     } as Record<string, string>,
     heroTagline:
       "Talking head, motion graphics, memes and trend-based video, for any industry.",

@@ -25,7 +25,29 @@ const router = Router();
 
 const SITE = "https://www.beezvn.com";
 
-type Entry = { loc: string; changefreq: string; priority: string; lastmod?: string };
+/**
+ * `cap`: trang có bản tiếng Anh (đợt J, 25/11/2026) — khai thêm cặp
+ * xhtml:link hreflang vi/en/x-default, khớp thẻ trong HTML (Seo.tsx và
+ * scripts/prerender-meta.mjs). Bài viết, /bang-gia chỉ có tiếng Việt: không có cap.
+ */
+type Entry = { loc: string; changefreq: string; priority: string; lastmod?: string; cap?: { vi: string; en: string } };
+
+/** Đường Việt → đường Anh. */
+const sangEn = (p: string) => (p === "/" ? "/en" : `/en${p}`);
+/** Những trang tĩnh có bản Anh. */
+const TINH_CO_BAN_ANH = new Set(["/", "/service", "/portfolio", "/team", "/contact", "/chinh-sach-bao-mat"]);
+
+/**
+ * Nhân đôi một mục thành hai bản Việt + Anh, cả hai mang cùng cặp `cap`.
+ * Bản Anh ưu tiên thấp hơn một chút: khách chính của Bee Z tìm bằng tiếng Việt.
+ */
+function haiBan(e: Entry): Entry[] {
+  const cap = { vi: e.loc, en: sangEn(e.loc) };
+  return [
+    { ...e, cap },
+    { ...e, loc: cap.en, cap, priority: (Math.max(0.1, Number(e.priority) - 0.1)).toFixed(1) },
+  ];
+}
 
 const STATIC: Entry[] = [
   { loc: "/", changefreq: "weekly", priority: "1.0" },
@@ -58,8 +80,17 @@ function toXml(entries: Entry[]): string {
   const urls = entries
     .map((e) => {
       const lastmod = e.lastmod ? `\n    <lastmod>${e.lastmod}</lastmod>` : "";
+      const alt = e.cap
+        ? [
+            ["vi", e.cap.vi],
+            ["en", e.cap.en],
+            ["x-default", e.cap.vi],
+          ]
+            .map(([l, p]) => `\n    <xhtml:link rel="alternate" hreflang="${l}" href="${escapeXml(SITE + p)}"/>`)
+            .join("")
+        : "";
       return `  <url>
-    <loc>${escapeXml(SITE + e.loc)}</loc>${lastmod}
+    <loc>${escapeXml(SITE + e.loc)}</loc>${alt}${lastmod}
     <changefreq>${e.changefreq}</changefreq>
     <priority>${e.priority}</priority>
   </url>`;
@@ -67,7 +98,7 @@ function toXml(entries: Entry[]): string {
     .join("\n");
 
   return `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
 ${urls}
 </urlset>
 `;
@@ -125,16 +156,18 @@ router.get("/", async (_req, res, next) => {
     const entries: Entry[] = [
       ...STATIC.map((e) =>
         e.loc === "/portfolio" ? { ...e, lastmod: day(latestProject as Date) } : e,
-      ),
+      ).flatMap((e) => (TINH_CO_BAN_ANH.has(e.loc) ? haiBan(e) : [e])),
       // Ưu tiên tên đường dẫn; mã cũ chỉ dùng khi chưa kịp điền tên, để sitemap
       // không bao giờ rỗng dù việc điền tên có trục trặc.
-      ...services.map((s) => ({
-        loc: `/service/${(s as { slug?: string }).slug || String(s._id)}`,
-        changefreq: "monthly",
-        priority: "0.8",
-        lastmod: day((s as { updatedAt?: Date }).updatedAt),
-      })),
-      ...projectEntries,
+      ...services.flatMap((s) =>
+        haiBan({
+          loc: `/service/${(s as { slug?: string }).slug || String(s._id)}`,
+          changefreq: "monthly",
+          priority: "0.8",
+          lastmod: day((s as { updatedAt?: Date }).updatedAt),
+        }),
+      ),
+      ...projectEntries.flatMap(haiBan),
       // Mục bài viết chỉ khai khi đã có bài — khai một trang danh sách rỗng là
       // mời Google lập chỉ mục một trang mỏng.
       ...(baiViet.length

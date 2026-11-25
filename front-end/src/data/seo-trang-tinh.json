@@ -32,5 +32,41 @@
     "noi-dung-dang-ngan": "Video ngắn",
     "quay-phim-chup-anh-su-kien": "Quay chụp sự kiện",
     "quay-phim-chup-anh-cuoi": "Phim cưới"
+  },
+  "en": {
+    "_ghi_chu": "Bản tiếng Anh của các trang tĩnh (đợt J, 25/11/2026) — dùng cho /en/… ở cả bản dựng sẵn lẫn bản chạy JavaScript. Bài viết chỉ có tiếng Việt nên không có ở đây.",
+    "/service": {
+      "title": "Video & TVC production services",
+      "description": "Bee Z Production services: TVC and commercial production, corporate films, brand films and social media content — end to end, from idea to post-production."
+    },
+    "/portfolio": {
+      "title": "Portfolio — completed projects",
+      "description": "Bee Z Production's portfolio of past work: TVCs, events, F&B, lookbooks and social media content. Filter by service and watch each project's film."
+    },
+    "/team": {
+      "title": "Team",
+      "description": "The people behind every Bee Z Production project — directors, camera operators, editors and producers."
+    },
+    "/contact": {
+      "title": "Contact",
+      "description": "Contact Bee Z Production for advice and a quote on TVC production, corporate films and brand films in Hanoi and Ho Chi Minh City."
+    },
+    "/chinh-sach-bao-mat": {
+      "title": "Privacy policy",
+      "description": "How Bee Z Production collects, uses and protects personal information when you browse beezvn.com or request a quote."
+    },
+    "/": {
+      "title": "TVC & video production in Hanoi & Ho Chi Minh City | Bee Z",
+      "description": "Bee Z Production makes TVCs, commercials, event videos and social media content in Hanoi and Ho Chi Minh City. Published starting prices from VND 50,000,000."
+    }
+  },
+  "_nhanMangEn": {
+    "_ghi_chu": "Nhãn mảng tiếng Anh cho tiêu đề trang dự án /en/du-an/…",
+    "san-xuat-tvc": "TVC production",
+    "do-an-thuc-uong-f-b": "Product photo & video",
+    "lookbook-thoi-trang": "Fashion lookbook",
+    "noi-dung-dang-ngan": "Short-form video",
+    "quay-phim-chup-anh-su-kien": "Event filming & photography",
+    "quay-phim-chup-anh-cuoi": "Wedding film"
   }
 }

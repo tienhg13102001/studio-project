@@ -31,7 +31,7 @@ createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <HelmetProvider>
       <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-        <LanguageProvider>
+        <LanguageProvider router={router}>
           <RouterProvider router={router} />
         </LanguageProvider>
       </ThemeProvider>

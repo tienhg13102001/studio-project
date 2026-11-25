@@ -1,7 +1,7 @@
 import Reveal from "#components/Reveal";
 import SplitText from "#components/molecules/SplitText";
 import { Button } from "#components/ui/button";
-import { useTranslation } from "#i18n";
+import { useLanguage, useTranslation } from "#i18n";
 import { ArrowRightIcon, ChartLineUpIcon } from "@phosphor-icons/react";
 import { useNavigate } from "react-router-dom";
 
@@ -14,6 +14,7 @@ type Props = {
 const CTASection = ({ title, subtitle }: Props) => {
   const t = useTranslation();
   const navigate = useNavigate();
+  const { dd } = useLanguage();
   return (
     <section className="relative overflow-hidden px-6 py-24 text-center">
       <div className="from-primary/10 via-background pointer-events-none absolute inset-0 bg-linear-to-t to-transparent" />
@@ -24,7 +25,7 @@ const CTASection = ({ title, subtitle }: Props) => {
           </h2>
           <p className="text-muted-foreground mt-3 text-base">{subtitle || t.service.ctaSubtitle}</p>
           <Button
-            onClick={() => navigate("/contact")}
+            onClick={() => navigate(dd("/contact"))}
             className="bg-primary text-primary-foreground hover:bg-primary/90 mt-8 h-auto gap-2 rounded-full px-8 py-3 text-sm font-semibold"
           >
             <ChartLineUpIcon size={18} weight="bold" />

@@ -13,7 +13,7 @@ const ServicesPage = () => {
 
   return (
     <div className="min-h-screen">
-      <Seo {...seoTrangTinh("/service")} path="/service" />
+      <Seo {...seoTrangTinh("/service", lang)} path="/service" />
       <PageHero title={t.services.pageTitle} subtitle={t.services.sectionSubtitle} />
 
       <section className="mx-auto max-w-7xl px-4 pb-24 sm:px-6 lg:px-8">
