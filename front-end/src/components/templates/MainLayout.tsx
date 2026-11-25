@@ -5,6 +5,7 @@ import Navbar from "../organisms/Navbar";
 import ScrollToTop from "../atoms/ScrollToTop";
 import FloatingZalo from "#components/molecules/FloatingZalo";
 import ThanhLienHeDiDong from "#components/molecules/ThanhLienHeDiDong";
+import VetSangChuot from "#components/atoms/VetSangChuot";
 import { useSettings } from "#hooks/useSettings";
 import { usePageView } from "#hooks/usePageView";
 
@@ -45,6 +46,8 @@ const MainLayout: React.FC<Props> = () => {
       <div aria-hidden="true" className="h-20 md:hidden" />
       <FloatingZalo />
       <ThanhLienHeDiDong />
+      {/* Chỉ trang cho khách, không có ở Portal (Portal dùng layout riêng). */}
+      <VetSangChuot />
 
       {/*
         Ảnh nền chung cho mọi trang khách, lấy từ mục Cài đặt trong portal.
