@@ -21,17 +21,19 @@ import { useEffect, useRef, useState } from "react";
  */
 
 /**
- * Ảnh cho từng bước — ảnh thật trong dữ liệu dự án (Portal), chọn tay 24/11/2026:
- * bốn bước đầu là hậu trường Techcombank Summit 2026, bước cuối là thành phẩm.
+ * Ảnh cho từng bước — ảnh thật trong dữ liệu dự án (Portal). Chọn lại 25/11/2026
+ * vì Hoàn chê bộ cũ (4 ảnh hậu trường tối, mặt người sát khung): giờ chủ yếu là
+ * ảnh highlight sự kiện, chỉ 2 ảnh hậu trường ở hai bước làm việc tại hiện trường.
+ * Khung máy tính cắt dọc 4:5, điện thoại 16:9 → chọn ảnh có chủ thể ở giữa.
  * Lấy lúc chạy theo tên dự án + số thứ tự ảnh, không chép cứng địa chỉ ảnh: dự
  * án đổi ảnh vẫn chạy; dự án bị xoá thì lùi về ảnh bìa các dự án khác.
  */
 const ANH_BUOC: { slug: string; anh: number }[] = [
-  { slug: "bts-su-kien-techcombank-summit-2026", anh: 1 }, // team bàn việc ở bàn điều khiển
-  { slug: "bts-su-kien-techcombank-summit-2026", anh: 4 }, // khảo sát sân khấu
-  { slug: "bts-su-kien-techcombank-summit-2026", anh: 5 }, // dựng máy trước giờ chạy
-  { slug: "bts-su-kien-techcombank-summit-2026", anh: 2 }, // đang quay gimbal
-  { slug: "parasola-cosmetics-radiant-sun-protection", anh: 4 }, // thành phẩm
+  { slug: "chuong-trinh-nghe-thuat-ket-noi-yeu-thuong", anh: 9 }, // cúp vàng giữa sân khấu (ảnh Techcombank dính logo cắt dở ở mép)
+  { slug: "concert-of-childhood-memory-to-the-light", anh: 0 }, // dàn nhạc, màn LED tròn đỏ
+  { slug: "bts-su-kien-techcombank-summit-2026", anh: 3 }, // quay phim chỉnh máy, ánh xanh
+  { slug: "bts-su-kien-techcombank-summit-2026", anh: 7 }, // đang quay, nhìn ra sân khấu
+  { slug: "chuong-trinh-nghe-thuat-ket-noi-yeu-thuong", anh: 11 }, // ca sĩ áo dài trắng
 ];
 
 const ProcessSection = () => {
