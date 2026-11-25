@@ -21,6 +21,22 @@ import path from "node:path";
 import { Marked } from "marked";
 import { CHAN_TRANG, khoiLienKet, khoiNoiDung, khoiTrang } from "./lien-ket-noi-bo.mjs";
 
+/**
+ * Dòng vàng dưới tên dịch vụ — PHẢI KHỚP `service.heroAccentByTag` trong
+ * src/i18n/locales/vi.ts. Trang thật vẽ H1 = tên + dòng vàng, nên bản dựng sẵn
+ * cho bot cũng phải có đủ cả hai, không thì Google thấy một H1, khách thấy H1 khác.
+ */
+// Phải khớp từng ký tự với heroAccentByTag trong vi.ts (kể cả dấu cách không ngắt \u00a0).
+const DONG_VANG = {
+  TVC: "Phim quảng cáo tại Hà\u00a0Nội & TP.HCM",
+  "F&B": "Chụp món ăn, video sản phẩm tại Hà\u00a0Nội & TP.HCM",
+  LOOKBOOK: "Lookbook, campaign tại Hà\u00a0Nội & TP.HCM",
+  SHORT: "Video TikTok, Reels tại Hà\u00a0Nội & TP.HCM",
+  EVENT: "Hội nghị, ra\u00a0mắt, concert tại Hà\u00a0Nội & TP.HCM",
+  WEDDING: "Phóng sự cưới, pre-wedding tại Hà\u00a0Nội & TP.HCM",
+};
+
+
 const SITE = "https://www.beezvn.com";
 const DIST = path.resolve(process.cwd(), "dist");
 const SUFFIX = " — Bee Z Production";
@@ -367,7 +383,7 @@ function renderPage(route, dsDichVu = [], dsDuAn = []) {
         ? khoiNoiDung({ ten: route.tenThat ?? route.title, caseStudy: route.caseStudy }) + CHAN_TRANG
         : route.loai === "dich-vu"
           ? khoiTrang({
-              h1: route.tenThat,
+              h1: `${route.tenThat}: ${route.dongVang}`,
               doan: [route.moTaDay],
               muc: route.noiBat,
               hoiDap: (route.faqs ?? []).map((f) => ({ q: f.question?.vi, a: f.answer?.vi })),
@@ -442,6 +458,7 @@ async function detailRoutes() {
       image: s.thumbnailImage,
       loai: "dich-vu",
       tenThat: s.title?.vi || s.title?.en || "Dịch vụ",
+      dongVang: DONG_VANG[s.tag] ?? "Sản xuất video",
       faqs: s.faqs ?? [],
       // Cho khối chữ thật trong HTML thô (khoiTrang): đúng chữ trang hiện ra.
       moTaDay: s.description?.vi || "",
@@ -650,14 +667,14 @@ const dsDichVu = details
 function khoiTrangTinh(duong, dsDV) {
   if (duong === "/service")
     return khoiTrang({
-      h1: "Lĩnh vực hoạt động",
+      h1: "Dịch vụ sản xuất video và chụp ảnh tại Hà Nội",
       doan: ["Từ TVC truyền hình đến video ngắn cho mạng xã hội"],
       muc: dsDV.map((d) => ({ h: d.title, p: d.moTa })),
     });
-  if (duong === "/portfolio") return khoiTrang({ h1: "Portfolio", doan: ["Vài dự án và hình ảnh tiêu biểu."] });
-  if (duong === "/team") return khoiTrang({ h1: "Đội ngũ" });
+  if (duong === "/portfolio") return khoiTrang({ h1: "Dự án TVC, sự kiện và hình ảnh Bee Z đã thực hiện", doan: ["Vài dự án và hình ảnh tiêu biểu."] });
+  if (duong === "/team") return khoiTrang({ h1: "Đội ngũ sản xuất phim của Bee Z Production" });
   if (duong === "/contact")
-    return khoiTrang({ h1: "Liên hệ", doan: ["Cần hỏi về dịch vụ, báo giá hay bất cứ điều gì, cứ nhắn. Bee Z trả lời."] });
+    return khoiTrang({ h1: "Liên hệ Bee Z Production tại Hà Nội", doan: ["Cần hỏi về dịch vụ, báo giá hay bất cứ điều gì, cứ nhắn. Bee Z trả lời."] });
   if (duong === "/chinh-sach-bao-mat") return khoiTrang({ h1: "Chính sách bảo mật" });
   return CHAN_TRANG;
 }

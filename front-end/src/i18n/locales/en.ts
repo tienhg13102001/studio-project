@@ -11,6 +11,7 @@ const en = {
     letsTalk: "Get a Quote",
   },
   portfolio: {
+    pageTitle: "Portfolio",
     subtitle: "A few projects and images worth showing.",
     empty: "No images yet — check back soon.",
     profileHeading: "Company profile",
@@ -33,6 +34,7 @@ const en = {
   services: {
     sectionTitle: "What We Do",
     sectionSubtitle: "From broadcast TVCs to short-form for social",
+    pageTitle: "Video production and photography in Hanoi",
   },
   featured: {
     sectionTitle: "Featured",
@@ -93,8 +95,8 @@ const en = {
       },
       {
         title: "Post & delivery",
-        desc: "Edit, colour and sound. Two rounds of revisions included. Master files handed back to you.",
-        when: "5–10 days",
+        desc: "Edit, colour and sound. Three rounds of revisions included. High-quality master delivered to you.",
+        when: "10–14 days",
       },
     ],
   },
@@ -135,6 +137,7 @@ const en = {
   },
   contact: {
     title: "Contact",
+    pageTitle: "Contact Bee Z Production in Hanoi",
     intro:
       "Questions about services, pricing or anything else — just write. Bee Z will answer.",
     emailLabel: "Email",

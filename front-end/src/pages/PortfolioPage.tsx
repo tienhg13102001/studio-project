@@ -38,7 +38,7 @@ const PortfolioPage = () => {
     <div className="min-h-screen pt-17">
       <Seo {...seoTrangTinh("/portfolio")} path="/portfolio" />
 
-      <PageHero title="Portfolio" subtitle={t.portfolio.subtitle} />
+      <PageHero title={t.portfolio.pageTitle} subtitle={t.portfolio.subtitle} />
 
       {/* Khung chờ nằm TRONG ProfileStrip để có cả phần tiêu đề — hết giật bố cục. */}
       <ProfileStrip items={hoSo ?? []} dangTai={dangTaiHoSo} />

@@ -21,6 +21,8 @@ const vi = {
     letsTalk: "Nhận báo giá",
   },
   portfolio: {
+    // H1 trang /portfolio (mục N3). Menu vẫn ghi "Portfolio".
+    pageTitle: "Dự án TVC, sự kiện và hình ảnh Bee Z đã thực hiện",
     subtitle: "Vài dự án và hình ảnh tiêu biểu.",
     empty: "Chưa có hình ảnh nào — vui lòng quay lại sau.",
     profileHeading: "Hồ sơ năng lực",
@@ -43,6 +45,9 @@ const vi = {
   services: {
     sectionTitle: "Lĩnh vực hoạt động",
     sectionSubtitle: "Từ TVC truyền hình đến video ngắn cho mạng xã hội",
+    // H1 riêng của trang /service. Khối trang chủ vẫn dùng sectionTitle (H2), nên
+    // không đổi chung một chữ: H1 cần từ khoá + "Hà Nội" (mục N3, Hoàn chốt 24/11).
+    pageTitle: "Dịch vụ sản xuất video và chụp ảnh tại Hà Nội",
   },
   featured: {
     sectionTitle: "Nổi bật",
@@ -104,8 +109,8 @@ const vi = {
       },
       {
         title: "Hậu kỳ & bàn giao",
-        desc: "Dựng, chỉnh màu, âm thanh. Hai vòng sửa miễn phí. Giao file gốc lại cho bạn.",
-        when: "5–10 ngày",
+        desc: "Dựng, chỉnh màu, âm thanh. Ba vòng sửa miễn phí. Giao bản hoàn thiện chất lượng cao.",
+        when: "10–14 ngày",
       },
     ],
   },
@@ -117,7 +122,7 @@ const vi = {
     sectionSubtitle: "Nhận xét",
   },
   team: {
-    heroLine1: "Những người đứng sau",
+    heroLine1: "Đội ngũ sản xuất phim của",
     heroLine2: "Bee Z Production",
     heroSubtitle: "Những người trực tiếp làm ra từng dự án",
     aboutBadge: "Về chúng tôi",
@@ -146,6 +151,9 @@ const vi = {
   },
   contact: {
     title: "Liên hệ",
+    // H1 trang /contact cố định trong code: ô heading của Contact không có đường sửa
+    // nào trên Portal/API, mà H1 phải khớp với bản HTML dựng sẵn cho bot (mục N3).
+    pageTitle: "Liên hệ Bee Z Production tại Hà Nội",
     intro:
       "Cần hỏi về dịch vụ, báo giá hay bất cứ điều gì, cứ nhắn. Bee Z trả lời.",
     emailLabel: "Email",
@@ -186,13 +194,14 @@ const vi = {
      *
      * Thêm mảng mới mà quên khai ở đây thì tự lùi về câu chung, không vỡ trang.
      */
+    // "Hà\u00a0Nội": dấu cách không ngắt, để điện thoại không bẻ dòng giữa "Hà" và "Nội".
     heroAccentByTag: {
-      TVC: "Phim quảng cáo thương hiệu",
-      "F&B": "Quay chụp món ăn & sản phẩm",
-      LOOKBOOK: "Lookbook & chiến dịch thời trang",
-      SHORT: "Video ngắn cho mạng xã hội",
-      EVENT: "Sự kiện & concert, ghi hình đa máy",
-      WEDDING: "Ảnh và phim ngày cưới",
+      TVC: "Phim quảng cáo tại Hà\u00a0Nội & TP.HCM",
+      "F&B": "Chụp món ăn, video sản phẩm tại Hà\u00a0Nội & TP.HCM",
+      LOOKBOOK: "Lookbook, campaign tại Hà\u00a0Nội & TP.HCM",
+      SHORT: "Video TikTok, Reels tại Hà\u00a0Nội & TP.HCM",
+      EVENT: "Hội nghị, ra\u00a0mắt, concert tại Hà\u00a0Nội & TP.HCM",
+      WEDDING: "Phóng sự cưới, pre-wedding tại Hà\u00a0Nội & TP.HCM",
     } as Record<string, string>,
     heroTagline:
       "Talking head, motion graphics, meme và video bắt trend, làm cho mọi ngành hàng.",
